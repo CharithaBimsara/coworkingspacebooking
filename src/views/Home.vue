@@ -444,7 +444,7 @@ import { defineComponent } from 'vue'
 import type { Router } from 'vue-router'
 import LocationDropdown from '../components/LocationDropdown.vue'
 import { HomeAPI } from '../api'
-import { SearchSpacesRequestDto, NewsletterSubscriptionRequestDto } from '../dto/request'
+import { NewsletterSubscriptionRequestDto } from '../dto/request'
 import type { SpaceDto, AdvertisementDto, TestimonialDto } from '../dto/response'
 
 interface SearchForm {
@@ -520,33 +520,12 @@ export default defineComponent({
       try {
         this.isSearching = true
         
-        const searchRequest = new SearchSpacesRequestDto({
-          location: this.searchForm.location || undefined,
-          spaceType: this.searchForm.spaceType || undefined
-        })
-        
-        // Navigate based on space type or to general search results
+        // Always navigate to SearchResults with provided query params
         const query: Record<string, string> = {}
         if (this.searchForm.location) query.location = this.searchForm.location
+        if (this.searchForm.spaceType) query.spaceType = this.searchForm.spaceType
         
-        if (this.searchForm.spaceType) {
-          // Route to specific category page
-          switch (this.searchForm.spaceType) {
-            case 'meeting-room':
-              await this.$router.push({ name: 'MeetingRooms', query })
-              break
-            case 'hot-desk':
-              await this.$router.push({ name: 'HotDesk', query })
-              break
-            case 'coworking-space':
-              await this.$router.push({ name: 'CoworkingSpace', query })
-              break
-            default:
-              await this.$router.push({ name: 'SearchResults', query })
-          }
-        } else {
-          await this.$router.push({ name: 'SearchResults', query })
-        }
+        await this.$router.push({ name: 'SearchResults', query })
       } catch (error) {
         console.error('Error during search:', error)
       } finally {
