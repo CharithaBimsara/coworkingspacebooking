@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-white">
     <!-- Hero Section -->
     <section class="relative bg-gradient-to-br from-gray-50 to-white overflow-hidden">
-      <div class="max-w-7xl mx-auto container-padding section-padding">
+      <div class="max-w-8xl mx-auto container-padding section-padding">
         <div class="text-center">
           <h1 class="text-4xl lg:text-5xl xl:text-6xl font-heading font-bold text-gray-900 mb-6">
             Revolutionizing the Way

@@ -125,12 +125,12 @@ export default defineComponent({
   width: 100%;
 }
 .custom-time-input {
-  width: 90px;
+  width: 120px;
   padding: 0.5rem 0.75rem;
   border: 1px solid #D1D5DB;
   border-radius: 0.5rem;
   outline: none;
-  font-size: 1rem;
+  font-size: 0.75rem; /* text-xs */
   color: #111;
   background: #fff;
   cursor: pointer;
@@ -155,7 +155,7 @@ export default defineComponent({
   padding: 0.5rem 1rem;
   cursor: pointer;
   color: #111;
-  font-size: 1rem;
+  font-size: 0.75rem; /* text-xs */
   transition: background 0.15s, color 0.15s;
 }
 .dropdown-item.selected,

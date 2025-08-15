@@ -3,9 +3,9 @@
     <!-- Advanced Search Bar -->
     <div class="bg-white border-b mr-5 ml-5 rounded-lg border-gray-200 sticky top-16 mt-5 z-40">
       <div class="max-w-8xl mx-10 px-5 py-5">
-        <div class="flex flex-wrap items-end justify-start gap-4 w-full">
-          <div class="flex-grow">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Space Type</label>
+  <div class="flex flex-wrap items-end justify-start gap-4 w-full relative">
+          <div class="flex-grow relative">
+            <label class="block text-sm font-medium text-gray-700 mb-2 text-sm">Space Type</label>
             <select v-model="editSearchForm.spaceType" class="input-field text-sm py-2 px-3 w-full">
               <option value="">Space Type</option>
               <option value="meeting-room">Meeting Room</option>
@@ -15,22 +15,24 @@
           </div>
 
           <div class="flex-grow">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2 text-sm">Date</label>
             <SingleDatePicker :modelValue="editSearchForm.date === null ? undefined : editSearchForm.date" @update:modelValue="editSearchForm.date = $event" placeholder="Date" class="text-sm py-0 w-full" />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Time Range</label>
-            <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" />
+            <label class="block text-sm font-medium text-gray-700  mb-2">Time Range</label>
+            <div class="min-w-[260px]">
+              <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" />
+            </div>
           </div>
 
           <div class="flex-none mr-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
             <input v-model.number="editSearchForm.capacity" type="number" min="1" placeholder="Capacity"
-              class="input-field text-xs py-3 px-3 w-full">
+              class="input-field text-xs py-2.5 px-3 w-full">
           </div>
 
-          <div class="flex-shrink-0 pt-5">
+          <div class="flex-shrink-0 pt-5 relative">
             <button @click="updateSearch" class="btn-primary py-3 px-4 text-sm w-40" :disabled="isSearching">
               {{ isSearching ? 'Searching...' : 'Search' }}
             </button>
@@ -39,30 +41,30 @@
       </div>
     </div>
 
-    <div class="max-w-8xl mx-auto px-5 py-6">
-      <div class="grid md:grid-cols-4 gap-6">
+  <div class="max-w-8xl mx-auto px-2 sm:px-5 py-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-2 relative">
         <!-- Filters Sidebar - Narrower -->
-        <div class="md:col-span-1 w-full">
-          <div class="bg-white rounded-lg p-3 shadow-card sticky top-60 z-30">
+  <div class="md:col-span-1 w-full mb-4 md:mb-0 md:ml-14 ml-0 md:max-w-xs md:min-w-[210px]">
+          <div class="bg-white rounded-lg p-3 shadow-card sticky top-60 z-30 text-[1.08rem] md:text-base" style="font-size: 1.08rem;">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-base font-semibold text-gray-900">Filters</h3>
-              <button @click="clearAllFilters" class="text-xs text-primary hover:text-primary/80">
+              <h3 class="text-lg font-semibold text-gray-900">Filters</h3>
+              <button @click="clearAllFilters" class="text-sm text-secondary-500 ">
                 Clear All
               </button>
             </div>
 
             <!-- Location Filter -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Location</h4>
-              <input v-model="filters.location" type="text" placeholder="Enter location" class="input-field w-full text-sm py-1.5 px-2"
+              <h4 class="font-medium text-gray-900 text-base mb-2">Location</h4>
+              <input v-model="filters.location" type="text" placeholder="Enter location" class="input-field w-full text-base py-1.5 px-2"
                 @input="applyFilters">
             </div>
 
             <!-- Price Range -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Price Range (per day)</h4>
+              <h4 class="font-medium text-gray-900 text-base mb-2">Price Range (per day)</h4>
               <div class="space-y-2">
-                <div class="flex items-center justify-between text-xs text-gray-600">
+                <div class="flex items-center justify-between text-sm text-gray-600">
                   <span>${{ priceRange.min }}</span>
                   <span>${{ priceRange.max }}</span>
                 </div>
@@ -73,39 +75,39 @@
 
             <!-- Facilities -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Facilities</h4>
+              <h4 class="font-medium text-gray-900 text-base mb-2">Facilities</h4>
               <div class="space-y-1.5">
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="High-Speed WiFi" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-xs">High-Speed WiFi</span>
+                  <span class="ml-2 text-gray-700 text-sm">High-Speed WiFi</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="4K Display" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-xs">4K Display</span>
+                  <span class="ml-2 text-gray-700 text-sm">4K Display</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Video Conferencing" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-xs">Video Conferencing</span>
+                  <span class="ml-2 text-gray-700 text-sm">Video Conferencing</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Natural Light" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-xs">Natural Light</span>
+                  <span class="ml-2 text-gray-700 text-sm">Natural Light</span>
                 </label>
               </div>
             </div>
 
             <!-- Rating -->
             <div>
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Rating</h4>
+              <h4 class="font-medium text-gray-900 text-base mb-2">Rating</h4>
               <div class="space-y-1.5">
                 <label class="flex items-center">
                   <input v-model="minRating" value="4" type="radio" name="rating"
                     class="border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 flex items-center text-xs">
+                  <span class="ml-2 text-gray-700 flex items-center text-sm">
                     4+ stars
                     <div class="flex ml-1 text-yellow-400">
                       <svg v-for="star in 4" :key="star" class="w-3 h-3 fill-current" viewBox="0 0 20 20">
@@ -118,7 +120,7 @@
                 <label class="flex items-center">
                   <input v-model="minRating" value="0" type="radio" name="rating"
                     class="border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-xs">Any rating</span>
+                  <span class="ml-2 text-gray-700 text-sm">Any rating</span>
                 </label>
               </div>
             </div>
@@ -126,7 +128,7 @@
         </div>
 
         <!-- Results Area -->
-        <div class="md:col-span-3">
+  <div class="md:col-span-3 relative md:mr-14 mr-0">
           <!-- Title and Sort -->
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div>
@@ -159,7 +161,7 @@
           </div>
 
           <!-- Space Cards Grid - 3 per row -->
-          <div v-else-if="filteredSpaces.length > 0" class="grid md:grid-cols-3 gap-4">
+          <div v-else-if="filteredSpaces.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div v-for="space in sortedSpaces" :key="space.id"
               class="card overflow-hidden group cursor-pointer hover:shadow-md transition-all duration-200"
               @click="viewSpace(space.id, space.productType)">

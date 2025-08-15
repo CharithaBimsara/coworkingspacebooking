@@ -69,29 +69,7 @@
             {{ date.day }}
           </button>
         </div>
-        <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-          <button 
-            @click="clearSelection"
-            class="text-sm text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            Clear
-          </button>
-          <div class="flex space-x-2">
-            <button
-              @click="cancelSelection"
-              class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applySelection"
-              :disabled="!tempDate"
-              class="px-4 py-1 bg-primary text-white text-sm rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Apply
-            </button>
-          </div>
-        </div>
+  <!-- Removed Apply, Clear, and Cancel buttons. Date selection is now instant. -->
       </div>
     </div>
   </div>
@@ -215,8 +193,11 @@ export default defineComponent({
     },
     selectDate(dateObj: CalendarDate): void {
       if (dateObj.disabled) return
-  const dateString = this.formatLocalDate(dateObj.date)
-      this.tempDate = dateString
+      const dateString = this.formatLocalDate(dateObj.date)
+      this.selectedDate = dateString
+      this.$emit('update:modelValue', this.selectedDate)
+      this.$emit('change', this.selectedDate)
+      this.showCalendar = false
     },
     isDateDisabled(date: Date): boolean {
   const dateString = this.formatLocalDate(date)
@@ -254,20 +235,7 @@ export default defineComponent({
       const d = new Date(year, month - 1, day)
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     },
-    clearSelection(): void {
-      this.tempDate = null
-      this.applySelection()
-    },
-    cancelSelection(): void {
-      this.tempDate = this.selectedDate
-      this.showCalendar = false
-    },
-    applySelection(): void {
-      this.selectedDate = this.tempDate
-      this.$emit('update:modelValue', this.selectedDate)
-      this.$emit('change', this.selectedDate)
-      this.showCalendar = false
-    }
+  // clearSelection, cancelSelection, and applySelection removed (no longer needed)
   }
 })
 </script>

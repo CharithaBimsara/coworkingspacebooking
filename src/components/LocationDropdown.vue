@@ -32,7 +32,7 @@
     <!-- Dropdown -->
     <div 
       v-if="showDropdown && (filteredLocations.length > 0 || isLoading)"
-      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
+      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto custom-scrollbar min-w-[260px]"
     >
       <!-- Loading state -->
       <div v-if="isLoading" class="p-3 text-center text-gray-500">
@@ -278,3 +278,24 @@ export default defineComponent({
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 </style>
+
+/* Custom scrollbar for dropdown */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px !important;
+  background: #f3f4f6 !important;
+  border-radius: 10px !important;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6366f1 40%, #a5b4fc 100%) !important;
+  border-radius: 10px !important;
+  min-height: 40px !important;
+  border: 2px solid #f3f4f6 !important;
+  transition: background 0.2s;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #4338ca 40%, #818cf8 100%) !important;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #6366f1 #f3f4f6;
+}
