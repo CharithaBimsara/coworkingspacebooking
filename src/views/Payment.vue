@@ -226,8 +226,8 @@
             <div v-if="bookingDetails.length > 0" class="space-y-4 mb-6">
               <div v-for="(booking, index) in bookingDetails" :key="index" class="flex space-x-3">
                 <img 
-                  v-if="booking.space && booking.space.image" 
-                  :src="booking.space.image" 
+                  v-if="booking.space && booking.space.images && booking.space.images.length > 0" 
+                  :src="booking.space.images[0]" 
                   :alt="booking.space.name || 'Space Image'" 
                   class="w-16 h-16 rounded-lg object-cover"
                 >
@@ -301,7 +301,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useBookingStore } from '../stores/booking';
-import type { Booking } from '../stores/booking';
+import type { BookingDetails } from '../stores/booking';
 
 interface CardInfo {
   number: string;
@@ -346,7 +346,7 @@ export default defineComponent({
     bookingStore() {
       return useBookingStore();
     },
-    bookingDetails(): Booking[] {
+    bookingDetails(): BookingDetails[] {
       return this.bookingStore.currentBooking;
     },
     totalAmount(): number {
@@ -413,9 +413,9 @@ export default defineComponent({
       this.cardInfo.expiry = value;
     },
     
-    formatBookingDate(booking: Booking): string {
-      const startDate = booking.booking?.startDate || booking.subscription?.startDate || booking.startDate;
-      const endDate = booking.booking?.endDate || booking.subscription?.endDate || booking.endDate;
+    formatBookingDate(booking: BookingDetails): string {
+      const startDate = booking.booking?.startDate || booking.subscription?.startDate;
+      const endDate = booking.booking?.endDate || booking.subscription?.endDate;
       
       if (startDate && endDate) {
         const start = new Date(startDate);
@@ -424,7 +424,7 @@ export default defineComponent({
         return `${start.toLocaleDateString('en-US', formatOptions)} - ${end.toLocaleDateString('en-US', formatOptions)}`;
       }
       
-      const legacyDate = booking.booking?.date || booking.date;
+      const legacyDate = booking.booking?.date;
       if (legacyDate) {
         return new Date(legacyDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       }
