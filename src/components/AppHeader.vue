@@ -105,20 +105,38 @@
 
     <!-- Auth Modals -->
     <AuthModals :showSignIn="showSignInModal" :showSignUp="showSignUpModal" @close="closeAuthModals"
-      @user-authenticated="handleUserAuthenticated" :contextMessage="authModalContextMessage" />
+      @user-authenticated="handleUserAuthenticated" :contextMessage="authModalContextMessage" :redirectPath="redirectAfterAuth" />
+
+    <!-- Sign Out Success Overlay -->
+    <SuccessOverlay
+      :show="authStore.showSignOutMessage"
+      title="Signed Out Successfully"
+      message="You have been successfully signed out of your account."
+      :primary-action="{
+        text: 'Continue Browsing',
+        action: () => {
+          authStore.clearSignOutMessage();
+          $router.push('/');
+        }
+      }"
+      @close="authStore.clearSignOutMessage()"
+    />
   </header>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import AuthModals from './AuthModals.vue'
+import SuccessOverlay from './SuccessOverlay.vue' // Import SuccessOverlay
 import type { UserDto } from '../dto/response'
 import { useAuthStore } from '../stores/auth'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'AppHeader',
   components: {
-    AuthModals
+    AuthModals,
+    SuccessOverlay // Register SuccessOverlay
   },
 
   data() {
@@ -127,24 +145,33 @@ export default defineComponent({
       showMobileMenu: false,
       showSignInModal: false,
       showSignUpModal: false,
-      authModalContextMessage: '' // New data property
+      authModalContextMessage: '', // New data property
+      redirectAfterAuth: '', // New data property
+      authStore: null as any, // Initialize authStore as null
+      router: null as any // Initialize router as null
     }
   },
 
   computed: {
     currentUser(): UserDto | null {
-      const authStore = useAuthStore()
-      return authStore.currentUser
+      return this.authStore?.currentUser || null
     },
     myBookingsLink(): string {
       return this.currentUser ? '/my-bookings' : '/'; // Navigate to home if not logged in
+    },
+    currentRoute(): any {
+      return this.router?.currentRoute?.value || { path: '/' }
     }
+  },
+
+  created() {
+    this.authStore = useAuthStore();
+    this.router = useRouter();
   },
 
   mounted() {
     // Initialize auth store
-    const authStore = useAuthStore()
-    authStore.initializeAuth()
+    this.authStore?.initializeAuth()
 
     // Add click outside listener to close menus
     document.addEventListener('click', this.handleClickOutside)
@@ -157,18 +184,19 @@ export default defineComponent({
 
   methods: {
 
-    openLogin(message: string = '') { // Modified to accept message
+    openLogin(message: string = '', redirectPath: string = '/my-bookings') { // Modified to accept message and redirectPath
       console.log('Opening login modal')
       this.showSignInModal = true
       this.authModalContextMessage = message; // Set the message
+      this.redirectAfterAuth = redirectPath; // Set the redirect path
       this.closeMobileMenu()
     },
 
     handleMyBookingsClick() {
       if (this.currentUser) {
-        this.$router.push('/my-bookings');
+        this.router?.push('/my-bookings');
       } else {
-        this.openLogin('To view your bookings, please log in or register.'); // Pass the message
+        this.openLogin('To view your bookings, please log in or register.', '/my-bookings'); // Pass the message and redirectPath
       }
       this.closeMobileMenu();
     },
@@ -181,25 +209,21 @@ export default defineComponent({
 
     handleUserAuthenticated(user: UserDto) {
       console.log('User authenticated:', user)
-      const authStore = useAuthStore()
       // The auth store is already updated by the AuthModals component
       this.closeAuthModals()
     },
 
     handleLogout() {
       console.log('User logging out')
-      const authStore = useAuthStore()
-      authStore.clearUser()
+      this.authStore?.clearUser()
 
       this.closeUserMenu()
       this.closeMobileMenu()
 
       // Redirect to home if on protected route
-      if (this.$route.path === '/my-bookings') {
-        this.$router.push('/')
+      if (this.currentRoute.path === '/my-bookings') {
+        this.router?.push('/')
       }
-
-      alert('Successfully signed out!')
     },
 
     toggleUserMenu() {

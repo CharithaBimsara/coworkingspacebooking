@@ -22,7 +22,7 @@
       </div>
     </div>
     <div v-else class="summary-tab">
-      <button class="btn-secondary py-2 px-4">Return to Booking Summary</button>
+      <button @click.stop="goToBookingSummary" class="btn-secondary py-2 px-4">Return to Booking Summary</button>
     </div>
   </div>
 </template>
@@ -59,13 +59,18 @@ export default defineComponent({
       return types[type] || type
     }
 
+    const goToBookingSummary = () => {
+      router.push({ name: 'BookingSummary' })
+    }
+
     return {
       isExpanded,
       bookingData,
       totalAmount,
       toggleExpansion,
       goToCheckout,
-      formatProductType
+      formatProductType,
+      goToBookingSummary
     }
   }
 })

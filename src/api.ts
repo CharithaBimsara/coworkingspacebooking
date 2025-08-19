@@ -83,11 +83,11 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 // Helper function to generate mock availability
 const generateMockAvailability = (days: number = 7) => {
   const availability = [];
-  let currentDate = new Date();
+  const currentDate = new Date();
   for (let i = 0; i < days; i++) {
     const dateString = currentDate.toISOString().split('T')[0];
     const isAvailable = Math.random() > 0.2; // 80% chance of being available
-    let availableTimes: string[] = [];
+    const availableTimes: string[] = [];
 
     if (isAvailable) {
       // Generate some random time slots

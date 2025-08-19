@@ -298,8 +298,7 @@
         </div>
       </div>
     </div>
-    <FloatingBookingSummary />
-  </div>
+    </div>
 </template>
 
 <script lang="ts">

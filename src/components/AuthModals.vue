@@ -184,6 +184,10 @@ export default defineComponent({
     showSignUp: {
       type: Boolean as PropType<boolean>,
       default: false
+    },
+    redirectPath: {
+      type: String as PropType<string>,
+      default: '/my-bookings'
     }
   },
   
@@ -260,7 +264,7 @@ export default defineComponent({
             text: 'Continue',
             action: () => {
               // Navigate to dashboard or previous page
-              this.$router?.push('/my-bookings').catch(() => {});
+              this.$router?.push(this.redirectPath).catch(() => {});
             }
           };
         } else {
@@ -320,7 +324,7 @@ export default defineComponent({
             text: 'Get Started',
             action: () => {
               // Navigate to onboarding or dashboard
-              this.$router?.push('/my-bookings').catch(() => {});
+              this.$router?.push(this.redirectPath).catch(() => {});
             }
           };
         } else {

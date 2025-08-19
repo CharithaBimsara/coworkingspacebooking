@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useBookingStore } from './booking'
 import type { UserDto } from '../dto/response'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -7,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserDto | null>(null)
   const token = ref<string | null>(null)
   const isLoading = ref(false)
+  const showSignOutMessage = ref(false) // New state for sign-out message
 
   // Getters
   const isAuthenticated = computed(() => !!user.value && !!token.value)
@@ -29,6 +31,13 @@ export const useAuthStore = defineStore('auth', () => {
     // Clear from localStorage
     localStorage.removeItem('workspace_user')
     localStorage.removeItem('auth_token')
+
+    // Clear booking details from sessionStorage on logout
+    const bookingStore = useBookingStore();
+    bookingStore.clearBookingDetails();
+
+    // Show sign-out message
+    setShowSignOutMessage(true);
   }
 
   const initializeAuth = () => {
@@ -57,11 +66,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const setShowSignOutMessage = (value: boolean) => {
+    showSignOutMessage.value = value;
+  }
+
+  const clearSignOutMessage = () => {
+    showSignOutMessage.value = false;
+  }
+
   return {
     // State
     user,
     token,
     isLoading,
+    showSignOutMessage,
     
     // Getters
     isAuthenticated,
@@ -72,6 +90,8 @@ export const useAuthStore = defineStore('auth', () => {
     clearUser,
     initializeAuth,
     setLoading,
-    updateUser
+    updateUser,
+    setShowSignOutMessage,
+    clearSignOutMessage
   }
 })
