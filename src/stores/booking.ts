@@ -43,27 +43,39 @@ interface BookingDetails {
 
 export const useBookingStore = defineStore('booking', () => {
   // State
-  const currentBooking = ref<BookingDetails | null>(null)
+  const currentBooking = ref<BookingDetails[]>([])
   const bookingHistory = ref<BookingDto[]>([])
   const isProcessing = ref(false)
+  const isFloating = ref(false)
+  const isMinimized = ref(false)
 
   // Actions
   const setBookingDetails = (details: BookingDetails) => {
-    currentBooking.value = details
+    const existingIndex = currentBooking.value.findIndex(i => i.spaceId === details.spaceId);
+
+    if (existingIndex !== -1) {
+      // If an item with the same spaceId exists, replace it
+      currentBooking.value[existingIndex] = details;
+    } else {
+      // Otherwise, add the new item
+      currentBooking.value.push(details);
+    }
     
-    // Persist to sessionStorage for booking flow
-    sessionStorage.setItem('bookingDetails', JSON.stringify(details))
+    sessionStorage.setItem('bookingDetails', JSON.stringify(currentBooking.value));
   }
 
-  const updateBookingDetails = (updates: Partial<BookingDetails>) => {
-    if (currentBooking.value) {
-      currentBooking.value = { ...currentBooking.value, ...updates }
-      sessionStorage.setItem('bookingDetails', JSON.stringify(currentBooking.value))
-    }
+  const removeBookingItem = (spaceId: number) => {
+    currentBooking.value = currentBooking.value.filter(item => item.spaceId !== spaceId);
+    sessionStorage.setItem('bookingDetails', JSON.stringify(currentBooking.value));
+  }
+
+  const updateBookingDetails = (bookings: BookingDetails[]) => {
+    currentBooking.value = bookings;
+    sessionStorage.setItem('bookingDetails', JSON.stringify(currentBooking.value))
   }
 
   const clearBookingDetails = () => {
-    currentBooking.value = null
+    currentBooking.value = []
     sessionStorage.removeItem('bookingDetails')
   }
 
@@ -82,6 +94,18 @@ export const useBookingStore = defineStore('booking', () => {
   const setProcessing = (processing: boolean) => {
     isProcessing.value = processing
   }
+
+  const setFloating = (floating: boolean) => {
+    isFloating.value = floating;
+  };
+
+  const setMinimized = (minimized: boolean) => {
+    isMinimized.value = minimized;
+  };
+
+  const toggleMinimized = () => {
+    isMinimized.value = !isMinimized.value;
+  };
 
   const addToBookingHistory = (booking: BookingDto) => {
     bookingHistory.value.unshift(booking)
@@ -112,13 +136,19 @@ export const useBookingStore = defineStore('booking', () => {
     currentBooking,
     bookingHistory,
     isProcessing,
+    isFloating,
+    isMinimized,
     
     // Actions
     setBookingDetails,
+    removeBookingItem,
     updateBookingDetails,
     clearBookingDetails,
     initializeBooking,
     setProcessing,
+    setFloating,
+    setMinimized,
+    toggleMinimized,
     addToBookingHistory,
     loadBookingHistory,
     clearBookingHistory

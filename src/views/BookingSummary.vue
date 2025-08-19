@@ -26,141 +26,108 @@
       <div class="grid lg:grid-cols-3 gap-8">
         <!-- Booking Details -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Space Information -->
-          <div class="bg-white rounded-xl p-6 shadow-card">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Space Details</h2>
+          <!-- Loop through each booking -->
+          <div v-for="(booking, index) in bookingData" :key="index" class="bg-white rounded-xl p-6 shadow-card">
+            <div class="flex justify-between items-start">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">Space Details</h2>
+              <button @click="removeBookingItem(booking.spaceId)" class="text-red-500 hover:text-red-700">
+                Remove
+              </button>
+            </div>
             <div class="flex space-x-4">
-  <img 
-    v-if="bookingData.space && bookingData.space.image" 
-    :src="bookingData.space.image" 
-    :alt="bookingData.space.name || 'Space Image'" 
-    class="w-24 h-24 rounded-lg object-cover"
-  >
-  <img 
-    v-else 
-    src="https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-    alt="Default Space Image" 
-    class="w-24 h-24 rounded-lg object-cover"
-  >
-  <div class="flex-1">
-    <h3 class="text-lg font-semibold text-gray-900">{{ bookingData.space?.name || 'Unknown Space' }}</h3>
-    <div class="flex items-center text-gray-600 mt-1">
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-      </svg>
-      {{ bookingData.space?.location || 'Unknown Location' }}
-    </div>
-    <!-- ... rest of the template remains unchanged -->
-  </div>
-</div>
+              <img 
+                v-if="booking.space && booking.space.images && booking.space.images.length > 0" 
+                :src="booking.space.images[0]" 
+                :alt="booking.space.name || 'Space Image'" 
+                class="w-24 h-24 rounded-lg object-cover"
+              >
+              <img 
+                v-else 
+                src="https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                alt="Default Space Image" 
+                class="w-24 h-24 rounded-lg object-cover"
+              >
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900">{{ booking.space?.name || 'Unknown Space' }}</h3>
+                <div class="flex items-center text-gray-600 mt-1">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                  {{ booking.space?.location || 'Unknown Location' }}
+                </div>
+              </div>
+            </div>
             
             <!-- Booking Details -->
             <div class="mt-6 pt-6 border-t border-gray-200">
               <div class="grid sm:grid-cols-2 gap-4">
-                <div v-if="productType === 'meeting-room'">
+                <div v-if="booking.productType === 'meeting-room'">
                   <label class="text-sm font-medium text-gray-700">Date Range & Time</label>
-                  <p class="text-gray-900 font-semibold">{{ formatDateRange() }}</p>
-                  <p class="text-gray-600 text-sm">{{ bookingData.booking?.startTime }} - {{ getEndTime() }} ({{ bookingData.booking?.duration }}h)</p>
+                  <p class="text-gray-900 font-semibold">{{ formatDateRange(booking) }}</p>
+                  <p class="text-gray-600 text-sm">{{ booking.booking?.startTime }} - {{ getEndTime(booking) }} ({{ booking.booking?.duration }}h)</p>
                 </div>
                 <div v-else>
                   <label class="text-sm font-medium text-gray-700">Subscription Period</label>
-                  <p class="text-gray-900 font-semibold">{{ formatDateRange() }}</p>
-                  <p class="text-gray-600 text-sm">{{ getPackageDisplayName() }}</p>
+                  <p class="text-gray-900 font-semibold">{{ formatDateRange(booking) }}</p>
+                  <p class="text-gray-600 text-sm">{{ getPackageDisplayName(booking) }}</p>
                 </div>
                 <div>
                   <label class="text-sm font-medium text-gray-700">Product Type</label>
-                  <p class="text-gray-900 font-semibold">{{ formatProductType(productType) }}</p>
-                  <p v-if="productType === 'meeting-room'" class="text-gray-600 text-sm">Capacity: {{ bookingData.space?.capacity || 'N/A' }} people</p>
-                  <p v-else-if="productType === 'coworking-space'" class="text-gray-600 text-sm">Team Size: {{ bookingData.teamSize || 'N/A' }}</p>
+                  <p class="text-gray-900 font-semibold">{{ formatProductType(booking.productType) }}</p>
+                  <p v-if="booking.productType === 'meeting-room'" class="text-gray-600 text-sm">Capacity: {{ booking.space?.capacity || 'N/A' }} people</p>
+                  <p v-else-if="booking.productType === 'coworking-space'" class="text-gray-600 text-sm">Team Size: {{ booking.subscription?.teamSize || 'N/A' }}</p>
                   <p v-else class="text-gray-600 text-sm">Individual workspace</p>
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- Add another service -->
+          <div class="text-center">
+            <button @click="addAnotherService" class="btn-secondary">+ Add Another Service</button>
+          </div>
+
           <!-- Guest Information -->
           <div class="bg-white rounded-xl p-6 shadow-card">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Guest Information</h2>
-            <form @submit.prevent="proceedToPayment" class="space-y-4">
-              <div class="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                  <input 
-                    v-model="guestInfo.firstName" 
-                    type="text" 
-                    required
-                    class="input-field"
-                    placeholder="Enter your first name"
-                  >
+            <div v-if="!isAuthenticated">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">Your Information</h2>
+              <div v-if="!guestCheckout">
+                <p class="text-gray-600 mb-4">You can log in, register, or continue as a guest to complete your booking.</p>
+                <div class="flex space-x-4">
+                  <button @click="openAuthModal('login')" class="btn-primary">Login</button>
+                  <button @click="openAuthModal('register')" class="btn-secondary">Register</button>
+                  <button v-if="allowGuestCheckout" @click="guestCheckout = true" class="btn-secondary">Continue as Guest</button>
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                  <input 
-                    v-model="guestInfo.lastName" 
-                    type="text" 
-                    required
-                    class="input-field"
-                    placeholder="Enter your last name"
-                  >
-                </div>
+                <p v-if="!allowGuestCheckout" class="text-sm text-gray-500 mt-4">Guest checkout is only available for meeting room bookings.</p>
               </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                <input 
-                  v-model="guestInfo.email" 
-                  type="email" 
-                  required
-                  class="input-field"
-                  placeholder="Enter your email address"
-                >
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                <input 
-                  v-model="guestInfo.phone" 
-                  type="tel" 
-                  required
-                  class="input-field"
-                  placeholder="Enter your phone number"
-                >
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Special Requests</label>
-                <textarea 
-                  v-model="guestInfo.specialRequests" 
-                  rows="3"
-                  class="input-field resize-none"
-                  placeholder="Any special requirements or notes for your booking..."
-                ></textarea>
-              </div>
-              
-              <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">Emergency Contact</h3>
-                <div class="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Contact Name</label>
-                    <input 
-                      v-model="guestInfo.emergencyContactName" 
-                      type="text" 
-                      class="input-field"
-                      placeholder="Emergency contact name"
-                    >
+              <div v-if="guestCheckout">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Guest Details</h3>
+                <form @submit.prevent="proceedToPayment" class="space-y-4">
+                  <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                      <input v-model="guestInfo.firstName" type="text" required class="input-field" placeholder="Enter your first name">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                      <input v-model="guestInfo.lastName" type="text" required class="input-field" placeholder="Enter your last name">
+                    </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Contact Phone</label>
-                    <input 
-                      v-model="guestInfo.emergencyContactPhone" 
-                      type="tel" 
-                      class="input-field"
-                      placeholder="Emergency contact phone"
-                    >
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input v-model="guestInfo.email" type="email" required class="input-field" placeholder="Enter your email address">
                   </div>
-                </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                    <input v-model="guestInfo.phone" type="tel" required class="input-field" placeholder="Enter your phone number">
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
+            <div v-if="isAuthenticated">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">Your Information</h2>
+              <p class="text-gray-600" v-if="currentUser">You are logged in as {{ currentUser.email }}. We will use the information from your profile.</p>
+            </div>
           </div>
         </div>
 
@@ -171,24 +138,9 @@
             
             <!-- Price breakdown -->
             <div class="space-y-3 mb-6">
-              <div class="flex items-center justify-between">
-                <span class="text-gray-600">{{ getServiceDisplayName() }}</span>
-                <span class="font-semibold">${{ basePrice || 170 }}</span>
-              </div>
-              
-              <div v-if="facilitiesPrice > 0" class="flex items-center justify-between">
-                <span class="text-gray-600">Additional Facilities</span>
-                <span class="font-semibold">${{ facilitiesPrice }}</span>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-gray-600">Service Fee</span>
-                <span class="font-semibold">${{ serviceFee }}</span>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-gray-600">Taxes</span>
-                <span class="font-semibold">${{ taxes }}</span>
+              <div v-for="(booking, index) in bookingData" :key="index" class="flex items-center justify-between">
+                <span class="text-gray-600">{{ getServiceDisplayName(booking) }}</span>
+                <span class="font-semibold">${{ booking.totalPrice || 0 }}</span>
               </div>
               
               <hr class="my-4">
@@ -263,6 +215,12 @@
         </div>
       </div>
     </div>
+    <AuthModals 
+      :show-sign-in="showSignInModal" 
+      :show-sign-up="showSignUpModal"
+      @close="closeAuthModals"
+      @user-authenticated="handleUserAuthenticated"
+    />
   </div>
 </template>
 
@@ -271,6 +229,7 @@ import { defineComponent } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useBookingStore } from '../stores/booking'
 import type { UserDto } from '../dto/response'
+import AuthModals from '../components/AuthModals.vue'
 
 interface GuestInfo {
   firstName: string
@@ -285,9 +244,12 @@ interface GuestInfo {
 export default defineComponent({
   name: 'BookingSummary',
   
+  components: {
+    AuthModals
+  },
+
   data() {
     return {
-      // Guest information form
       guestInfo: {
         firstName: '',
         lastName: '',
@@ -297,142 +259,72 @@ export default defineComponent({
         emergencyContactName: '',
         emergencyContactPhone: ''
       } as GuestInfo,
-      
-      // Promo code
       promoCode: '',
       promoCodeApplied: false,
       promoCodeMessage: '',
-      
-      // Booking data from Pinia store
-      bookingData: {} as any,
-      productType: 'meeting-room',
-      
-      // Space types pricing
-      spaceTypes: {
-        'hot-desk': { name: 'Hot Desk', hourly: 8, daily: 25, weekly: 150 },
-        'dedicated-desk': { name: 'Dedicated Desk', hourly: 12, daily: 35, weekly: 210 },
-        'private-office': { name: 'Private Office', hourly: 25, daily: 75, weekly: 450 },
-        'meeting-room': { name: 'Meeting Room', hourly: 30, daily: 120, weekly: 600 }
-      }
+      guestCheckout: false,
+      showSignInModal: false,
+      showSignUpModal: false,
     }
   },
   
   computed: {
-    basePrice() {
-      if (this.productType === 'meeting-room') {
-        const hourlyRate = this.bookingData.space?.hourlyRate || 85
-        const duration = parseInt(this.bookingData.booking?.duration || '2')
-        return hourlyRate * duration
-      } else {
-        return this.bookingData.totalPrice || this.bookingData.pricing?.total || 0
-      }
+    authStore() {
+      return useAuthStore()
     },
-    
-    facilitiesPrice(): number {
-      if (this.productType === 'meeting-room' && this.bookingData.facilities) {
-        const prices: Record<string, number> = { tv: 25, printer: 15, catering: 50 }
-        return this.bookingData.facilities.reduce((total: number, facility: string) => {
-          return total + (prices[facility] || 0)
-        }, 0)
-      }
-      return 0
+    bookingStore() {
+      return useBookingStore()
     },
-    
-    serviceFee() {
-      return Math.round((this.basePrice + this.facilitiesPrice) * 0.1)
+    bookingData() {
+      return this.bookingStore.currentBooking
     },
-    
-    taxes() {
-      return Math.round((this.basePrice + this.facilitiesPrice + this.serviceFee) * 0.0875)
+    isAuthenticated() {
+      return this.authStore.isAuthenticated
     },
-    
-    discount(): number {
-      return this.promoCodeApplied ? Math.round(this.basePrice * 0.1) : 0
+    currentUser() {
+      return this.authStore.currentUser
     },
-    
+    allowGuestCheckout() {
+      return this.bookingData.every(item => item.productType === 'meeting-room')
+    },
     totalAmount() {
-      return this.basePrice + this.facilitiesPrice + this.serviceFee + this.taxes - this.discount
+      return this.bookingData.reduce((total, booking) => total + (booking.totalPrice || 0), 0)
     },
-    
     isFormValid() {
-      return this.guestInfo.firstName && 
-             this.guestInfo.lastName && 
-             this.guestInfo.email && 
-             this.guestInfo.phone
+      if (this.isAuthenticated) {
+        return true
+      }
+      if (this.guestCheckout) {
+        return this.guestInfo.firstName && 
+               this.guestInfo.lastName && 
+               this.guestInfo.email && 
+               this.guestInfo.phone
+      }
+      return false
     }
   },
   
+  watch: {
+    isAuthenticated(isAuth) {
+      if (isAuth && this.currentUser) {
+        this.guestInfo.firstName = this.currentUser.firstName || ''
+        this.guestInfo.lastName = this.currentUser.lastName || ''
+        this.guestInfo.email = this.currentUser.email || ''
+        this.guestInfo.phone = this.currentUser.phone || ''
+      }
+    }
+  },
+
   mounted() {
-    const bookingStore = useBookingStore()
-    const authStore = useAuthStore()
-    
-    // Initialize booking from store
-    bookingStore.initializeBooking()
-    
-    // Define a fallback booking data
-    const fallbackBookingData = {
-      spaceId: 1,
-      productType: 'meeting-room',
-      space: {
-        id: 1,
-        name: 'Executive Boardroom',
-        location: 'Downtown, San Francisco',
-        rating: 4.9,
-        reviews: 127,
-        image: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      },
-      booking: {
-        date: new Date().toISOString().split('T')[0],
-        startTime: '09:00',
-        duration: '2'
-      },
-      facilities: [],
-      totalPrice: 170,
-      pricing: {
-        basePrice: 170,
-        facilitiesPrice: 0,
-        total: 170
-      }
-    }
+    this.bookingStore.initializeBooking()
+    this.authStore.initializeAuth()
 
-    // Get booking data from Pinia store
-    if (bookingStore.currentBooking) {
-      this.bookingData = bookingStore.currentBooking
-      this.productType = this.bookingData.productType || 'meeting-room'
-      
-      // Validate space data
-      if (!this.bookingData.space || !this.bookingData.space.image || !this.bookingData.space.name || !this.bookingData.space.location) {
-        console.warn('Invalid or missing space data, using fallback')
-        this.bookingData = { ...this.bookingData, space: { ...fallbackBookingData.space } }
-      }
-    } else {
-      console.log('No booking data found, using fallback data')
-      this.bookingData = { ...fallbackBookingData }
-      this.productType = 'meeting-room'
+    if (this.isAuthenticated && this.currentUser) {
+      this.guestInfo.firstName = this.currentUser.firstName || ''
+      this.guestInfo.lastName = this.currentUser.lastName || ''
+      this.guestInfo.email = this.currentUser.email || ''
+      this.guestInfo.phone = this.currentUser.phone || ''
     }
-
-    // Auto-fill guest info from current user if logged in
-    authStore.initializeAuth()
-    const currentUser = authStore.currentUser
-    if (currentUser) {
-      this.guestInfo.firstName = currentUser.firstName || ''
-      this.guestInfo.lastName = currentUser.lastName || ''
-      this.guestInfo.email = currentUser.email || ''
-      this.guestInfo.phone = currentUser.phone || ''
-    } else {
-      // Set demo data if no user is logged in
-      this.guestInfo = {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@email.com',
-        phone: '(555) 123-4567',
-        specialRequests: '',
-        emergencyContactName: '',
-        emergencyContactPhone: ''
-      }
-    }
-
-    console.log('Final booking data:', this.bookingData)
   },
   
   methods: {
@@ -446,13 +338,12 @@ export default defineComponent({
       })
     },
     
-    formatDateRange(): string {
-      const startDate = this.bookingData.booking?.startDate || this.bookingData.subscription?.startDate || this.bookingData.startDate
-      const endDate = this.bookingData.booking?.endDate || this.bookingData.subscription?.endDate || this.bookingData.endDate
+    formatDateRange(booking: any): string {
+      const startDate = booking.booking?.startDate || booking.subscription?.startDate || booking.startDate
+      const endDate = booking.booking?.endDate || booking.subscription?.endDate || booking.endDate
       
       if (!startDate || !endDate) {
-        // Fallback to legacy date field
-        const legacyDate = this.bookingData.booking?.date || this.bookingData.date
+        const legacyDate = booking.booking?.date || booking.date
         return legacyDate ? this.formatDate(legacyDate) : 'Date not specified'
       }
       
@@ -471,19 +362,6 @@ export default defineComponent({
       return `${start.toLocaleDateString('en-US', formatOptions)} - ${end.toLocaleDateString('en-US', formatOptions)}`
     },
     
-    formatDuration(duration: string): string {
-      switch (duration) {
-        case 'hourly':
-          return 'Hourly booking'
-        case 'daily':
-          return 'Full day access'
-        case 'weekly':
-          return 'Weekly access'
-        default:
-          return 'Full day access'
-      }
-    },
-    
     formatProductType(type: string): string {
       const types: Record<string, string> = {
         'meeting-room': 'Meeting Room',
@@ -493,19 +371,19 @@ export default defineComponent({
       return types[type] || type
     },
     
-    getServiceDisplayName() {
-      if (this.productType === 'meeting-room') {
-        const duration = this.bookingData.booking?.duration || '2'
+    getServiceDisplayName(booking: any) {
+      if (booking.productType === 'meeting-room') {
+        const duration = booking.booking?.duration || '2'
         return `Meeting Room (${duration}h)`
-      } else if (this.productType === 'hot-desk') {
-        return this.getPackageDisplayName()
+      } else if (booking.productType === 'hot-desk') {
+        return this.getPackageDisplayName(booking)
       } else {
-        return this.getPackageDisplayName()
+        return this.getPackageDisplayName(booking)
       }
     },
     
-    getPackageDisplayName(): string {
-      const packageType = this.bookingData.package || 'monthly'
+    getPackageDisplayName(booking: any): string {
+      const packageType = booking.subscription?.packageType || 'monthly'
       const names: Record<string, string> = {
         daily: 'Daily Pass',
         monthly: 'Monthly Subscription',
@@ -514,22 +392,40 @@ export default defineComponent({
       return names[packageType] || 'Subscription'
     },
     
-    getEndTime() {
-      if (this.productType !== 'meeting-room') return ''
-      const startTime = this.bookingData.booking?.startTime || '09:00'
-      const duration = parseInt(this.bookingData.booking?.duration || '2')
+    getEndTime(booking: any) {
+      if (booking.productType !== 'meeting-room') return ''
+      const startTime = booking.booking?.startTime || '09:00'
+      const duration = parseInt(booking.booking?.duration || '2')
       const [hours, minutes] = startTime.split(':').map(Number)
       const endHour = hours + duration
       return `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
     },
     
-    changeSelection() {
-      this.$router.push({
-        name: 'SpaceDetails',
-        params: { id: this.bookingData.spaceId }
-      })
+    addAnotherService() {
+      this.$router.push({ name: 'SearchResults' });
+    },
+
+    removeBookingItem(spaceId: number) {
+      this.bookingStore.removeBookingItem(spaceId);
     },
     
+    openAuthModal(type: 'login' | 'register') {
+      if (type === 'login') {
+        this.showSignInModal = true;
+      } else {
+        this.showSignUpModal = true;
+      }
+    },
+
+    closeAuthModals() {
+      this.showSignInModal = false;
+      this.showSignUpModal = false;
+    },
+
+    handleUserAuthenticated() {
+      this.closeAuthModals();
+    },
+
     applyPromoCode() {
       if (this.promoCode.toLowerCase() === 'welcome10') {
         this.promoCodeApplied = true
@@ -541,43 +437,25 @@ export default defineComponent({
     },
     
     proceedToPayment(): void {
-      console.log('Proceeding to payment...', {
-        isValid: this.isFormValid,
-        guestInfo: this.guestInfo
-      })
-
-      const bookingStore = useBookingStore()
-
-      // Provide default guest info if missing
-      const finalGuestInfo = {
-        firstName: this.guestInfo.firstName || 'Demo',
-        lastName: this.guestInfo.lastName || 'User',
-        email: this.guestInfo.email || 'demo@workspace.com',
-        phone: this.guestInfo.phone || '(555) 123-4567',
-        specialRequests: this.guestInfo.specialRequests,
-        emergencyContactName: this.guestInfo.emergencyContactName,
-        emergencyContactPhone: this.guestInfo.emergencyContactPhone
+      if (!this.isFormValid) {
+        return;
       }
 
-      // Update booking details with guest info and pricing
-      const updatedBookingDetails = {
-        ...this.bookingData,
+      const finalGuestInfo = this.isAuthenticated && this.currentUser ? {
+        firstName: this.currentUser.firstName || '',
+        lastName: this.currentUser.lastName || '',
+        email: this.currentUser.email || '',
+        phone: this.currentUser.phone || ''
+      } : this.guestInfo;
+
+      const updatedBookings = this.bookingData.map(booking => ({
+        ...booking,
         guestInfo: finalGuestInfo,
-        pricing: {
-          basePrice: this.basePrice || 170,
-          facilitiesPrice: this.facilitiesPrice || 0,
-          serviceFee: this.serviceFee || 17,
-          taxes: this.taxes || 15,
-          discount: this.discount || 0,
-          total: this.totalAmount || 202
-        },
         promoCode: this.promoCodeApplied ? this.promoCode : null
-      }
+      }));
 
-      console.log('Updating booking details for payment:', updatedBookingDetails)
-      bookingStore.updateBookingDetails(updatedBookingDetails)
-
-      this.$router.push({ name: 'Payment' })
+      this.bookingStore.updateBookingDetails(updatedBookings);
+      this.$router.push({ name: 'Payment' });
     }
   }
 })

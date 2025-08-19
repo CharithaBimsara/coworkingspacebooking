@@ -223,12 +223,12 @@
             <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
             
             <!-- Booking details -->
-            <div class="space-y-4 mb-6">
-              <div class="flex space-x-3">
+            <div v-if="bookingDetails.length > 0" class="space-y-4 mb-6">
+              <div v-for="(booking, index) in bookingDetails" :key="index" class="flex space-x-3">
                 <img 
-                  v-if="bookingDetails.space && bookingDetails.space.image" 
-                  :src="bookingDetails.space.image" 
-                  :alt="bookingDetails.space.name || 'Space Image'" 
+                  v-if="booking.space && booking.space.image" 
+                  :src="booking.space.image" 
+                  :alt="booking.space.name || 'Space Image'" 
                   class="w-16 h-16 rounded-lg object-cover"
                 >
                 <img 
@@ -238,53 +238,31 @@
                   class="w-16 h-16 rounded-lg object-cover"
                 >
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-gray-900 truncate">{{ bookingDetails.space?.name || 'Unknown Space' }}</h3>
-                  <p class="text-sm text-gray-600 truncate">{{ bookingDetails.space?.location || 'Unknown Location' }}</p>
-                  <p class="text-sm text-gray-600">{{ formatBookingDate() }}</p>
+                  <h3 class="font-semibold text-gray-900 truncate">{{ booking.space?.name || 'Unknown Space' }}</h3>
+                  <p class="text-sm text-gray-600 truncate">{{ booking.space?.location || 'Unknown Location' }}</p>
+                  <p class="text-sm text-gray-600">{{ formatBookingDate(booking) }}</p>
                 </div>
               </div>
               
               <div class="pt-4 border-t border-gray-200">
                 <div class="text-sm text-gray-600 mb-1">
-                  Guest: {{ bookingDetails.guestInfo?.firstName || 'Demo' }} {{ bookingDetails.guestInfo?.lastName || 'User' }}
+                  Guest: {{ primaryGuestName }}
                 </div>
-                <div class="text-sm text-gray-600 mb-1">{{ formatProductType() }}</div>
-                <div class="text-sm text-gray-600">{{ formatBookingDuration() }}</div>
               </div>
             </div>
             
             <!-- Price breakdown -->
             <div class="space-y-3 mb-6">
-              <div class="flex items-center justify-between">
-                <span class="text-gray-600">Base Price</span>
-                <span class="font-semibold">${{ bookingDetails.pricing?.basePrice || 170 }}</span>
-              </div>
-              
-              <div v-if="bookingDetails.pricing?.facilitiesPrice > 0" class="flex items-center justify-between">
-                <span class="text-gray-600">Additional Facilities</span>
-                <span class="font-semibold">${{ bookingDetails.pricing?.facilitiesPrice || 0 }}</span>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-gray-600">Service Fee</span>
-                <span class="font-semibold">${{ bookingDetails.pricing?.serviceFee || 17 }}</span>
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <span class="text-gray-600">Taxes</span>
-                <span class="font-semibold">${{ bookingDetails.pricing?.taxes || 15 }}</span>
-              </div>
-              
-              <div v-if="bookingDetails.pricing?.discount > 0" class="flex items-center justify-between text-green-600">
-                <span>Discount ({{ bookingDetails.promoCode || 'N/A' }})</span>
-                <span class="font-semibold">-${{ bookingDetails.pricing?.discount || 0 }}</span>
+              <div v-for="(booking, index) in bookingDetails" :key="index" class="flex items-center justify-between">
+                <span class="text-gray-600">{{ booking.space.name }}</span>
+                <span class="font-semibold">${{ booking.totalPrice || 0 }}</span>
               </div>
               
               <hr class="my-4">
               
               <div class="flex items-center justify-between">
                 <span class="text-lg font-bold text-gray-900">Total</span>
-                <span class="text-2xl font-bold text-primary">${{ bookingDetails.pricing?.total || 202 }}</span>
+                <span class="text-2xl font-bold text-primary">${{ totalAmount }}</span>
               </div>
             </div>
 
@@ -301,7 +279,7 @@
                 </svg>
                 Processing...
               </span>
-              <span v-else>Complete Booking - ${{ bookingDetails.pricing?.total || 202 }}</span>
+              <span v-else>Complete Booking - ${{ totalAmount }}</span>
             </button>
 
             <!-- Money back guarantee -->
@@ -321,43 +299,39 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useBookingStore } from '../stores/booking'
+import { defineComponent } from 'vue';
+import { useBookingStore } from '../stores/booking';
+import type { Booking } from '../stores/booking';
 
 interface CardInfo {
-  number: string
-  expiry: string
-  cvv: string
-  name: string
+  number: string;
+  expiry: string;
+  cvv: string;
+  name: string;
 }
 
 interface BillingAddress {
-  country: string
-  zipCode: string
-  address: string
-  city: string
-  state: string
+  country: string;
+  zipCode: string;
+  address: string;
+  city: string;
+  state: string;
 }
 
 export default defineComponent({
-  name: 'Payment',
+  name: 'PaymentPage',
   
   data() {
     return {
-      // Payment state
       processing: false,
       paymentMethod: 'card',
       sameAsGuest: true,
-      
-      // Card information with demo data
       cardInfo: {
         number: '4242 4242 4242 4242',
         expiry: '12/25',
         cvv: '123',
         name: 'John Doe'
       } as CardInfo,
-      
-      // Billing address with demo data
       billingAddress: {
         country: 'US',
         zipCode: '94105',
@@ -365,237 +339,133 @@ export default defineComponent({
         city: 'San Francisco',
         state: 'CA'
       } as BillingAddress,
-      
-      // Booking details from Pinia store
-      bookingDetails: {} as any
-    }
+    };
   },
   
   computed: {
-    cardType(): string | null {
-      const number = this.cardInfo.number.replace(/\s/g, '')
-      if (number.startsWith('4')) return 'VISA'
-      if (number.startsWith('5') || number.startsWith('2')) return 'MC'
-      if (number.startsWith('3')) return 'AX'
-      return null
+    bookingStore() {
+      return useBookingStore();
     },
-    
+    bookingDetails(): Booking[] {
+      return this.bookingStore.currentBooking;
+    },
+    totalAmount(): number {
+      return this.bookingDetails.reduce((total, booking) => total + (booking.totalPrice || 0), 0);
+    },
+    primaryGuestName(): string {
+      const guestInfo = this.bookingDetails[0]?.guestInfo;
+      return guestInfo ? `${guestInfo.firstName} ${guestInfo.lastName}` : 'Demo User';
+    },
+    cardType(): string | null {
+      const number = this.cardInfo.number.replace(/\s/g, '');
+      if (number.startsWith('4')) return 'VISA';
+      if (/^5[1-5]/.test(number)) return 'MC';
+      if (/^3[47]/.test(number)) return 'AX';
+      return null;
+    },
     cardTypeClass(): string {
       switch (this.cardType) {
-        case 'VISA':
-          return 'from-blue-600 to-blue-700'
-        case 'MC':
-          return 'from-red-600 to-red-700'
-        case 'AX':
-          return 'from-blue-500 to-blue-600'
-        default:
-          return 'from-gray-400 to-gray-500'
+        case 'VISA': return 'from-blue-600 to-blue-700';
+        case 'MC': return 'from-red-600 to-red-700';
+        case 'AX': return 'from-blue-500 to-blue-600';
+        default: return 'from-gray-400 to-gray-500';
       }
     },
-    
     isPaymentFormValid(): boolean {
       if (this.paymentMethod === 'card') {
         return this.cardInfo.number.length >= 19 &&
                this.cardInfo.expiry.length === 5 &&
                this.cardInfo.cvv.length >= 3 &&
                this.cardInfo.name.trim() !== '' &&
-               this.billingAddress.zipCode !== '' &&
-               this.billingAddress.address !== '' &&
-               this.billingAddress.city !== '' &&
-               this.billingAddress.state !== ''
+               this.billingAddress.zipCode.trim() !== '' &&
+               this.billingAddress.address.trim() !== '' &&
+               this.billingAddress.city.trim() !== '' &&
+               this.billingAddress.state.trim() !== '';
       }
-      return true
+      return true;
     }
   },
   
   mounted() {
-    const bookingStore = useBookingStore()
-    
-    // Initialize booking from store
-    bookingStore.initializeBooking()
-    
-    // Define a fallback booking data
-    const fallbackBookingDetails = {
-      spaceId: 1,
-      productType: 'meeting-room',
-      space: {
-        id: 1,
-        name: 'Executive Boardroom',
-        location: 'Downtown, San Francisco',
-        rating: 4.9,
-        reviews: 127,
-        image: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      },
-      guestInfo: {
-        firstName: 'Demo',
-        lastName: 'User',
-        email: 'demo@workspace.com',
-        phone: '(555) 123-4567'
-      },
-      pricing: {
-        basePrice: 170,
-        facilitiesPrice: 0,
-        serviceFee: 17,
-        taxes: 15,
-        discount: 0,
-        total: 202
-      },
-      booking: {
-        date: new Date().toISOString().split('T')[0],
-        startTime: '09:00',
-        duration: '2'
-      }
-    }
-
-    // Get booking data from Pinia store
-    if (bookingStore.currentBooking) {
-      this.bookingDetails = bookingStore.currentBooking
-      
-      // Validate space data
-      if (!this.bookingDetails.space || !this.bookingDetails.space.image || !this.bookingDetails.space.name || !this.bookingDetails.space.location) {
-        console.warn('Invalid or missing space data, using fallback space')
-        this.bookingDetails.space = { ...fallbackBookingDetails.space }
-      }
-      
-      // Validate guestInfo data
-      if (!this.bookingDetails.guestInfo || !this.bookingDetails.guestInfo.firstName || !this.bookingDetails.guestInfo.lastName) {
-        console.warn('Invalid or missing guestInfo data, using fallback')
-        this.bookingDetails.guestInfo = { ...fallbackBookingDetails.guestInfo }
-      }
-      
-      // Validate pricing data
-      if (!this.bookingDetails.pricing || !Number.isFinite(this.bookingDetails.pricing.basePrice) || !Number.isFinite(this.bookingDetails.pricing.total)) {
-        console.warn('Invalid or missing pricing data, using fallback')
-        this.bookingDetails.pricing = { ...fallbackBookingDetails.pricing }
-      }
-    } else {
-      console.log('No booking data found, using fallback data')
-      this.bookingDetails = { ...fallbackBookingDetails }
-    }
-
-    console.log('Final payment details:', this.bookingDetails)
+    this.bookingStore.initializeBooking();
   },
   
   methods: {
-    formatCardNumber(event: any): void {
-      let value = event.target.value.replace(/\s/g, '')
-      let formattedValue = value.replace(/(.{4})/g, '$1 ').trim()
-      this.cardInfo.number = formattedValue
-    },
-    
-    formatExpiry(event: any): void {
-      let value = event.target.value.replace(/\D/g, '')
-      if (value.length >= 2) {
-        value = value.substring(0, 2) + '/' + value.substring(2, 4)
+    formatCardNumber(event: Event): void {
+      const input = event.target as HTMLInputElement;
+      let value = input.value.replace(/\D/g, '');
+      if (value.length > 16) {
+        value = value.slice(0, 16);
       }
-      this.cardInfo.expiry = value
+      const formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+      this.cardInfo.number = formattedValue;
     },
     
-    formatBookingDate(): string {
-      const startDate = this.bookingDetails.booking?.startDate || this.bookingDetails.subscription?.startDate || this.bookingDetails.startDate
-      const endDate = this.bookingDetails.booking?.endDate || this.bookingDetails.subscription?.endDate || this.bookingDetails.endDate
+    formatExpiry(event: Event): void {
+      const input = event.target as HTMLInputElement;
+      let value = input.value.replace(/\D/g, '');
+      if (value.length > 4) {
+        value = value.slice(0, 4);
+      }
+      if (value.length >= 2) {
+        value = `${value.slice(0, 2)}/${value.slice(2)}`;
+      }
+      this.cardInfo.expiry = value;
+    },
+    
+    formatBookingDate(booking: Booking): string {
+      const startDate = booking.booking?.startDate || booking.subscription?.startDate || booking.startDate;
+      const endDate = booking.booking?.endDate || booking.subscription?.endDate || booking.endDate;
       
       if (startDate && endDate) {
-        const start = new Date(startDate)
-        const end = new Date(endDate)
-        
-        const formatOptions: Intl.DateTimeFormatOptions = {
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric'
-        }
-        
-        return `${start.toLocaleDateString('en-US', formatOptions)} - ${end.toLocaleDateString('en-US', formatOptions)}`
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const formatOptions: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+        return `${start.toLocaleDateString('en-US', formatOptions)} - ${end.toLocaleDateString('en-US', formatOptions)}`;
       }
       
-      // Fallback to legacy date field
-      const legacyDate = this.bookingDetails.booking?.date || this.bookingDetails.date
+      const legacyDate = booking.booking?.date || booking.date;
       if (legacyDate) {
-        return new Date(legacyDate).toLocaleDateString('en-US', {
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric'
-        })
+        return new Date(legacyDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       }
       
-      return 'Date not specified'
-    },
-    
-    formatProductType(): string {
-      const types: Record<string, string> = {
-        'meeting-room': 'Meeting Room',
-        'hot-desk': 'Hot Desk',
-        'coworking-space': 'Co-working Space'
-      }
-      return types[this.bookingDetails.productType] || 'Workspace'
-    },
-    
-    formatBookingDuration(): string {
-      if (this.bookingDetails.productType === 'meeting-room') {
-        const duration = this.bookingDetails.booking?.duration || '2'
-        return `${duration} hour${duration !== '1' ? 's' : ''}`
-      } else {
-        const packageType = this.bookingDetails.package || 'monthly'
-        const names: Record<string, string> = {
-          daily: 'Daily Access',
-          monthly: 'Monthly Subscription',
-          annual: 'Annual Subscription'
-        }
-        return names[packageType] || 'Subscription'
-      }
+      return 'Date not specified';
     },
     
     async processPayment(): Promise<void> {
-      console.log('Processing payment...', {
-        paymentMethod: this.paymentMethod,
-        bookingDetails: this.bookingDetails
-      })
+      if (!this.isPaymentFormValid) return;
 
-      const bookingStore = useBookingStore()
+      this.processing = true;
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Allow payment processing even if form isn't completely valid for demo
-      this.processing = true
+        const bookingId = 'WS' + Date.now().toString().slice(-8);
+        const confirmationData = {
+          bookings: this.bookingDetails,
+          bookingId,
+          paymentMethod: this.paymentMethod,
+          cardInfo: this.paymentMethod === 'card' ? {
+            number: '**** ' + this.cardInfo.number.slice(-4),
+            name: this.cardInfo.name,
+            expiry: this.cardInfo.expiry
+          } : null,
+          confirmedAt: new Date().toISOString(),
+          totalAmount: this.totalAmount
+        };
 
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 1500))
+        sessionStorage.setItem('bookingConfirmation', JSON.stringify(confirmationData));
+        this.bookingStore.clearBookingDetails();
 
-      // Generate booking ID
-      const bookingId = 'WS' + Date.now().toString().slice(-8)
-
-      // Store booking confirmation data
-      const confirmationData = {
-        ...this.bookingDetails,
-        bookingId,
-        paymentMethod: this.paymentMethod,
-        cardInfo: this.paymentMethod === 'card' ? {
-          number: this.cardInfo.number ? '****' + this.cardInfo.number.slice(-4) : '****4242',
-          name: this.cardInfo.name || 'Demo User',
-          expiry: this.cardInfo.expiry || '12/25'
-        } : null,
-        confirmedAt: new Date().toISOString(),
-        // Ensure we have all required data
-        guestInfo: this.bookingDetails.guestInfo || {
-          firstName: 'Demo',
-          lastName: 'User',
-          email: 'demo@workspace.com',
-          phone: '(555) 123-4567'
-        }
+        this.$router.push({
+          name: 'BookingConfirmation',
+          params: { bookingId }
+        });
+      } catch (error) {
+        console.error('Payment processing error:', error);
+      } finally {
+        this.processing = false;
       }
-
-      console.log('Payment processed, storing confirmation:', confirmationData)
-      
-      // Store confirmation in sessionStorage for the confirmation page
-      sessionStorage.setItem('bookingConfirmation', JSON.stringify(confirmationData))
-      
-      // Clear the current booking from Pinia store
-      bookingStore.clearBookingDetails()
-
-      // Navigate to confirmation
-      this.$router.push({
-        name: 'BookingConfirmation',
-        params: { bookingId }
-      })
     }
   }
-})
+});
 </script>

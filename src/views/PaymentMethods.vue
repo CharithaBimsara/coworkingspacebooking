@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Payment Methods</h1>
             <p class="text-gray-600 mt-1">Manage your payment cards and billing information</p>
           </div>
-          <router-link to="/my-bookings" class="btn-primary">
+          <router-link to="/my-bookings" class="btn-secondary">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -290,7 +290,7 @@
             <button
               type="button"
               @click="closeModals"
-              class="btn-primary"
+              class="btn-secondary"
             >
               Cancel
             </button>
@@ -317,21 +317,40 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import SuccessOverlay from '../components/SuccessOverlay.vue'
+import { defineComponent } from 'vue';
+import SuccessOverlay from '../components/SuccessOverlay.vue';
 
 interface PaymentMethod {
-  id: string
-  brand: string
-  lastFour: string
-  expiryMonth: string
-  expiryYear: string
-  holderName: string
-  isDefault: boolean
+  id: string;
+  brand: string;
+  lastFour: string;
+  expiryMonth: string;
+  expiryYear: string;
+  holderName: string;
+  isDefault: boolean;
+}
+
+interface CardForm {
+  holderName: string;
+  cardNumber: string;
+  expiry: string;
+  cvv: string;
+  isDefault: boolean;
+}
+
+interface BillingForm {
+  firstName: string;
+  lastName: string;
+  company: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  zipCode: string;
 }
 
 export default defineComponent({
-  name: 'PaymentMethods',
+  name: 'PaymentMethodsPage',
   
   components: {
     SuccessOverlay
@@ -346,8 +365,7 @@ export default defineComponent({
       showSuccessOverlay: false,
       successTitle: '',
       successMessage: '',
-      editingCardId: '',
-      
+      editingCardId: '' as string | null,
       paymentMethods: [
         {
           id: '1',
@@ -368,15 +386,13 @@ export default defineComponent({
           isDefault: false
         }
       ] as PaymentMethod[],
-      
       cardForm: {
         holderName: '',
         cardNumber: '',
         expiry: '',
         cvv: '',
         isDefault: false
-      },
-      
+      } as CardForm,
       billingForm: {
         firstName: 'John',
         lastName: 'Doe',
@@ -386,177 +402,148 @@ export default defineComponent({
         city: 'San Francisco',
         state: 'CA',
         zipCode: '94105'
-      }
-    }
+      } as BillingForm
+    };
   },
   
   methods: {
     formatCardNumber(event: Event): void {
-      const input = event.target as HTMLInputElement
-      let value = input.value.replace(/\s/g, '').replace(/[^0-9]/gi, '')
-      const formattedValue = value.match(/.{1,4}/g)?.join(' ') || value
-      this.cardForm.cardNumber = formattedValue
+      const input = event.target as HTMLInputElement;
+      const value = input.value.replace(/\D/g, '');
+      this.cardForm.cardNumber = (value.match(/.{1,4}/g) || []).join(' ');
     },
     
     formatExpiry(event: Event): void {
-      const input = event.target as HTMLInputElement
-      let value = input.value.replace(/\D/g, '')
+      const input = event.target as HTMLInputElement;
+      let value = input.value.replace(/\D/g, '');
+      if (value.length > 4) value = value.slice(0, 4);
       if (value.length >= 2) {
-        value = value.substring(0, 2) + '/' + value.substring(2, 4)
+        value = `${value.slice(0, 2)}/${value.slice(2)}`;
       }
-      this.cardForm.expiry = value
+      this.cardForm.expiry = value;
     },
     
     async savePaymentMethod(): Promise<void> {
-      this.isSavingCard = true
-      
+      this.isSavingCard = true;
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        if (this.showEditCardModal) {
-          // Update existing card
-          const index = this.paymentMethods.findIndex(m => m.id === this.editingCardId)
+        const [month, year] = this.cardForm.expiry.split('/');
+        const newCardData = {
+          holderName: this.cardForm.holderName,
+          lastFour: this.cardForm.cardNumber.slice(-4),
+          expiryMonth: month,
+          expiryYear: year,
+          isDefault: this.cardForm.isDefault,
+          brand: this.detectCardBrand(this.cardForm.cardNumber)
+        };
+
+        if (this.showEditCardModal && this.editingCardId) {
+          const index = this.paymentMethods.findIndex(m => m.id === this.editingCardId);
           if (index !== -1) {
-            const [month, year] = this.cardForm.expiry.split('/')
-            this.paymentMethods[index] = {
-              ...this.paymentMethods[index],
-              holderName: this.cardForm.holderName,
-              lastFour: this.cardForm.cardNumber.slice(-4),
-              expiryMonth: month,
-              expiryYear: year,
-              isDefault: this.cardForm.isDefault
-            }
+            this.paymentMethods[index] = { ...this.paymentMethods[index], ...newCardData };
           }
         } else {
-          // Add new card
-          const [month, year] = this.cardForm.expiry.split('/')
-          const newCard: PaymentMethod = {
-            id: Date.now().toString(),
-            brand: this.detectCardBrand(this.cardForm.cardNumber),
-            lastFour: this.cardForm.cardNumber.slice(-4),
-            expiryMonth: month,
-            expiryYear: year,
-            holderName: this.cardForm.holderName,
-            isDefault: this.cardForm.isDefault
-          }
-          
-          this.paymentMethods.push(newCard)
+          const newCard: PaymentMethod = { ...newCardData, id: Date.now().toString() };
+          this.paymentMethods.push(newCard);
+          this.editingCardId = newCard.id;
         }
         
-        // If setting as default, update other cards
         if (this.cardForm.isDefault) {
           this.paymentMethods.forEach(method => {
-            if (method.id !== this.editingCardId) {
-              method.isDefault = false
-            }
-          })
+            method.isDefault = method.id === this.editingCardId;
+          });
         }
         
-        this.closeModals()
-        this.showSuccessOverlay = true
-        this.successTitle = this.showEditCardModal ? 'Card Updated!' : 'Card Added!'
-        this.successMessage = `Your payment method has been successfully ${this.showEditCardModal ? 'updated' : 'added'}.`
+        this.closeModals();
+        this.showSuccessOverlay = true;
+        this.successTitle = this.showEditCardModal ? 'Card Updated!' : 'Card Added!';
+        this.successMessage = `Your payment method has been successfully ${this.showEditCardModal ? 'updated' : 'added'}.`;
       } catch (error) {
-        console.error('Error saving payment method:', error)
+        console.error('Error saving payment method:', error);
       } finally {
-        this.isSavingCard = false
+        this.isSavingCard = false;
       }
     },
     
     detectCardBrand(cardNumber: string): string {
-      const number = cardNumber.replace(/\s/g, '')
-      if (number.startsWith('4')) return 'visa'
-      if (number.startsWith('5') || number.startsWith('2')) return 'mastercard'
-      if (number.startsWith('3')) return 'amex'
-      return 'unknown'
+      const num = cardNumber.replace(/\s/g, '');
+      if (/^4/.test(num)) return 'visa';
+      if (/^5[1-5]/.test(num)) return 'mastercard';
+      if (/^3[47]/.test(num)) return 'amex';
+      return 'unknown';
     },
     
     editPaymentMethod(method: PaymentMethod): void {
-      this.editingCardId = method.id
+      this.editingCardId = method.id;
       this.cardForm = {
         holderName: method.holderName,
         cardNumber: `•••• •••• •••• ${method.lastFour}`,
         expiry: `${method.expiryMonth}/${method.expiryYear}`,
         cvv: '',
         isDefault: method.isDefault
-      }
-      this.showEditCardModal = true
+      };
+      this.showEditCardModal = true;
     },
     
     async setDefaultPaymentMethod(id: string): Promise<void> {
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        this.paymentMethods.forEach(method => {
-          method.isDefault = method.id === id
-        })
-        
-        this.showSuccessOverlay = true
-        this.successTitle = 'Default Payment Updated!'
-        this.successMessage = 'Your default payment method has been updated.'
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.paymentMethods.forEach(method => (method.isDefault = method.id === id));
+        this.showSuccessOverlay = true;
+        this.successTitle = 'Default Payment Updated!';
+        this.successMessage = 'Your default payment method has been updated.';
       } catch (error) {
-        console.error('Error setting default payment method:', error)
+        console.error('Error setting default payment method:', error);
       }
     },
     
     async deletePaymentMethod(id: string): Promise<void> {
-      if (!confirm('Are you sure you want to delete this payment method?')) {
-        return
-      }
+      if (!confirm('Are you sure you want to delete this payment method?')) return;
       
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        this.paymentMethods = this.paymentMethods.filter(method => method.id !== id)
-        
-        this.showSuccessOverlay = true
-        this.successTitle = 'Card Deleted!'
-        this.successMessage = 'Your payment method has been successfully removed.'
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.paymentMethods = this.paymentMethods.filter(method => method.id !== id);
+        this.showSuccessOverlay = true;
+        this.successTitle = 'Card Deleted!';
+        this.successMessage = 'Your payment method has been successfully removed.';
       } catch (error) {
-        console.error('Error deleting payment method:', error)
+        console.error('Error deleting payment method:', error);
       }
     },
     
     async updateBillingAddress(): Promise<void> {
-      this.isUpdatingBilling = true
-      
+      this.isUpdatingBilling = true;
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        this.showSuccessOverlay = true
-        this.successTitle = 'Billing Address Updated!'
-        this.successMessage = 'Your billing address has been successfully updated.'
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.showSuccessOverlay = true;
+        this.successTitle = 'Billing Address Updated!';
+        this.successMessage = 'Your billing address has been successfully updated.';
       } catch (error) {
-        console.error('Error updating billing address:', error)
+        console.error('Error updating billing address:', error);
       } finally {
-        this.isUpdatingBilling = false
+        this.isUpdatingBilling = false;
       }
     },
     
     closeModals(): void {
-      this.showAddCardModal = false
-      this.showEditCardModal = false
-      this.editingCardId = ''
+      this.showAddCardModal = false;
+      this.showEditCardModal = false;
+      this.editingCardId = null;
       this.cardForm = {
         holderName: '',
         cardNumber: '',
         expiry: '',
         cvv: '',
         isDefault: false
-      }
+      };
     },
     
     closeSuccessOverlay(): void {
-      this.showSuccessOverlay = false
-      this.successTitle = ''
-      this.successMessage = ''
+      this.showSuccessOverlay = false;
     }
   }
-})
+});
 </script>
 
 <style scoped>
@@ -596,7 +583,7 @@ export default defineComponent({
   cursor: not-allowed;
 }
 
-.btn-primary {
+.btn-secondary {
   background-color: #F3F4F6;
   color: #374151;
   padding: 0.5rem 1rem;
@@ -610,7 +597,7 @@ export default defineComponent({
   cursor: pointer;
 }
 
-.btn-primary:hover {
+.btn-secondary:hover {
   background-color: #E5E7EB;
 }
 </style>

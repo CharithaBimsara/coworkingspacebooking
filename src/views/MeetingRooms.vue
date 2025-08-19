@@ -175,28 +175,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import DateRangePicker from '../components/DateRangePicker.vue'
-import MeetingRoomFilter from '../components/MeetingRoomFilter.vue'
-import { SpacesAPI } from '../api'
-import { SearchSpacesRequestDto } from '../dto/request'
-import type { SpaceDto } from '../dto/response'
+import { defineComponent } from 'vue';
+import MeetingRoomFilter from '../components/MeetingRoomFilter.vue';
+import { SpacesAPI } from '../api';
+import { SearchSpacesRequestDto } from '../dto/request';
+import type { SpaceDto } from '../dto/response';
 
 interface DateRange {
-  startDate: string | null
-  endDate: string | null
+  startDate: string | null;
+  endDate: string | null;
 }
 
 interface SearchFilters {
-  dateRange: DateRange
-  location: string
-  time: string
-  seating: string
-  minRating: string
+  dateRange: DateRange;
+  location: string;
+  time: string;
+  seating: string;
+  minRating: string;
 }
 
 export default defineComponent({
-  name: 'MeetingRooms',
+  name: 'MeetingRoomsPage',
   
   components: {
     MeetingRoomFilter
@@ -204,7 +203,6 @@ export default defineComponent({
   
   data() {
     return {
-      // Search filters
       searchFilters: {
         dateRange: {
           startDate: null,
@@ -215,238 +213,162 @@ export default defineComponent({
         seating: '',
         minRating: '0'
       } as SearchFilters,
-      
       sortBy: 'price-low',
-      
-      // Loading states
       isLoading: false,
       isSearching: false,
-      
-      // Data from API
       allRooms: [] as SpaceDto[],
       suggestedRooms: [] as SpaceDto[],
-      
-      // Filtered and sorted data
       filteredRooms: [] as SpaceDto[],
       sortedRooms: [] as SpaceDto[]
-    }
+    };
   },
   
   computed: {
     today(): string {
-      return new Date().toISOString().split('T')[0]
+      return new Date().toISOString().split('T')[0];
     }
   },
   
   async mounted() {
-    await this.loadMeetingRooms()
-    this.applyFiltersAndSorting()
+    await this.loadMeetingRooms();
+    this.applyFiltersAndSorting();
   },
   
   methods: {
     onFiltersChanged(newFilters: SearchFilters): void {
-      this.searchFilters = { ...this.searchFilters, ...newFilters }
-      this.applyFiltersAndSorting()
+      this.searchFilters = { ...this.searchFilters, ...newFilters };
+      this.applyFiltersAndSorting();
     },
+
     async loadMeetingRooms(): Promise<void> {
+      this.isLoading = true;
       try {
-        this.isLoading = true
-        
         const searchRequest = new SearchSpacesRequestDto({
           spaceType: 'meeting-room',
           location: this.searchFilters.location || undefined
-        })
+        });
         
-        const response = await SpacesAPI.searchSpaces(searchRequest)
+        const response = await SpacesAPI.searchSpaces(searchRequest);
         
-        if (response.success) {
-          this.allRooms = response.spaces || []
-          
-          // Load suggested rooms if no results
+        if (response.success && response.spaces) {
+          this.allRooms = response.spaces;
           if (this.allRooms.length === 0) {
-            await this.loadSuggestedRooms()
+            await this.loadSuggestedRooms();
           }
         } else {
-          console.error('Failed to load meeting rooms:', response.message)
-          await this.loadSuggestedRooms()
+          console.error('Failed to load meeting rooms:', response.message);
+          await this.loadSuggestedRooms();
         }
       } catch (error) {
-        console.error('Error loading meeting rooms:', error)
-        await this.loadSuggestedRooms()
+        console.error('Error loading meeting rooms:', error);
+        await this.loadSuggestedRooms();
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
     },
     
     async loadSuggestedRooms(): Promise<void> {
       try {
-        // First try to get meeting rooms from different locations
-        const searchRequest = new SearchSpacesRequestDto({
-          spaceType: 'meeting-room'
-          // Don't filter by location to get rooms from other areas
-        })
-        
-        const response = await SpacesAPI.searchSpaces(searchRequest)
+        const searchRequest = new SearchSpacesRequestDto({ spaceType: 'meeting-room' });
+        const response = await SpacesAPI.searchSpaces(searchRequest);
+
         if (response.success && response.spaces && response.spaces.length > 0) {
-          // Filter out rooms from the same location if user searched for a specific location
-          let availableRooms = response.spaces
+          let availableRooms = response.spaces;
           if (this.searchFilters.location) {
             availableRooms = response.spaces.filter(space =>
               !space.location.toLowerCase().includes(this.searchFilters.location.toLowerCase())
-            )
+            );
           }
-          this.suggestedRooms = availableRooms.slice(0, 3)
+          this.suggestedRooms = availableRooms.slice(0, 3);
         } else {
-          // Fallback to featured spaces
-          const featuredResponse = await SpacesAPI.getFeaturedSpaces()
-          if (featuredResponse.success) {
-            this.suggestedRooms = (featuredResponse.spaces || [])
+          const featuredResponse = await SpacesAPI.getFeaturedSpaces();
+          if (featuredResponse.success && featuredResponse.spaces) {
+            this.suggestedRooms = featuredResponse.spaces
               .filter(space => space.productType === 'meeting-room')
-              .slice(0, 3)
+              .slice(0, 3);
           }
         }
       } catch (error) {
-        console.error('Error loading suggested rooms:', error)
-      }
-    },
-    
-    async applyFilters(): Promise<void> {
-      try {
-        this.isSearching = true
-        
-        const searchRequest = new SearchSpacesRequestDto({
-          spaceType: 'meeting-room',
-          location: this.searchFilters.location || undefined
-        })
-        
-        const response = await SpacesAPI.searchSpaces(searchRequest)
-        
-        if (response.success) {
-          this.allRooms = response.spaces || []
-          this.applyFiltersAndSorting()
-        }
-      } catch (error) {
-        console.error('Error applying filters:', error)
-      } finally {
-        this.isSearching = false
+        console.error('Error loading suggested rooms:', error);
       }
     },
     
     applyFiltersAndSorting(): void {
-      // Apply local filters
       this.filteredRooms = this.allRooms.filter(room => {
-        // Location filter (additional local filtering)
         if (this.searchFilters.location && 
             !room.location.toLowerCase().includes(this.searchFilters.location.toLowerCase())) {
-          return false
+          return false;
         }
         
-        // Seating filter
         if (this.searchFilters.seating) {
-          const [min, max] = this.getSeatingRange(this.searchFilters.seating)
-          const capacity = room.capacity || 0
-          if (capacity < min || (max && capacity > max)) {
-            return false
+          const [min, max] = this.getSeatingRange(this.searchFilters.seating);
+          const capacity = room.capacity || 0;
+          if (capacity < min || (max !== null && capacity > max)) {
+            return false;
           }
         }
 
-        // Time filter
-        if (this.searchFilters.time) {
-          // Assuming room.availableTimes is an array of strings like 'morning', 'afternoon', 'evening'
-          // Or you might need to parse room.availableTimes based on your actual data structure
-          // For now, a simple check:
-          // if (!room.availableTimes || !room.availableTimes.includes(this.searchFilters.time)) {
-          //   return false;
-          // }
-        }
-
-        // Date Range filter
-        if (this.searchFilters.dateRange.startDate && this.searchFilters.dateRange.endDate) {
-          // This would require more complex logic to check room availability based on date ranges
-          // For now, assuming all rooms are available for any date range if not specified otherwise
-        }
-
-        // Rating filter
         if (this.searchFilters.minRating !== '0' && room.rating < parseFloat(this.searchFilters.minRating)) {
-          return false
+          return false;
         }
         
-        return true
-      })
+        return true;
+      });
       
-      this.applySorting()
+      this.applySorting();
     },
     
     applySorting(): void {
-      const rooms = [...this.filteredRooms]
+      const rooms = [...this.filteredRooms];
       
       switch (this.sortBy) {
         case 'price-low':
-          this.sortedRooms = rooms.sort((a, b) => this.getHourlyRate(a) - this.getHourlyRate(b))
-          break
+          this.sortedRooms = rooms.sort((a, b) => this.getHourlyRate(a) - this.getHourlyRate(b));
+          break;
         case 'price-high':
-          this.sortedRooms = rooms.sort((a, b) => this.getHourlyRate(b) - this.getHourlyRate(a))
-          break
+          this.sortedRooms = rooms.sort((a, b) => this.getHourlyRate(b) - this.getHourlyRate(a));
+          break;
         case 'capacity':
-          this.sortedRooms = rooms.sort((a, b) => (b.capacity || 0) - (a.capacity || 0))
-          break
+          this.sortedRooms = rooms.sort((a, b) => (b.capacity || 0) - (a.capacity || 0));
+          break;
         case 'rating':
-          this.sortedRooms = rooms.sort((a, b) => (b.rating || 0) - (a.rating || 0))
-          break
+          this.sortedRooms = rooms.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+          break;
         default:
-          this.sortedRooms = rooms
+          this.sortedRooms = rooms;
       }
     },
     
     getSeatingRange(range: string): [number, number | null] {
       switch (range) {
-        case '2-4':
-          return [2, 4]
-        case '5-8':
-          return [5, 8]
-        case '9-15':
-          return [9, 15]
-        case '16+':
-          return [16, null]
-        default:
-          return [0, null]
+        case '2-4': return [2, 4];
+        case '5-8': return [5, 8];
+        case '9-15': return [9, 15];
+        case '16+': return [16, null];
+        default: return [0, null];
       }
     },
     
     getFilterSummary(): string {
-      const parts: string[] = []
-      if (this.searchFilters.location) parts.push(`in ${this.searchFilters.location}`)
+      const parts: string[] = [];
+      if (this.searchFilters.location) parts.push(`in ${this.searchFilters.location}`);
       
       if (this.searchFilters.dateRange.startDate && this.searchFilters.dateRange.endDate) {
-        const start = new Date(this.searchFilters.dateRange.startDate)
-        const end = new Date(this.searchFilters.dateRange.endDate)
-        const formatOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
-        parts.push(`from ${start.toLocaleDateString('en-US', formatOptions)} to ${end.toLocaleDateString('en-US', formatOptions)}`)
+        const start = new Date(this.searchFilters.dateRange.startDate);
+        const end = new Date(this.searchFilters.dateRange.endDate);
+        const formatOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+        parts.push(`from ${start.toLocaleDateString('en-US', formatOptions)} to ${end.toLocaleDateString('en-US', formatOptions)}`);
       }
       
-      if (this.searchFilters.time) parts.push(`during ${this.searchFilters.time}`)
-      if (this.searchFilters.seating) parts.push(`for ${this.searchFilters.seating} people`)
-      if (this.searchFilters.minRating !== '0') parts.push(`${this.searchFilters.minRating}+ stars`)
+      if (this.searchFilters.time) parts.push(`during ${this.searchFilters.time}`);
+      if (this.searchFilters.seating) parts.push(`for ${this.searchFilters.seating} people`);
+      if (this.searchFilters.minRating !== '0') parts.push(`${this.searchFilters.minRating}+ stars`);
       
-      return parts.length > 0 ? parts.join(', ') : 'All available meeting rooms'
-    },
-    
-    clearFilters(): void {
-      this.searchFilters = {
-        dateRange: {
-          startDate: null,
-          endDate: null
-        },
-        location: '',
-        time: '',
-        seating: '',
-        minRating: '0'
-      }
-      this.applyFiltersAndSorting()
+      return parts.length > 0 ? parts.join(', ') : 'All available meeting rooms';
     },
     
     getHourlyRate(room: SpaceDto): number {
-      return room.pricing?.hourly || 0
+      return room.pricing?.hourly || 0;
     },
     
     async viewRoom(id: number): Promise<void> {
@@ -455,37 +377,23 @@ export default defineComponent({
           name: 'SpaceDetails',
           params: { id: id.toString() },
           query: { type: 'meeting-room' }
-        })
+        });
       } catch (error) {
-        console.error('Error navigating to room details:', error)
+        console.error('Error navigating to room details:', error);
       }
     }
   },
   
   watch: {
     sortBy() {
-      this.applySorting()
+      this.applySorting();
     },
-    
-    'searchFilters.location'() {
-      this.applyFiltersAndSorting()
-    },
-    
-    'searchFilters.seating'() {
-      this.applyFiltersAndSorting()
-    },
-    
-    'searchFilters.time'() {
-      this.applyFiltersAndSorting()
-    },
-    
-    'searchFilters.dateRange'() {
-      this.applyFiltersAndSorting()
-    },
-
-    'searchFilters.minRating'() {
-      this.applyFiltersAndSorting()
+    searchFilters: {
+      handler() {
+        this.applyFiltersAndSorting();
+      },
+      deep: true
     }
   }
-})
+});
 </script>

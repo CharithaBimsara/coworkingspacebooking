@@ -105,6 +105,229 @@ const generateMockAvailability = (days: number = 7) => {
   return availability;
 };
 
+const mockSpaces = [
+  new SpaceDto({
+    id: 1,
+    name: 'The Innovation Hub',
+    location: 'Downtown, San Francisco',
+    address: '123 Business District, San Francisco, CA 94105',
+    rating: 4.9,
+    reviews: 127,
+    description: 'A premium workspace designed for innovation and collaboration.',
+    images: [
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['High-Speed WiFi', '4K Display', 'Coffee Service', 'Security Access'],
+    pricing: { hourly: 85, daily: 35, monthly: 450, annual: 4500 },
+    capacity: 12,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+  new SpaceDto({
+    id: 2,
+    name: 'Creative Commons',
+    location: 'SOMA, San Francisco',
+    address: '456 Creative Street, San Francisco, CA 94103',
+    rating: 4.8,
+    reviews: 89,
+    description: 'Open workspace perfect for creative professionals.',
+    images: [
+      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['Natural Light', 'Standing Desks', 'Community Events', 'Printing'],
+    pricing: { daily: 40, monthly: 500, annual: 5200 },
+    isAvailable: true,
+    productType: 'hot-desk',
+    availability: generateMockAvailability()
+  }),
+  new SpaceDto({
+    id: 3,
+    name: 'Executive Boardroom',
+    location: 'Financial District, San Francisco',
+    address: '789 Executive Plaza, San Francisco, CA 94111',
+    rating: 4.9,
+    reviews: 156,
+    description: 'Premium executive boardroom for high-level meetings.',
+    images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['4K Display', 'Video Conferencing', 'Executive Seating'],
+    pricing: { hourly: 120 },
+    capacity: 16,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+  new SpaceDto({
+    id: 4,
+    name: 'Startup Incubator Space',
+    location: 'Mission Bay, San Francisco',
+    address: '321 Innovation Drive, San Francisco, CA 94158',
+    rating: 4.7,
+    reviews: 203,
+    description: 'Collaborative workspace designed for startups and growing teams.',
+    images: [
+      'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['Open Layout', 'Meeting Pods', '24/7 Access'],
+    pricing: { monthly: 2500, annual: 27000 },
+    maxCapacity: 50,
+    isAvailable: true,
+    productType: 'coworking-space',
+    availability: generateMockAvailability()
+  }),
+  new SpaceDto({
+    id: 5,
+    name: 'Skyline Boardroom',
+    location: 'Downtown, SF',
+    address: '100 Main St, San Francisco, CA 94105',
+    rating: 4.8,
+    reviews: 42,
+    description: 'A modern boardroom with panoramic city views.',
+    images: [
+      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['Panoramic View', 'Smart TV', 'Coffee Machine'],
+    pricing: { hourly: 110 },
+    capacity: 10,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+  new SpaceDto({
+    id: 6,
+    name: 'Tech Valley Workspace',
+    location: 'Palo Alto, CA',
+    address: '456 Tech Avenue, Palo Alto, CA 94305',
+    rating: 4.9,
+    reviews: 78,
+    description: 'A tech-focused workspace with cutting-edge amenities.',
+    images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['High-Speed Internet', 'Video Conferencing', 'Ergonomic Chairs'],
+    pricing: { hourly: 95, daily: 400, monthly: 3800 },
+    capacity: 20,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+  new SpaceDto({
+    id: 7,
+    name: 'Tech Valley Workspace',
+    location: 'Palo Alto, CA',
+    address: '456 Tech Avenue, Palo Alto, CA 94305',
+    rating: 4.9,
+    reviews: 78,
+    description: 'A tech-focused workspace with cutting-edge amenities.',
+    images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['High-Speed Internet', 'Video Conferencing', 'Ergonomic Chairs'],
+    pricing: { hourly: 95, daily: 400, monthly: 3800 },
+    capacity: 20,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+  new SpaceDto({
+    id: 8,
+    name: 'Downtown Executive Hub',
+    location: 'New York, NY',
+    address: '200 Madison Ave, New York, NY 10016',
+    rating: 4.8,
+    reviews: 102,
+    description: 'Premium meeting space with panoramic city views and top-tier services.',
+    images: [
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['24/7 Access', 'Private Lounge', 'Smart Board'],
+    pricing: { hourly: 120, daily: 500, monthly: 4500 },
+    capacity: 15,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+
+  new SpaceDto({
+    id: 9,
+    name: 'Creative Loft Boardroom',
+    location: 'Austin, TX',
+    address: '88 Congress Ave, Austin, TX 78701',
+    rating: 4.7,
+    reviews: 64,
+    description: 'A modern, art-inspired meeting room ideal for brainstorming sessions.',
+    images: [
+      'https://images.unsplash.com/photo-1590490360182-663ea36f84b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['Whiteboards', 'Natural Lighting', 'Coffee & Snacks'],
+    pricing: { hourly: 85, daily: 350, monthly: 3200 },
+    capacity: 12,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+
+  new SpaceDto({
+    id: 10,
+    name: 'Harbor View Conference Hall',
+    location: 'San Francisco, CA',
+    address: '500 Embarcadero, San Francisco, CA 94107',
+    rating: 4.9,
+    reviews: 91,
+    description: 'Spacious waterfront meeting venue with state-of-the-art facilities.',
+    images: [
+      'https://images.unsplash.com/photo-1573164573938-c9b3fd37f3a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['HD Projector', 'Catering Services', 'Sound System'],
+    pricing: { hourly: 110, daily: 450, monthly: 4100 },
+    capacity: 25,
+    isAvailable: false,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+
+  new SpaceDto({
+    id: 11,
+    name: 'Greenlight Innovation Room',
+    location: 'Seattle, WA',
+    address: '600 5th Ave, Seattle, WA 98104',
+    rating: 4.6,
+    reviews: 55,
+    description: 'Eco-friendly meeting space with greenery and fresh air circulation.',
+    images: [
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['Sustainable Materials', 'Natural Light', 'High-Speed Wi-Fi'],
+    pricing: { hourly: 75, daily: 300, monthly: 2800 },
+    capacity: 10,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+
+  new SpaceDto({
+    id: 12,
+    name: 'Global Connect Conference Suite',
+    location: 'Chicago, IL',
+    address: '150 Wacker Dr, Chicago, IL 60606',
+    rating: 4.8,
+    reviews: 83,
+    description: 'Fully equipped for international business calls and hybrid meetings.',
+    images: [
+      'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    ],
+    features: ['Multi-Language Support', '4K Video Conferencing', 'Secure Wi-Fi'],
+    pricing: { hourly: 100, daily: 420, monthly: 3900 },
+    capacity: 18,
+    isAvailable: true,
+    productType: 'meeting-room',
+    availability: generateMockAvailability()
+  }),
+];
+
 // Authentication API
 export class AuthAPI {
   // Real API call (commented out for now)
@@ -220,231 +443,6 @@ export class SpacesAPI {
     try {
       await delay(800);
 
-      const mockSpaces = [
-        new SpaceDto({
-          id: 1,
-          name: 'The Innovation Hub',
-          location: 'Downtown, San Francisco',
-          address: '123 Business District, San Francisco, CA 94105',
-          rating: 4.9,
-          reviews: 127,
-          description: 'A premium workspace designed for innovation and collaboration.',
-          images: [
-            'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['High-Speed WiFi', '4K Display', 'Coffee Service', 'Security Access'],
-          pricing: { hourly: 85, daily: 35, monthly: 450, annual: 4500 },
-          capacity: 12,
-          isAvailable: true,
-          productType: request.spaceType || 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-        new SpaceDto({
-          id: 2,
-          name: 'Creative Commons',
-          location: 'SOMA, San Francisco',
-          address: '456 Creative Street, San Francisco, CA 94103',
-          rating: 4.8,
-          reviews: 89,
-          description: 'Open workspace perfect for creative professionals.',
-          images: [
-            'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Natural Light', 'Standing Desks', 'Community Events', 'Printing'],
-          pricing: { daily: 40, monthly: 500, annual: 5200 },
-          isAvailable: true,
-          productType: 'hot-desk',
-          availability: generateMockAvailability()
-        }),
-        new SpaceDto({
-          id: 3,
-          name: 'Executive Boardroom',
-          location: 'Financial District, San Francisco',
-          address: '789 Executive Plaza, San Francisco, CA 94111',
-          rating: 4.9,
-          reviews: 156,
-          description: 'Premium executive boardroom for high-level meetings.',
-          images: [
-            'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['4K Display', 'Video Conferencing', 'Executive Seating'],
-          pricing: { hourly: 120 },
-          capacity: 16,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-        new SpaceDto({
-          id: 4,
-          name: 'Startup Incubator Space',
-          location: 'Mission Bay, San Francisco',
-          address: '321 Innovation Drive, San Francisco, CA 94158',
-          rating: 4.7,
-          reviews: 203,
-          description: 'Collaborative workspace designed for startups and growing teams.',
-          images: [
-            'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Open Layout', 'Meeting Pods', '24/7 Access'],
-          pricing: { monthly: 2500, annual: 27000 },
-          maxCapacity: 50,
-          isAvailable: true,
-          productType: 'coworking-space',
-          availability: generateMockAvailability()
-        }),
-        new SpaceDto({
-          id: 5,
-          name: 'Skyline Boardroom',
-          location: 'Downtown, SF',
-          address: '100 Main St, San Francisco, CA 94105',
-          rating: 4.8,
-          reviews: 42,
-          description: 'A modern boardroom with panoramic city views.',
-          images: [
-            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Panoramic View', 'Smart TV', 'Coffee Machine'],
-          pricing: { hourly: 110 },
-          capacity: 10,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-        new SpaceDto({
-          id: 6,
-          name: 'Tech Valley Workspace',
-          location: 'Palo Alto, CA',
-          address: '456 Tech Avenue, Palo Alto, CA 94305',
-          rating: 4.9,
-          reviews: 78,
-          description: 'A tech-focused workspace with cutting-edge amenities.',
-          images: [
-            'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['High-Speed Internet', 'Video Conferencing', 'Ergonomic Chairs'],
-          pricing: { hourly: 95, daily: 400, monthly: 3800 },
-          capacity: 20,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-        new SpaceDto({
-          id: 7,
-          name: 'Tech Valley Workspace',
-          location: 'Palo Alto, CA',
-          address: '456 Tech Avenue, Palo Alto, CA 94305',
-          rating: 4.9,
-          reviews: 78,
-          description: 'A tech-focused workspace with cutting-edge amenities.',
-          images: [
-            'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['High-Speed Internet', 'Video Conferencing', 'Ergonomic Chairs'],
-          pricing: { hourly: 95, daily: 400, monthly: 3800 },
-          capacity: 20,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-        new SpaceDto({
-          id: 8,
-          name: 'Downtown Executive Hub',
-          location: 'New York, NY',
-          address: '200 Madison Ave, New York, NY 10016',
-          rating: 4.8,
-          reviews: 102,
-          description: 'Premium meeting space with panoramic city views and top-tier services.',
-          images: [
-            'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['24/7 Access', 'Private Lounge', 'Smart Board'],
-          pricing: { hourly: 120, daily: 500, monthly: 4500 },
-          capacity: 15,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-
-        new SpaceDto({
-          id: 9,
-          name: 'Creative Loft Boardroom',
-          location: 'Austin, TX',
-          address: '88 Congress Ave, Austin, TX 78701',
-          rating: 4.7,
-          reviews: 64,
-          description: 'A modern, art-inspired meeting room ideal for brainstorming sessions.',
-          images: [
-            'https://images.unsplash.com/photo-1590490360182-663ea36f84b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Whiteboards', 'Natural Lighting', 'Coffee & Snacks'],
-          pricing: { hourly: 85, daily: 350, monthly: 3200 },
-          capacity: 12,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-
-        new SpaceDto({
-          id: 10,
-          name: 'Harbor View Conference Hall',
-          location: 'San Francisco, CA',
-          address: '500 Embarcadero, San Francisco, CA 94107',
-          rating: 4.9,
-          reviews: 91,
-          description: 'Spacious waterfront meeting venue with state-of-the-art facilities.',
-          images: [
-            'https://images.unsplash.com/photo-1573164573938-c9b3fd37f3a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['HD Projector', 'Catering Services', 'Sound System'],
-          pricing: { hourly: 110, daily: 450, monthly: 4100 },
-          capacity: 25,
-          isAvailable: false,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-
-        new SpaceDto({
-          id: 11,
-          name: 'Greenlight Innovation Room',
-          location: 'Seattle, WA',
-          address: '600 5th Ave, Seattle, WA 98104',
-          rating: 4.6,
-          reviews: 55,
-          description: 'Eco-friendly meeting space with greenery and fresh air circulation.',
-          images: [
-            'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Sustainable Materials', 'Natural Light', 'High-Speed Wi-Fi'],
-          pricing: { hourly: 75, daily: 300, monthly: 2800 },
-          capacity: 10,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-
-        new SpaceDto({
-          id: 12,
-          name: 'Global Connect Conference Suite',
-          location: 'Chicago, IL',
-          address: '150 Wacker Dr, Chicago, IL 60606',
-          rating: 4.8,
-          reviews: 83,
-          description: 'Fully equipped for international business calls and hybrid meetings.',
-          images: [
-            'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Multi-Language Support', '4K Video Conferencing', 'Secure Wi-Fi'],
-          pricing: { hourly: 100, daily: 420, monthly: 3900 },
-          capacity: 18,
-          isAvailable: true,
-          productType: 'meeting-room',
-          availability: generateMockAvailability()
-        }),
-
-
-      ];
-
       // Filter spaces based on request
       let filteredSpaces = mockSpaces;
       if (request.location) {
@@ -484,95 +482,14 @@ export class SpacesAPI {
     try {
       await delay(600);
 
-      // Create a comprehensive space database with SpaceType enums
-      const spaceDatabase: Record<number, any> = {
-        1: {
-          id: 1,
-          name: 'The Innovation Hub',
-          location: 'Downtown, San Francisco',
-          address: '123 Business District, San Francisco, CA 94105',
-          rating: 4.9,
-          reviews: 127,
-          description: 'A premium workspace designed for innovation and collaboration. Perfect for team meetings, presentations, and creative sessions.',
-          images: [
-            'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['High-Speed WiFi', '4K Display', 'Coffee Service', 'Security Access', 'Video Conferencing', 'Whiteboard'],
-          pricing: { hourly: 85, daily: 35, monthly: 450, annual: 4500 },
-          capacity: 12,
-          isAvailable: true,
-          spaceType: SpaceType.MEETING_ROOM,
-          productType: getSpaceTypeString(SpaceType.MEETING_ROOM),
-          availability: generateMockAvailability()
-        },
-        2: {
-          id: 2,
-          name: 'Creative Commons',
-          location: 'SOMA, San Francisco',
-          address: '456 Creative Street, San Francisco, CA 94103',
-          rating: 4.8,
-          reviews: 89,
-          description: 'Open workspace perfect for creative professionals. Bright, airy environment with natural light and modern amenities.',
-          images: [
-            'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Natural Light', 'Standing Desks', 'Community Events', 'Printing', 'High-Speed WiFi', 'Kitchen Access'],
-          pricing: { daily: 40, monthly: 500, annual: 5200 },
-          isAvailable: true,
-          spaceType: SpaceType.HOT_DESK,
-          productType: getSpaceTypeString(SpaceType.HOT_DESK),
-          availability: generateMockAvailability()
-        },
-        3: {
-          id: 3,
-          name: 'Executive Boardroom',
-          location: 'Financial District, San Francisco',
-          address: '789 Executive Plaza, San Francisco, CA 94111',
-          rating: 4.9,
-          reviews: 156,
-          description: 'Premium executive boardroom for high-level meetings and presentations. Sophisticated environment with top-tier amenities.',
-          images: [
-            'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['4K Display', 'Video Conferencing', 'High-Speed WiFi', 'Climate Control', 'Executive Seating', 'Catering Service'],
-          pricing: { hourly: 120 },
-          capacity: 16,
-          isAvailable: true,
-          spaceType: SpaceType.MEETING_ROOM,
-          productType: getSpaceTypeString(SpaceType.MEETING_ROOM),
-          availability: generateMockAvailability()
-        },
-        4: {
-          id: 4,
-          name: 'Startup Incubator Space',
-          location: 'Mission Bay, San Francisco',
-          address: '321 Innovation Drive, San Francisco, CA 94158',
-          rating: 4.7,
-          reviews: 203,
-          description: 'Collaborative workspace designed for startups and growing teams. Flexible environment that adapts to your team\'s needs.',
-          images: [
-            'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          features: ['Open Layout', 'Meeting Pods', 'High-Speed WiFi', 'Community Events', 'Mentorship Programs', '24/7 Access'],
-          pricing: { monthly: 2500, annual: 27000 },
-          maxCapacity: 50,
-          isAvailable: true,
-          spaceType: SpaceType.COWORKING_SPACE,
-          productType: getSpaceTypeString(SpaceType.COWORKING_SPACE),
-          availability: generateMockAvailability()
-        }
-      };
+      const spaceData = mockSpaces.find(space => space.id === spaceId);
 
-      // Get the space data based on ID, fallback to space 1 if not found
-      const spaceData = spaceDatabase[spaceId] || spaceDatabase[1];
+      if (!spaceData) {
+        return new SpaceDetailsResponseDto(false, {} as SpaceDto, [], [], 'Space not found');
+      }
 
-      // Override spaceType if provided
+      // Override productType if spaceType is provided
       if (spaceType !== undefined) {
-        spaceData.spaceType = spaceType;
         spaceData.productType = getSpaceTypeString(spaceType);
       }
 

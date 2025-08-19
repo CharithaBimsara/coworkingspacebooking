@@ -438,21 +438,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import type { Router } from 'vue-router'
-import LocationDropdown from '../components/LocationDropdown.vue'
-import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue'
-import { HomeAPI } from '../api'
-import { NewsletterSubscriptionRequestDto } from '../dto/request'
-import type { SpaceDto, AdvertisementDto, TestimonialDto } from '../dto/response'
+import { defineComponent } from 'vue';
+import LocationDropdown from '../components/LocationDropdown.vue';
+import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
+import { HomeAPI } from '../api';
+import { NewsletterSubscriptionRequestDto } from '../dto/request';
+import type { SpaceDto, AdvertisementDto, TestimonialDto } from '../dto/response';
 
 interface SearchForm {
-  location: string
-  spaceType: string
+  location: string;
+  spaceType: string;
+}
+
+interface SpaceTypeOption {
+  value: string;
+  label: string;
+  icon: string;
 }
 
 export default defineComponent({
-  name: 'Home',
+  name: 'HomePage',
   
   components: {
     LocationDropdown,
@@ -461,26 +466,20 @@ export default defineComponent({
   
   data() {
     return {
-      // Search form data
       searchForm: {
         location: '',
         spaceType: ''
       } as SearchForm,
-      // Loading states
       isSearching: false,
       isLoadingSpaces: false,
       isSubscribing: false,
-      // Newsletter
       newsletterEmail: '',
       subscriptionMessage: '',
-      // Slideshow state
       currentSlide: 0,
       slideInterval: null as number | null,
-      // Data from API
       advertisements: [] as AdvertisementDto[],
       featuredSpaces: [] as SpaceDto[],
       testimonials: [] as TestimonialDto[],
-      // Space type dropdown options
       spaceTypeOptions: [
         {
           value: '',
@@ -502,53 +501,50 @@ export default defineComponent({
           label: 'Co-working Space',
           icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
         }
-      ]
-    }
+      ] as SpaceTypeOption[]
+    };
   },
   
   async mounted() {
-    await this.loadHomePageData()
-    this.startSlideshow()
+    await this.loadHomePageData();
+    this.startSlideshow();
   },
   
   beforeUnmount() {
-    this.stopSlideshow()
+    this.stopSlideshow();
   },
   
   methods: {
     async loadHomePageData(): Promise<void> {
+      this.isLoadingSpaces = true;
       try {
-        this.isLoadingSpaces = true
-        const response = await HomeAPI.getHomePageData()
-        
+        const response = await HomeAPI.getHomePageData();
         if (response.success) {
-          this.featuredSpaces = response.featuredSpaces || []
-          this.advertisements = response.advertisements || []
-          this.testimonials = response.testimonials || []
+          this.featuredSpaces = response.featuredSpaces || [];
+          this.advertisements = response.advertisements || [];
+          this.testimonials = response.testimonials || [];
         } else {
-          console.error('Failed to load home page data:', response.message)
+          console.error('Failed to load home page data:', response.message);
         }
       } catch (error) {
-        console.error('Error loading home page data:', error)
+        console.error('Error loading home page data:', error);
       } finally {
-        this.isLoadingSpaces = false
+        this.isLoadingSpaces = false;
       }
     },
     
     async searchSpaces(): Promise<void> {
+      this.isSearching = true;
       try {
-        this.isSearching = true
+        const query: Record<string, string> = {};
+        if (this.searchForm.location) query.location = this.searchForm.location;
+        if (this.searchForm.spaceType) query.spaceType = this.searchForm.spaceType;
         
-        // Always navigate to SearchResults with provided query params
-        const query: Record<string, string> = {}
-        if (this.searchForm.location) query.location = this.searchForm.location
-        if (this.searchForm.spaceType) query.spaceType = this.searchForm.spaceType
-        
-        await this.$router.push({ name: 'SearchResults', query })
+        await this.$router.push({ name: 'SearchResults', query });
       } catch (error) {
-        console.error('Error during search:', error)
+        console.error('Error during search:', error);
       } finally {
-        this.isSearching = false
+        this.isSearching = false;
       }
     },
     
@@ -557,82 +553,74 @@ export default defineComponent({
         await this.$router.push({
           name: 'SpaceDetails',
           params: { id: id.toString() }
-        })
+        });
       } catch (error) {
-        console.error('Error navigating to space details:', error)
+        console.error('Error navigating to space details:', error);
       }
     },
     
     async subscribeNewsletter(): Promise<void> {
-      if (!this.newsletterEmail) return
+      if (!this.newsletterEmail) return;
       
+      this.isSubscribing = true;
+      this.subscriptionMessage = '';
       try {
-        this.isSubscribing = true
-        this.subscriptionMessage = ''
-        
-        const request = new NewsletterSubscriptionRequestDto(this.newsletterEmail)
-        
-        const response = await HomeAPI.subscribeNewsletter(request)
-        
+        const request = new NewsletterSubscriptionRequestDto(this.newsletterEmail);
+        const response = await HomeAPI.subscribeNewsletter(request);
         if (response.success) {
-          this.subscriptionMessage = response.message || 'Successfully subscribed!'
-          this.newsletterEmail = ''
+          this.subscriptionMessage = response.message || 'Successfully subscribed!';
+          this.newsletterEmail = '';
         } else {
-          this.subscriptionMessage = response.message || 'Failed to subscribe. Please try again.'
+          this.subscriptionMessage = response.message || 'Failed to subscribe. Please try again.';
         }
       } catch (error) {
-        console.error('Newsletter subscription error:', error)
-        this.subscriptionMessage = 'An error occurred. Please try again.'
+        console.error('Newsletter subscription error:', error);
+        this.subscriptionMessage = 'An error occurred. Please try again.';
       } finally {
-        this.isSubscribing = false
-        
-        // Clear message after 5 seconds
+        this.isSubscribing = false;
         setTimeout(() => {
-          this.subscriptionMessage = ''
-        }, 5000)
+          this.subscriptionMessage = '';
+        }, 5000);
       }
     },
     
     nextSlide(): void {
       if (this.advertisements.length > 0) {
-        this.currentSlide = (this.currentSlide + 1) % this.advertisements.length
+        this.currentSlide = (this.currentSlide + 1) % this.advertisements.length;
       }
     },
     
     previousSlide(): void {
       if (this.advertisements.length > 0) {
-        this.currentSlide = this.currentSlide === 0
-          ? this.advertisements.length - 1
-          : this.currentSlide - 1
+        this.currentSlide = (this.currentSlide - 1 + this.advertisements.length) % this.advertisements.length;
       }
     },
     
     startSlideshow(): void {
       if (this.advertisements.length > 1) {
-        this.slideInterval = Number(setInterval(this.nextSlide, 5000)) // Change slide every 5 seconds
+        this.slideInterval = window.setInterval(this.nextSlide, 5000);
       }
     },
     
     stopSlideshow(): void {
       if (this.slideInterval) {
-        clearInterval(this.slideInterval)
-        this.slideInterval = null
+        clearInterval(this.slideInterval);
+        this.slideInterval = null;
       }
     },
     
     getStartingPrice(space: SpaceDto): number {
       if (space.pricing) {
-        return space.pricing.daily || space.pricing.hourly || space.pricing.monthly || 0
+        return space.pricing.daily || space.pricing.hourly || space.pricing.monthly || 0;
       }
-      return 0
+      return 0;
     },
     
-    onLocationChange(location: any): void {
-      // Handle location selection if needed
+    onLocationChange(location: string): void {
       if (location) {
-        console.log('Selected location:', location)
+        console.log('Selected location:', location);
       }
     }
   }
-})
+});
 </script>

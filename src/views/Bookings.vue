@@ -8,9 +8,6 @@
           <p class="text-gray-600">Manage your workspace reservations and booking history</p>
         </div>
         <router-link to="/search" class="btn-primary mt-4 sm:mt-0">
-          <!-- <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg> -->
           Book New Space
         </router-link>
       </div>
@@ -129,14 +126,9 @@
 
             <!-- Export -->
             <button @click="exportBookings" class="btn-primary mr-2">
-              <!-- <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg> -->
               Export
             </button>
 
-            <!-- Settings -->
-           
           </div>
         </div>
       </div>
@@ -186,6 +178,7 @@
               <!-- Space Image and Info -->
               <div class="flex space-x-4 flex-1">
                 <img 
+                  v-if="booking.space.image" 
                   :src="booking.space.image" 
                   :alt="booking.space.name"
                   class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity"
@@ -323,7 +316,7 @@
         <div class="space-y-6">
           <!-- Space Info -->
           <div class="flex space-x-4">
-            <img :src="selectedBooking.space.image" :alt="selectedBooking.space.name" class="w-24 h-24 rounded-lg object-cover">
+            <img v-if="selectedBooking.space.image" :src="selectedBooking.space.image" :alt="selectedBooking.space.name" class="w-24 h-24 rounded-lg object-cover">
             <div class="flex-1">
               <h3 class="text-lg font-semibold text-gray-900">{{ selectedBooking.space.name }}</h3>
               <p class="text-gray-600">{{ selectedBooking.space.location }}</p>
@@ -565,6 +558,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BookingCalendar from '../components/BookingCalendar.vue'
+import { generatePDFReceipt } from '../utils/pdfReceipt'
 
 const router = useRouter()
 
@@ -920,7 +914,7 @@ const exportBookings = () => {
     'Duration': formatDuration(booking.duration),
     'Space Type': formatSpaceType(booking.spaceType),
     'Status': booking.status,
-    'Total Amount': `$${booking.totalAmount}`,
+    'Total Amount': `${booking.totalAmount}`,
     'Guests': booking.guests
   }))
 
@@ -943,41 +937,43 @@ const exportBookings = () => {
 
 const downloadReceipt = async (booking: any) => {
   try {
-    const { generatePDFReceipt } = await import('../utils/pdfReceipt')
-    await generatePDFReceipt(booking)
+    const mappedBooking: any = {
+      spaceId: booking.space.id,
+      productType: booking.spaceType,
+      space: {
+        name: booking.space.name,
+        location: booking.space.location,
+      },
+      totalPrice: booking.totalAmount,
+    };
+
+    if (booking.spaceType === 'meeting-room') {
+      mappedBooking.booking = {
+        startDate: booking.date,
+        endDate: booking.date,
+        startTime: '09:00', // Placeholder, not available in BookingItem
+        duration: booking.duration,
+      };
+    } else {
+      mappedBooking.subscription = {
+        startDate: booking.date,
+        endDate: booking.date,
+        packageType: booking.duration,
+      };
+    }
+
+    const receiptData = {
+      bookings: [mappedBooking],
+      bookingId: booking.id,
+      paymentMethod: 'Credit Card', // Assuming default, as this data is not in the booking object
+      confirmedAt: new Date().toISOString(),
+      totalAmount: booking.totalAmount,
+      guestInfo: { firstName: 'Demo', lastName: 'User' } // Assuming default guest info
+    }
+    await generatePDFReceipt(receiptData)
   } catch (error) {
-    console.error('Error generating PDF receipt:', error)
-    // Fallback to text receipt
-    const receiptContent = `
-      RECEIPT
-      -------
-      Booking ID: ${booking.id}
-      Space: ${booking.space.name}
-      Location: ${booking.space.location}
-      Date: ${formatDate(booking.date)}
-      Duration: ${formatDuration(booking.duration)}
-      Space Type: ${formatSpaceType(booking.spaceType)}
-      Guests: ${booking.guests}
-
-      PRICING:
-      Base Price: $${booking.basePrice}
-      Extra Fees: $${booking.extraFees}
-      Service Fee: $${booking.serviceFee}
-      Taxes: $${booking.taxes}
-      --------
-      Total: $${booking.totalAmount}
-
-      Status: ${booking.status}
-      Generated: ${new Date().toLocaleString()}
-    `.trim()
-
-    const blob = new Blob([receiptContent], { type: 'text/plain' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `receipt-${booking.id}.txt`
-    a.click()
-    window.URL.revokeObjectURL(url)
+    console.error('Failed to generate PDF receipt:', error)
+    alert('Could not generate PDF receipt. Please try again later.')
   }
 }
 
@@ -1029,10 +1025,11 @@ const handleLogout = () => {
 
 // Add any new bookings from session storage
 const addSessionBookings = () => {
-  const confirmation = sessionStorage.getItem('bookingConfirmation')
+  const confirmation = sessionStorage.getItem('bookingConfirmation');
   if (confirmation) {
     try {
-      const confirmationData = JSON.parse(confirmation)
+      const confirmationData = JSON.parse(confirmation);
+      const images = confirmationData.space?.images || ['https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'];
       const newBooking = {
         id: confirmationData.bookingId || 'WS' + Date.now().toString().slice(-8),
         status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Cancelled',
@@ -1053,23 +1050,23 @@ const addSessionBookings = () => {
           name: confirmationData.space?.name || 'Workspace',
           location: confirmationData.space?.location || 'San Francisco',
           rating: confirmationData.space?.rating || 4.8,
-          image: confirmationData.space?.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+          image: images[0]
         }
-      }
+      };
 
       // Add to beginning of bookings if not already exists
-      const exists = allBookings.value.find(b => b.id === newBooking.id)
+      const exists = allBookings.value.find(b => b.id === newBooking.id);
       if (!exists) {
-        allBookings.value.unshift(newBooking)
-        stats.value.totalBookings = allBookings.value.length
+        allBookings.value.unshift(newBooking);
+        stats.value.totalBookings = allBookings.value.length;
         stats.value.upcomingBookings = allBookings.value.filter(b =>
-          b.status === 'Confirmed' && new Date(b.date) >= new Date()).length
+          b.status === 'Confirmed' && new Date(b.date) >= new Date()).length;
       }
     } catch (error) {
-      console.log('Error parsing booking confirmation:', error)
+      console.log('Error parsing booking confirmation:', error);
     }
   }
-}
+};
 
 // Initialize
 onMounted(() => {

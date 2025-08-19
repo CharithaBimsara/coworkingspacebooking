@@ -504,6 +504,10 @@ export default defineComponent({
     }
   },
   
+  watch: {
+    '$route': 'loadSpaceDetails'
+  },
+
   computed: {
     today(): string {
       return new Date().toISOString().split('T')[0]
