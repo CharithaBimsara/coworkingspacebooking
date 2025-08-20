@@ -44,9 +44,9 @@
     </div>
 
     <div class="max-w-8xl mx-auto px-2 sm:px-5 py-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 relative">
         <!-- Filters Sidebar - Narrower -->
-        <div class="md:col-span-1 w-full mb-4 md:mb-0 md:ml-14 ml-0 md:max-w-[240px] md:min-w-[200px]">
+        <div class="md:col-span-1 w-full mb-4 md:mb-0 md:ml-14 ml-0 md:max-w-[280px] md:min-w-[200px]">
           <!-- Mobile Filter Toggle -->
           <div class="md:hidden mb-4">
             <button @click="isFilterOpen = !isFilterOpen"
