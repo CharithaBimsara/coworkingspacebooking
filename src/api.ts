@@ -134,7 +134,7 @@ const mockSpaces = [
     reviews: 89,
     description: 'Open workspace perfect for creative professionals.',
     images: [
-      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Natural Light', 'Standing Desks', 'Community Events', 'Printing'],
     pricing: { daily: 40, monthly: 500, annual: 5200 },
@@ -260,7 +260,7 @@ const mockSpaces = [
     reviews: 64,
     description: 'A modern, art-inspired meeting room ideal for brainstorming sessions.',
     images: [
-      'https://images.unsplash.com/photo-1590490360182-663ea36f84b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Whiteboards', 'Natural Lighting', 'Coffee & Snacks'],
     pricing: { hourly: 85, daily: 350, monthly: 3200 },
@@ -279,7 +279,7 @@ const mockSpaces = [
     reviews: 91,
     description: 'Spacious waterfront meeting venue with state-of-the-art facilities.',
     images: [
-      'https://images.unsplash.com/photo-1573164573938-c9b3fd37f3a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['HD Projector', 'Catering Services', 'Sound System'],
     pricing: { hourly: 110, daily: 450, monthly: 4100 },
@@ -602,7 +602,7 @@ export class SpacesAPI {
           rating: 4.8,
           reviews: 89,
           description: 'Creative workspace for professionals',
-          images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
+          images: ['https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
           features: ['Natural Light', 'Standing Desks'],
           pricing: { daily: 40, monthly: 500 },
           isAvailable: true,
@@ -1171,7 +1171,7 @@ export class HomeAPI {
           rating: 4.8,
           reviews: 89,
           description: 'Creative workspace for professionals',
-          images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
+          images: ['https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
           features: ['Natural Light', 'Standing Desks'],
           pricing: { daily: 40, monthly: 500 },
           isAvailable: true,
@@ -1272,10 +1272,10 @@ export class HomeAPI {
       const testimonials = [
         new TestimonialDto({
           id: 1,
-          name: 'Sarah Chen',
-          role: 'Product Manager at Stripe',
-          content: 'WorkSpace has completely transformed how I work. The flexibility to book different spaces based on my needs is incredible.',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+          name: 'Marcus Rodriguez',
+          role: 'Freelance Designer',
+          content: 'As a freelancer, I love the variety of environments I can choose from. Perfect for different types of work.',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
           rating: 5
         }),
         new TestimonialDto({
@@ -1285,7 +1285,15 @@ export class HomeAPI {
           content: 'As a freelancer, I love the variety of environments I can choose from. Perfect for different types of work.',
           avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
           rating: 5
-        })
+        }),
+        new TestimonialDto({
+          id: 3,
+          name: 'Marcus Rodriguez',
+          role: 'Freelance Designer',
+          content: 'As a freelancer, I love the variety of environments I can choose from. Perfect for different types of work.',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+          rating: 5
+        }),
       ];
 
       return new HomePageDataResponseDto(true, featuredSpaces, advertisements, testimonials);

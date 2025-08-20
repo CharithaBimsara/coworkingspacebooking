@@ -2,8 +2,8 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Advanced Search Bar -->
     <div class="bg-white border-b mr-5 ml-5 rounded-lg border-gray-200 sticky top-16 mt-5 z-40">
-      <div class="max-w-8xl mx-10 px-5 py-5">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4">Advanced Search</h1>
+      <div class="max-w-8xl mx-10 px-5 py-3">
+        <h1 class="text-lg font-bold text-gray-800 mb-2 ">Search Your WorkSpace</h1>
         <div class="flex flex-wrap items-end justify-start gap-4 w-full relative">
           <div class="flex-grow relative">
             <label class="block text-sm font-medium text-gray-700 mb-2 text-sm">Space Type</label>

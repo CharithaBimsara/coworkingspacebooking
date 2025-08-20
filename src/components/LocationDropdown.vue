@@ -1,6 +1,6 @@
 <template>
-  <div class="relative">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 mb-3">{{ label }}</label>
+  <div class="relative" ref="dropdownContainer">
+    <label v-if="label" class="block text-sm font-medium text-black mb-3">{{ label }}</label>
     <div class="relative">
       <input 
         v-model="searchQuery"
@@ -9,19 +9,14 @@
         @blur="onBlur"
         type="text" 
         :placeholder="placeholder"
-        class="input-field pl-10"
+        class="input-field pl-10 text-black"
         autocomplete="off"
       >
-      <!-- <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg> -->
-      
       <!-- Clear button -->
       <button 
         v-if="searchQuery"
         @click="clearSearch"
-        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-black hover:text-gray-600"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -32,11 +27,11 @@
     <!-- Dropdown -->
     <div 
       v-if="showDropdown && (filteredLocations.length > 0 || isLoading)"
-      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto custom-scrollbar min-w-[260px]"
+      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-24 overflow-y-auto custom-scrollbar min-w-[260px]"
     >
       <!-- Loading state -->
-      <div v-if="isLoading" class="p-3 text-center text-gray-500">
-        <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+      <div v-if="isLoading" class="p-3 text-center text-sm text-black">
+        <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-gray-300"></div>
         <span class="ml-2">Loading locations...</span>
       </div>
       
@@ -46,21 +41,21 @@
           v-for="location in filteredLocations"
           :key="location.id"
           @mousedown="selectLocation(location)"
-          class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+          class="w-full text-left px-4 py-3 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0"
         >
           <div class="flex items-center">
-            <svg class="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-black mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             </svg>
             <div>
-              <div class="font-medium text-gray-900">{{ location.name }}</div>
-              <div class="text-sm text-gray-500">{{ location.description }}</div>
+              <div class="font-medium text-sm text-black">{{ location.name }}</div>
+              <div class="text-sm text-black">{{ location.description }}</div>
             </div>
           </div>
         </button>
         
         <!-- No results -->
-        <div v-if="filteredLocations.length === 0 && searchQuery" class="p-4 text-center text-gray-500">
+        <div v-if="filteredLocations.length === 0 && searchQuery" class="p-4 text-center text-sm text-black">
           <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -73,7 +68,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 interface Location {
   id: number
@@ -267,35 +262,37 @@ export default defineComponent({
 .input-field {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #D1D5DB;
+  border: 1px solid #E5E7EB; /* Light gray border */
   border-radius: 0.5rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  background: #FFFFFF; /* White background */
 }
 
 .input-field:focus {
-  border-color: #6366F1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  border-color: #D1D5DB; /* Lighter gray on focus */
+  box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.3); /* Subtle light gray shadow */
 }
-</style>
 
 /* Custom scrollbar for dropdown */
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px !important;
-  background: #f3f4f6 !important;
+  background: #FFFFFF !important; /* White scrollbar track */
   border-radius: 10px !important;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #6366f1 40%, #a5b4fc 100%) !important;
+  background: linear-gradient(135deg, #000000 40%, #4A4A4A 100%) !important; /* Black to dark gray gradient */
   border-radius: 10px !important;
   min-height: 40px !important;
-  border: 2px solid #f3f4f6 !important;
+  border: 2px solid #FFFFFF !important; /* White border to match track */
   transition: background 0.2s;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #4338ca 40%, #818cf8 100%) !important;
+  background: linear-gradient(135deg, #1A1A1A 40%, #333333 100%) !important; /* Darker black on hover */
 }
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #6366f1 #f3f4f6;
+  scrollbar-color: #000000 #FFFFFF; /* Black thumb, white track */
 }
+</style>
+

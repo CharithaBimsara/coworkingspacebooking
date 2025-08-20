@@ -1,6 +1,6 @@
 <template>
   <header class="bg-white  border-b border-gray-100 sticky top-0  z-50"> 
-    <div class="max-w-8xl mx-auto px-5 container-padding">
+    <div class="max-w-8xl mx-auto  px-5 container-padding">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
         <div class="flex items-center">
