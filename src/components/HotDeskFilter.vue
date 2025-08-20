@@ -1,4 +1,3 @@
-
 <template>
   <div class="bg-white rounded-xl p-6 shadow-card sticky top-32">
     <div class="flex items-center justify-between mb-6">
@@ -29,17 +28,6 @@
         class="input-field"
         @input="applyFilters"
       >
-    </div>
-
-    <!-- Subscription Type -->
-    <div class="mb-6">
-      <h4 class="font-medium text-gray-900 mb-3">Subscription Type</h4>
-      <select v-model="filters.subscriptionType" class="input-field" @change="applyFilters">
-        <option value="">All options</option>
-        <option value="daily">Daily Pass</option>
-        <option value="monthly">Monthly</option>
-        <option value="annually">Annual</option>
-      </select>
     </div>
 
     <!-- Rating -->
@@ -104,7 +92,6 @@ export default defineComponent({
     const filters = ref({
       dateRange: { startDate: null, endDate: null },
       location: '',
-      subscriptionType: '',
       minRating: '0'
     })
 
@@ -118,7 +105,6 @@ export default defineComponent({
       filters.value = {
         dateRange: { startDate: null, endDate: null },
         location: '',
-        subscriptionType: '',
         minRating: '0'
       }
       applyFilters()

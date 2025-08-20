@@ -105,7 +105,7 @@
                   </svg>
                   {{ space?.location || 'Loading...' }}
                 </div>
-                <div v-if="productType === 'meeting-room'" class="text-sm text-gray-600 mt-1">
+                <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="text-sm text-gray-600 mt-1">
                   Capacity: {{ space?.capacity || 0 }} people
                 </div>
                 <div v-else-if="productType === 'dedicated-desk'" class="text-sm text-gray-600 mt-1">
@@ -137,7 +137,7 @@
             <p class="text-gray-600 mb-6 leading-relaxed">{{ space?.description || 'Loading description...' }}</p>
 
             <!-- Meeting Room Booking Form -->
-            <div v-if="productType === 'meeting-room'" class="space-y-4 mb-6">
+            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-4 mb-6">
               <h3 class="font-semibold text-gray-900">Booking Details</h3>
               <DateRangePicker
                 v-model="bookingForm.dateRange"
@@ -183,52 +183,6 @@
                     <span class="ml-2 text-sm text-gray-700">Catering Service (+$50)</span>
                   </label>
                 </div>
-              </div>
-            </div>
-
-            <!-- Hot Desk Booking Form -->
-            <div v-else-if="productType === 'hot-desk'" class="space-y-4 mb-6">
-              <h3 class="font-semibold text-gray-900">Subscription Plans</h3>
-              <DateRangePicker
-                v-model="bookingForm.dateRange"
-                label="Subscription Period"
-                placeholder="Select subscription dates"
-                :min-date="today"
-                @change="onDateRangeChange"
-              />
-              
-              <!-- Package Selection -->
-              <div class="space-y-3">
-                <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-colors" 
-                       :class="selectedPackage === 'daily' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'">
-                  <input v-model="selectedPackage" value="daily" type="radio" class="sr-only">
-                  <div class="flex-1">
-                    <div class="font-semibold text-gray-900">Daily Pass</div>
-                    <div class="text-sm text-gray-600">Perfect for occasional use</div>
-                    <div class="text-lg font-bold text-primary">${{ space?.pricing?.daily || 35 }}/day</div>
-                  </div>
-                </label>
-                
-                <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-colors" 
-                       :class="selectedPackage === 'monthly' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'">
-                  <input v-model="selectedPackage" value="monthly" type="radio" class="sr-only">
-                  <div class="flex-1">
-                    <div class="font-semibold text-gray-900">Monthly Subscription</div>
-                    <div class="text-sm text-gray-600">Unlimited access for a month</div>
-                    <div class="text-lg font-bold text-primary">${{ space?.pricing?.monthly || 450 }}/month</div>
-                  </div>
-                </label>
-                
-                <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-colors" 
-                       :class="selectedPackage === 'annual' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'">
-                  <input v-model="selectedPackage" value="annual" type="radio" class="sr-only">
-                  <div class="flex-1">
-                    <div class="font-semibold text-gray-900">Annual Subscription</div>
-                    <div class="text-sm text-gray-600">Best value - save 20%</div>
-                    <div class="text-lg font-bold text-primary">${{ space?.pricing?.annual || 4500 }}/year</div>
-                    <div class="text-xs text-green-600 font-medium">Save ${{ getSavings() }}</div>
-                  </div>
-                </label>
               </div>
             </div>
 
@@ -280,7 +234,7 @@
 
             <!-- Price Calculation -->
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
-              <div v-if="productType === 'meeting-room'">
+              <div v-if="productType === 'meeting-room' || productType === 'hot-desk'">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-gray-600">Room ({{ bookingForm.duration }}h)</span>
                   <span class="font-semibold">${{ roomBasePrice }}</span>
@@ -307,7 +261,7 @@
             </div>
 
             <!-- Action Buttons -->
-            <div v-if="productType === 'meeting-room'">
+            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'">
               <button 
                 @click="proceedToBooking"
                 :disabled="!isBookingFormValid || isProcessing"
@@ -325,7 +279,7 @@
               >
                 {{ isProcessing ? 'Processing...' : 'Subscribe Now' }}
               </button>
-              <p v-if="productType === 'hot-desk' || productType === 'dedicated-desk'" class="text-xs text-gray-500 text-center mt-2">
+              <p v-if="productType === 'dedicated-desk'" class="text-xs text-gray-500 text-center mt-2">
                 {{ currentUser ? 'Ready to book' : 'Login required for subscriptions' }}
               </p>
             </div>
@@ -336,7 +290,7 @@
                 <svg class="w-4 h-4 inline mr-1 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
-                {{ productType === 'meeting-room' ? 'Secure booking process' : 'Cancel anytime with 30 days notice' }}
+                {{ productType === 'meeting-room' || productType === 'hot-desk' ? 'Secure booking process' : 'Cancel anytime with 30 days notice' }}
               </p>
             </div>
           </div>
@@ -349,7 +303,7 @@
           <!-- Features/Amenities -->
           <section>
             <h3 class="text-2xl font-heading font-semibold text-gray-900 mb-6">
-              {{ productType === 'meeting-room' ? 'Room Features' : 'Amenities & Features' }}
+              {{ productType === 'meeting-room' || productType === 'hot-desk' ? 'Room Features' : 'Amenities & Features' }}
             </h3>
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div v-for="feature in space?.features || []" :key="feature" class="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-card">
@@ -622,7 +576,7 @@ export default defineComponent({
         case 'meeting-room':
           return 'Meeting Rooms'
         case 'hot-desk':
-          return 'Hot Desk'
+          return 'Hot Desks'
         case 'dedicated-desk':
           return 'Dedicated Desk'
         default:
@@ -728,7 +682,7 @@ export default defineComponent({
       this.showAuthModal = false
 
       // After authentication, proceed with the booking
-      if (this.productType === 'hot-desk' || this.productType === 'dedicated-desk') {
+      if (this.productType === 'dedicated-desk') {
         setTimeout(() => {
           this.proceedToSubscription()
         }, 100)
