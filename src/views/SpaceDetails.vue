@@ -39,7 +39,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
-        <router-link :to="getCategoryRoute()" class="hover:text-primary transition-colors">{{ getCategoryName() }}</router-link>
+                        <router-link :to="getCategoryRoute()" class="hover:text-primary transition-colors" @click.prevent="goToSearchResults">{{ getCategoryName() }}</router-link>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
@@ -614,16 +614,7 @@ export default defineComponent({
     },
     
     getCategoryRoute(): string {
-      switch (this.productType) {
-        case 'meeting-room':
-          return '/meeting-rooms'
-        case 'hot-desk':
-          return '/hot-desk'
-        case 'dedicated-desk':
-          return '/dedicated-desk'
-        default:
-          return '/'
-      }
+      return `/search?spaceType=${this.productType}`;
     },
     
     getCategoryName(): string {
@@ -638,6 +629,18 @@ export default defineComponent({
           return 'Spaces'
       }
     },
+
+    goToSearchResults() {
+      this.$router.push(this.getCategoryRoute());
+    },
+
+    // goToSearchResults() {
+    //   this.$router.push(this.getCategoryRoute());
+    // },
+
+    // // goToSearchResults() {
+    // //   this.$router.push(this.getCategoryRoute());
+    // // },
     
     getCurrentImage(): string {
       const images = this.getImages()
