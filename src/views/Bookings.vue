@@ -249,7 +249,7 @@
                   </button>
 
                   <button
-                    v-if="booking.status === 'Confirmed' && canCancel(booking)"
+                    v-if="booking.status === 'Confirmed'"
                     @click="cancelBooking(booking)"
                     class="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                   >
@@ -551,6 +551,19 @@
         </div>
       </div>
     </div>
+
+    <success-overlay
+      :show="showSuccessOverlay"
+      :title="successOverlayTitle"
+      :message="successOverlayMessage"
+      @close="showSuccessOverlay = false"
+    />
+
+    <CancelBooking
+      :show="showCancelModal"
+      @close="showCancelModal = false"
+      @confirm="confirmCancellation"
+    />
   </div>
 </template>
 
@@ -559,6 +572,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BookingCalendar from '../components/BookingCalendar.vue'
 import { generatePDFReceipt } from '../utils/pdfReceipt'
+import SuccessOverlay from '../components/SuccessOverlay.vue'
+import CancelBooking from '../components/CancelBooking.vue'
 
 const router = useRouter()
 
@@ -574,6 +589,11 @@ const showProfileModal = ref(false)
 const showCardsModal = ref(false)
 const bookingToChange = ref<any>(null)
 const newDate = ref('')
+const showSuccessOverlay = ref(false)
+const successOverlayTitle = ref('')
+const successOverlayMessage = ref('')
+const showCancelModal = ref(false)
+const bookingToCancel = ref<any>(null)
 
 // Stats
 const stats = ref({
@@ -864,13 +884,6 @@ const getEmptyStateDescription = () => {
   }
 }
 
-const canCancel = (booking: any) => {
-  const bookingDate = new Date(booking.date)
-  const now = new Date()
-  const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60)
-  return hoursDiff > 24
-}
-
 const viewBookingDetails = (booking: any) => {
   selectedBooking.value = booking
 }
@@ -880,9 +893,17 @@ const viewSpaceDetails = (spaceId: number) => {
 }
 
 const cancelBooking = (booking: any) => {
-  if (confirm('Are you sure you want to cancel this booking? You may be eligible for a refund according to our cancellation policy.')) {
-    booking.status = 'Cancelled'
-    alert('Booking cancelled successfully.')
+  bookingToCancel.value = booking
+  showCancelModal.value = true
+}
+
+const confirmCancellation = () => {
+  if (bookingToCancel.value) {
+    bookingToCancel.value.status = 'Cancelled'
+    showCancelModal.value = false
+    successOverlayTitle.value = 'Booking Cancelled'
+    successOverlayMessage.value = 'Your booking has been successfully cancelled.'
+    showSuccessOverlay.value = true
   }
 }
 
