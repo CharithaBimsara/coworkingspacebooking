@@ -4,7 +4,7 @@ import Home from '../views/Home.vue'
 import SearchResults from '../views/SearchResults.vue'
 import MeetingRooms from '../views/MeetingRooms.vue'
 import HotDesk from '../views/HotDesk.vue'
-import CoworkingSpace from '../views/CoworkingSpace.vue'
+import DedicatedDesk from '../views/DedicatedDesk.vue'
 import SpaceDetails from '../views/SpaceDetails.vue'
 import BookingSummary from '../views/BookingSummary.vue'
 import Payment from '../views/Payment.vue'
@@ -40,9 +40,9 @@ const routes: RouteRecordRaw[] = [
       component: HotDesk
     },
     {
-      path: '/coworking-space',
-      name: 'CoworkingSpace',
-      component: CoworkingSpace
+      path: '/dedicated-desk',
+      name: 'DedicatedDesk',
+      component: DedicatedDesk
     },
     {
       path: '/space/:id',

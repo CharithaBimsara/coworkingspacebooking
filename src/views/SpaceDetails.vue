@@ -108,7 +108,7 @@
                 <div v-if="productType === 'meeting-room'" class="text-sm text-gray-600 mt-1">
                   Capacity: {{ space?.capacity || 0 }} people
                 </div>
-                <div v-else-if="productType === 'coworking-space'" class="text-sm text-gray-600 mt-1">
+                <div v-else-if="productType === 'dedicated-desk'" class="text-sm text-gray-600 mt-1">
                   Max Capacity: {{ space?.maxCapacity || space?.capacity || 0 }} seats
                 </div>
               </div>
@@ -232,8 +232,8 @@
               </div>
             </div>
 
-            <!-- Co-working Space Booking Form -->
-            <div v-else-if="productType === 'coworking-space'" class="space-y-4 mb-6">
+            <!-- dedicated desk Booking Form -->
+            <div v-else-if="productType === 'dedicated-desk'" class="space-y-4 mb-6">
               <h3 class="font-semibold text-gray-900">Team Workspace</h3>
               <DateRangePicker
                 v-model="bookingForm.dateRange"
@@ -325,7 +325,7 @@
               >
                 {{ isProcessing ? 'Processing...' : 'Subscribe Now' }}
               </button>
-              <p v-if="productType === 'hot-desk' || productType === 'coworking-space'" class="text-xs text-gray-500 text-center mt-2">
+              <p v-if="productType === 'hot-desk' || productType === 'dedicated-desk'" class="text-xs text-gray-500 text-center mt-2">
                 {{ currentUser ? 'Ready to book' : 'Login required for subscriptions' }}
               </p>
             </div>
@@ -541,7 +541,7 @@ export default defineComponent({
       return !!(this.bookingForm.dateRange.startDate &&
                this.bookingForm.dateRange.endDate &&
                this.selectedPackage &&
-               (this.productType !== 'coworking-space' || this.bookingForm.teamSize))
+               (this.productType !== 'dedicated-desk' || this.bookingForm.teamSize))
     }
   },
   
@@ -619,8 +619,8 @@ export default defineComponent({
           return '/meeting-rooms'
         case 'hot-desk':
           return '/hot-desk'
-        case 'coworking-space':
-          return '/coworking-space'
+        case 'dedicated-desk':
+          return '/dedicated-desk'
         default:
           return '/'
       }
@@ -632,8 +632,8 @@ export default defineComponent({
           return 'Meeting Rooms'
         case 'hot-desk':
           return 'Hot Desk'
-        case 'coworking-space':
-          return 'Co-working Space'
+        case 'dedicated-desk':
+          return 'Dedicated Desk'
         default:
           return 'Spaces'
       }
@@ -725,7 +725,7 @@ export default defineComponent({
       this.showAuthModal = false
 
       // After authentication, proceed with the booking
-      if (this.productType === 'hot-desk' || this.productType === 'coworking-space') {
+      if (this.productType === 'hot-desk' || this.productType === 'dedicated-desk') {
         setTimeout(() => {
           this.proceedToSubscription()
         }, 100)
@@ -798,7 +798,7 @@ export default defineComponent({
     async proceedToSubscription(): Promise<void> {
       if (!this.isSubscriptionFormValid || this.isProcessing) return
       
-      // For hot desk and coworking space, authentication is required
+      // For hot desk and dedicated desk, authentication is required
       if (!this.currentUser) {
         this.showAuthModal = true
         return

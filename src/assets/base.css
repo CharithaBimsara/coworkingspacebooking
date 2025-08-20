@@ -3,7 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS Variables for the coworking space theme */
+/* Custom CSS Variables for the dedicated desk theme */
 :root {
   --primary: 99 102 241;
   --secondary: 59 130 246;

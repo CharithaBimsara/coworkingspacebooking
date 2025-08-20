@@ -5,7 +5,7 @@
       <div class="max-w-7xl mx-auto container-padding py-8">
         <div class="text-center">
           <h1 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
-            Co-working Space
+            Dedicated Desk
           </h1>
           <p class="text-xl text-gray-600 max-w-2xl mx-auto">
             Collaborative workspaces designed for teams and companies who need flexible office solutions
@@ -71,7 +71,7 @@
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="text-xl font-semibold text-gray-900">
-            {{ filteredSpaces.length }} Co-working Spaces Found
+            {{ filteredSpaces.length }} Dedicated Desks Found
           </h2>
           <p class="text-gray-600">{{ getFilterSummary() }}</p>
         </div>
@@ -88,10 +88,10 @@
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-12">
         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <p class="mt-4 text-gray-600">Loading co-working spaces...</p>
+        <p class="mt-4 text-gray-600">Loading dedicated desks...</p>
       </div>
 
-      <!-- Co-working Spaces Grid -->
+      <!-- dedicated desks Grid -->
       <div v-else-if="filteredSpaces.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div 
           v-for="space in sortedSpaces" 
@@ -169,13 +169,13 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-gray-900 mb-2">No co-working spaces found</h3>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">No dedicated desks found</h3>
         <p class="text-gray-600 mb-8">Try adjusting your search criteria or check out these related options</p>
         
         <!-- Suggested Alternatives -->
         <div v-if="suggestedSpaces.length > 0" class="max-w-4xl mx-auto">
           <h4 class="text-lg font-semibold text-gray-900 mb-6">
-            {{ searchFilters.location ? `Co-working Spaces in Other Locations` : 'Suggested Co-working Spaces' }}
+            {{ searchFilters.location ? `Dedicated Desks in Other Locations` : 'Suggested Dedicated Desks' }}
           </h4>
           <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div 
@@ -241,7 +241,7 @@ interface SearchFilters {
 }
 
 export default defineComponent({
-  name: 'CoworkingSpace',
+  name: 'DedicatedDesk',
   
   components: {
     DateRangePicker
@@ -283,17 +283,17 @@ export default defineComponent({
   },
   
   async mounted() {
-    await this.loadCoworkingSpaces()
+    await this.loadDedicatedDesks()
     this.applyFiltersAndSorting()
   },
   
   methods: {
-    async loadCoworkingSpaces(): Promise<void> {
+    async loadDedicatedDesks(): Promise<void> {
       try {
         this.isLoading = true
         
         const searchRequest = new SearchSpacesRequestDto({
-          spaceType: 'coworking-space',
+          spaceType: 'dedicated-desk',
           location: this.searchFilters.location || undefined
         })
         
@@ -307,11 +307,11 @@ export default defineComponent({
             await this.loadSuggestedSpaces()
           }
         } else {
-          console.error('Failed to load co-working spaces:', response.message)
+          console.error('Failed to load dedicated desks:', response.message)
           await this.loadSuggestedSpaces()
         }
       } catch (error) {
-        console.error('Error loading co-working spaces:', error)
+        console.error('Error loading dedicated desks:', error)
         await this.loadSuggestedSpaces()
       } finally {
         this.isLoading = false
@@ -320,9 +320,9 @@ export default defineComponent({
     
     async loadSuggestedSpaces(): Promise<void> {
       try {
-        // First try to get co-working spaces from different locations
+        // First try to get dedicated desks from different locations
         const searchRequest = new SearchSpacesRequestDto({
-          spaceType: 'coworking-space'
+          spaceType: 'dedicated-desk'
           // Don't filter by location to get spaces from other areas
         })
         
@@ -341,7 +341,7 @@ export default defineComponent({
           const featuredResponse = await SpacesAPI.getFeaturedSpaces()
           if (featuredResponse.success) {
             this.suggestedSpaces = (featuredResponse.spaces || [])
-              .filter(space => space.productType === 'coworking-space')
+              .filter(space => space.productType === 'dedicated-desk')
               .slice(0, 3)
           }
         }
@@ -355,7 +355,7 @@ export default defineComponent({
         this.isSearching = true
         
         const searchRequest = new SearchSpacesRequestDto({
-          spaceType: 'coworking-space',
+          spaceType: 'dedicated-desk',
           location: this.searchFilters.location || undefined
         })
         
@@ -443,7 +443,7 @@ export default defineComponent({
       if (this.searchFilters.seatCount) parts.push(`for ${this.searchFilters.seatCount} seats`)
       if (this.searchFilters.subscriptionType) parts.push(`${this.searchFilters.subscriptionType} subscription`)
       
-      return parts.length > 0 ? parts.join(', ') : 'All available co-working spaces'
+      return parts.length > 0 ? parts.join(', ') : 'All available dedicated desks'
     },
     
     clearFilters(): void {
@@ -484,7 +484,7 @@ export default defineComponent({
         await this.$router.push({
           name: 'SpaceDetails',
           params: { id: id.toString() },
-          query: { type: 'coworking-space' }
+          query: { type: 'dedicated-desk' }
         })
       } catch (error) {
         console.error('Error navigating to space details:', error)

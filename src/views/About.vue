@@ -11,7 +11,7 @@
             </span>
           </h1>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            WorkSpace is the premier platform connecting professionals with premium coworking spaces. 
+            WorkSpace is the premier platform connecting professionals with premium dedicated desks. 
             We believe the future of work is flexible, collaborative, and inspiring.
           </p>
         </div>
@@ -63,7 +63,7 @@
           </p>
           <p class="text-lg leading-relaxed mb-6">
             As digital nomads and remote workers ourselves, we spent countless hours researching, calling, 
-            and visiting coworking spaces around the world. Each city brought new challenges – different 
+            and visiting dedicated desks around the world. Each city brought new challenges – different 
             booking systems, unclear pricing, limited availability information, and no way to compare options.
           </p>
           <p class="text-lg leading-relaxed mb-6">

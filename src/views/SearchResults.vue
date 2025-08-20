@@ -11,7 +11,7 @@
               <option value="">Space Type</option>
               <option value="meeting-room">Meeting Room</option>
               <option value="hot-desk">Hot Desk</option>
-              <option value="coworking-space">Co-working Space</option>
+              <option value="dedicated-desk">Dedicated Desk</option>
             </select>
           </div>
 
@@ -22,7 +22,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700  mb-2">Time Range</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Time Range</label>
             <div class="min-w-[260px]">
               <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" />
             </div>
@@ -64,7 +64,7 @@
             :class="{ 'hidden md:block': !isFilterOpen }" style="font-size: 1.08rem;">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-semibold text-gray-900">Filters</h3>
-              <button @click="clearAllFilters" class="text-sm text-secondary-500 ">
+              <button @click="clearAllFilters" class="text-sm text-secondary-500">
                 Clear All
               </button>
             </div>
@@ -283,7 +283,7 @@
               <option value="">All Types</option>
               <option value="meeting-room">Meeting Room</option>
               <option value="hot-desk">Hot Desk</option>
-              <option value="coworking-space">Co-working Space</option>
+              <option value="dedicated-desk">Dedicated Desk</option>
             </select>
           </div>
         </div>
@@ -298,7 +298,7 @@
         </div>
       </div>
     </div>
-    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -404,6 +404,7 @@ export default defineComponent({
       isLoading: false,
       isSearching: false,
       isFilterOpen: false,
+      showEditSearch: false,
       filters: new SearchFilters(
         getQueryParam(query.location),
         getQueryParam(query.spaceType),
@@ -416,11 +417,13 @@ export default defineComponent({
         capacity ? parseInt(capacity, 10) : null
       ),
       sortBy: 'price-low',
-      priceRange: new PriceRange(10, 1000),
-      selectedSpaceTypes: [] as string[],
-      selectedFacilities: [] as string[],
-      minRating: '0',
-      showEditSearch: false,
+      priceRange: new PriceRange(
+        query.minPrice ? parseInt(getQueryParam(query.minPrice), 10) : 10,
+        query.maxPrice ? parseInt(getQueryParam(query.maxPrice), 10) : 1000
+      ),
+      selectedSpaceTypes: query.spaceType ? [getQueryParam(query.spaceType)] : [] as string[],
+      selectedFacilities: query.facilities ? getQueryParam(query.facilities).split(',') : [] as string[],
+      minRating: query.minRating ? getQueryParam(query.minRating) : '0',
       editSearchForm: new EditSearchForm(),
       allSpaces: [] as SpaceDto[],
       filteredSpaces: [] as SpaceDto[],
@@ -436,7 +439,6 @@ export default defineComponent({
       timeRange: { start: this.filters.startTime || '', end: this.filters.endTime || '' }
     };
     await this.loadSpaces();
-    this.initializeFilters();
     this.applyFiltersAndSorting();
   },
 
@@ -453,7 +455,23 @@ export default defineComponent({
         filters.push(`${this.minRating}+ stars`);
       }
       if (this.priceRange.min !== 10 || this.priceRange.max !== 1000) {
-        filters.push(`$${this.priceRange.min} - $${this.priceRange.max}`);
+        filters.push(`${this.priceRange.min} - ${this.priceRange.max}`);
+      }
+      if (this.filters.location) {
+        filters.push(`Location: ${this.filters.location}`);
+      }
+      if (this.filters.dateRange.startDate) {
+        let dateTag = `Date: ${this.filters.dateRange.startDate}`;
+        if (this.filters.dateRange.endDate && this.filters.dateRange.startDate !== this.filters.dateRange.endDate) {
+          dateTag += ` to ${this.filters.dateRange.endDate}`;
+        }
+        filters.push(dateTag);
+      }
+      if (this.filters.startTime && this.filters.endTime) {
+        filters.push(`Time: ${this.filters.startTime} - ${this.filters.endTime}`);
+      }
+      if (this.filters.capacity) {
+        filters.push(`Capacity: ${this.filters.capacity}`);
       }
       return filters;
     },
@@ -472,41 +490,6 @@ export default defineComponent({
   },
 
   methods: {
-    removeFilter(filterToRemove: string): void {
-      const spaceTypes: Record<string, string> = {
-        'meeting-room': 'Meeting Room',
-        'hot-desk': 'Hot Desk',
-        'coworking-space': 'Co-working Space'
-      };
-      for (const key in spaceTypes) {
-        if (spaceTypes[key] === filterToRemove) {
-          this.selectedSpaceTypes = this.selectedSpaceTypes.filter(t => t !== key);
-          this.applyFilters();
-          return;
-        }
-      }
-
-      if (this.selectedFacilities.includes(filterToRemove)) {
-        this.selectedFacilities = this.selectedFacilities.filter(f => f !== filterToRemove);
-        this.applyFilters();
-        return;
-      }
-
-      if (filterToRemove.endsWith('+ stars')) {
-        const rating = filterToRemove.split('+')[0];
-        if (this.minRating === rating) {
-          this.minRating = '0';
-          this.applyFilters();
-          return;
-        }
-      }
-
-      if (filterToRemove.startsWith('$')) {
-        this.priceRange = new PriceRange(10, 1000);
-        this.applyFilters();
-      }
-    },
-
     async loadSpaces(): Promise<void> {
       this.isLoading = true;
       try {
@@ -526,12 +509,6 @@ export default defineComponent({
         this.allSpaces = [];
       } finally {
         this.isLoading = false;
-      }
-    },
-
-    initializeFilters(): void {
-      if (this.$route.query.spaceType) {
-        this.selectedSpaceTypes = [getQueryParam(this.$route.query.spaceType)];
       }
     },
 
@@ -656,7 +633,7 @@ export default defineComponent({
     },
 
     getAdjustedPrice(space: SpaceDto): number {
-      if (space.productType === 'coworking-space' && space.pricing?.monthly) {
+      if (space.productType === 'dedicated-desk' && space.pricing?.monthly) {
         return Math.round(space.pricing.monthly / 30);
       }
       if (space.productType === 'meeting-room' && space.pricing?.hourly) {
@@ -672,7 +649,7 @@ export default defineComponent({
       if (space.productType === 'hot-desk') {
         return space.pricing?.daily || 0;
       }
-      if (space.productType === 'coworking-space') {
+      if (space.productType === 'dedicated-desk') {
         return space.pricing?.monthly || 0;
       }
       return 0;
@@ -684,7 +661,7 @@ export default defineComponent({
           return 'Per Hour';
         case 'hot-desk':
           return 'Per Day';
-        case 'coworking-space':
+        case 'dedicated-desk':
           return 'Per Month';
         default:
           return 'Per Day';
@@ -701,7 +678,7 @@ export default defineComponent({
       const types: Record<string, string> = {
         'meeting-room': 'Meeting Room',
         'hot-desk': 'Hot Desk',
-        'coworking-space': 'Co-working Space'
+        'dedicated-desk': 'Dedicated Desk'
       };
       return types[type] || type;
     },
@@ -715,41 +692,10 @@ export default defineComponent({
       this.editSearchForm = new EditSearchForm();
       this.sortBy = 'price-low';
 
-      try {
-        await this.$router.push({ query: {} });
-      } catch (error) {
-        const navError = error as NavigationFailure;
-        if (navError.name !== 'NavigationDuplicated') {
-          console.error('Error updating route:', error);
-        }
-      }
-
-      await this.loadSpaces();
-      this.applyFiltersAndSorting();
+      await this.updateQueryAndReload();
     },
 
-    editSearch(): void {
-      this.editSearchForm = {
-        ...this.filters,
-        date: null,
-        timeRange: { start: this.filters.startTime || '', end: this.filters.endTime || '' }
-      };
-      this.showEditSearch = true;
-    },
-
-    async updateSearch(): Promise<void> {
-      this.isSearching = true;
-      
-      this.filters.location = this.editSearchForm.location;
-      this.filters.spaceType = this.editSearchForm.spaceType;
-      this.filters.capacity = this.editSearchForm.capacity;
-      this.filters.dateRange = {
-        startDate: this.editSearchForm.date,
-        endDate: this.editSearchForm.date
-      };
-      this.filters.startTime = this.editSearchForm.timeRange.start;
-      this.filters.endTime = this.editSearchForm.timeRange.end;
-
+    async updateQueryAndReload(): Promise<void> {
       const queryParams: Record<string, string | number | null | undefined> = {
         location: this.filters.location,
         spaceType: this.filters.spaceType,
@@ -760,13 +706,9 @@ export default defineComponent({
         endTime: this.filters.endTime,
         minPrice: this.priceRange.min,
         maxPrice: this.priceRange.max,
-        minRating: this.minRating
+        minRating: this.minRating,
+        facilities: this.selectedFacilities.length > 0 ? this.selectedFacilities.join(',') : undefined
       };
-      
-      // Add selected facilities to query params
-      if (this.selectedFacilities.length > 0) {
-        queryParams.facilities = this.selectedFacilities.join(',');
-      }
 
       Object.keys(queryParams).forEach(key => {
         if (queryParams[key] === null || queryParams[key] === undefined || queryParams[key] === '') {
@@ -781,12 +723,112 @@ export default defineComponent({
         });
         await this.loadSpaces();
         this.applyFiltersAndSorting();
-        this.showEditSearch = false;
       } catch (error) {
-        console.error('Error updating search:', error);
-      } finally {
-        this.isSearching = false;
+        const navError = error as NavigationFailure;
+        if (navError.name !== 'NavigationDuplicated') {
+          console.error('Error updating route:', error);
+        }
       }
+    },
+
+    removeFilter(filterToRemove: string): void {
+      const spaceTypes: Record<string, string> = {
+        'meeting-room': 'Meeting Room',
+        'hot-desk': 'Hot Desk',
+        'dedicated-desk': 'Dedicated Desk'
+      };
+
+      // Handle space type filters
+      for (const key in spaceTypes) {
+        if (spaceTypes[key] === filterToRemove) {
+          this.selectedSpaceTypes = this.selectedSpaceTypes.filter(t => t !== key);
+          this.filters.spaceType = this.selectedSpaceTypes.length > 0 ? this.selectedSpaceTypes[0] : '';
+          this.editSearchForm.spaceType = this.filters.spaceType;
+          this.updateQueryAndReload();
+          return;
+        }
+      }
+
+      // Handle facility filters
+      if (this.selectedFacilities.includes(filterToRemove)) {
+        this.selectedFacilities = this.selectedFacilities.filter(f => f !== filterToRemove);
+        this.updateQueryAndReload();
+        return;
+      }
+
+      // Handle rating filters
+      if (filterToRemove.endsWith('+ stars')) {
+        const rating = filterToRemove.split('+')[0].trim();
+        if (this.minRating === rating) {
+          this.minRating = '0';
+          this.updateQueryAndReload();
+          return;
+        }
+      }
+
+      // Handle price range filters
+      if (filterToRemove.includes(' - ')) {
+        const [min, max] = filterToRemove.split(' - ').map(val => parseInt(val));
+        if (this.priceRange.min === min && this.priceRange.max === max) {
+          this.priceRange = new PriceRange(10, 1000);
+          this.updateQueryAndReload();
+          return;
+        }
+      }
+
+      // Handle location filter
+      if (filterToRemove.startsWith('Location: ')) {
+        this.filters.location = '';
+        this.editSearchForm.location = '';
+        this.updateQueryAndReload();
+        return;
+      }
+
+      // Handle date filter
+      if (filterToRemove.startsWith('Date: ')) {
+        this.filters.dateRange = { startDate: null, endDate: null };
+        this.editSearchForm.date = null;
+        this.editSearchForm.dateRange = { startDate: null, endDate: null };
+        this.updateQueryAndReload();
+        return;
+      }
+
+      // Handle time filter
+      if (filterToRemove.startsWith('Time: ')) {
+        this.filters.startTime = '';
+        this.filters.endTime = '';
+        this.editSearchForm.timeRange = { start: '', end: '' };
+        this.updateQueryAndReload();
+        return;
+      }
+
+      // Handle capacity filter
+      if (filterToRemove.startsWith('Capacity: ')) {
+        this.filters.capacity = null;
+        this.editSearchForm.capacity = null;
+        this.updateQueryAndReload();
+        return;
+      }
+    },
+
+    async updateSearch(): Promise<void> {
+      this.isSearching = true;
+
+      this.filters.location = this.editSearchForm.location;
+      this.filters.spaceType = this.editSearchForm.spaceType;
+      this.filters.capacity = this.editSearchForm.capacity;
+      this.filters.dateRange = {
+        startDate: this.editSearchForm.date,
+        endDate: this.editSearchForm.date
+      };
+      this.filters.startTime = this.editSearchForm.timeRange.start;
+      this.filters.endTime = this.editSearchForm.timeRange.end;
+
+      this.selectedSpaceTypes = this.filters.spaceType ? [this.filters.spaceType] : [];
+
+      await this.updateQueryAndReload();
+      this.showEditSearch = false;
+      this.isSearching = false;
     },
 
     async viewSpace(id: number, type: string): Promise<void> {
@@ -835,47 +877,13 @@ export default defineComponent({
           date: this.filters.dateRange.startDate,
           timeRange: { start: this.filters.startTime || '', end: this.filters.endTime || '' }
         };
-        
-        // Update selectedSpaceTypes based on query parameter
-        if (newQuery.spaceType) {
-          this.selectedSpaceTypes = [getQueryParam(newQuery.spaceType)];
-        } else {
-          this.selectedSpaceTypes = [];
-        }
-        
-        // Update price range based on query parameters
-        if (newQuery.minPrice) {
-          const minPrice = parseInt(getQueryParam(newQuery.minPrice), 10);
-          if (!isNaN(minPrice)) {
-            this.priceRange.min = minPrice;
-          }
-        } else {
-          this.priceRange.min = 10;
-        }
-        
-        if (newQuery.maxPrice) {
-          const maxPrice = parseInt(getQueryParam(newQuery.maxPrice), 10);
-          if (!isNaN(maxPrice)) {
-            this.priceRange.max = maxPrice;
-          }
-        } else {
-          this.priceRange.max = 1000;
-        }
-        
-        // Update minRating based on query parameter
-        if (newQuery.minRating) {
-          this.minRating = getQueryParam(newQuery.minRating);
-        } else {
-          this.minRating = '0';
-        }
-        
-        // Update selectedFacilities based on query parameter
-        if (newQuery.facilities) {
-          this.selectedFacilities = getQueryParam(newQuery.facilities).split(',');
-        } else {
-          this.selectedFacilities = [];
-        }
-        
+        this.selectedSpaceTypes = newQuery.spaceType ? [getQueryParam(newQuery.spaceType)] : [];
+        this.selectedFacilities = newQuery.facilities ? getQueryParam(newQuery.facilities).split(',') : [];
+        this.minRating = newQuery.minRating ? getQueryParam(newQuery.minRating) : '0';
+        this.priceRange = new PriceRange(
+          newQuery.minPrice ? parseInt(getQueryParam(newQuery.minPrice), 10) : 10,
+          newQuery.maxPrice ? parseInt(getQueryParam(newQuery.maxPrice), 10) : 1000
+        );
         this.loadSpaces();
       },
       deep: true

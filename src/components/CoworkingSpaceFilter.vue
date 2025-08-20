@@ -1,4 +1,3 @@
-
 <template>
   <div class="bg-white rounded-xl p-6 shadow-card sticky top-32">
     <div class="flex items-center justify-between mb-6">
@@ -96,7 +95,7 @@ import { defineComponent, ref, watch } from 'vue'
 import DateRangePicker from './DateRangePicker.vue'
 
 export default defineComponent({
-  name: 'CoworkingSpaceFilter',
+  name: 'DedicatedDeskFilter',
   
   components: {
     DateRangePicker

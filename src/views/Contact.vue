@@ -303,7 +303,7 @@
             Partner With WorkSpace
           </h2>
           <p class="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Own a coworking space? Join our network and reach thousands of professionals looking for their perfect workspace.
+            Own a dedicated desk? Join our network and reach thousands of professionals looking for their perfect workspace.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <button class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">

@@ -175,7 +175,7 @@ const mockSpaces = [
     pricing: { monthly: 2500, annual: 27000 },
     maxCapacity: 50,
     isAvailable: true,
-    productType: 'coworking-space',
+    productType: 'dedicated-desk',
     availability: generateMockAvailability()
   }),
   new SpaceDto({
@@ -670,7 +670,7 @@ export class BookingsAPI {
       const mockBooking = new BookingDto({
         id: bookingId,
         spaceId: request.spaceId,
-        spaceName: request.productType === 'hot-desk' ? 'Hot Desk Area' : 'Co-working Space',
+        spaceName: request.productType === 'hot-desk' ? 'Hot Desk Area' : 'Dedicated Desk',
         productType: request.productType,
         date: request.startDate,
         packageType: request.packageType,
@@ -892,7 +892,7 @@ export class BookingsAPI {
           location: 'Mission Bay, San Francisco',
           rating: 4.7,
           image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-          spaceType: SpaceType.COWORKING_SPACE,
+          spaceType: SpaceType.DEDICATED_DESK,
           lastBooked: '2024-12-05'
         },
         {
@@ -1200,7 +1200,7 @@ export class HomeAPI {
         new AdvertisementDto({
           id: 1,
           title: 'Premium Workspaces',
-          description: 'Experience luxury coworking spaces with world-class amenities',
+          description: 'Experience luxury dedicated desks with world-class amenities',
           buttonText: 'Explore Now',
           image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         }),
@@ -1241,7 +1241,7 @@ export class HomeAPI {
         }),
         new AdvertisementDto({
           id: 7,
-          title: 'Coworking Memberships',
+          title: 'Dedicated Desk Memberships',
           description: 'Choose a membership plan that fits your work style and budget',
           buttonText: 'Compare Plans',
           image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
@@ -1256,7 +1256,7 @@ export class HomeAPI {
         new AdvertisementDto({
           id: 9,
           title: 'New Location Opening',
-          description: 'Discover our brand new coworking space in the city center',
+          description: 'Discover our brand new dedicated desk in the city center',
           buttonText: 'Visit New Space',
           image: 'https://images.unsplash.com/photo-1504384308090-c8997100287a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         }),
