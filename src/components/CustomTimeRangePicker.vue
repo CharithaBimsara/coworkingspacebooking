@@ -45,16 +45,20 @@ import { defineComponent, ref, watch, computed } from 'vue'
 export default defineComponent({
   name: 'CustomTimeRangePicker',
   props: {
-    modelValue: {
-      type: Object as () => { start: string|null, end: string|null },
-      default: () => ({ start: null, end: null })
+    startTime: {
+      type: String,
+      default: null
+    },
+    endTime: {
+      type: String,
+      default: null
     },
     label: {
       type: String,
       default: ''
     }
   },
-  emits: ['update:modelValue'],
+  emits: ['update:startTime', 'update:endTime'],
   setup(props, { emit }) {
     const showStartDropdown = ref(false)
     const showEndDropdown = ref(false)
@@ -68,8 +72,17 @@ export default defineComponent({
         showStartDropdown.value = false;
       }
     }
-    const startTime = ref(props.modelValue.start)
-    const endTime = ref(props.modelValue.end)
+    // Use local refs for start and end time
+    const localStartTime = ref(props.startTime)
+    const localEndTime = ref(props.endTime)
+
+    // Watch props and update local refs
+    watch(() => props.startTime, (val) => {
+      localStartTime.value = val
+    })
+    watch(() => props.endTime, (val) => {
+      localEndTime.value = val
+    })
 
     const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
       const hour = Math.floor(i / 2)
@@ -77,23 +90,19 @@ export default defineComponent({
       return `${hour.toString().padStart(2, '0')}:${min}`
     })
 
-    const startTimeDisplay = computed(() => startTime.value || '')
-    const endTimeDisplay = computed(() => endTime.value || '')
-
-    watch(() => props.modelValue, (val) => {
-      startTime.value = val.start
-      endTime.value = val.end
-    })
+    const startTimeDisplay = computed(() => localStartTime.value || '')
+    const endTimeDisplay = computed(() => localEndTime.value || '')
 
     function selectTime(type: 'start' | 'end', time: string) {
       if (type === 'start') {
-        startTime.value = time
+        localStartTime.value = time
         showStartDropdown.value = false
+        emit('update:startTime', time) // Emit update:startTime
       } else {
-        endTime.value = time
+        localEndTime.value = time
         showEndDropdown.value = false
+        emit('update:endTime', time) // Emit update:endTime
       }
-      emit('update:modelValue', { start: startTime.value, end: endTime.value })
     }
 
     function onBlur(type: 'start' | 'end') {
@@ -106,8 +115,8 @@ export default defineComponent({
     return {
       showStartDropdown,
       showEndDropdown,
-      startTime,
-      endTime,
+      startTime: localStartTime, // Expose local refs
+      endTime: localEndTime,     // Expose local refs
       timeOptions,
       selectTime,
       startTimeDisplay,

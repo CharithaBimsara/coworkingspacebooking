@@ -95,20 +95,22 @@
 
         <!-- Booking Widget -->
         <div class="lg:col-span-1 overflow-visible">
-          <div  class="bg-white rounded-xl p-6 shadow-card sticky top-24 lg:sticky lg:top-24">
-            <div class="flex items-start justify-between mb-4">
+          <div  class="bg-white rounded-xl p-6 shadow-card sticky top-24 lg:sticky lg:top-24 space-y-6">
+            <div class="flex items-start justify-between">
               <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ space?.name || 'Loading...' }}</h2>
-                <div class="flex items-center text-gray-600 mt-1">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center text-lg text-gray-800 mt-2">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
                   {{ space?.location || 'Loading...' }}
                 </div>
-                <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="text-sm text-gray-600 mt-1">
+                <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="flex items-center text-base text-gray-600 mt-1">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                   Capacity: {{ space?.capacity || 0 }} people
                 </div>
-                <div v-else-if="productType === 'dedicated-desk'" class="text-sm text-gray-600 mt-1">
+                <div v-else-if="productType === 'dedicated-desk'" class="flex items-center text-base text-gray-600 mt-1">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                   Max Capacity: {{ space?.maxCapacity || space?.capacity || 0 }} seats
                 </div>
               </div>
@@ -123,7 +125,7 @@
             </div>
 
             <!-- Rating -->
-            <div class="flex items-center mb-4">
+            <div class="flex items-center">
               <div class="flex text-yellow-400">
                 <svg v-for="star in 5" :key="star" :class="['w-5 h-5', star <= (space?.rating || 0) ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -134,10 +136,10 @@
             </div>
 
             <!-- Description -->
-            <p class="text-gray-600 mb-6 leading-relaxed">{{ space?.description || 'Loading description...' }}</p>
+            <p class="text-gray-600 leading-relaxed">{{ space?.description || 'Loading description...' }}</p>
 
             <!-- Meeting Room Booking Form -->
-            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-4 mb-6">
+            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-4">
               <h3 class="font-semibold text-gray-900">Booking Details</h3>
               <SingleDatePicker
                 v-model="bookingForm.date"
@@ -147,23 +149,12 @@
                 @change="onDateChange"
               />
               
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
-                  <select v-model="bookingForm.startTime" class="input-field">
-                    <option v-for="time in timeSlots" :key="time" :value="time">{{ time }}</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Duration (hours)</label>
-                  <select v-model="bookingForm.duration" class="input-field">
-                    <option value="1">1 hour</option>
-                    <option value="2">2 hours</option>
-                    <option value="3">3 hours</option>
-                    <option value="4">4 hours</option>
-                    <option value="8">Full day</option>
-                  </select>
-                </div>
+              <div>
+                <CustomTimeRangePicker
+                  v-model:start-time="bookingForm.startTime"
+                  v-model:end-time="bookingForm.endTime"
+                  label="Booking Time"
+                />
               </div>
 
               <!-- Additional Facilities -->
@@ -236,8 +227,12 @@
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
               <div v-if="productType === 'meeting-room' || productType === 'hot-desk'">
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-gray-600">Room ({{ bookingForm.duration }}h)</span>
+                  <span class="text-gray-600">{{ getSpaceTypeName() }} ({{ calculateDurationInHours() }}h)</span>
                   <span class="font-semibold">${{ roomBasePrice }}</span>
+                </div>
+                <div v-for="facility in selectedFacilities" :key="facility" class="flex items-center justify-between text-sm text-gray-600 ml-4">
+                  <span>{{ facilityDisplayName(facility) }}</span>
+                  <span>+${{ facilityPrice(facility) }}</span>
                 </div>
                 <div v-if="facilitiesPrice > 0" class="flex items-center justify-between mb-2">
                   <span class="text-gray-600">Additional Facilities</span>
@@ -248,7 +243,8 @@
                   <span class="text-lg font-bold text-gray-900">Total</span>
                   <span class="text-2xl font-bold text-primary">${{ totalPrice }}</span>
                 </div>
-                <div class="text-xs text-gray-600 mt-1">Non-refundable booking</div>
+                <div class="text-xs text-red-600 mt-1">Non-refundable booking</div>
+                
               </div>
               
               <div v-else>
@@ -393,6 +389,7 @@
 import { defineComponent } from 'vue'
 import AuthModals from '../components/AuthModals.vue'
 import SingleDatePicker from '../components/SingleDatePicker.vue'
+import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue'
 
 import { SpacesAPI } from '../api'
 import type { SpaceDto, ReviewDto, UserDto } from '../dto/response'
@@ -404,7 +401,7 @@ import { useSpacesStore } from '../stores/spaces'
 interface BookingForm {
   date: string | undefined
   startTime: string
-  duration: string
+  endTime: string // Changed from duration
   teamSize: string
 }
 
@@ -413,7 +410,8 @@ export default defineComponent({
   
   components: {
     AuthModals,
-    SingleDatePicker
+    SingleDatePicker,
+    CustomTimeRangePicker // Added
   },
   
   data() {
@@ -432,7 +430,7 @@ export default defineComponent({
       bookingForm: {
         date: undefined,
         startTime: '09:00',
-        duration: '2',
+        endTime: '10:00', // Added endTime
         teamSize: '1-5'
       } as BookingForm,
       selectedFacilities: [] as string[],
@@ -442,12 +440,7 @@ export default defineComponent({
       space: null as SpaceDto | null,
       reviews: [] as ReviewDto[],
       
-      // Time slots for meeting rooms
-      timeSlots: [
-        '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-        '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-        '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'
-      ]
+      // timeSlots removed
     }
   },
   
@@ -462,7 +455,7 @@ export default defineComponent({
     
     roomBasePrice(): number {
       const hourlyRate = this.space?.pricing?.hourly || 85
-      const duration = parseInt(this.bookingForm.duration || '2')
+      const duration = this.calculateDurationInHours() // Use the method
       return hourlyRate * duration
     },
     
@@ -480,7 +473,7 @@ export default defineComponent({
     isBookingFormValid(): boolean {
       return !!(this.bookingForm.date &&
                this.bookingForm.startTime &&
-               this.bookingForm.duration)
+               this.bookingForm.endTime) // Check for endTime
     },
     
     isSubscriptionFormValid(): boolean {
@@ -510,7 +503,7 @@ export default defineComponent({
     
     this.bookingForm.date = tomorrow.toISOString().split('T')[0]
     this.bookingForm.startTime = '09:00'
-    this.bookingForm.duration = '2'
+    this.bookingForm.endTime = '10:00' // Set default endTime
     this.bookingForm.teamSize = '1-5'
 
     // Set default package selection
@@ -527,6 +520,15 @@ export default defineComponent({
   },
   
   methods: {
+    calculateDurationInHours(): number {
+      const start = new Date(`2000-01-01T${this.bookingForm.startTime}:00`)
+      const end = new Date(`2000-01-01T${this.bookingForm.endTime}:00`)
+      let duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+      if (duration < 0) {
+        duration += 24 // Handle overnight bookings
+      }
+      return duration
+    },
     async loadSpaceDetails(): Promise<void> {
       try {
         this.loading = true
@@ -569,6 +571,19 @@ export default defineComponent({
           return 'Dedicated Desk'
         default:
           return 'Spaces'
+      }
+    },
+
+    getSpaceTypeName(): string {
+      switch (this.productType) {
+        case 'meeting-room':
+          return 'Meeting Room'
+        case 'hot-desk':
+          return 'Hot Desk'
+        case 'dedicated-desk':
+          return 'Dedicated Desk'
+        default:
+          return 'Space'
       }
     },
 
@@ -686,6 +701,19 @@ export default defineComponent({
       console.log('Date changed:', date)
     },
     
+    facilityDisplayName(facility: string): string {
+      const names: Record<string, string> = {
+        tv: 'TV/Display',
+        printer: 'Printer Access',
+        catering: 'Catering Service'
+      }
+      return names[facility] || facility
+    },
+    facilityPrice(facility: string): number {
+      const prices: Record<string, number> = { tv: 25, printer: 15, catering: 50 }
+      return prices[facility] || 0
+    },
+    
     async proceedToBooking(): Promise<void> {
       if (!this.isBookingFormValid || this.isProcessing) return
       
@@ -718,7 +746,8 @@ export default defineComponent({
             startDate: this.bookingForm.date,
             endDate: this.bookingForm.date,
             startTime: this.bookingForm.startTime,
-            duration: this.bookingForm.duration,
+            endTime: this.bookingForm.endTime, // Pass endTime
+            duration: this.calculateDurationInHours(), // Calculate duration
             // Add legacy date field for backward compatibility
             date: this.bookingForm.date
           },
