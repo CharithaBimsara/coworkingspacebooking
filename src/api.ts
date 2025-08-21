@@ -596,6 +596,24 @@ export class SpacesAPI {
     }
   }
 
+  static async getUnavailableTimes(spaceId: number, date: string): Promise<{ success: boolean, unavailableTimes: { start: string[], end: string[] } }> {
+    try {
+      await delay(500);
+      console.log(`Fetching unavailable times for space ${spaceId} on ${date}`);
+
+      // Mock unavailable times - in a real app, this would be an API call
+      const unavailableTimes = {
+        start: ['10:00', '11:30', '14:00'],
+        end: ['10:30', '12:00', '15:00']
+      };
+
+      return { success: true, unavailableTimes };
+    } catch (error) {
+      console.error('Get unavailable times error:', error);
+      return { success: false, unavailableTimes: { start: [], end: [] } };
+    }
+  }
+
   static async getFeaturedSpaces(): Promise<SearchSpacesResponseDto> {
     try {
       await delay(500);

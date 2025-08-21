@@ -155,13 +155,8 @@
                   label="Booking Time"
                   :disabled-start-times="disabledTimes.start"
                   :disabled-end-times="disabledTimes.end"
-                  :loading="availabilityStatus === 'checking'"
+                  :loading="isLoadingAvailability"
                 />
-                <div class="mt-2 flex items-center">
-                </div>
-                <p v-if="availabilityMessage" :class="['text-sm mt-2', availabilityStatus === 'available' ? 'text-green-600' : 'text-red-600']">
-                  {{ availabilityMessage }}
-                </p>
               </div>
 
               <!-- Additional Facilities -->
@@ -267,7 +262,7 @@
             <div v-if="productType === 'meeting-room' || productType === 'hot-desk'">
               <button 
                 @click="proceedToBooking"
-                :disabled="!isBookingFormValid || isProcessing || availabilityStatus !== 'available'"
+                :disabled="!isBookingFormValid || isProcessing"
                 class="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {{ isProcessing ? 'Processing...' : 'Book Now' }}
@@ -431,11 +426,10 @@ export default defineComponent({
       isFavorite: false,
       currentUser: null as UserDto | null,
       productType: 'meeting-room',
-      availabilityStatus: 'unchecked', // unchecked, checking, available, unavailable
-      availabilityMessage: '',
+      isLoadingAvailability: false,
       disabledTimes: {
-        start: ['10:00', '11:30', '14:00'],
-        end: ['10:30', '12:00', '15:00']
+        start: [] as string[],
+        end: [] as string[]
       },
       
       // Form data
@@ -456,12 +450,7 @@ export default defineComponent({
   },
   
   watch: {
-    '$route': 'loadSpaceDetails',
-    'bookingForm.date': 'checkAvailability',
-    'bookingForm.timeRange': {
-      handler: 'checkAvailability',
-      deep: true
-    }
+    '$route': 'loadSpaceDetails'
   },
 
   computed: {
@@ -489,7 +478,7 @@ export default defineComponent({
     isBookingFormValid(): boolean {
       return !!(this.bookingForm.date &&
                this.bookingForm.timeRange.start &&
-               this.bookingForm.timeRange.end) // Check for endTime
+               this.bookingForm.timeRange.end)
     },
     
     isSubscriptionFormValid(): boolean {
@@ -511,13 +500,8 @@ export default defineComponent({
     // Get product type from route query
     this.productType = (this.$route.query.type as string) || 'meeting-room'
     
-    // Set default values for booking form
-    const tomorrow = new Date()
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    const dayAfterTomorrow = new Date(tomorrow)
-    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1)
-    
-    this.bookingForm.date = tomorrow.toISOString().split('T')[0]
+    // Reset form fields
+    this.bookingForm.date = undefined;
     this.bookingForm.timeRange = { start: '09:00', end: '10:00' };
     this.bookingForm.teamSize = '1-5'
 
@@ -535,27 +519,25 @@ export default defineComponent({
   },
   
   methods: {
-    checkAvailability() {
-      if (!this.bookingForm.timeRange.start || !this.bookingForm.timeRange.end) {
-        return;
-      }
-      this.availabilityStatus = 'checking';
-      this.availabilityMessage = '';
+    async fetchUnavailableTimes() {
+      if (!this.bookingForm.date) return;
 
-      // Simulate API call
-      setTimeout(() => {
-        // This is where you would typically make an API call
-        // to check for availability with the selected date, start and end times.
-        const isAvailable = Math.random() > 0.3; // Simulate success or failure
+      this.isLoadingAvailability = true;
+      this.disabledTimes = { start: [], end: [] };
 
-        if (isAvailable) {
-          this.availabilityStatus = 'available';
-          this.availabilityMessage = 'This time slot is available!';
-        } else {
-          this.availabilityStatus = 'unavailable';
-          this.availabilityMessage = 'Sorry, this time slot is not available. Please try another time.';
+      try {
+        const spaceId = parseInt(this.$route.params.id as string);
+        const response = await SpacesAPI.getUnavailableTimes(spaceId, this.bookingForm.date);
+
+        if (response.success) {
+          this.disabledTimes = response.unavailableTimes;
         }
-      }, 1000);
+      } catch (error) {
+        console.error('Error fetching unavailable times:', error);
+        // Optionally, show an error message to the user
+      } finally {
+        this.isLoadingAvailability = false;
+      }
     },
     calculateDurationInHours(): number {
       const start = new Date(`2000-01-01T${this.bookingForm.timeRange.start}:00`)
@@ -734,8 +716,8 @@ export default defineComponent({
     },
     
     onDateChange(date: string): void {
-      this.bookingForm.date = date
-      console.log('Date changed:', date)
+      this.bookingForm.date = date;
+      this.fetchUnavailableTimes();
     },
     
     facilityDisplayName(facility: string): string {
