@@ -151,10 +151,17 @@
               
               <div>
                 <CustomTimeRangePicker
-                  v-model:start-time="bookingForm.startTime"
-                  v-model:end-time="bookingForm.endTime"
+                  v-model="bookingForm.timeRange"
                   label="Booking Time"
+                  :disabled-start-times="disabledTimes.start"
+                  :disabled-end-times="disabledTimes.end"
+                  :loading="availabilityStatus === 'checking'"
                 />
+                <div class="mt-2 flex items-center">
+                </div>
+                <p v-if="availabilityMessage" :class="['text-sm mt-2', availabilityStatus === 'available' ? 'text-green-600' : 'text-red-600']">
+                  {{ availabilityMessage }}
+                </p>
               </div>
 
               <!-- Additional Facilities -->
@@ -260,7 +267,7 @@
             <div v-if="productType === 'meeting-room' || productType === 'hot-desk'">
               <button 
                 @click="proceedToBooking"
-                :disabled="!isBookingFormValid || isProcessing"
+                :disabled="!isBookingFormValid || isProcessing || availabilityStatus !== 'available'"
                 class="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {{ isProcessing ? 'Processing...' : 'Book Now' }}
@@ -400,8 +407,7 @@ import { useSpacesStore } from '../stores/spaces'
 
 interface BookingForm {
   date: string | undefined
-  startTime: string
-  endTime: string // Changed from duration
+  timeRange: { start: string; end: string }
   teamSize: string
 }
 
@@ -425,12 +431,17 @@ export default defineComponent({
       isFavorite: false,
       currentUser: null as UserDto | null,
       productType: 'meeting-room',
+      availabilityStatus: 'unchecked', // unchecked, checking, available, unavailable
+      availabilityMessage: '',
+      disabledTimes: {
+        start: ['10:00', '11:30', '14:00'],
+        end: ['10:30', '12:00', '15:00']
+      },
       
       // Form data
       bookingForm: {
         date: undefined,
-        startTime: '09:00',
-        endTime: '10:00', // Added endTime
+        timeRange: { start: '09:00', end: '10:00' },
         teamSize: '1-5'
       } as BookingForm,
       selectedFacilities: [] as string[],
@@ -445,7 +456,12 @@ export default defineComponent({
   },
   
   watch: {
-    '$route': 'loadSpaceDetails'
+    '$route': 'loadSpaceDetails',
+    'bookingForm.date': 'checkAvailability',
+    'bookingForm.timeRange': {
+      handler: 'checkAvailability',
+      deep: true
+    }
   },
 
   computed: {
@@ -472,8 +488,8 @@ export default defineComponent({
     
     isBookingFormValid(): boolean {
       return !!(this.bookingForm.date &&
-               this.bookingForm.startTime &&
-               this.bookingForm.endTime) // Check for endTime
+               this.bookingForm.timeRange.start &&
+               this.bookingForm.timeRange.end) // Check for endTime
     },
     
     isSubscriptionFormValid(): boolean {
@@ -502,8 +518,7 @@ export default defineComponent({
     dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1)
     
     this.bookingForm.date = tomorrow.toISOString().split('T')[0]
-    this.bookingForm.startTime = '09:00'
-    this.bookingForm.endTime = '10:00' // Set default endTime
+    this.bookingForm.timeRange = { start: '09:00', end: '10:00' };
     this.bookingForm.teamSize = '1-5'
 
     // Set default package selection
@@ -520,9 +535,31 @@ export default defineComponent({
   },
   
   methods: {
+    checkAvailability() {
+      if (!this.bookingForm.timeRange.start || !this.bookingForm.timeRange.end) {
+        return;
+      }
+      this.availabilityStatus = 'checking';
+      this.availabilityMessage = '';
+
+      // Simulate API call
+      setTimeout(() => {
+        // This is where you would typically make an API call
+        // to check for availability with the selected date, start and end times.
+        const isAvailable = Math.random() > 0.3; // Simulate success or failure
+
+        if (isAvailable) {
+          this.availabilityStatus = 'available';
+          this.availabilityMessage = 'This time slot is available!';
+        } else {
+          this.availabilityStatus = 'unavailable';
+          this.availabilityMessage = 'Sorry, this time slot is not available. Please try another time.';
+        }
+      }, 1000);
+    },
     calculateDurationInHours(): number {
-      const start = new Date(`2000-01-01T${this.bookingForm.startTime}:00`)
-      const end = new Date(`2000-01-01T${this.bookingForm.endTime}:00`)
+      const start = new Date(`2000-01-01T${this.bookingForm.timeRange.start}:00`)
+      const end = new Date(`2000-01-01T${this.bookingForm.timeRange.end}:00`)
       let duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
       if (duration < 0) {
         duration += 24 // Handle overnight bookings
@@ -745,9 +782,9 @@ export default defineComponent({
           booking: {
             startDate: this.bookingForm.date,
             endDate: this.bookingForm.date,
-            startTime: this.bookingForm.startTime,
-            endTime: this.bookingForm.endTime, // Pass endTime
-            duration: this.calculateDurationInHours(), // Calculate duration
+            startTime: this.bookingForm.timeRange.start,
+            endTime: this.bookingForm.timeRange.end, // Pass endTime
+            duration: this.calculateDurationInHours().toString(), // Calculate duration
             // Add legacy date field for backward compatibility
             date: this.bookingForm.date
           },

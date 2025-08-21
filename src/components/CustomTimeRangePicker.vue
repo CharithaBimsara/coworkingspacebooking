@@ -13,7 +13,12 @@
           placeholder="Start time"
         />
         <div v-if="showStartDropdown" class="dropdown absolute left-0 mt-1">
-          <div v-for="time in timeOptions" :key="time" @mousedown.prevent="selectTime('start', time)" :class="['dropdown-item', { selected: startTime === time }]">
+          <div 
+            v-for="time in timeOptions" 
+            :key="time" 
+            @mousedown.prevent="selectTime('start', time)" 
+            :class="['dropdown-item', { selected: startTime === time, disabled: isStartTimeDisabled(time) }]"
+          >
             {{ time }}
           </div>
         </div>
@@ -30,10 +35,18 @@
           placeholder="End time"
         />
         <div v-if="showEndDropdown" class="dropdown absolute left-0 mt-1">
-          <div v-for="time in timeOptions" :key="time" @mousedown.prevent="selectTime('end', time)" :class="['dropdown-item', { selected: endTime === time }]">
+          <div 
+            v-for="time in timeOptions" 
+            :key="time" 
+            @mousedown.prevent="selectTime('end', time)" 
+            :class="['dropdown-item', { selected: endTime === time, disabled: isEndTimeDisabled(time) }]"
+          >
             {{ time }}
           </div>
         </div>
+      </div>
+      <div v-if="loading" class="ml-2">
+        <div class="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
       </div>
     </div>
   </div>
@@ -41,24 +54,33 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, computed } from 'vue'
+import type { PropType } from 'vue'
 
 export default defineComponent({
   name: 'CustomTimeRangePicker',
   props: {
-    startTime: {
-      type: String,
-      default: null
-    },
-    endTime: {
-      type: String,
-      default: null
+    modelValue: {
+      type: Object as PropType<{ start: string; end: string }>,
+      default: () => ({ start: '', end: '' })
     },
     label: {
       type: String,
       default: ''
+    },
+    disabledStartTimes: {
+      type: Array as PropType<string[]>,
+      default: () => []
+    },
+    disabledEndTimes: {
+      type: Array as PropType<string[]>,
+      default: () => []
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['update:startTime', 'update:endTime'],
+  emits: ['update:modelValue'],
   setup(props, { emit }) {
     const showStartDropdown = ref(false)
     const showEndDropdown = ref(false)
@@ -72,16 +94,13 @@ export default defineComponent({
         showStartDropdown.value = false;
       }
     }
-    // Use local refs for start and end time
-    const localStartTime = ref(props.startTime)
-    const localEndTime = ref(props.endTime)
+    
+    const localStartTime = ref(props.modelValue.start)
+    const localEndTime = ref(props.modelValue.end)
 
-    // Watch props and update local refs
-    watch(() => props.startTime, (val) => {
-      localStartTime.value = val
-    })
-    watch(() => props.endTime, (val) => {
-      localEndTime.value = val
+    watch(() => props.modelValue, (val) => {
+      localStartTime.value = val.start
+      localEndTime.value = val.end
     })
 
     const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
@@ -95,13 +114,15 @@ export default defineComponent({
 
     function selectTime(type: 'start' | 'end', time: string) {
       if (type === 'start') {
+        if (isStartTimeDisabled(time)) return;
         localStartTime.value = time
         showStartDropdown.value = false
-        emit('update:startTime', time) // Emit update:startTime
+        emit('update:modelValue', { start: time, end: localEndTime.value })
       } else {
+        if (isEndTimeDisabled(time)) return;
         localEndTime.value = time
         showEndDropdown.value = false
-        emit('update:endTime', time) // Emit update:endTime
+        emit('update:modelValue', { start: localStartTime.value, end: time })
       }
     }
 
@@ -112,17 +133,27 @@ export default defineComponent({
       }, 100)
     }
 
+    const isStartTimeDisabled = (time: string) => {
+      return props.disabledStartTimes.includes(time);
+    }
+
+    const isEndTimeDisabled = (time: string) => {
+      return props.disabledEndTimes.includes(time);
+    }
+
     return {
       showStartDropdown,
       showEndDropdown,
-      startTime: localStartTime, // Expose local refs
-      endTime: localEndTime,     // Expose local refs
+      startTime: localStartTime,
+      endTime: localEndTime,
       timeOptions,
       selectTime,
       startTimeDisplay,
       endTimeDisplay,
       onBlur,
-      openDropdown
+      openDropdown,
+      isStartTimeDisabled,
+      isEndTimeDisabled
     }
   }
 })
@@ -168,8 +199,13 @@ export default defineComponent({
   transition: background 0.15s, color 0.15s;
 }
 .dropdown-item.selected,
-.dropdown-item:hover {
+.dropdown-item:hover:not(.disabled) {
   background: #000;
   color: #fff;
+}
+.dropdown-item.disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
 </style>
