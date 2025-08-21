@@ -134,10 +134,13 @@ const mockSpaces = [
     reviews: 89,
     description: 'Open workspace perfect for creative professionals.',
     images: [
-      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Natural Light', 'Standing Desks', 'Community Events', 'Printing'],
     pricing: { daily: 40, monthly: 500, annual: 5200 },
+    capacity: 1,
     isAvailable: true,
     productType: 'hot-desk',
     availability: generateMockAvailability()
@@ -150,8 +153,10 @@ const mockSpaces = [
     rating: 4.9,
     reviews: 156,
     description: 'Premium executive boardroom for high-level meetings.',
-    images: [
-      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+   images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['4K Display', 'Video Conferencing', 'Executive Seating'],
     pricing: { hourly: 120 },
@@ -169,7 +174,9 @@ const mockSpaces = [
     reviews: 203,
     description: 'Collaborative workspace designed for startups and growing teams.',
     images: [
-      'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Open Layout', 'Meeting Pods', '24/7 Access'],
     pricing: { monthly: 2500, annual: 27000 },
@@ -187,7 +194,9 @@ const mockSpaces = [
     reviews: 42,
     description: 'A modern boardroom with panoramic city views.',
     images: [
-      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Panoramic View', 'Smart TV', 'Coffee Machine'],
     pricing: { hourly: 110 },
@@ -205,7 +214,9 @@ const mockSpaces = [
     reviews: 78,
     description: 'A tech-focused workspace with cutting-edge amenities.',
     images: [
-      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['High-Speed Internet', 'Video Conferencing', 'Ergonomic Chairs'],
     pricing: { hourly: 95, daily: 400, monthly: 3800 },
@@ -222,8 +233,10 @@ const mockSpaces = [
     rating: 4.9,
     reviews: 78,
     description: 'A tech-focused workspace with cutting-edge amenities.',
-    images: [
-      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+   images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['High-Speed Internet', 'Video Conferencing', 'Ergonomic Chairs'],
     pricing: { hourly: 95, daily: 400, monthly: 3800 },
@@ -240,8 +253,10 @@ const mockSpaces = [
     rating: 4.8,
     reviews: 102,
     description: 'Premium meeting space with panoramic city views and top-tier services.',
-    images: [
-      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+   images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['24/7 Access', 'Private Lounge', 'Smart Board'],
     pricing: { hourly: 120, daily: 500, monthly: 4500 },
@@ -260,6 +275,8 @@ const mockSpaces = [
     reviews: 64,
     description: 'A modern, art-inspired meeting room ideal for brainstorming sessions.',
     images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Whiteboards', 'Natural Lighting', 'Coffee & Snacks'],
@@ -279,7 +296,9 @@ const mockSpaces = [
     reviews: 91,
     description: 'Spacious waterfront meeting venue with state-of-the-art facilities.',
     images: [
-      'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['HD Projector', 'Catering Services', 'Sound System'],
     pricing: { hourly: 110, daily: 450, monthly: 4100 },
@@ -297,7 +316,9 @@ const mockSpaces = [
     rating: 4.6,
     reviews: 55,
     description: 'Eco-friendly meeting space with greenery and fresh air circulation.',
-    images: [
+   images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Sustainable Materials', 'Natural Light', 'High-Speed Wi-Fi'],
@@ -316,8 +337,10 @@ const mockSpaces = [
     rating: 4.8,
     reviews: 83,
     description: 'Fully equipped for international business calls and hybrid meetings.',
-    images: [
-      'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+   images: [
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     features: ['Multi-Language Support', '4K Video Conferencing', 'Secure Wi-Fi'],
     pricing: { hourly: 100, daily: 420, monthly: 3900 },
