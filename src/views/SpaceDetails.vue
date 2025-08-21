@@ -139,12 +139,12 @@
             <!-- Meeting Room Booking Form -->
             <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-4 mb-6">
               <h3 class="font-semibold text-gray-900">Booking Details</h3>
-              <DateRangePicker
-                v-model="bookingForm.dateRange"
-                label="Date Range"
-                placeholder="Select booking dates"
+              <SingleDatePicker
+                v-model="bookingForm.date"
+                label="Date"
+                placeholder="Select booking date"
                 :min-date="today"
-                @change="onDateRangeChange"
+                @change="onDateChange"
               />
               
               <div class="grid grid-cols-2 gap-3">
@@ -189,12 +189,12 @@
             <!-- dedicated desk Booking Form -->
             <div v-else-if="productType === 'dedicated-desk'" class="space-y-4 mb-6">
               <h3 class="font-semibold text-gray-900">Team Workspace</h3>
-              <DateRangePicker
-                v-model="bookingForm.dateRange"
+              <SingleDatePicker
+                v-model="bookingForm.date"
                 label="Workspace Period"
-                placeholder="Select workspace dates"
+                placeholder="Select workspace date"
                 :min-date="today"
-                @change="onDateRangeChange"
+                @change="onDateChange"
               />
               
               <div>
@@ -392,7 +392,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import AuthModals from '../components/AuthModals.vue'
-import DateRangePicker from '../components/DateRangePicker.vue'
+import SingleDatePicker from '../components/SingleDatePicker.vue'
+
 import { SpacesAPI } from '../api'
 import type { SpaceDto, ReviewDto, UserDto } from '../dto/response'
 import { getSpaceTypeEnum } from '../types/enums'
@@ -400,13 +401,8 @@ import { useAuthStore } from '../stores/auth'
 import { useBookingStore } from '../stores/booking'
 import { useSpacesStore } from '../stores/spaces'
 
-interface DateRange {
-  startDate: string | null
-  endDate: string | null
-}
-
 interface BookingForm {
-  dateRange: DateRange
+  date: string | undefined
   startTime: string
   duration: string
   teamSize: string
@@ -417,7 +413,7 @@ export default defineComponent({
   
   components: {
     AuthModals,
-    DateRangePicker
+    SingleDatePicker
   },
   
   data() {
@@ -434,10 +430,7 @@ export default defineComponent({
       
       // Form data
       bookingForm: {
-        dateRange: {
-          startDate: null,
-          endDate: null
-        },
+        date: undefined,
         startTime: '09:00',
         duration: '2',
         teamSize: '1-5'
@@ -485,15 +478,13 @@ export default defineComponent({
     },
     
     isBookingFormValid(): boolean {
-      return !!(this.bookingForm.dateRange.startDate &&
-               this.bookingForm.dateRange.endDate &&
+      return !!(this.bookingForm.date &&
                this.bookingForm.startTime &&
                this.bookingForm.duration)
     },
     
     isSubscriptionFormValid(): boolean {
-      return !!(this.bookingForm.dateRange.startDate &&
-               this.bookingForm.dateRange.endDate &&
+      return !!(this.bookingForm.date &&
                this.selectedPackage &&
                (this.productType !== 'dedicated-desk' || this.bookingForm.teamSize))
     }
@@ -517,10 +508,7 @@ export default defineComponent({
     const dayAfterTomorrow = new Date(tomorrow)
     dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1)
     
-    this.bookingForm.dateRange = {
-      startDate: tomorrow.toISOString().split('T')[0],
-      endDate: dayAfterTomorrow.toISOString().split('T')[0]
-    }
+    this.bookingForm.date = tomorrow.toISOString().split('T')[0]
     this.bookingForm.startTime = '09:00'
     this.bookingForm.duration = '2'
     this.bookingForm.teamSize = '1-5'
@@ -657,7 +645,7 @@ export default defineComponent({
       const imageCount = this.getImageCount()
       this.currentImageIndex = this.currentImageIndex === 0
         ? imageCount - 1
-        : this.currentImageIndex - 1
+        : this.currentImageIndex + 1
     },
     
     nextImage(): void {
@@ -693,9 +681,9 @@ export default defineComponent({
       this.showAuthModal = false
     },
     
-    onDateRangeChange(dateRange: DateRange): void {
-      this.bookingForm.dateRange = dateRange
-      console.log('Date range changed:', dateRange)
+    onDateChange(date: string): void {
+      this.bookingForm.date = date
+      console.log('Date changed:', date)
     },
     
     async proceedToBooking(): Promise<void> {
@@ -711,9 +699,9 @@ export default defineComponent({
           return
         }
         
-        // Ensure date range is selected
-        if (!this.bookingForm.dateRange.startDate || !this.bookingForm.dateRange.endDate) {
-          console.error('Date range is required for booking')
+        // Ensure date is selected
+        if (!this.bookingForm.date) {
+          console.error('Date is required for booking')
           return
         }
         
@@ -727,12 +715,12 @@ export default defineComponent({
             image: this.getCurrentImage()
           },
           booking: {
-            startDate: this.bookingForm.dateRange.startDate,
-            endDate: this.bookingForm.dateRange.endDate,
+            startDate: this.bookingForm.date,
+            endDate: this.bookingForm.date,
             startTime: this.bookingForm.startTime,
             duration: this.bookingForm.duration,
             // Add legacy date field for backward compatibility
-            date: this.bookingForm.dateRange.startDate
+            date: this.bookingForm.date
           },
           facilities: this.selectedFacilities,
           totalPrice: this.totalPrice,
@@ -772,8 +760,8 @@ export default defineComponent({
         }
         
         // Ensure date range is selected
-        if (!this.bookingForm.dateRange.startDate || !this.bookingForm.dateRange.endDate) {
-          console.error('Date range is required for subscription')
+        if (!this.bookingForm.date) {
+          console.error('Date is required for subscription')
           return
         }
         
@@ -787,8 +775,8 @@ export default defineComponent({
             image: this.getCurrentImage()
           },
           subscription: {
-            startDate: this.bookingForm.dateRange.startDate,
-            endDate: this.bookingForm.dateRange.endDate,
+            startDate: this.bookingForm.date,
+            endDate: this.bookingForm.date,
             packageType: this.selectedPackage,
             teamSize: this.bookingForm.teamSize
           },
