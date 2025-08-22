@@ -3,7 +3,7 @@
     <label v-if="label" class="block text-sm font-medium text-black mb-3">{{ label }}</label>
     <button
       @click="toggleDropdown"
-      class="input-field flex items-center justify-between w-full px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+      :class="['input-field flex items-center justify-between w-full px-4 py-2', heightClass, 'bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-100']"
       type="button"
     >
       <span class="flex items-center">
@@ -16,7 +16,7 @@
     </button>
     <div
       v-if="showDropdown"
-      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-24 overflow-y-auto custom-scrollbar min-w-[220px]"
+      :class="['absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg z-50 max-h-24 overflow-y-auto custom-scrollbar', compact ? 'min-w-[140px]' : 'min-w-[220px]', compact ? '' : '']"
     >
       <button
         v-for="option in options"
@@ -49,6 +49,14 @@ export default defineComponent({
     options: {
       type: Array as PropType<Array<{ value: string, label: string, icon?: any }>>,
       required: true
+    },
+    compact: {
+      type: Boolean,
+      default: false
+    },
+    heightClass: {
+      type: String,
+      default: 'h-11'
     }
   },
   emits: ['update:modelValue', 'change'],
@@ -102,12 +110,12 @@ export default defineComponent({
   border: 1px solid #E5E7EB; /* Light gray border */
   border-radius: 0.5rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  /* transition: border-color 0.2s, box-shadow 0.2s; */
   background: #FFFFFF; /* White background */
 }
 .input-field:focus {
   border-color: #D1D5DB; /* Lighter gray on focus */
-  box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.3); /* Subtle light gray shadow */
+  /* box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.3);  */
 }
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px !important;

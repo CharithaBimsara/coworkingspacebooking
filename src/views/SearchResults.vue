@@ -1,41 +1,44 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Advanced Search Bar -->
-    <div class="bg-white border-b mr-5 ml-5 rounded-lg border-gray-200 sticky top-16 mt-5 z-40">
-      <div class="max-w-8xl mx-10 px-5 py-3">
-        <h1 class="text-lg font-bold text-gray-800 mb-2 ">Search Your WorkSpace</h1>
-        <div class="flex flex-wrap items-end justify-start gap-4 w-full relative">
-          <div class="flex-grow relative">
-            <label class="block text-sm font-medium text-gray-700 mb-2 text-sm">Space Type</label>
-            <select v-model="editSearchForm.spaceType" class="input-field text-sm py-2 px-3 w-full">
-              <option value="">Space Type</option>
-              <option value="meeting-room">Meeting Room</option>
-              <option value="hot-desk">Hot Desk</option>
-              <option value="dedicated-desk">Dedicated Desk</option>
-            </select>
+    <div class="bg-white border-b mr-5 ml-5 rounded-lg border-gray-200 fixed top-16 left-0 right-0 z-40 mx-5">
+      <div class="max-w-8xl mx-10 px-4 py-2">
+        <h1 class="text-base font-bold text-gray-800 mb-3">Search Your WorkSpace</h1>
+        <div class="flex flex-row items-center justify-start gap-3 w-full relative">
+          <div class="relative min-w-[220px] max-w-[260px] flex flex-col justify-end">
+            <label class="block text-xs font-medium text-black mb-0.5">Space Type</label>
+            <SpaceTypeDropdown
+              v-model="editSearchForm.spaceType"
+              :options="spaceTypeOptions"
+              label=""
+              class="w-full text-xs"
+              :compact="false"
+              heightClass="h-9"
+            />
           </div>
 
-          <div class="flex-grow">
-            <label class="block text-sm font-medium text-gray-700 mb-2 text-sm">Date</label>
+          <div class="flex-grow min-w-[200px] flex flex-col justify-end">
+            <label class="block text-xs font-medium text-gray-700 mb-0.5">Date</label>
             <SingleDatePicker :modelValue="editSearchForm.date === null ? undefined : editSearchForm.date"
-              @update:modelValue="editSearchForm.date = $event" placeholder="Date" class="text-sm py-0 w-full" />
+              @update:modelValue="editSearchForm.date = $event" placeholder="Date" class="text-xs py-0 px-0 w-full h-9" />
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Time Range</label>
-            <div class="min-w-[260px]">
-              <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" />
+          <div class="flex flex-col justify-end min-w-[280px]">
+            <label class="block text-xs font-medium text-gray-700 mb-1">Time Range</label>
+            <div class="h-8 flex items-center">
+              <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" class="h-10" />
             </div>
           </div>
 
-          <div class="flex-none mr-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
+          <div class="flex-none mr-1 flex flex-col justify-end min-w-[100px]">
+            <label class="block text-xs font-medium text-gray-700 mb-0.5">Capacity</label>
             <input v-model.number="editSearchForm.capacity" type="number" min="1" placeholder="Capacity"
-              class="input-field text-xs py-2.5 px-3 w-full">
+              class="input-field text-xs py-1.5 px-2 w-full h-9">
           </div>
 
-          <div class="flex-shrink-0 pt-5 relative">
-            <button @click="updateSearch" class="btn-primary py-3 px-4 text-sm w-40" :disabled="isSearching">
+          <div class="flex-shrink-0 flex flex-col justify-end min-w-[110px]">
+            <label class="block text-xs font-medium text-transparent mb-0.5 select-none">Search</label>
+            <button @click="updateSearch" class="btn-primary py-2 px-3 text-xs w-32" :disabled="isSearching || !isSearchFormValid">
               {{ isSearching ? 'Searching...' : 'Search' }}
             </button>
           </div>
@@ -43,8 +46,8 @@
       </div>
     </div>
 
-    <div class="max-w-8xl mx-auto px-2 sm:px-5 py-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 relative">
+    <div class="max-w-8xl mx-auto px-2 sm:px-5 py-6 mt-24">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-0 relative">
         <!-- Filters Sidebar - Narrower -->
         <div class="md:col-span-1 w-full mb-4 md:mb-0 md:ml-14 ml-0 md:max-w-[280px] md:min-w-[200px]">
           <!-- Mobile Filter Toggle -->
@@ -60,27 +63,27 @@
           </div>
 
           <div
-            class="bg-white rounded-lg p-3 shadow-card sticky top-60 z-30 text-[1.08rem] md:text-base"
-            :class="{ 'hidden md:block': !isFilterOpen }" style="font-size: 1.08rem;">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-gray-900">Filters</h3>
-              <button @click="clearAllFilters" class="text-sm text-secondary-500">
+            class="bg-white rounded-lg p-3 shadow-card fixed top-45 left-20 w-64 z-30 max-h-[calc(100vh-12rem)] overflow-y-auto"
+            :class="{ 'hidden md:block': !isFilterOpen }">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-semibold text-gray-900">Filters</h3>
+              <button @click="clearAllFilters" class="text-xs text-secondary-500">
                 Clear All
               </button>
             </div>
 
             <!-- Location Filter -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-base mb-2">Location</h4>
+              <h4 class="font-medium text-gray-900 text-sm mb-2">Location</h4>
               <input v-model="filters.location" type="text" placeholder="Enter location"
-                class="input-field w-full text-base py-1.5 px-2" @input="applyFilters">
+                class="input-field w-full text-sm py-1.5 px-2" @input="applyFilters">
             </div>
 
             <!-- Price Range -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-base mb-2">Price Range (per day)</h4>
+              <h4 class="font-medium text-gray-900 text-sm mb-2">Price Range (per day)</h4>
               <div class="space-y-2">
-                <div class="flex items-center justify-between text-sm text-gray-600">
+                <div class="flex items-center justify-between text-xs text-gray-600">
                   <span>${{ priceRange.min }}</span>
                   <span>${{ priceRange.max }}</span>
                 </div>
@@ -91,39 +94,44 @@
 
             <!-- Facilities -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-base mb-2">Facilities</h4>
-              <div class="space-y-1.5">
+              <h4 class="font-medium text-gray-900 text-sm mb-2">Facilities</h4>
+              <div class="space-y-1">
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="High-Speed WiFi" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-sm">High-Speed WiFi</span>
+                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                  <span class="ml-2 text-gray-700 text-xs">High-Speed WiFi</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="4K Display" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-sm">4K Display</span>
+                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                  <span class="ml-2 text-gray-700 text-xs">4K Display</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Video Conferencing" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-sm">Video Conferencing</span>
+                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                  <span class="ml-2 text-gray-700 text-xs">Video Conferencing</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Natural Light" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-sm">Natural Light</span>
+                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                  <span class="ml-2 text-gray-700 text-xs">Natural Light</span>
                 </label>
               </div>
             </div>
 
             <!-- Rating -->
             <div>
-              <h4 class="font-medium text-gray-900 text-base mb-2">Rating</h4>
-              <div class="space-y-1.5">
+              <h4 class="font-medium text-gray-900 text-sm mb-2">Rating</h4>
+              <div class="space-y-1">
                 <label class="flex items-center">
                   <input v-model="minRating" value="4" type="radio" name="rating"
-                    class="border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 flex items-center text-sm">
+                    class="border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                  <span class="ml-2 text-gray-700 flex items-center text-xs">
                     4+ stars
                     <div class="flex ml-1 text-yellow-400">
                       <svg v-for="star in 4" :key="star" class="w-3 h-3 fill-current" viewBox="0 0 20 20">
@@ -135,8 +143,9 @@
                 </label>
                 <label class="flex items-center">
                   <input v-model="minRating" value="0" type="radio" name="rating"
-                    class="border-gray-300 text-primary focus:ring-primary text-xs" @change="applyFilters">
-                  <span class="ml-2 text-gray-700 text-sm">Any rating</span>
+                    class="border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                  <span class="ml-2 text-gray-700 text-xs">Any rating</span>
                 </label>
               </div>
             </div>
@@ -144,11 +153,11 @@
         </div>
 
         <!-- Results Area -->
-        <div class="md:col-span-3 relative md:mr-14 mr-0">
+        <div class="md:col-span-3 relative md:mr-14 mr-0 md:-ml-10 ml-0">
           <!-- Title and Sort -->
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div>
-              <h2 class="text-xl font-semibold text-gray-900">{{ searchResultTitle }}</h2>
+              <h2 class="text-lg font-semibold text-gray-900">{{ searchResultTitle }}</h2>
               <div class="flex items-center gap-1.5 flex-wrap mt-1.5">
                 <span v-for="filter in activeFilters" :key="filter"
                   class="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded-full text-xs">
@@ -177,7 +186,7 @@
           </div>
 
           <!-- Space Cards Grid - 3 per row -->
-          <div v-else-if="filteredSpaces.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div v-else-if="filteredSpaces.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <div v-for="space in sortedSpaces" :key="space.id"
               class="card overflow-hidden group cursor-pointer hover:shadow-md transition-all duration-200 flex flex-col"
               @click="viewSpace(space.id, space.productType)">
@@ -186,7 +195,7 @@
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <button @click.stop="toggleFavorite(space.id)"
                   :class="['absolute top-2 right-2 p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors', isFavorite(space.id) ? 'text-red-500' : 'text-gray-400']">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                       d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
                       clip-rule="evenodd" />
@@ -199,41 +208,50 @@
                 </div>
               </div>
 
-              <div class="p-3 flex flex-col flex-grow">
+              <div class="p-2.5 flex flex-col flex-grow">
                 <div class="flex-grow">
-                  <div class="flex items-start justify-between mb-1.5">
-                    <h3 class="text-base font-semibold text-gray-900 group-hover:text-primary transition-colors">
+                  <div class="flex items-start justify-between mb-1">
+                    <h3 class="text-sm font-semibold text-gray-900 group-hover:text-primary transition-colors leading-tight">
                       {{ space.name }}
                     </h3>
-                    <div class="text-xl font-bold text-gray-900">
+                    <div class="text-sm font-bold text-gray-900 ml-2 flex-shrink-0">
                       ${{ getStartingPrice(space) }}
-                      <span class="text-lg font-normal text-gray-600">/{{ getPriceUnit(space.productType) }}</span>
+                      <span class="text-xs font-normal text-gray-600 block">/{{ getPriceUnit(space.productType) }}</span>
                     </div>
                   </div>
 
-                  <div class="flex items-center text-gray-600 text-sm mb-2">
-                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="flex items-center text-gray-600 text-xs mb-1.5">
+                    <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
-                    {{ space.location }}
+                    <span class="truncate">{{ space.location }}</span>
                   </div>
 
-                  <div class="border-t border-gray-200 mt-3 pt-3">
+                  <div class="flex items-center mb-2">
+                    <div class="flex text-yellow-400">
+                      <svg v-for="star in 5" :key="star" :class="['w-3 h-3', star <= space.rating ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                    <span class="ml-1 text-xs text-gray-600">{{ space.rating }} ({{ space.reviews }})</span>
+                  </div>
+
+                  <div class="border-t border-gray-200 mt-2 pt-2">
                     <div class="flex flex-wrap gap-1">
                       <span v-for="feature in space.features.slice(0, 2)" :key="feature"
-                        class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs">
+                        class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
                         {{ feature }}
                       </span>
                       <span v-if="space.features.length > 2"
-                        class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs">
-                        +{{ space.features.length - 2 }} more
+                        class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
+                        +{{ space.features.length - 2 }}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <button class="btn-primary text-sm w-full mt-5 py-2 px-3">
+                <button class="btn-primary text-xs w-full mt-3 py-2 px-3">
                   Select
                 </button>
               </div>
@@ -248,11 +266,88 @@
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <h3 class="text-base font-semibold text-gray-900 mb-1.5">No spaces found</h3>
-            <p class="text-gray-600 mb-3 text-sm">Try adjusting your filters or search criteria</p>
-            <button @click="clearAllFilters" class="btn-primary text-sm py-1.5 px-4">
+            <h3 class="text-sm font-semibold text-gray-900 mb-1.5">No spaces found</h3>
+            <p class="text-gray-600 mb-3 text-xs">Try adjusting your filters or search criteria</p>
+            <button @click="clearAllFilters" class="btn-primary text-xs py-1.5 px-4">
               Clear All Filters
             </button>
+
+            <!-- Suggestions from other locations -->
+            <div v-if="filters.location && allSpaces.length > 0">
+              <h4 class="mt-8 mb-2 text-sm font-semibold text-gray-900">Suggestions from other locations</h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div v-for="space in allSpaces.filter(s => !filters.location || !s.location.toLowerCase().includes(filters.location.toLowerCase()))"
+                  :key="space.id"
+                  class="card overflow-hidden group cursor-pointer hover:shadow-md transition-all duration-200 flex flex-col"
+                  @click="viewSpace(space.id, space.productType)">
+                  <div class="relative aspect-[4/3] overflow-hidden">
+                    <img :src="getSpaceImage(space)" :alt="space.name"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <button @click.stop="toggleFavorite(space.id)"
+                      :class="['absolute top-2 right-2 p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors', isFavorite(space.id) ? 'text-red-500' : 'text-gray-400']">
+                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <div class="absolute bottom-2 left-2">
+                      <span class="bg-white/90 text-gray-900 px-1.5 py-0.5 rounded-full text-xs font-medium">
+                        {{ formatSpaceType(space.productType) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="p-2.5 flex flex-col flex-grow">
+                    <div class="flex-grow">
+                      <div class="flex items-start justify-between mb-1">
+                        <h3 class="text-sm font-semibold text-gray-900 group-hover:text-primary transition-colors leading-tight">
+                          {{ space.name }}
+                        </h3>
+                        <div class="text-sm font-bold text-gray-900 ml-2 flex-shrink-0">
+                          ${{ getStartingPrice(space) }}
+                          <span class="text-xs font-normal text-gray-600 block">/{{ getPriceUnit(space.productType) }}</span>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center text-gray-600 text-xs mb-1.5">
+                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        <span class="truncate">{{ space.location }}</span>
+                      </div>
+
+                      <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-400">
+                          <svg v-for="star in 5" :key="star" :class="['w-3 h-3', star <= space.rating ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        </div>
+                        <span class="ml-1 text-xs text-gray-600">{{ space.rating }} ({{ space.reviews }})</span>
+                      </div>
+
+                      <div class="border-t border-gray-200 mt-2 pt-2">
+                        <div class="flex flex-wrap gap-1">
+                          <span v-for="feature in space.features.slice(0, 2)" :key="feature"
+                            class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
+                            {{ feature }}
+                          </span>
+                          <span v-if="space.features.length > 2"
+                            class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
+                            +{{ space.features.length - 2 }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button class="btn-primary text-xs w-full mt-3 py-2 px-3">
+                      Select
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -292,7 +387,7 @@
           <button @click="showEditSearch = false" class="btn-primary text-sm py-1.5 px-3">
             Cancel
           </button>
-          <button @click="updateSearch" class="btn-primary text-sm py-1.5 px-3" :disabled="isSearching">
+          <button @click="updateSearch" class="btn-primary text-sm py-1.5 px-3" :disabled="isSearching || !isSearchFormValid">
             {{ isSearching ? 'Searching...' : 'Update Search' }}
           </button>
         </div>
@@ -310,6 +405,7 @@ import DualRangeSlider from '../components/DualRangeSlider.vue';
 import SingleDatePicker from '../components/SingleDatePicker.vue';
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue';
 import FloatingBookingSummary from '../components/FloatingBookingSummary.vue';
+import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
 import type { RouteLocationNormalizedLoaded, NavigationFailure, LocationQueryValue } from 'vue-router';
 
 // Helper function to safely parse query parameters
@@ -393,7 +489,8 @@ export default defineComponent({
     DualRangeSlider,
     SingleDatePicker,
     CustomTimeRangePicker,
-    FloatingBookingSummary
+    FloatingBookingSummary,
+    SpaceTypeDropdown
   },
 
   data() {
@@ -428,7 +525,30 @@ export default defineComponent({
       allSpaces: [] as SpaceDto[],
       filteredSpaces: [] as SpaceDto[],
       sortedSpaces: [] as SpaceDto[],
-      favoriteSpaceIds: [] as number[]
+      favoriteSpaceIds: [] as number[],
+      spaceTypeOptions: [
+        {
+          value: '',
+          label: 'All Types',
+          icon: ''
+        },
+        {
+          value: 'meeting-room',
+          label: 'Meeting Room',
+          icon: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`
+        },
+        {
+          value: 'hot-desk',
+          label: 'Hot Desk',
+          icon: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`
+        },
+        {
+          value: 'dedicated-desk',
+          label: 'Dedicated Desk',
+          icon: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
+        }
+      ],
+     
     };
   },
 
@@ -486,11 +606,29 @@ export default defineComponent({
         return 'Filtered Results';
       }
       return 'All Spaces';
+    },
+    isSearchFormValid(): boolean {
+      // If time range is partially selected, both start and end time must be provided
+      const hasStartTime = !!(this.editSearchForm.timeRange.start);
+      const hasEndTime = !!(this.editSearchForm.timeRange.end);
+      
+      // If either time is selected, both must be selected
+      if (hasStartTime || hasEndTime) {
+        return hasStartTime && hasEndTime;
+      }
+      
+      // If no time is selected, search is still valid
+      return true;
     }
   },
 
   methods: {
     async loadSpaces(): Promise<void> {
+      // Prevent multiple simultaneous calls
+      if (this.isLoading) {
+        return;
+      }
+      
       this.isLoading = true;
       try {
         const searchRequest = new SearchSpacesRequestDto({
@@ -518,6 +656,12 @@ export default defineComponent({
     },
 
     applyFilters(): void {
+      // Don't apply filters if no spaces are loaded yet
+      if (!this.allSpaces || this.allSpaces.length === 0) {
+        this.filteredSpaces = [];
+        return;
+      }
+      
       this.filteredSpaces = this.allSpaces.filter(space => {
         if (
           this.filters.location &&
@@ -563,7 +707,13 @@ export default defineComponent({
           for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
             const dateString = d.toISOString().split('T')[0];
             const dayAvailability = space.availability.find(a => a.date === dateString);
-            if (!dayAvailability || !dayAvailability.available) {
+            if (!dayAvailability || !dayAvailability.timeSlots || dayAvailability.timeSlots.length === 0) {
+              isAvailable = false;
+              break;
+            }
+            // Check if there are any available time slots for this date
+            const hasAvailableSlots = dayAvailability.timeSlots.some((slot: { time: string; available: boolean }) => slot.available);
+            if (!hasAvailableSlots) {
               isAvailable = false;
               break;
             }
@@ -579,7 +729,7 @@ export default defineComponent({
         ) {
           const selectedDate = this.filters.dateRange.startDate;
           const dayAvailability = space.availability.find(a => a.date === selectedDate);
-          if (!dayAvailability || !dayAvailability.available) return false;
+          if (!dayAvailability || !dayAvailability.timeSlots || dayAvailability.timeSlots.length === 0) return false;
 
           const startMinutes =
             parseInt(this.filters.startTime.split(':')[0]) * 60 +
@@ -599,6 +749,7 @@ export default defineComponent({
 
         return true;
       });
+      
       this.applySorting();
     },
 
@@ -721,8 +872,7 @@ export default defineComponent({
           name: 'SearchResults',
           query: queryParams as Record<string, string>
         });
-        await this.loadSpaces();
-        this.applyFiltersAndSorting();
+        // Don't call loadSpaces here - the route watcher will handle it
       } catch (error) {
         const navError = error as NavigationFailure;
         if (navError.name !== 'NavigationDuplicated') {
@@ -812,23 +962,33 @@ export default defineComponent({
     },
 
     async updateSearch(): Promise<void> {
+      // Validate form before proceeding
+      if (!this.isSearchFormValid) {
+        return;
+      }
+      
       this.isSearching = true;
 
-      this.filters.location = this.editSearchForm.location;
-      this.filters.spaceType = this.editSearchForm.spaceType;
-      this.filters.capacity = this.editSearchForm.capacity;
-      this.filters.dateRange = {
-        startDate: this.editSearchForm.date,
-        endDate: this.editSearchForm.date
-      };
-      this.filters.startTime = this.editSearchForm.timeRange.start;
-      this.filters.endTime = this.editSearchForm.timeRange.end;
+      try {
+        this.filters.location = this.editSearchForm.location;
+        this.filters.spaceType = this.editSearchForm.spaceType;
+        this.filters.capacity = this.editSearchForm.capacity;
+        this.filters.dateRange = {
+          startDate: this.editSearchForm.date,
+          endDate: this.editSearchForm.date
+        };
+        this.filters.startTime = this.editSearchForm.timeRange.start;
+        this.filters.endTime = this.editSearchForm.timeRange.end;
 
-      this.selectedSpaceTypes = this.filters.spaceType ? [this.filters.spaceType] : [];
+        this.selectedSpaceTypes = this.filters.spaceType ? [this.filters.spaceType] : [];
 
-      await this.updateQueryAndReload();
-      this.showEditSearch = false;
-      this.isSearching = false;
+        await this.updateQueryAndReload();
+        this.showEditSearch = false;
+      } catch (error) {
+        console.error('Error updating search:', error);
+      } finally {
+        this.isSearching = false;
+      }
     },
 
     async viewSpace(id: number, type: string): Promise<void> {
@@ -859,7 +1019,12 @@ export default defineComponent({
 
   watch: {
     '$route.query': {
-      handler(newQuery: RouteLocationNormalizedLoaded['query']) {
+      async handler(newQuery: RouteLocationNormalizedLoaded['query'], oldQuery: RouteLocationNormalizedLoaded['query']) {
+        // Skip if the query hasn't actually changed
+        if (oldQuery && JSON.stringify(newQuery) === JSON.stringify(oldQuery)) {
+          return;
+        }
+        
         const capacity = getQueryParam(newQuery.capacity);
         this.filters = new SearchFilters(
           getQueryParam(newQuery.location),
@@ -884,7 +1049,19 @@ export default defineComponent({
           newQuery.minPrice ? parseInt(getQueryParam(newQuery.minPrice), 10) : 10,
           newQuery.maxPrice ? parseInt(getQueryParam(newQuery.maxPrice), 10) : 1000
         );
-        this.loadSpaces();
+        
+        try {
+          await this.loadSpaces();
+          this.applyFiltersAndSorting();
+        } catch (error) {
+          console.error('Error in route query handler:', error);
+        }
+      },
+      deep: true
+    },
+    priceRange: {
+      handler() {
+        this.applyFilters();
       },
       deep: true
     },

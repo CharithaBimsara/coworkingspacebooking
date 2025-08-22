@@ -12,7 +12,7 @@
           class="custom-time-input"
           placeholder="Start time"
         />
-        <div v-if="showStartDropdown" class="dropdown absolute left-0 mt-1">
+        <div v-if="showStartDropdown" class="dropdown custom-scrollbar absolute w-full left-0 mt-1">
           <div 
             v-for="time in timeOptions" 
             :key="time" 
@@ -31,12 +31,19 @@
           @focus="openDropdown('end')"
           @blur="onBlur('end')"
           readonly
-          class="custom-time-input"
-          placeholder="End time"
+          :disabled="!startTime"
+          :class="[
+            'custom-time-input', 
+            { 
+              'disabled': !startTime,
+              'highlight-needed': shouldHighlightEndTime
+            }
+          ]"
+          :placeholder="!startTime ? 'End time' : 'Enter end time'"
         />
-        <div v-if="showEndDropdown" class="dropdown absolute left-0 mt-1">
+        <div v-if="showEndDropdown && startTime" class="dropdown custom-scrollbar w-full absolute left-0 mt-1">
           <div 
-            v-for="time in timeOptions" 
+            v-for="time in availableEndTimeOptions" 
             :key="time" 
             @mousedown.prevent="selectTime('end', time)" 
             :class="['dropdown-item', { selected: endTime === time, disabled: isEndTimeDisabled(time) }]"
@@ -86,6 +93,10 @@ export default defineComponent({
     const showEndDropdown = ref(false)
 
     function openDropdown(type: 'start' | 'end') {
+      if (type === 'end' && !localStartTime.value) {
+        return; // Don't open end dropdown if no start time
+      }
+      
       if (type === 'start') {
         showStartDropdown.value = true;
         showEndDropdown.value = false;
@@ -141,6 +152,28 @@ export default defineComponent({
       return props.disabledEndTimes.includes(time);
     }
 
+    // Only show end times that are after the selected start time
+    const availableEndTimeOptions = computed(() => {
+      if (!localStartTime.value) return [];
+      
+      const startTimeMinutes = convertTimeToMinutes(localStartTime.value);
+      return timeOptions.filter(time => {
+        const timeMinutes = convertTimeToMinutes(time);
+        return timeMinutes > startTimeMinutes; // End time must be after start time
+      });
+    });
+
+    // Check if we should highlight end time (start time selected but end time not)
+    const shouldHighlightEndTime = computed(() => {
+      return !!(localStartTime.value && !localEndTime.value);
+    });
+
+    // Helper function to convert time string to minutes
+    function convertTimeToMinutes(time: string): number {
+      const [hours, minutes] = time.split(':').map(Number);
+      return hours * 60 + minutes;
+    }
+
     return {
       showStartDropdown,
       showEndDropdown,
@@ -153,7 +186,9 @@ export default defineComponent({
       onBlur,
       openDropdown,
       isStartTimeDisabled,
-      isEndTimeDisabled
+      isEndTimeDisabled,
+      availableEndTimeOptions,
+      shouldHighlightEndTime
     }
   }
 })
@@ -165,7 +200,8 @@ export default defineComponent({
   width: 100%;
 }
 .custom-time-input {
-  width: 120px;
+  width: 160px;
+  margin-top: 2px;
   padding: 0.5rem 0.75rem;
   border: 1px solid #D1D5DB;
   border-radius: 0.5rem;
@@ -174,11 +210,72 @@ export default defineComponent({
   color: #111;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  /* transition: border-color 0.2s, box-shadow 0.2s; */
 }
 .custom-time-input:focus {
   border-color: #000;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+  /* box-shadow: 0 0 0 2px rgba(0,0,0,0.1); */
+}
+.custom-time-input.disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+.custom-time-input:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+.custom-time-input.highlight-needed {
+  animation: pulseHighlight 2s infinite;
+  border-color: #f59e0b;
+  /* box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px !important;
+  background: #FFFFFF !important; /* White scrollbar track */
+  border-radius: 10px !important;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #000000 40%, #4A4A4A 100%) !important; /* Black to dark gray gradient */
+  border-radius: 10px !important;
+  min-height: 40px !important;
+  border: 2px solid #FFFFFF !important; /* White border to match track */
+  transition: background 0.2s;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #1A1A1A 40%, #333333 100%) !important; /* Darker black on hover */
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #000000 #FFFFFF; /* Black thumb, white track */
+}
+
+@keyframes pulseHighlight {
+  0% {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+  }
+  25% {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+  }
+  50% {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+  }
+  75% {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+  }
+  100% {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+  }
 }
 .dropdown {
   position: absolute;

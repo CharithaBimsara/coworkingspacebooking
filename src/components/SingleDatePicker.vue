@@ -12,7 +12,7 @@
       <div 
         @click="toggleCalendar"
         class="input-field cursor-pointer flex items-center justify-between"
-        :class="{ 'border-primary': showCalendar }"
+        :class="{ 'border-black': showCalendar }"
       >
         <span v-if="selectedDate" class="text-gray-900">
           {{ formatDate(selectedDate) }}
@@ -24,7 +24,7 @@
       </div>
       <div 
         v-if="showCalendar" 
-        class="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-60 p-4"
+        class="absolute top-full w-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-60 p-4"
         style="min-width: 295px;"
       >
         <div class="flex items-center justify-between mb-4">
@@ -64,7 +64,7 @@
             @click="selectDate(date)"
             :disabled="date.disabled"
             :class="getDateClasses(date)"
-            class="h-10 text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+            class="h-10 text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-1"
           >
             {{ date.day }}
           </button>
@@ -220,11 +220,11 @@ export default defineComponent({
         classes.push('text-gray-900 hover:bg-gray-100')
       }
       if (this.tempDate === dateString) {
-        classes.push('bg-primary text-white hover:bg-primary/90')
+        classes.push('bg-black text-white hover:bg-black/90')
       }
   const today = this.formatLocalDate(new Date())
-      if (dateString === today && !classes.some(c => c.includes('bg-primary'))) {
-        classes.push('ring-2 ring-primary ring-inset')
+      if (dateString === today && !classes.some(c => c.includes('bg-black'))) {
+        classes.push('ring-2 ring-black ring-inset')
       }
       return classes.join(' ')
     },

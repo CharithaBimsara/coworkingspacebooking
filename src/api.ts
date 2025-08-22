@@ -84,22 +84,29 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const generateMockAvailability = (days: number = 7) => {
   const availability = [];
   const currentDate = new Date();
+  
   for (let i = 0; i < days; i++) {
     const dateString = currentDate.toISOString().split('T')[0];
-    const isAvailable = Math.random() > 0.2; // 80% chance of being available
-    const availableTimes: string[] = [];
+    const timeSlots = [];
 
-    if (isAvailable) {
-      // Generate some random time slots
-      const startHour = 9;
-      const endHour = 17;
-      for (let hour = startHour; hour <= endHour; hour++) {
-        if (Math.random() > 0.3) { // 70% chance of a time slot being available
-          availableTimes.push(`${hour.toString().padStart(2, '0')}:00`);
-        }
+    // Generate time slots from 9 AM to 5 PM (every hour)
+    for (let hour = 9; hour <= 17; hour++) {
+      const time = `${hour.toString().padStart(2, '0')}:00`;
+      const available = Math.random() > 0.3; // 70% chance of being available
+      timeSlots.push({ time, available });
+      
+      // Also add 30-minute slots
+      const halfHourTime = `${hour.toString().padStart(2, '0')}:30`;
+      const halfHourAvailable = Math.random() > 0.3;
+      if (hour < 17) { // Don't add 17:30
+        timeSlots.push({ time: halfHourTime, available: halfHourAvailable });
       }
     }
-    availability.push({ date: dateString, available: isAvailable, availableTimes });
+
+    availability.push({ 
+      date: dateString, 
+      timeSlots: timeSlots 
+    });
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return availability;
@@ -464,7 +471,7 @@ export class SpacesAPI {
   // Mock implementation
   static async searchSpaces(request: SearchSpacesRequestDto): Promise<SearchSpacesResponseDto> {
     try {
-      await delay(800);
+      await delay(300); // Reduced delay for better UX
 
       // Filter spaces based on request
       let filteredSpaces = mockSpaces;
