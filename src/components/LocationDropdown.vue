@@ -27,7 +27,7 @@
     <!-- Dropdown -->
     <div 
       v-if="showDropdown && (filteredLocations.length > 0 || isLoading)"
-      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-24 overflow-y-auto custom-scrollbar min-w-[260px]"
+  class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto custom-scrollbar min-w-[260px]"
     >
       <!-- Loading state -->
       <div v-if="isLoading" class="p-3 text-center text-sm text-black">
@@ -94,6 +94,10 @@ export default defineComponent({
     placeholder: {
       type: String,
       default: 'Enter location'
+    },
+    locations: {
+      type: Array as () => string[],
+      default: () => []
     }
   },
   
@@ -104,7 +108,8 @@ export default defineComponent({
       searchQuery: '',
       showDropdown: false,
       isLoading: false,
-      locations: [
+      // Keep these as fallback if no locations are passed via props
+      fallbackLocations: [
         {
           id: 1,
           name: 'Downtown, San Francisco',
@@ -144,46 +149,6 @@ export default defineComponent({
           city: 'San Francisco',
           state: 'CA',
           country: 'USA'
-        },
-        {
-          id: 6,
-          name: 'Palo Alto, California',
-          description: 'Silicon Valley, CA',
-          city: 'Palo Alto',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 7,
-          name: 'Mountain View, California',
-          description: 'Tech Center, CA',
-          city: 'Mountain View',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 8,
-          name: 'Redwood City, California',
-          description: 'Peninsula, CA',
-          city: 'Redwood City',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 9,
-          name: 'San Jose, California',
-          description: 'Capital of Silicon Valley, CA',
-          city: 'San Jose',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 10,
-          name: 'Oakland, California',
-          description: 'East Bay, CA',
-          city: 'Oakland',
-          state: 'CA',
-          country: 'USA'
         }
       ] as Location[]
     }
@@ -191,14 +156,25 @@ export default defineComponent({
   
   computed: {
     filteredLocations(): Location[] {
+      // Use API locations if available, otherwise fallback to hardcoded ones
+      const locationsToUse = this.locations.length > 0 ? 
+        this.locations.map((loc, index) => ({ 
+          id: index + 1, 
+          name: loc, 
+          description: '', 
+          city: loc.split(',')[0] || loc,
+          state: '',
+          country: ''
+        })) : 
+        this.fallbackLocations;
+
       if (!this.searchQuery) {
-        return this.locations.slice(0, 5) // Show top 5 popular locations
+        return locationsToUse.slice(0, 5) // Show top 5 locations
       }
       
       const query = this.searchQuery.toLowerCase()
-      return this.locations.filter(location => 
+      return locationsToUse.filter(location => 
         location.name.toLowerCase().includes(query) ||
-        location.description.toLowerCase().includes(query) ||
         location.city.toLowerCase().includes(query)
       )
     }

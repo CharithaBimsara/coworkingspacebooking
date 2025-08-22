@@ -22,7 +22,7 @@
                 <!-- Location -->
                 <div class="space-y-2 mt-1">
                   <LocationDropdown v-model="searchForm.location" label="Location"
-                    placeholder="Where do you want to work?" @change="onLocationChange" />
+                    placeholder="Where do you want to work?" :locations="locations" @change="onLocationChange" />
                 </div>
 
                 <!-- Space Type -->
@@ -483,6 +483,7 @@ import { defineComponent } from 'vue';
 import LocationDropdown from '../components/LocationDropdown.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
 import { HomeAPI } from '../api';
+import { NetworkManager } from '../api/networkManager';
 import { NewsletterSubscriptionRequestDto } from '../dto/request';
 import type { SpaceDto, AdvertisementDto, TestimonialDto } from '../dto/response';
 
@@ -530,6 +531,7 @@ export default defineComponent({
       advertisements: [] as AdvertisementDto[],
       featuredSpaces: [] as SpaceDto[],
       testimonials: [] as TestimonialDto[],
+      locations: [] as string[], // Real locations from API
       spaceTypeOptions: [
         {
           value: '',
@@ -587,9 +589,84 @@ export default defineComponent({
   },
 
   methods: {
+    /**
+     * How to call backend APIs and map data for Home page:
+     *
+     * // 1. Get all locations for dropdown
+     * // const locationsRes = await networkManager.getLocations();
+     * // this.locationOptions = locationsRes; // string[]
+     *
+     * // 2. Get all space types for dropdown
+     * // const spaceTypesRes = await networkManager.getSpaceTypes();
+     * // this.spaceTypeOptions = spaceTypesRes; // Array<{ value, label, icon }>
+     *
+     * // 3. Get hero images for slideshow
+     * // const heroImagesRes = await networkManager.getHeroImages();
+     * // this.heroImages = heroImagesRes; // Array<{ src, alt }>
+     *
+     * // 4. Get advertisements for offers/partners
+     * // const adsRes = await networkManager.getAdvertisements();
+     * // this.advertisements = adsRes; // AdvertisementDto[]
+     *
+     * // 5. Get featured workspaces
+     * // const featuredRes = await networkManager.getFeaturedSpaces();
+     * // this.featuredSpaces = featuredRes; // SpaceDto[]
+     *
+     * // 6. Get testimonials
+     * // const testimonialsRes = await networkManager.getTestimonials();
+     * // this.testimonials = testimonialsRes; // TestimonialDto[]
+     *
+     * // 7. Subscribe to newsletter
+     * // const subRes = await networkManager.subscribeNewsletter(email);
+     * // if (subRes.success) { ... }
+     *
+     * // 8. Get branding (logo, website name)
+     * // const brandingRes = await networkManager.getBranding();
+     * // this.logoUrl = brandingRes.logoUrl;
+     * // this.websiteName = brandingRes.websiteName;
+     *
+     * // 9. Get footer contact details
+     * // const contactRes = await networkManager.getFooterContact();
+     * // this.footerEmail = contactRes.email;
+     * // this.footerPhone = contactRes.phone;
+     * // this.footerAddress = contactRes.address;
+     *
+     * When backend is ready, uncomment the above and remove the mock/demo data.
+     */
     async loadHomePageData(): Promise<void> {
       this.isLoadingSpaces = true;
       try {
+        // Load locations from NetworkManager API
+        try {
+          const locationsRes = await NetworkManager.getLocations();
+          this.locations = locationsRes;
+          console.log('Loaded locations:', this.locations);
+        } catch (error) {
+          console.error('Error loading locations:', error);
+          // Keep empty array if API fails
+          this.locations = [];
+        }
+
+        // Example: Uncomment and use real API calls when backend is ready
+        // const spaceTypesRes = await networkManager.getSpaceTypes();
+        // this.spaceTypeOptions = spaceTypesRes;
+        // const heroImagesRes = await networkManager.getHeroImages();
+        // this.heroImages = heroImagesRes;
+        // const adsRes = await networkManager.getAdvertisements();
+        // this.advertisements = adsRes;
+        // const featuredRes = await networkManager.getFeaturedSpaces();
+        // this.featuredSpaces = featuredRes;
+        // const testimonialsRes = await networkManager.getTestimonials();
+        // this.testimonials = testimonialsRes;
+        // const brandingRes = await networkManager.getBranding();
+        // this.logoUrl = brandingRes.logoUrl;
+        // this.websiteName = brandingRes.websiteName;
+        // const contactRes = await networkManager.getFooterContact();
+        // this.footerEmail = contactRes.email;
+        // this.footerPhone = contactRes.phone;
+        // this.footerAddress = contactRes.address;
+        //
+        // For now, use mock/demo data for other sections:
         const response = await HomeAPI.getHomePageData();
         if (response.success) {
           this.featuredSpaces = response.featuredSpaces || [];

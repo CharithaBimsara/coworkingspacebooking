@@ -930,6 +930,13 @@ export default defineComponent({
       if (filterToRemove.startsWith('Location: ')) {
         this.filters.location = '';
         this.editSearchForm.location = '';
+        // Also clear location in the query if present
+        if (this.$route.query.location) {
+          this.$router.replace({
+            query: { ...this.$route.query, location: undefined }
+          });
+        }
+        this.applyFiltersAndSorting();
         this.updateQueryAndReload();
         return;
       }
