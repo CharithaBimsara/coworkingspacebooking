@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Advanced Search Bar -->
     <div class="bg-white border-b mr-5 ml-5 rounded-lg border-gray-200 fixed top-16 left-0 right-0 z-40 mx-5">
-      <div class="max-w-8xl mx-10 px-4 py-2">
+      <div class="max-w-8xl  py-3">
         <h1 class="text-base font-bold text-gray-800 mb-3">Search Your WorkSpace</h1>
         <div class="flex flex-row items-center justify-start gap-3 w-full relative">
           <div class="relative min-w-[220px] max-w-[260px] flex flex-col justify-end">
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="max-w-8xl mx-auto px-2 sm:px-5 py-6 mt-24">
+    <div class="max-w-8xl mx-auto px-2 sm:px-5 py-7 mt-24">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-0 relative">
         <!-- Filters Sidebar - Narrower -->
         <div class="md:col-span-1 w-full mb-4 md:mb-0 md:ml-14 ml-0 md:max-w-[280px] md:min-w-[200px]">
@@ -63,7 +63,7 @@
           </div>
 
           <div
-            class="bg-white rounded-lg p-3 shadow-card fixed top-45 left-20 w-64 z-30 max-h-[calc(100vh-12rem)] overflow-y-auto"
+            class="bg-white rounded-lg p-3 shadow-card fixed top-45 left-5 w-72 z-30 max-h-[calc(100vh-12rem)] overflow-y-auto"
             :class="{ 'hidden md:block': !isFilterOpen }">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-sm font-semibold text-gray-900">Filters</h3>
@@ -76,7 +76,7 @@
             <div class="mb-3">
               <h4 class="font-medium text-gray-900 text-sm mb-2">Location</h4>
               <input v-model="filters.location" type="text" placeholder="Enter location"
-                class="input-field w-full text-sm py-1.5 px-2" @input="applyFilters">
+                class="input-field w-full text-sm py-1.5 px-2" @input="updateQueryAndReload">
             </div>
 
             <!-- Price Range -->
@@ -88,7 +88,7 @@
                   <span>${{ priceRange.max }}</span>
                 </div>
                 <DualRangeSlider v-model:min="priceRange.min" v-model:max="priceRange.max" :minVal="10" :maxVal="1000"
-                  @change="applyFilters" class="w-full" />
+                  @change="updateQueryAndReload" class="w-full" />
               </div>
             </div>
 
@@ -99,25 +99,25 @@
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="High-Speed WiFi" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
-                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
                   <span class="ml-2 text-gray-700 text-xs">High-Speed WiFi</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="4K Display" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
-                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
                   <span class="ml-2 text-gray-700 text-xs">4K Display</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Video Conferencing" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
-                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
                   <span class="ml-2 text-gray-700 text-xs">Video Conferencing</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Natural Light" type="checkbox"
                     class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
-                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
                   <span class="ml-2 text-gray-700 text-xs">Natural Light</span>
                 </label>
               </div>
@@ -130,7 +130,7 @@
                 <label class="flex items-center">
                   <input v-model="minRating" value="4" type="radio" name="rating"
                     class="border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
-                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
                   <span class="ml-2 text-gray-700 flex items-center text-xs">
                     4+ stars
                     <div class="flex ml-1 text-yellow-400">
@@ -144,7 +144,7 @@
                 <label class="flex items-center">
                   <input v-model="minRating" value="0" type="radio" name="rating"
                     class="border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
-                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="applyFilters">
+                    :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
                   <span class="ml-2 text-gray-700 text-xs">Any rating</span>
                 </label>
               </div>
@@ -153,7 +153,7 @@
         </div>
 
         <!-- Results Area -->
-        <div class="md:col-span-3 relative md:mr-14 mr-0 md:-ml-10 ml-0">
+        <div class="md:col-span-3 relative mr-0 md:-ml-14 ml-0">
           <!-- Title and Sort -->
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div>
@@ -398,9 +398,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { SpacesAPI } from '../api';
+import { SpacesAPI } from '../api'; // Keep this import for backward compatibility
 import { SearchSpacesRequestDto } from '../dto/request';
 import type { SpaceDto } from '../dto/response';
+import { NetworkManager } from '../api/networkManager'; // Import NetworkManager directly
 import DualRangeSlider from '../components/DualRangeSlider.vue';
 import SingleDatePicker from '../components/SingleDatePicker.vue';
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue';
@@ -519,7 +520,7 @@ export default defineComponent({
         query.maxPrice ? parseInt(getQueryParam(query.maxPrice), 10) : 1000
       ),
       selectedSpaceTypes: query.spaceType ? [getQueryParam(query.spaceType)] : [] as string[],
-      selectedFacilities: query.facilities ? getQueryParam(query.facilities).split(',') : [] as string[],
+      selectedFacilities: query.facilities ? decodeURIComponent(getQueryParam(query.facilities)).split(',') : [] as string[],
       minRating: query.minRating ? getQueryParam(query.minRating) : '0',
       editSearchForm: new EditSearchForm(),
       allSpaces: [] as SpaceDto[],
@@ -631,13 +632,37 @@ export default defineComponent({
       
       this.isLoading = true;
       try {
-        const searchRequest = new SearchSpacesRequestDto({
+        // Create search parameters object directly for NetworkManager
+        const searchParams = {
           location: this.filters.location || undefined,
-          spaceType: this.filters.spaceType || undefined
-        });
-        const response = await SpacesAPI.searchSpaces(searchRequest);
+          spaceType: this.filters.spaceType || undefined,
+          startDate: this.filters.dateRange.startDate || undefined,
+          endDate: this.filters.dateRange.endDate || undefined,
+          startTime: this.filters.startTime || undefined,
+          endTime: this.filters.endTime || undefined,
+          capacity: this.filters.capacity || undefined,
+          priceRange: this.priceRange.min !== 10 || this.priceRange.max !== 1000 
+            ? { min: this.priceRange.min, max: this.priceRange.max } 
+            : undefined,
+          facilities: this.selectedFacilities.length > 0 
+            ? this.selectedFacilities 
+            : undefined,
+          minRating: this.minRating !== '0' 
+            ? this.minRating 
+            : undefined
+        };
+        
+        console.log('Searching spaces with params:', searchParams);
+        if (this.selectedFacilities.length > 0) {
+          console.log('Selected facilities:', this.selectedFacilities);
+        }
+        
+        // Call NetworkManager directly instead of going through SpacesAPI
+        const response = await NetworkManager.searchSpaces(searchParams);
+        
         if (response.success) {
           this.allSpaces = response.spaces || [];
+          console.log(`Loaded ${this.allSpaces.length} spaces:`, this.allSpaces);
         } else {
           console.error('Failed to load spaces:', response.message);
           this.allSpaces = [];
@@ -688,7 +713,14 @@ export default defineComponent({
 
         if (
           this.selectedFacilities.length > 0 &&
-          !this.selectedFacilities.every(facility => space.features.includes(facility))
+          !this.selectedFacilities.every(facility => {
+            // Case-insensitive and partial matching for facilities
+            const facilityLower = facility.toLowerCase();
+            return space.features.some(feature => 
+              feature.toLowerCase().includes(facilityLower) || 
+              facilityLower.includes(feature.toLowerCase())
+            );
+          })
         ) {
           return false;
         }
@@ -700,25 +732,46 @@ export default defineComponent({
           }
         }
 
+        // Date range filter
         if (this.filters.dateRange.startDate && this.filters.dateRange.endDate) {
           const startDate = new Date(this.filters.dateRange.startDate);
           const endDate = new Date(this.filters.dateRange.endDate);
           let isAvailable = true;
-          for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+          
+          // Debug date availability
+          console.log(`Checking date availability for space ${space.id} (${space.name})`);
+          console.log(`Requested dates: ${this.filters.dateRange.startDate} to ${this.filters.dateRange.endDate}`);
+          console.log(`Space availability:`, space.availability);
+          
+          for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             const dateString = d.toISOString().split('T')[0];
+            console.log(`Checking date: ${dateString}`);
+            
+            // Check if the space has this date in its availability
             const dayAvailability = space.availability.find(a => a.date === dateString);
-            if (!dayAvailability || !dayAvailability.timeSlots || dayAvailability.timeSlots.length === 0) {
+            
+            if (!dayAvailability) {
+              console.log(`Space ${space.id} has no availability for date ${dateString}`);
               isAvailable = false;
               break;
             }
-            // Check if there are any available time slots for this date
-            const hasAvailableSlots = dayAvailability.timeSlots.some((slot: { time: string; available: boolean }) => slot.available);
-            if (!hasAvailableSlots) {
+            
+            // Check if the date has slots (our mock data has 'slots', not 'timeSlots')
+            const slotsArray = dayAvailability.slots || dayAvailability.timeSlots;
+            const hasSlots = slotsArray && slotsArray.length > 0;
+            
+            if (!hasSlots) {
+              console.log(`Space ${space.id} has no slots for date ${dateString}`);
               isAvailable = false;
               break;
             }
+            
+            console.log(`Space ${space.id} is available for date ${dateString}`);
           }
-          if (!isAvailable) return false;
+          
+          if (!isAvailable) {
+            return false;
+          }
         }
 
         if (
@@ -728,8 +781,22 @@ export default defineComponent({
           this.filters.dateRange.startDate === this.filters.dateRange.endDate
         ) {
           const selectedDate = this.filters.dateRange.startDate;
+          console.log(`Checking time availability for space ${space.id} on ${selectedDate}: ${this.filters.startTime}-${this.filters.endTime}`);
+          
           const dayAvailability = space.availability.find(a => a.date === selectedDate);
-          if (!dayAvailability || !dayAvailability.timeSlots || dayAvailability.timeSlots.length === 0) return false;
+          if (!dayAvailability) {
+            console.log(`Space ${space.id} has no availability for date ${selectedDate}`);
+            return false;
+          }
+          
+          // Check if the mock data uses 'slots' or 'timeSlots'
+          const slotsArray = dayAvailability.slots || dayAvailability.timeSlots;
+          if (!slotsArray || slotsArray.length === 0) {
+            console.log(`Space ${space.id} has no time slots for date ${selectedDate}`);
+            return false;
+          }
+          
+          console.log(`Space ${space.id} time slots:`, slotsArray);
 
           const startMinutes =
             parseInt(this.filters.startTime.split(':')[0]) * 60 +
@@ -737,14 +804,43 @@ export default defineComponent({
           const endMinutes =
             parseInt(this.filters.endTime.split(':')[0]) * 60 +
             parseInt(this.filters.endTime.split(':')[1]);
+            
+          console.log(`Requested time in minutes: ${startMinutes}-${endMinutes}`);
 
-          const isTimeSlotAvailable = dayAvailability.timeSlots.some((slot: { time: string; available: boolean }) => {
-            const slotMinutes =
-              parseInt(slot.time.split(':')[0]) * 60 + parseInt(slot.time.split(':')[1]);
-            return slot.available && slotMinutes >= startMinutes && slotMinutes < endMinutes;
+          // Check if any time slot overlaps with the requested time range
+          const isTimeSlotAvailable = slotsArray.some((slot: any) => {
+            // Handle both formats: {time, available} and {startTime, endTime}
+            let slotStartMinutes, slotEndMinutes;
+            
+            if (slot.startTime && slot.endTime) {
+              slotStartMinutes = parseInt(slot.startTime.split(':')[0]) * 60 + 
+                                parseInt(slot.startTime.split(':')[1]);
+              slotEndMinutes = parseInt(slot.endTime.split(':')[0]) * 60 + 
+                              parseInt(slot.endTime.split(':')[1]);
+                              
+              console.log(`Slot time in minutes (startTime/endTime format): ${slotStartMinutes}-${slotEndMinutes}`);
+              
+              // The slot covers the requested time if it starts before/at requested start and ends after/at requested end
+              return slotStartMinutes <= startMinutes && slotEndMinutes >= endMinutes;
+            } else if (slot.time) {
+              slotStartMinutes = parseInt(slot.time.split(':')[0]) * 60 + parseInt(slot.time.split(':')[1]);
+              
+              console.log(`Slot time in minutes (time format): ${slotStartMinutes}`);
+              
+              // Using the original logic for backward compatibility
+              return slot.available && slotStartMinutes >= startMinutes && slotStartMinutes < endMinutes;
+            }
+            
+            console.log('Unrecognized slot format:', slot);
+            return false;
           });
 
-          if (!isTimeSlotAvailable) return false;
+          if (!isTimeSlotAvailable) {
+            console.log(`Space ${space.id} has no suitable time slots for the requested time range`);
+            return false;
+          }
+          
+          console.log(`Space ${space.id} is available for the requested time range`);
         }
 
         return true;
@@ -858,7 +954,7 @@ export default defineComponent({
         minPrice: this.priceRange.min,
         maxPrice: this.priceRange.max,
         minRating: this.minRating,
-        facilities: this.selectedFacilities.length > 0 ? this.selectedFacilities.join(',') : undefined
+        facilities: this.selectedFacilities.length > 0 ? encodeURIComponent(this.selectedFacilities.join(',')) : undefined
       };
 
       Object.keys(queryParams).forEach(key => {
@@ -1050,7 +1146,7 @@ export default defineComponent({
           timeRange: { start: this.filters.startTime || '', end: this.filters.endTime || '' }
         };
         this.selectedSpaceTypes = newQuery.spaceType ? [getQueryParam(newQuery.spaceType)] : [];
-        this.selectedFacilities = newQuery.facilities ? getQueryParam(newQuery.facilities).split(',') : [];
+        this.selectedFacilities = newQuery.facilities ? decodeURIComponent(getQueryParam(newQuery.facilities)).split(',') : [];
         this.minRating = newQuery.minRating ? getQueryParam(newQuery.minRating) : '0';
         this.priceRange = new PriceRange(
           newQuery.minPrice ? parseInt(getQueryParam(newQuery.minPrice), 10) : 10,
@@ -1069,6 +1165,23 @@ export default defineComponent({
     priceRange: {
       handler() {
         this.applyFilters();
+      },
+      deep: true
+    },
+    selectedFacilities: {
+      handler() {
+        this.updateQueryAndReload();
+      },
+      deep: true
+    },
+    minRating: {
+      handler() {
+        this.updateQueryAndReload();
+      }
+    },
+    selectedSpaceTypes: {
+      handler() {
+        this.updateQueryAndReload();
       },
       deep: true
     },

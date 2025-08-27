@@ -19,7 +19,8 @@
             @mousedown.prevent="selectTime('start', time)" 
             :class="['dropdown-item', { selected: startTime === time, disabled: isStartTimeDisabled(time) }]"
           >
-            {{ time }}
+            <span>{{ time }}</span>
+            <span v-if="isStartTimeDisabled(time)" class="text-xs text-red-500 ml-2">Booked</span>
           </div>
         </div>
       </div>
@@ -48,7 +49,8 @@
             @mousedown.prevent="selectTime('end', time)" 
             :class="['dropdown-item', { selected: endTime === time, disabled: isEndTimeDisabled(time) }]"
           >
-            {{ time }}
+            <span>{{ time }}</span>
+            <span v-if="isEndTimeDisabled(time)" class="text-xs text-red-500 ml-2">Booked</span>
           </div>
         </div>
       </div>
@@ -87,7 +89,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'start-time-change'],
   setup(props, { emit }) {
     const showStartDropdown = ref(false)
     const showEndDropdown = ref(false)
@@ -114,8 +116,8 @@ export default defineComponent({
       localEndTime.value = val.end
     })
 
-    const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
-      const hour = Math.floor(i / 2)
+    const timeOptions = Array.from({ length: 9 * 2 }, (_, i) => {
+      const hour = Math.floor(i / 2) + 9  // Start from 9 AM
       const min = i % 2 === 0 ? '00' : '30'
       return `${hour.toString().padStart(2, '0')}:${min}`
     })
@@ -127,8 +129,10 @@ export default defineComponent({
       if (type === 'start') {
         if (isStartTimeDisabled(time)) return;
         localStartTime.value = time
+        localEndTime.value = '' // Reset end time when start time changes
         showStartDropdown.value = false
-        emit('update:modelValue', { start: time, end: localEndTime.value })
+        emit('update:modelValue', { start: time, end: '' })
+        emit('start-time-change', time) // Emit start time change event
       } else {
         if (isEndTimeDisabled(time)) return;
         localEndTime.value = time
@@ -294,6 +298,9 @@ export default defineComponent({
   color: #111;
   font-size: 0.75rem; /* text-xs */
   transition: background 0.15s, color 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .dropdown-item.selected,
 .dropdown-item:hover:not(.disabled) {

@@ -468,31 +468,40 @@ export class SpacesAPI {
   }
   */
 
-  // Mock implementation
+  // Implementation using NetworkManager
   static async searchSpaces(request: SearchSpacesRequestDto): Promise<SearchSpacesResponseDto> {
     try {
-      await delay(300); // Reduced delay for better UX
-
-      // Filter spaces based on request
-      let filteredSpaces = mockSpaces;
-      if (request.location) {
-        filteredSpaces = filteredSpaces.filter(space =>
-          space.location.toLowerCase().includes(request.location!.toLowerCase())
-        );
-      }
-      if (request.spaceType) {
-        filteredSpaces = filteredSpaces.filter(space => space.productType === request.spaceType);
-      }
-
+      // Convert request parameters to match NetworkManager search params format
+      const searchParams = {
+        location: request.location,
+        spaceType: request.spaceType,
+        startDate: request.startDate,
+        endDate: request.endDate,
+        startTime: request.startTime,
+        endTime: request.endTime,
+        capacity: request.capacity,
+        priceRange: request.priceRange,
+        facilities: request.facilities,
+        minRating: request.minRating
+      };
+      
+      console.log('Search request parameters:', searchParams);
+      
+      // Call NetworkManager searchSpaces
+      const { NetworkManager } = await import('./api/networkManager');
+      const result = await NetworkManager.searchSpaces(searchParams);
+      
+      // Map the response to SearchSpacesResponseDto
       return new SearchSpacesResponseDto(
-        true,
-        filteredSpaces,
-        filteredSpaces.length,
+        result.success,
+        result.spaces,
+        result.totalCount || result.spaces.length,
         {
           location: request.location,
           spaceType: request.spaceType,
           priceRange: request.priceRange
-        }
+        },
+        result.message
       );
     } catch (error) {
       console.error('Search spaces error:', error);

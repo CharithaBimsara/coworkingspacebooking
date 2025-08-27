@@ -33,19 +33,27 @@ export class SearchSpacesRequestDto {
   spaceType?: string;
   startDate?: string;
   endDate?: string;
+  startTime?: string;
+  endTime?: string;
   capacity?: number;
   priceRange?: {
     min: number;
     max: number;
   };
+  facilities?: string[];
+  minRating?: number | string;
 
   constructor(params: Partial<SearchSpacesRequestDto> = {}) {
     this.location = params.location;
     this.spaceType = params.spaceType;
     this.startDate = params.startDate;
     this.endDate = params.endDate;
+    this.startTime = params.startTime;
+    this.endTime = params.endTime;
     this.capacity = params.capacity;
     this.priceRange = params.priceRange;
+    this.facilities = params.facilities;
+    this.minRating = params.minRating;
   }
 }
 

@@ -84,8 +84,11 @@ export const useBookingStore = defineStore('booking', () => {
   const removeBookingItem = (uniqueKeyToRemove: string) => {
     currentBooking.value = currentBooking.value.filter(item => item.uniqueKey !== uniqueKeyToRemove);
     sessionStorage.setItem('bookingDetails', JSON.stringify(currentBooking.value));
+    
+    // If there are no items left, reset the state and flags
     if (currentBooking.value.length === 0) {
       isAddingMoreServices.value = false;
+      localStorage.removeItem('addAnotherServiceClicked');
     }
   }
 
@@ -97,6 +100,7 @@ export const useBookingStore = defineStore('booking', () => {
   const clearBookingDetails = () => {
     currentBooking.value = []
     sessionStorage.removeItem('bookingDetails')
+    localStorage.removeItem('addAnotherServiceClicked')
     isAddingMoreServices.value = false;
   }
 

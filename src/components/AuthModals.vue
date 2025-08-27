@@ -9,7 +9,7 @@
 
       <form @submit.prevent="handleSignIn" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <label class="block text-sm font-medium text-black mb-1">Email</label>
           <input
             v-model="signInForm.email"
             type="email"
@@ -20,7 +20,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <label class="block text-sm font-medium text-black mb-1">Password</label>
           <input
             v-model="signInForm.password"
             type="password"
@@ -35,7 +35,7 @@
             <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
             <span class="ml-2 text-sm text-gray-600">Remember me</span>
           </label>
-          <a href="#" class="text-sm text-primary hover:text-primary/80">Forgot password?</a>
+          <a href="#" class="text-sm font-bold text-black hover:text-gray-700">Forgot password?</a>
         </div>
 
         <button type="submit" class="w-full btn-primary" :disabled="isSigningIn">
@@ -46,7 +46,7 @@
       <div class="mt-6 text-center">
         <p class="text-gray-600">
           Don't have an account?
-          <button @click="switchToSignUp" class="text-primary hover:text-primary/80 font-medium">
+          <button @click="switchToSignUp" class="font-bold text-black hover:text-gray-700">
             Sign up
           </button>
         </p>
@@ -65,7 +65,7 @@
       <form @submit.prevent="handleSignUp" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+            <label class="block text-sm font-medium text-black mb-1">First Name</label>
             <input
               v-model="signUpForm.firstName"
               type="text"
@@ -75,7 +75,7 @@
             >
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+            <label class="block text-sm font-medium text-black mb-1">Last Name</label>
             <input
               v-model="signUpForm.lastName"
               type="text"
@@ -87,7 +87,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <label class="block text-sm font-medium text-black mb-1">Email</label>
           <input
             v-model="signUpForm.email"
             type="email"
@@ -98,7 +98,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <label class="block text-sm font-medium text-black mb-1">Password</label>
           <input
             v-model="signUpForm.password"
             type="password"
@@ -109,7 +109,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+          <label class="block text-sm font-medium text-black mb-1">Confirm Password</label>
           <input
             v-model="signUpForm.confirmPassword"
             type="password"
@@ -128,8 +128,8 @@
               class="rounded border-gray-300 text-primary focus:ring-primary"
             >
             <span class="ml-2 text-sm text-gray-600">
-              I agree to the <a href="#" class="text-primary hover:text-primary/80">Terms of Service</a> and 
-              <a href="#" class="text-primary hover:text-primary/80">Privacy Policy</a>
+              I agree to the <a href="#" class="font-bold text-black hover:text-gray-700">Terms of Service</a> and 
+              <a href="#" class="font-bold text-black hover:text-gray-700">Privacy Policy</a>
             </span>
           </label>
         </div>
@@ -142,7 +142,7 @@
       <div class="mt-6 text-center">
         <p class="text-gray-600">
           Already have an account?
-          <button @click="switchToSignIn" class="text-primary hover:text-primary/80 font-medium">
+          <button @click="switchToSignIn" class="font-bold text-black hover:text-gray-700">
             Sign in
           </button>
         </p>
@@ -175,7 +175,7 @@ export default defineComponent({
     SuccessOverlay
   },
   
-  emits: ['close', 'user-authenticated'],
+  emits: ['close', 'user-authenticated', 'switch-to-signup', 'switch-to-signin'],
   props: {
     showSignIn: {
       type: Boolean as PropType<boolean>,
@@ -210,19 +210,11 @@ export default defineComponent({
     },
     
     switchToSignUp() {
-      this.$emit('close');
-      this.$nextTick(() => {
-        // @ts-ignore
-        this.$parent.showSignUpModal = true;
-      });
+      this.$emit('switch-to-signup');
     },
     
     switchToSignIn() {
-      this.$emit('close');
-      this.$nextTick(() => {
-        // @ts-ignore
-        this.$parent.showSignInModal = true;
-      });
+      this.$emit('switch-to-signin');
     },
     
     async handleSignIn() {
@@ -352,38 +344,46 @@ export default defineComponent({
 <style scoped>
 .input-field {
   width: 100%;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  border: 1px solid #D1D5DB; /* gray-300 */
-  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #E5E7EB; /* Light gray border */
+  border-radius: 0.5rem;
   outline: none;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  background: #FFFFFF; /* White background */
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease-in-out;
 }
+
 .input-field:focus {
-  border-color: #6366F1; /* primary (example: indigo-500) */
-  box-shadow: 0 0 0 2px #6366F1;
+  border-color: #D1D5DB; /* Lighter gray on focus */
+  outline: none;
 }
 
 .btn-primary {
-  background-color: #6366F1; /* primary (example: indigo-500) */
-  color: #fff;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
+  background-color: #00FE01;
+  color: white;
+  padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  transition: background 0.2s, box-shadow 0.2s;
-  outline: none;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
   border: none;
+  cursor: pointer;
 }
+
 .btn-primary:hover {
-  background-color: #4F46E5; /* primary/90 (example: indigo-600) */
+  background-color: rgba(0, 254, 1, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 254, 1, 0.3);
 }
+
 .btn-primary:focus {
-  box-shadow: 0 0 0 2px #6366F1;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 254, 1, 0.2);
 }
+
 .btn-primary:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 </style>

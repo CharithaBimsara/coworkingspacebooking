@@ -21,10 +21,10 @@
           <router-link :to="myBookingsLink" class="nav-link" :class="{ 'text-primary': $route.path === '/my-bookings' }" @click.prevent="handleMyBookingsClick">
             My Bookings
           </router-link>
-          <router-link to="/about" class="nav-link" :class="{ 'text-primary': $route.path === '/about' }">
+          <router-link to="/#about" class="nav-link" @click="scrollToAbout">
             About
           </router-link>
-          <router-link to="/contact" class="nav-link" :class="{ 'text-primary': $route.path === '/contact' }">
+          <router-link to="/#contact" class="nav-link" @click="scrollToContact">
             Contact
           </router-link>
         </nav>
@@ -81,10 +81,10 @@
           <router-link :to="myBookingsLink" class="mobile-nav-link" @click.prevent="handleMyBookingsClick">
             My Bookings
           </router-link>
-          <router-link to="/about" class="mobile-nav-link" @click="closeMobileMenu">
+          <router-link to="/#about" class="mobile-nav-link" @click="scrollToAbout">
             About
           </router-link>
-          <router-link to="/contact" class="mobile-nav-link" @click="closeMobileMenu">
+          <router-link to="/#contact" class="mobile-nav-link" @click="scrollToContact">
             Contact
           </router-link>
 
@@ -105,7 +105,8 @@
 
     <!-- Auth Modals -->
     <AuthModals :showSignIn="showSignInModal" :showSignUp="showSignUpModal" @close="closeAuthModals"
-      @user-authenticated="handleUserAuthenticated" :contextMessage="authModalContextMessage" :redirectPath="redirectAfterAuth" />
+      @user-authenticated="handleUserAuthenticated" @switch-to-signup="switchToSignUp" @switch-to-signin="switchToSignIn"
+      :contextMessage="authModalContextMessage" :redirectPath="redirectAfterAuth" />
 
     <!-- Sign Out Success Overlay -->
     <SuccessOverlay
@@ -206,6 +207,16 @@ export default defineComponent({
       this.showSignUpModal = false
       this.authModalContextMessage = ''; // Clear the message
     },
+    
+    switchToSignUp() {
+      this.showSignInModal = false
+      this.showSignUpModal = true
+    },
+    
+    switchToSignIn() {
+      this.showSignUpModal = false
+      this.showSignInModal = true
+    },
 
     handleUserAuthenticated(user: UserDto) {
       console.log('User authenticated:', user)
@@ -253,6 +264,74 @@ export default defineComponent({
       if (this.showMobileMenu && !target.closest('header')) {
         this.closeMobileMenu()
       }
+    },
+    
+    scrollToAbout() {
+      // Check if we're on the home page
+      if (this.router?.currentRoute?.value.path !== '/') {
+        // Navigate to home page first, then scroll
+        this.router?.push({ path: '/', hash: 'about' }).then(() => {
+          // Let the router handle the scrolling via the hash
+        }).catch((err: Error) => {
+          console.error('Navigation error:', err);
+        });
+      } else {
+        // Already on home page, just scroll
+        this.scrollToAboutSection();
+      }
+      
+      // Close mobile menu if open
+      this.closeMobileMenu();
+    },
+    
+    scrollToAboutSection() {
+      // Wait for DOM to be ready
+      this.$nextTick(() => {
+        // Try multiple times with increasing delays
+        this.attemptScroll(0, 'about');
+      });
+    },
+    
+    attemptScroll(attempt: number, sectionId: string) {
+      // Find the section element
+      const section = document.getElementById(sectionId);
+      if (section) {
+        // Scroll the section into view with smooth animation
+        section.scrollIntoView({ behavior: 'smooth' });
+      } else if (attempt < 5) {
+        // Try again with increasing delay
+        setTimeout(() => {
+          this.attemptScroll(attempt + 1, sectionId);
+        }, 100 * Math.pow(2, attempt)); // Exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms
+      } else {
+        console.error(`Could not find ${sectionId} section after multiple attempts`);
+      }
+    },
+    
+    scrollToContact() {
+      // Check if we're on the home page
+      if (this.router?.currentRoute?.value.path !== '/') {
+        // Navigate to home page first, then scroll
+        this.router?.push({ path: '/', hash: 'contact' }).then(() => {
+          // Let the router handle the scrolling via the hash
+        }).catch((err: Error) => {
+          console.error('Navigation error:', err);
+        });
+      } else {
+        // Already on home page, just scroll
+        this.scrollToContactSection();
+      }
+      
+      // Close mobile menu if open
+      this.closeMobileMenu();
+    },
+    
+    scrollToContactSection() {
+      // Wait for DOM to be ready
+      this.$nextTick(() => {
+        // Try multiple times with increasing delays
+        this.attemptScroll(0, 'contact');
+      });
     }
   }
 })

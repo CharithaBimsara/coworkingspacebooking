@@ -14,8 +14,7 @@ import PaymentMethods from '../views/PaymentMethods.vue'
 // Lazy load components that might not exist yet
 const BookingConfirmation = () => import('../views/BookingConfirmation.vue').catch(() => import('../views/Home.vue'))
 const Bookings = () => import('../views/Bookings.vue').catch(() => import('../views/Home.vue'))
-const About = () => import('../views/About.vue').catch(() => import('../views/Home.vue'))
-const Contact = () => import('../views/Contact.vue').catch(() => import('../views/Home.vue'))
+// Contact is now integrated in the Home page
 
 
 const routes: RouteRecordRaw[] = [
@@ -69,16 +68,7 @@ const routes: RouteRecordRaw[] = [
       name: 'Bookings',
       component: Bookings
     },
-    {
-      path: '/about',
-      name: 'About',
-      component: About
-    },
-    {
-      path: '/contact',
-      name: 'Contact',
-      component: Contact
-    },
+    // Contact section is now integrated in Home page
     {
       path: '/profile',
       name: 'ProfileSettings',
@@ -95,8 +85,21 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // always scroll to top
-    return { top: 0 }
+    // If there's a hash in the URL, scroll to it
+    if (to.hash) {
+      // Return a promise to allow for a delay (ensures element exists)
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            el: to.hash,
+            behavior: 'smooth',
+            top: 15 // Add a small offset to account for fixed header
+          });
+        }, 500); // Small delay to ensure the page is fully rendered
+      });
+    }
+    // Otherwise scroll to top
+    return { top: 0 };
   },
 })
 

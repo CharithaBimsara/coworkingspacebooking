@@ -24,47 +24,47 @@
       </div>
       <div 
         v-if="showCalendar" 
-        class="absolute top-full w-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-60 p-4"
-        style="min-width: 295px;"
+        class="absolute top-full w-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 calendar-dropdown"
+        style="z-index: 9999;"
       >
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center justify-between mb-3">
           <button 
             @click="previousMonth"
-            class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            class="p-1 hover:bg-gray-100 rounded transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h3 class="text-lg font-semibold text-gray-900">
+          <h3 class="text-sm font-semibold text-gray-900">
             {{ currentMonthYear }}
           </h3>
           <button 
             @click="nextMonth"
-            class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            class="p-1 hover:bg-gray-100 rounded transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
-        <div class="grid grid-cols-7 gap-1 mb-2">
+        <div class="grid grid-cols-7 gap-0.5 mb-2">
           <div 
             v-for="day in daysOfWeek" 
             :key="day"
-            class="text-center text-xs font-medium text-gray-500 py-2"
+            class="text-center text-xs font-medium text-gray-500 py-1"
           >
             {{ day }}
           </div>
         </div>
-        <div class="grid grid-cols-7 gap-1">
+        <div class="grid grid-cols-7 gap-0.5">
           <button
             v-for="date in calendarDays"
             :key="date.key"
             @click="selectDate(date)"
             :disabled="date.disabled"
             :class="getDateClasses(date)"
-            class="h-10 text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-1"
+            class="h-7 text-xs rounded transition-colors focus:outline-none focus:ring-1 focus:ring-black"
           >
             {{ date.day }}
           </button>
@@ -248,9 +248,55 @@ export default defineComponent({
   border-radius: 0.5rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 0.75rem; /* Compact size */
 }
+
 .input-field:focus {
   border-color: #6366F1;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+/* Calendar dropdown styling */
+.calendar-dropdown {
+  width: 100% !important;
+  min-width: auto !important;
+  max-width: none !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #d1d5db;
+}
+
+/* Ensure calendar dropdown has highest z-index and proper positioning */
+.single-date-picker {
+  position: relative;
+}
+
+/* Global override for calendar positioning */
+:deep(.single-date-picker) .absolute {
+  z-index: 10000 !important;
+}
+
+/* Ultra compact mode - when parent has ultra-compact class */
+:global(.ultra-compact) .single-date-picker .input-field {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.75rem;
+  min-height: 2rem;
+}
+
+:global(.ultra-compact) .single-date-picker .calendar-dropdown {
+  padding: 0.5rem;
+  font-size: 0.75rem;
+}
+
+:global(.ultra-compact) .single-date-picker .calendar-dropdown h3 {
+  font-size: 0.75rem;
+}
+
+:global(.ultra-compact) .single-date-picker .calendar-dropdown button {
+  height: 1.5rem;
+  font-size: 0.625rem;
+}
+
+:global(.ultra-compact) .single-date-picker .calendar-dropdown .text-xs {
+  font-size: 0.625rem;
 }
 </style>
