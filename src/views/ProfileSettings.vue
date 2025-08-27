@@ -334,11 +334,11 @@ export default defineComponent({
           name: 'Security',
           icon: 'LockIcon'
         },
-        {
-          id: 'preferences',
-          name: 'Preferences',
-          icon: 'CogIcon'
-        }
+        // {
+        //   id: 'preferences',
+        //   name: 'Preferences',
+        //   icon: 'CogIcon'
+        // }
       ],
       
       profileForm: {

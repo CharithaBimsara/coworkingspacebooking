@@ -1,15 +1,18 @@
 <template>
-  <header class="bg-white  border-b border-gray-100 sticky top-0  z-50"> 
-    <div class="max-w-8xl mx-auto  px-5 container-padding">
+  <header class="bg-white border-b border-gray-100 sticky top-0 z-50"> 
+    <div class="max-w-8xl mx-auto px-5 container-padding">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
         <div class="flex items-center">
-          <router-link to="/" class="flex items-center space-x-2">
-            <div
-              class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span class="text-white font-bold text-sm">W</span>
+          <router-link to="/" class="flex items-center">
+            <div class="h-10 w-auto">
+              <img 
+                :src="logoUrl" 
+                alt="Company Logo" 
+                class="h-full w-auto object-contain"
+                style="max-width: 180px;"
+              />
             </div>
-            <span class="text-xl font-heading font-bold text-gray-900">WorkSpace</span>
           </router-link>
         </div>
 
@@ -27,6 +30,15 @@
           <router-link to="/#contact" class="nav-link" @click="scrollToContact">
             Contact
           </router-link>
+          <!-- Sign In and Sign Up buttons, shown only when user is not logged in -->
+          <template v-if="!currentUser">
+            <button @click="openLogin('', '/my-bookings')" class="nav-link">
+              Sign In
+            </button>
+            <button @click="() => openSignUp('', '/my-bookings')" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+              Sign Up
+            </button>
+          </template>
         </nav>
 
         <!-- User Actions -->
@@ -88,6 +100,16 @@
             Contact
           </router-link>
 
+          <!-- Mobile Authentication Options -->
+          <div v-if="!currentUser" class="pt-4 border-t border-gray-200">
+            <button @click="openLogin('', '/my-bookings')" class="mobile-nav-link text-left w-full">
+              Sign In
+            </button>
+            <button @click="() => openSignUp('', '/my-bookings')" class="mobile-nav-link text-left w-full font-semibold text-primary">
+              Sign Up
+            </button>
+          </div>
+
           <div v-if="currentUser" class="pt-4 border-t border-gray-200">
             <router-link to="/profile" class="mobile-nav-link" @click="closeMobileMenu">
               Profile Settings
@@ -126,12 +148,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import AuthModals from './AuthModals.vue'
-import SuccessOverlay from './SuccessOverlay.vue' // Import SuccessOverlay
-import type { UserDto } from '../dto/response'
-import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
+import { defineComponent } from 'vue';
+import { useAuthStore } from '../stores/auth';
+import { useRouter } from 'vue-router';
+import AuthModals from './AuthModals.vue';
+import SuccessOverlay from './SuccessOverlay.vue';
+import { UserDto, CompanyProfileDto } from '../dto/response';
 
 export default defineComponent({
   name: 'AppHeader',
@@ -149,7 +171,11 @@ export default defineComponent({
       authModalContextMessage: '', // New data property
       redirectAfterAuth: '', // New data property
       authStore: null as any, // Initialize authStore as null
-      router: null as any // Initialize router as null
+      router: null as any, // Initialize router as null
+      companyName: '', // Will be populated from hardcoded values
+      companyProfile: null as CompanyProfileDto | null,
+      logoUrl: '/logo.png', // Hardcoded logo URL (default)
+      isHeaderLoading: true // Loading state for header
     }
   },
 
@@ -170,6 +196,14 @@ export default defineComponent({
     this.router = useRouter();
   },
 
+  beforeMount() {
+    // Load hardcoded company profile data before mounting
+    this.loadCompanyProfile()
+      .catch(error => {
+        console.error("Error setting company profile in header:", error);
+      });
+  },
+
   mounted() {
     // Initialize auth store
     this.authStore?.initializeAuth()
@@ -188,6 +222,14 @@ export default defineComponent({
     openLogin(message: string = '', redirectPath: string = '/my-bookings') { // Modified to accept message and redirectPath
       console.log('Opening login modal')
       this.showSignInModal = true
+      this.authModalContextMessage = message; // Set the message
+      this.redirectAfterAuth = redirectPath; // Set the redirect path
+      this.closeMobileMenu()
+    },
+    
+    openSignUp(message: string = '', redirectPath: string = '/my-bookings') {
+      console.log('Opening signup modal')
+      this.showSignUpModal = true
       this.authModalContextMessage = message; // Set the message
       this.redirectAfterAuth = redirectPath; // Set the redirect path
       this.closeMobileMenu()
@@ -332,6 +374,35 @@ export default defineComponent({
         // Try multiple times with increasing delays
         this.attemptScroll(0, 'contact');
       });
+    },
+    
+    loadCompanyProfile() {
+      // Use hardcoded values instead of API call
+      try {
+        const profileData = {
+          name: 'Squarehub',
+          email: 'contact@squarehub.com',
+          phone: '+1 (123) 456-7890',
+          address: '123 Workspace Avenue, Business District, Colombo',
+          image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+          logoUrl: '/logo.png'
+        };
+        
+        this.companyProfile = profileData;
+        this.companyName = profileData.name;
+        this.logoUrl = profileData.logoUrl;
+        console.log('Set hardcoded company profile in header:', this.companyProfile);
+        
+        // Turn off loading immediately
+        this.isHeaderLoading = false;
+        
+        return Promise.resolve(profileData);
+      } catch (error) {
+        console.error('Error setting company profile:', error);
+        this.companyName = 'Squarehub';
+        this.isHeaderLoading = false;
+        return Promise.reject(error);
+      }
     }
   }
 })

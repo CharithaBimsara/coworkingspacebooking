@@ -251,7 +251,7 @@ export default defineComponent({
           // Show success overlay
           this.showSuccessOverlay = true;
           this.successTitle = 'Welcome Back!';
-          this.successMessage = response.message || 'You have successfully signed in to your account.';
+          this.successMessage = response.message || 'You have successfully signed in to your account. Do you need to see your bookings?';
           this.successAction = {
             text: 'Continue',
             action: () => {

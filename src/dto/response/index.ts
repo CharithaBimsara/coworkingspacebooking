@@ -13,6 +13,29 @@ export class BaseResponseDto {
   }
 }
 
+// Company Profile DTO
+export class CompanyProfileDto {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  image: string;
+
+  constructor(params: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    image: string;
+  }) {
+    this.name = params.name;
+    this.email = params.email;
+    this.phone = params.phone;
+    this.address = params.address;
+    this.image = params.image;
+  }
+}
+
 // User and Authentication Response DTOs
 export class UserDto {
   id: number;
@@ -460,5 +483,28 @@ export class NewsletterResponseDto extends BaseResponseDto {
   constructor(success: boolean, subscribed: boolean, message?: string) {
     super(success, message);
     this.subscribed = subscribed;
+  }
+}
+
+// Booked Time Slots Response DTO
+export class BookedTimeSlotDto {
+  start_time: string;
+  end_time: string;
+
+  constructor(startTime: string, endTime: string) {
+    this.start_time = startTime;
+    this.end_time = endTime;
+  }
+}
+
+export class BookedTimeSlotsResponseDto {
+  status_code: number;
+  message: string;
+  data: BookedTimeSlotDto[];
+  
+  constructor(statusCode: number, message: string, data: BookedTimeSlotDto[]) {
+    this.status_code = statusCode;
+    this.message = message;
+    this.data = data;
   }
 }

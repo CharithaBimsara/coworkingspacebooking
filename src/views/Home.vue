@@ -1,5 +1,11 @@
 <template>
-  <div class="min-h-screen bg-white">
+  <div v-if="isLoading" class="min-h-screen flex items-center justify-center bg-white">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+      <p class="text-gray-600 text-lg">Loading...</p>
+    </div>
+  </div>
+  <div v-else class="min-h-screen bg-white">
     <!-- Hero Section -->
     <section class="relative bg-gradient-to-br from-gray-50 to-white overflow-hidden">
       <div class="max-w-7xl mx-auto container-padding section-padding">
@@ -8,7 +14,7 @@
             <h1 class="text-4xl lg:text-5xl xl:text-6xl font-heading font-bold text-gray-900 leading-tight">
               Find Your Perfect
               <span class="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
-                Workspace
+                WorkSpace
               </span>
             </h1>
             <p class="text-xl text-gray-600 leading-relaxed">
@@ -38,15 +44,14 @@
             </div>
           </div>
 
-          <!-- Hero Image Slideshow -->
+          <!-- Hero Image -->
           <div class="relative">
             <div class="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary/10 rounded-2xl overflow-hidden">
-              <div class="flex w-full h-full transition-transform duration-500 ease-in-out"
-                :style="{ transform: `translateX(-${currentHeroSlide * 100}%)` }">
-                <div v-for="(image, index) in heroImages" :key="index" class="w-full flex-shrink-0">
-                  <img :src="image.src" :alt="image.alt" class="w-full h-full object-cover absolute top-0 left-0">
-                </div>
-              </div>
+              <img 
+                :src="companyProfile.image || heroImages[0].src" 
+                :alt="companyProfile.name" 
+                class="w-full h-full object-cover"
+              >
             </div>
             <!-- Floating cards -->
             <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg border border-gray-100">
@@ -272,7 +277,7 @@
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-12">
           <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
-            Why Choose WorkSpace?
+            Why Choose {{ companyProfile.name }}?
           </h2>
           <p class="text-xl text-gray-600 max-w-2xl mx-auto">
             We make dedicated desk simple, flexible, and affordable for modern professionals
@@ -366,7 +371,7 @@
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-12">
           <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
-            About WorkSpace
+            About {{ companyProfile.name }}
           </h2>
           <p class="text-xl text-gray-600 max-w-2xl mx-auto">
             Your premium coworking solution for modern professionals
@@ -387,7 +392,7 @@
           <div class="space-y-6">
             <h3 class="text-2xl font-semibold text-gray-900">Creating Productive Work Environments</h3>
             <p class="text-gray-600 leading-relaxed">
-              At WorkSpace, we believe in providing more than just a desk. Our mission is to create environments where 
+              At {{ companyProfile.name }}, we believe in providing more than just a desk. Our mission is to create environments where 
               professionals thrive, connections are made, and productivity reaches new heights.
             </p>
             <p class="text-gray-600 leading-relaxed">
@@ -442,7 +447,7 @@
                 </div>
                 <div>
                   <h4 class="text-lg font-medium text-gray-900">Email Us</h4>
-                  <a href="mailto:info@workspace.com" class="text-primary hover:underline">info@workspace.com</a>
+                  <a :href="'mailto:' + companyProfile.email" class="text-gray-900 hover:underline">{{ companyProfile.email }}</a>
                 </div>
               </div>
               
@@ -455,7 +460,7 @@
                 </div>
                 <div>
                   <h4 class="text-lg font-medium text-gray-900">Call Us</h4>
-                  <p class="text-gray-600">+1 (555) 123-4567</p>
+                  <a :href="'tel:' + companyProfile.phone" class="text-gray-900 hover:underline">{{ companyProfile.phone }}</a>
                 </div>
               </div>
               
@@ -469,7 +474,8 @@
                 </div>
                 <div>
                   <h4 class="text-lg font-medium text-gray-900">Headquarters</h4>
-                  <p class="text-gray-600">123 Workspace Ave, Suite 400<br>San Francisco, CA 94107</p>
+                  <p class="text-gray-600">{{ companyProfile.address }}</p>
+                  <!-- <p class="text-gray-600">123 Workspace Ave, Suite 400<br>San Francisco, CA 94107</p> -->
                 </div>
               </div>
             </div>
@@ -540,7 +546,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Brand & Description -->
           <div class="space-y-4">
-            <h3 class="text-2xl font-heading font-bold">WorkSpace</h3>
+            <h3 class="text-2xl font-heading font-bold">{{ companyProfile.name }}</h3>
             <p class="text-gray-400 text-sm">
               Discover premium workspaces designed for productivity, flexibility, and collaboration. Book your perfect
               space today.
@@ -595,10 +601,10 @@
           <div class="space-y-4">
             <h4 class="text-lg font-semibold">Contact Us</h4>
             <ul class="space-y-2 text-gray-400 text-sm">
-              <li><a href="mailto:support@workspace.com"
-                  class="hover:text-white transition-colors">support@workspace.com</a></li>
-              <li><a href="tel:+1234567890" class="hover:text-white transition-colors">+1 (234) 567-890</a></li>
-              <li>123 Workspace Ave, New York, NY 10001</li>
+              <li><a :href="'mailto:' + companyProfile.email"
+                  class="hover:text-white transition-colors">{{ companyProfile.email }}</a></li>
+              <li><a :href="'tel:' + companyProfile.phone" class="hover:text-white transition-colors">{{ companyProfile.phone }}</a></li>
+              <li>{{ companyProfile.address }}</li>
             </ul>
           </div>
 
@@ -620,7 +626,7 @@
           </div>
         </div>
         <div class="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-          <p>&copy; {{ currentYear }} WorkSpace. All rights reserved.</p>
+          <p>&copy; {{ currentYear }} {{ companyProfile.name }}. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -631,10 +637,7 @@
 import { defineComponent } from 'vue';
 import LocationDropdown from '../components/LocationDropdown.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
-import { HomeAPI } from '../api';
-import { NetworkManager } from '../api/networkManager';
-import { NewsletterSubscriptionRequestDto } from '../dto/request';
-import type { SpaceDto, AdvertisementDto, TestimonialDto } from '../dto/response';
+import type { SpaceDto, AdvertisementDto, TestimonialDto, CompanyProfileDto } from '../dto/response';
 
 interface SearchForm {
   location: string;
@@ -666,6 +669,7 @@ export default defineComponent({
         location: '',
         spaceType: ''
       } as SearchForm,
+      isLoading: true, // New loading state for initial data fetching
       isSearching: false,
       isLoadingSpaces: false,
       isSubscribing: false,
@@ -675,13 +679,18 @@ export default defineComponent({
       footerNewsletterEmail: '',
       footerSubscriptionMessage: '',
       currentSlide: 0,
-      currentHeroSlide: 0,
       slideInterval: null as number | null,
-      heroSlideInterval: null as number | null,
       advertisements: [] as AdvertisementDto[],
       featuredSpaces: [] as SpaceDto[],
       testimonials: [] as TestimonialDto[],
       locations: [] as string[], // Real locations from API
+      companyProfile: {
+        name: 'WorkSpace',
+        email: 'support@workspace.com',
+        phone: '+1 (234) 567-890',
+        address: '123 Workspace Ave, New York, NY 10001',
+        image: ''
+      } as CompanyProfileDto,
       spaceTypeOptions: [
         {
           value: '',
@@ -706,7 +715,7 @@ export default defineComponent({
       ] as SpaceTypeOption[],
       heroImages: [
         {
-          src: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+          src: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
           alt: 'Modern dedicated desk'
         },
         {
@@ -714,7 +723,7 @@ export default defineComponent({
           alt: 'Professional meeting room'
         },
         {
-          src: 'https://images.unsplash.com/photo-1503428593583-5675fc6fd47f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+          src: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
           alt: 'Flexible hot desk'
         }
       ] as HeroImage[]
@@ -727,15 +736,20 @@ export default defineComponent({
     }
   },
 
-  async mounted() {
-    await this.loadHomePageData();
+  beforeMount() {
+    // Use hardcoded values instead of loading from API
+    this.setHardcodedValues();
+    // Turn off loading state immediately
+    this.isLoading = false;
+  },
+  
+  mounted() {
+    // Start slideshow after mounting
     this.startSlideshow();
-    this.startHeroSlideshow();
   },
 
   beforeUnmount() {
     this.stopSlideshow();
-    this.stopHeroSlideshow();
   },
 
   methods: {
@@ -783,129 +797,201 @@ export default defineComponent({
      *
      * When backend is ready, uncomment the above and remove the mock/demo data.
      */
-    async loadHomePageData(): Promise<void> {
-      this.isLoadingSpaces = true;
-      try {
-        // Load locations from NetworkManager API
-        try {
-          const locationsRes = await NetworkManager.getLocations();
-          this.locations = locationsRes;
-          console.log('Loaded locations:', this.locations);
-        } catch (error) {
-          console.error('Error loading locations:', error);
-          // Keep empty array if API fails
-          this.locations = [];
+    // Removed loadHomePageData method - using hardcoded values instead
+    
+    // Instead of API calls, set hardcoded values
+    setHardcodedValues(): void {
+      // Set hardcoded company profile
+      this.companyProfile = {
+        name: 'Squarehub',
+        email: 'contact@squarehub.com',
+        phone: '+1 (123) 456-7890',
+        address: '123 Workspace Avenue, Business District, Colombo',
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      };
+      
+      // Set hardcoded featured spaces
+      this.featuredSpaces = [
+        {
+          id: 1,
+          name: 'Executive Meeting Room',
+          description: 'Professional meeting space with modern amenities for your business needs',
+          location: 'Kandy Lakeside',
+          address: '123 Kandy Street, Kandy',
+          productType: 'meeting-room',
+          images: [
+            'https://images.unsplash.com/photo-1517502884422-41eaead166d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+          ],
+          rating: 4.8,
+          reviews: 124,
+          pricing: {
+            hourly: 25,
+            daily: 180
+          },
+          capacity: 12,
+          maxCapacity: 15,
+          features: ['wifi', 'High-Speed WiFi', 'projector', '4K Display', 'whiteboard', 'coffee', 'printing'],
+          isAvailable: true,
+          availability: [
+            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
+          ]
+        },
+        {
+          id: 2,
+          name: 'Hot Desk Premium',
+          description: 'Flexible workspace for professionals on the go',
+          location: 'Colombo Central',
+          address: '45 Main Street, Colombo',
+          productType: 'hot-desk',
+          images: [
+            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+          ],
+          rating: 4.5,
+          reviews: 89,
+          pricing: {
+            daily: 35
+          },
+          capacity: 1,
+          maxCapacity: 1,
+          features: ['wifi', 'coffee', 'printing', 'locker'],
+          isAvailable: true,
+          availability: [
+            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
+          ]
+        },
+        {
+          id: 3,
+          name: 'Dedicated Office Space',
+          description: 'Private office space with 24/7 access',
+          location: 'Galle Fort',
+          address: '78 Fort Road, Galle',
+          productType: 'dedicated-desk',
+          images: [
+            'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+          ],
+          rating: 4.9,
+          reviews: 45,
+          pricing: {
+            monthly: 350
+          },
+          capacity: 1,
+          maxCapacity: 1,
+          features: ['wifi', 'coffee', 'printing', 'parking', '24-7-access', 'meeting-room-credits'],
+          isAvailable: true,
+          availability: [
+            { date: '2025-08-27', slots: [{ startTime: '00:00', endTime: '23:59' }] }
+          ]
         }
-
-        // Example: Uncomment and use real API calls when backend is ready
-        // const spaceTypesRes = await networkManager.getSpaceTypes();
-        // this.spaceTypeOptions = spaceTypesRes;
-        // const heroImagesRes = await networkManager.getHeroImages();
-        // this.heroImages = heroImagesRes;
-        // const adsRes = await networkManager.getAdvertisements();
-        // this.advertisements = adsRes;
-        // const featuredRes = await networkManager.getFeaturedSpaces();
-        // this.featuredSpaces = featuredRes;
-        // const testimonialsRes = await networkManager.getTestimonials();
-        // this.testimonials = testimonialsRes;
-        // const brandingRes = await networkManager.getBranding();
-        // this.logoUrl = brandingRes.logoUrl;
-        // this.websiteName = brandingRes.websiteName;
-        // const contactRes = await networkManager.getFooterContact();
-        // this.footerEmail = contactRes.email;
-        // this.footerPhone = contactRes.phone;
-        // this.footerAddress = contactRes.address;
-        //
-        // For now, use mock/demo data for other sections:
-        const response = await HomeAPI.getHomePageData();
-        if (response.success) {
-          this.featuredSpaces = response.featuredSpaces || [];
-          this.advertisements = response.advertisements || [];
-          this.testimonials = response.testimonials || [];
-        } else {
-          console.error('Failed to load home page data:', response.message);
+      ];
+      
+      // Set hardcoded testimonials
+      this.testimonials = [
+        {
+          id: 1,
+          name: 'Sarah Chen',
+          role: 'Marketing Director',
+          rating: 5,
+          content: 'The workspace is amazing! Perfect for our team meetings and collaborative sessions.',
+          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+        },
+        {
+          id: 2,
+          name: 'Michael Ross',
+          role: 'Software Engineer',
+          rating: 5,
+          content: 'Great location and excellent technology setup. The high-speed internet is reliable.',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+        },
+        {
+          id: 3,
+          name: 'Emma Wilson',
+          role: 'Graphic Designer',
+          rating: 4,
+          content: 'Love the natural light and creative atmosphere. Perfect for my design work.',
+          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
         }
-      } catch (error) {
-        console.error('Error loading home page data:', error);
-      } finally {
-        this.isLoadingSpaces = false;
-      }
+      ];
+      
+      // Set hardcoded locations
+      this.locations = ['Colombo', 'Kandy', 'Galle', 'Negombo', 'Jaffna'];
+      
+      // Set hardcoded advertisements
+      this.advertisements = [
+        {
+          id: 1,
+          title: 'Summer Discount',
+          description: 'Get 20% off on all workspace bookings this summer',
+          image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+          buttonText: 'Learn More',
+          link: '/promotions/summer'
+        },
+        {
+          id: 2,
+          title: 'Corporate Packages',
+          description: 'Special rates for businesses with 10+ employees',
+          image: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+          buttonText: 'View Packages',
+          link: '/corporate'
+        }
+      ];
     },
 
-    async searchSpaces(): Promise<void> {
+    searchSpaces(): void {
       this.isSearching = true;
-      try {
-        const query: Record<string, string> = {};
-        if (this.searchForm.location) query.location = this.searchForm.location;
-        if (this.searchForm.spaceType) query.spaceType = this.searchForm.spaceType;
+      
+      const query: Record<string, string> = {};
+      if (this.searchForm.location) query.location = this.searchForm.location;
+      if (this.searchForm.spaceType) query.spaceType = this.searchForm.spaceType;
 
-        await this.$router.push({ name: 'SearchResults', query });
-      } catch (error) {
-        console.error('Error during search:', error);
-      } finally {
-        this.isSearching = false;
-      }
+      this.$router.push({ name: 'SearchResults', query })
+        .catch(error => console.error('Error during search:', error))
+        .finally(() => this.isSearching = false);
     },
 
-    async viewSpace(id: number): Promise<void> {
-      try {
-        await this.$router.push({
-          name: 'SpaceDetails',
-          params: { id: id.toString() }
-        });
-      } catch (error) {
-        console.error('Error navigating to space details:', error);
-      }
+    viewSpace(id: number): void {
+      this.$router.push({
+        name: 'SpaceDetails',
+        params: { id: id.toString() }
+      })
+      .catch(error => console.error('Error navigating to space details:', error));
     },
 
-    async subscribeNewsletter(): Promise<void> {
+    subscribeNewsletter(): void {
       if (!this.newsletterEmail) return;
 
       this.isSubscribing = true;
       this.subscriptionMessage = '';
-      try {
-        const request = new NewsletterSubscriptionRequestDto(this.newsletterEmail);
-        const response = await HomeAPI.subscribeNewsletter(request);
-        if (response.success) {
-          this.subscriptionMessage = response.message || 'Successfully subscribed!';
-          this.newsletterEmail = '';
-        } else {
-          this.subscriptionMessage = response.message || 'Failed to subscribe. Please try again.';
-        }
-      } catch (error) {
-        console.error('Newsletter subscription error:', error);
-        this.subscriptionMessage = 'An error occurred. Please try again.';
-      } finally {
+      
+      // Mock successful subscription without API call
+      setTimeout(() => {
+        this.subscriptionMessage = 'Successfully subscribed!';
+        this.newsletterEmail = '';
         this.isSubscribing = false;
+        
+        // Clear message after delay
         setTimeout(() => {
           this.subscriptionMessage = '';
         }, 5000);
-      }
+      }, 500); // Simulate network delay
     },
 
-    async subscribeFooterNewsletter(): Promise<void> {
+    subscribeFooterNewsletter(): void {
       if (!this.footerNewsletterEmail) return;
 
       this.isSubscribing = true;
       this.footerSubscriptionMessage = '';
-      try {
-        const request = new NewsletterSubscriptionRequestDto(this.footerNewsletterEmail);
-        const response = await HomeAPI.subscribeNewsletter(request);
-        if (response.success) {
-          this.footerSubscriptionMessage = response.message || 'Successfully subscribed!';
-          this.footerNewsletterEmail = '';
-        } else {
-          this.footerSubscriptionMessage = response.message || 'Failed to subscribe. Please try again.';
-        }
-      } catch (error) {
-        console.error('Footer newsletter subscription error:', error);
-        this.footerSubscriptionMessage = 'An error occurred. Please try again.';
-      } finally {
+      
+      // Mock successful subscription without API call
+      setTimeout(() => {
+        this.footerSubscriptionMessage = 'Successfully subscribed!';
+        this.footerNewsletterEmail = '';
         this.isSubscribing = false;
+        
+        // Clear message after delay
         setTimeout(() => {
           this.footerSubscriptionMessage = '';
         }, 5000);
-      }
+      }, 500); // Simulate network delay
     },
 
     nextSlide(): void {
@@ -933,24 +1019,7 @@ export default defineComponent({
       }
     },
 
-    nextHeroSlide(): void {
-      if (this.heroImages.length > 0) {
-        this.currentHeroSlide = (this.currentHeroSlide + 1) % this.heroImages.length;
-      }
-    },
-
-    startHeroSlideshow(): void {
-      if (this.heroImages.length > 1) {
-        this.heroSlideInterval = window.setInterval(this.nextHeroSlide, 5000);
-      }
-    },
-
-    stopHeroSlideshow(): void {
-      if (this.heroSlideInterval) {
-        clearInterval(this.heroSlideInterval);
-        this.heroSlideInterval = null;
-      }
-    },
+    // Hero slideshow methods removed - using single static hero image
 
     getStartingPrice(space: SpaceDto): number {
       if (space.pricing) {
@@ -970,18 +1039,57 @@ export default defineComponent({
 
 <style scoped>
 .container-padding {
-  @apply px-4 sm:px-6 lg:px-8;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .container-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 .section-padding {
-  @apply py-12 lg:py-16;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
 }
 
 .card {
-  @apply bg-white rounded-xl shadow-md transition-all duration-200;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition-property: all;
+  transition-duration: 200ms;
 }
 
 .btn-primary {
-  @apply bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition-property: background-color;
+  transition-duration: 200ms;
+}
+.btn-primary:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.9);
+}
+.btn-primary:focus {
+  outline: none;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--color-primary);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 </style>

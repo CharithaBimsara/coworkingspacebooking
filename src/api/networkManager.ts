@@ -2,7 +2,7 @@
 // NetworkManager for Home Page APIs (do not import or use in Home.vue yet)
 // Each method simulates a real API call and includes backend response format as comments.
 
-import type { SpaceDto, AdvertisementDto, TestimonialDto } from '../dto/response';
+import type { SpaceDto, AdvertisementDto, TestimonialDto, CompanyProfileDto } from '../dto/response';
 import { SearchSpacesRequestDto } from '../dto/request';
 
 export class NetworkManager {
@@ -45,6 +45,58 @@ export class NetworkManager {
     } catch (error) {
       console.error('Error fetching locations:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Get company profile information including name, contact details, and hero image.
+   * Backend expects:
+   *   { "id": 1 }
+   * Backend returns:
+   *   { 
+   *     "status_code": 200, 
+   *     "message": "Company retrieved successfully", 
+   *     "data": {
+   *       "name": "Squarehub",
+   *       "email": "stri@gmail.con",
+   *       "phone": "0111234567",
+   *       "address": "stringghgiu",
+   *       "image": "/uploads/Company/9064f3f4-f8d8-4938-b69d-e2d1b928dfa0.jpeg"
+   *     }
+   *   }
+   * Frontend maps: response.data (CompanyProfileDto)
+   */
+  static async getCompanyProfile(): Promise<CompanyProfileDto | null> {
+    try {
+      const response = await fetch(`http://192.168.2.10:9011/api/company-profile/get-company-profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: 1 })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.status_code === 200 && data.data) {
+        // Extract company profile data from the response
+        return {
+          name: data.data.name || '',
+          email: data.data.email || '',
+          phone: data.data.phone || '',
+          address: data.data.address || '',
+          image: data.data.image || ''
+        };
+      } else {
+        throw new Error(data.message || 'Failed to fetch company profile');
+      }
+    } catch (error) {
+      console.error('Error fetching company profile:', error);
+      return null;
     }
   }
 
@@ -692,29 +744,64 @@ export class NetworkManager {
     };
   }
 
-  static async getBookedTimeSlots(spaceId: number, date: string): Promise<Array<{ startTime: string; endTime: string }>> {
+  /**
+   * Get booked time slots for a specific space on a specific date.
+   * Backend expects:
+   *   { 
+   *     "product_id": 1,
+   *     "booking_date": "2025-08-27"
+   *   }
+   * Backend returns:
+   *   { 
+   *     "status_code": 200, 
+   *     "message": "Booked time durations retrieved successfully", 
+   *     "data": [
+   *       {
+   *         "start_time": "2025-08-27T08:32:42.465",
+   *         "end_time": "2025-08-27T10:32:42.465"
+   *       }
+   *     ] 
+   *   }
+   * Frontend maps: Array<{ startTime: string; endTime: string }>
+   */
+  static async getBookedTimeSlots(productId: number, bookingDate: string): Promise<Array<{ startTime: string; endTime: string }>> {
     try {
-      // Mock data for now - replace with real API call when backend is ready
-      // const response = await fetch(`${this.BASE_URL}/spaces/${spaceId}/booked-slots`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ date })
-      // });
-      // const data = await response.json();
-      // return data.data.bookedSlots;
-
-      // Mock booked time slots for testing
-      const mockBookedSlots = [
-        { startTime: '09:00', endTime: '10:30' },
-        { startTime: '11:00', endTime: '12:00' },
-        { startTime: '14:00', endTime: '16:00' },
-        { startTime: '17:30', endTime: '18:30' }
-      ];
+      const response = await fetch(`http://192.168.2.10:9011/api/booking/get-booked-time-durations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          product_id: productId,
+          booking_date: bookingDate
+        })
+      });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
-      return mockBookedSlots;
+      const data = await response.json();
+      
+      if (data.status_code === 200 && Array.isArray(data.data)) {
+        // Transform the API response to the expected format
+        return data.data.map((slot: { start_time: string; end_time: string }) => {
+          // Extract time from ISO date string (e.g., "2025-08-27T08:32:42.465" -> "08:32")
+          const extractTime = (isoString: string): string => {
+            if (!isoString.includes('T')) return isoString;
+            const timePart = isoString.split('T')[1];
+            const [hours, minutes] = timePart.split(':');
+            return `${hours}:${minutes}`;
+          };
+          
+          return {
+            startTime: extractTime(slot.start_time),
+            endTime: extractTime(slot.end_time)
+          };
+        });
+      } else {
+        throw new Error(data.message || 'Failed to fetch booked time slots');
+      }
     } catch (error) {
       console.error('Error fetching booked time slots:', error);
       return [];
@@ -767,3 +854,4 @@ export class NetworkManager {
     }
   }
 }
+

@@ -33,7 +33,7 @@
         </button>
         <button 
           @click="closeOverlay"
-          class="btn-primary px-6 py-2"
+          class="btn-secondary px-6 py-2"
         >
           {{ closeText }}
         </button>
@@ -107,7 +107,7 @@ export default defineComponent({
 
 <style scoped>
 .btn-primary {
-  background-color: #6366F1;
+  background-color:#00FE01 ;
   color: white;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -118,7 +118,7 @@ export default defineComponent({
   background-color: #5B5CF6;
 }
 
-.btn-primary {
+.btn-secondary {
   background-color: #F3F4F6;
   color: #374151;
   border-radius: 0.5rem;
@@ -126,7 +126,7 @@ export default defineComponent({
   transition: background-color 0.2s;
 }
 
-.btn-primary:hover {
+.btn-secondary:hover {
   background-color: #E5E7EB;
 }
 </style>

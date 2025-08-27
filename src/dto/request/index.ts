@@ -287,3 +287,14 @@ export class UpdateBillingAddressRequestDto {
     this.country = params.country;
   }
 }
+
+// Booked Time Slots Request DTO
+export class BookedTimeSlotsRequestDto {
+  product_id: number;
+  booking_date: string;
+
+  constructor(productId: number, bookingDate: string) {
+    this.product_id = productId;
+    this.booking_date = bookingDate;
+  }
+}

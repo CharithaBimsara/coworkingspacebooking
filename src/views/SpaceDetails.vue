@@ -1306,8 +1306,16 @@ export default defineComponent({
     },
 
     timeToMinutes(timeString: string): number {
-      const [hours, minutes] = timeString.split(':').map(Number);
-      return hours * 60 + minutes;
+      // If timeString is in ISO format like '2025-08-27T08:32:42.465'
+      if (timeString.includes('T')) {
+        const timeComponent = timeString.split('T')[1]; // Extract the time part
+        const [hours, minutes] = timeComponent.split(':').map(Number);
+        return hours * 60 + minutes;
+      } else {
+        // Handle regular time format like '08:30'
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
+      }
     },
 
     onTimeRangeStartChange() {

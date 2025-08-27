@@ -8,7 +8,8 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserDto | null>(null)
   const token = ref<string | null>(null)
   const isLoading = ref(false)
-  const showSignOutMessage = ref(false) // New state for sign-out message
+  const showSignOutMessage = ref(false) // State for sign-out message
+  const showSignInMessage = ref(false) // State for sign-in success message
 
   // Getters
   const isAuthenticated = computed(() => !!user.value && !!token.value)
@@ -22,6 +23,9 @@ export const useAuthStore = defineStore('auth', () => {
     // Persist to localStorage for session persistence
     localStorage.setItem('workspace_user', JSON.stringify(userData))
     localStorage.setItem('auth_token', authToken)
+    
+    // Show sign-in success message
+    setShowSignInMessage(true)
   }
 
   const clearUser = () => {
@@ -73,6 +77,14 @@ export const useAuthStore = defineStore('auth', () => {
   const clearSignOutMessage = () => {
     showSignOutMessage.value = false;
   }
+  
+  const setShowSignInMessage = (value: boolean) => {
+    showSignInMessage.value = value;
+  }
+
+  const clearSignInMessage = () => {
+    showSignInMessage.value = false;
+  }
 
   return {
     // State
@@ -80,6 +92,7 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     isLoading,
     showSignOutMessage,
+    showSignInMessage,
     
     // Getters
     isAuthenticated,
@@ -92,6 +105,8 @@ export const useAuthStore = defineStore('auth', () => {
     setLoading,
     updateUser,
     setShowSignOutMessage,
-    clearSignOutMessage
+    clearSignOutMessage,
+    setShowSignInMessage,
+    clearSignInMessage
   }
 })
