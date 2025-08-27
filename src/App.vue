@@ -11,6 +11,7 @@ import { defineComponent, onMounted } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import FloatingBookingSummary from './components/FloatingBookingSummary.vue'
 import { useBookingStore } from './stores/booking'
+import { useThemeStore } from './stores/theme'
 
 export default defineComponent({
   name: 'App',
@@ -20,8 +21,13 @@ export default defineComponent({
   },
   setup() {
     const bookingStore = useBookingStore();
+    const themeStore = useThemeStore();
 
     onMounted(() => {
+      // Initialize theme first for consistent appearance
+      themeStore.initTheme();
+      
+      // Then initialize booking data
       bookingStore.initializeBooking();
       // Ensure isAddingMoreServices is false on app load, as a safeguard
       bookingStore.setAddingMoreServices(false);

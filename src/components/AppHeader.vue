@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white border-b border-gray-100 sticky top-0 z-50"> 
+  <header class="bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 shadow-sm transition-colors duration-300"> 
     <div class="max-w-8xl mx-auto px-5 container-padding">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
@@ -43,33 +43,36 @@
 
         <!-- User Actions -->
         <div class="flex items-center space-x-4">
+          <!-- Theme Toggle -->
+          <ThemeToggle />
+          
           <!-- User Menu -->
           <div v-if="currentUser" class="relative">
             <button @click="toggleUserMenu"
-              class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors z-50">
-              <img :src="currentUser.avatar" :alt="currentUser.firstName" class="w-8 h-8 rounded-full object-cover">
-              <span class="hidden sm:block text-sm font-medium text-gray-700">
+              class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors z-50">
+              <img :src="currentUser.avatar" :alt="currentUser.firstName" class="w-8 h-8 rounded-full object-cover border-2 border-primary">
+              <span class="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {{ currentUser.firstName }} {{ currentUser.lastName }}
               </span>
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
             <!-- User Dropdown -->
             <div v-if="showUserMenu"
-              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-              <router-link to="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              class="absolute right-0 mt-2 w-48 bg-white dark:bg-black rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 py-1 z-50 transform origin-top scale-100 transition-all duration-200">
+              <router-link to="/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary first:rounded-t-xl"
                 @click="closeUserMenu">
                 Profile Settings
               </router-link>
-              <router-link to="/payment-methods" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              <router-link to="/payment-methods" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary"
                 @click="closeUserMenu">
                 Payment Methods
               </router-link>
-              <hr class="my-1">
+              <hr class="my-1 border-gray-200 dark:border-gray-700">
               <button @click="handleLogout"
-                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 last:rounded-b-xl">
                 Sign Out
               </button>
             </div>
@@ -85,7 +88,7 @@
       </div>
 
       <!-- Mobile Navigation -->
-      <div v-if="showMobileMenu" class="md:hidden py-4 border-t border-gray-200">
+      <div v-if="showMobileMenu" class="md:hidden py-4 border-t border-gray-200 dark:border-gray-800">
         <nav class="flex flex-col space-y-2">
           <router-link to="/" class="mobile-nav-link" @click="closeMobileMenu">
             Home
@@ -100,8 +103,14 @@
             Contact
           </router-link>
 
+          <!-- Theme Toggle in Mobile Menu -->
+          <div class="py-2 flex items-center">
+            <span class="text-sm text-gray-700 dark:text-gray-300 mr-2">Theme:</span>
+            <ThemeToggle />
+          </div>
+
           <!-- Mobile Authentication Options -->
-          <div v-if="!currentUser" class="pt-4 border-t border-gray-200">
+          <div v-if="!currentUser" class="pt-4 border-t border-gray-200 dark:border-gray-800">
             <button @click="openLogin('', '/my-bookings')" class="mobile-nav-link text-left w-full">
               Sign In
             </button>
@@ -110,7 +119,7 @@
             </button>
           </div>
 
-          <div v-if="currentUser" class="pt-4 border-t border-gray-200">
+          <div v-if="currentUser" class="pt-4 border-t border-gray-200 dark:border-gray-800">
             <router-link to="/profile" class="mobile-nav-link" @click="closeMobileMenu">
               Profile Settings
             </router-link>
@@ -153,13 +162,15 @@ import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import AuthModals from './AuthModals.vue';
 import SuccessOverlay from './SuccessOverlay.vue';
+import ThemeToggle from './ThemeToggle.vue';
 import { UserDto, CompanyProfileDto } from '../dto/response';
 
 export default defineComponent({
   name: 'AppHeader',
   components: {
     AuthModals,
-    SuccessOverlay // Register SuccessOverlay
+    SuccessOverlay, // Register SuccessOverlay
+    ThemeToggle // Register ThemeToggle
   },
 
   data() {

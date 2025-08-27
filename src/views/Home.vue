@@ -1,29 +1,38 @@
 <template>
-  <div v-if="isLoading" class="min-h-screen flex items-center justify-center bg-white">
+  <div v-if="isLoading" class="min-h-screen flex items-center justify-center bg-white dark:bg-black">
     <div class="text-center">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-      <p class="text-gray-600 text-lg">Loading...</p>
+      <p class="text-gray-600 dark:text-gray-300 text-lg">Loading...</p>
     </div>
   </div>
-  <div v-else class="min-h-screen bg-white">
+  <div v-else class="min-h-screen bg-white dark:bg-black transition-colors duration-300">
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-gray-50 to-white overflow-hidden">
-      <div class="max-w-7xl mx-auto container-padding section-padding">
+    <section class="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black overflow-hidden">
+      <!-- Decorative Elements -->
+      <div class="absolute top-20 left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+      
+      <div class="max-w-7xl mx-auto container-padding section-padding relative z-10">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
-          <div class="space-y-8">
-            <h1 class="text-4xl lg:text-5xl xl:text-6xl font-heading font-bold text-gray-900 leading-tight">
+          <div class="space-y-8 animate-fade-in">
+            <h1 class="text-4xl lg:text-5xl xl:text-6xl font-heading font-bold text-black dark:text-white leading-tight">
               Find Your Perfect
-              <span class="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
-                WorkSpace
+              <span class="relative">
+                <span class="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
+                  WorkSpace
+                </span>
+                <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+                </svg>
               </span>
             </h1>
-            <p class="text-xl text-gray-600 leading-relaxed">
+            <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
               Book desks, meeting rooms, and private offices in premium dedicated desks.
               Flexible booking, premium locations, and 24/7 access to boost your productivity.
             </p>
 
-            <!-- Simplified Search Widget -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+            <!-- Cute Search Widget -->
+            <div class="bg-white dark:bg-black p-6 rounded-3xl shadow-xl border-2 border-primary animate-bounce-enter-active">
               <div class="grid sm:grid-cols-2 gap-4">
                 <!-- Location -->
                 <div class="space-y-2 mt-1">
@@ -38,15 +47,24 @@
               </div>
 
               <button @click="searchSpaces" :disabled="isSearching"
-                class="w-full mt-6 bg-primary text-white py-4 px-8 rounded-xl font-semibold text-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50">
-                {{ isSearching ? 'Searching...' : 'Search Spaces' }}
+                class="w-full mt-6 bg-primary text-black py-4 px-8 rounded-full font-semibold text-lg hover:bg-primary/90 hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 shadow-lg">
+                <span class="flex items-center justify-center">
+                  <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ isSearching ? 'Searching...' : 'Search Spaces' }}
+                  <svg v-if="!isSearching" class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </span>
               </button>
             </div>
           </div>
 
           <!-- Hero Image -->
-          <div class="relative">
-            <div class="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary/10 rounded-2xl overflow-hidden">
+          <div class="relative animate-fade-in">
+            <div class="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary/20 rounded-3xl overflow-hidden border-2 border-primary transform hover:scale-[1.02] transition-all duration-300">
               <img 
                 :src="companyProfile.image || heroImages[0].src" 
                 :alt="companyProfile.name" 
@@ -54,30 +72,30 @@
               >
             </div>
             <!-- Floating cards -->
-            <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg border border-gray-100">
+            <div class="absolute -bottom-6 -left-6 bg-white dark:bg-black p-5 rounded-2xl shadow-lg border-2 border-primary transform hover:scale-110 hover:rotate-2 transition-all duration-300">
               <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                  <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <div>
-                  <p class="font-semibold text-gray-900">24/7 Access</p>
-                  <p class="text-sm text-gray-600">Available anytime</p>
+                  <p class="font-semibold text-black dark:text-white">24/7 Access</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Available anytime</p>
                 </div>
               </div>
             </div>
-            <div class="absolute -top-6 -right-6 bg-white p-4 rounded-xl shadow-lg border border-gray-100">
+            <div class="absolute -top-6 -right-6 bg-white dark:bg-black p-5 rounded-2xl shadow-lg border-2 border-primary transform hover:scale-110 hover:rotate-2 transition-all duration-300">
               <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
                   <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
                 <div>
-                  <p class="font-semibold text-gray-900">High-Speed WiFi</p>
-                  <p class="text-sm text-gray-600">1GB+ connection</p>
+                  <p class="font-semibold text-black dark:text-white">High-Speed WiFi</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">1GB+ connection</p>
                 </div>
               </div>
             </div>
@@ -87,24 +105,34 @@
     </section>
 
     <!-- Special Offers & Partners Section -->
-    <section class="section-padding bg-gray-50" v-if="advertisements.length > 0">
+    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="advertisements.length > 0">
       <div class="max-w-7xl mx-auto container-padding">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+            Special Offers
+            <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </h2>
+        </div>
         <div class="relative">
-          <div class="overflow-hidden rounded-2xl">
+          <div class="overflow-hidden rounded-3xl border-2 border-primary shadow-xl">
             <div class="flex transition-transform duration-500 ease-in-out"
               :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
               <div v-for="(ad, index) in advertisements" :key="index" class="w-full flex-shrink-0 relative">
-                <div class="aspect-[3/1] bg-gradient-to-r from-primary to-primary relative overflow-hidden">
-                  <img :src="ad.image" :alt="ad.title" class="w-full h-full object-cover">
-                  <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                <div class="aspect-[3/1] bg-gradient-to-r from-primary/30 to-primary/10 dark:from-primary/20 dark:to-black relative overflow-hidden">
+                  <img :src="ad.image" :alt="ad.title" class="w-full h-full object-cover mix-blend-luminosity hover:mix-blend-normal transition-all duration-300">
+                  <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
                   <div class="absolute inset-0 flex items-center justify-center text-center text-white">
                     <div class="max-w-2xl px-6">
-                      <h3 class="text-3xl lg:text-4xl font-bold mb-4">{{ ad.title }}</h3>
-                      <p class="text-xl mb-6 opacity-90">{{ ad.description }}</p>
-                      <button
-                        class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        {{ ad.buttonText }}
-                      </button>
+                      <div class="transform hover:scale-105 transition-all duration-300">
+                        <h3 class="text-3xl lg:text-4xl font-bold mb-4 text-white drop-shadow-lg">{{ ad.title }}</h3>
+                        <p class="text-xl mb-6 opacity-90 text-white/90">{{ ad.description }}</p>
+                        <button
+                          class="bg-primary text-black px-8 py-3 rounded-full font-semibold hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
+                          {{ ad.buttonText }}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -112,146 +140,181 @@
             </div>
           </div>
 
-          <!-- Navigation arrows -->
+          <!-- Navigation arrows - updated with cuter styles -->
           <button @click="previousSlide"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-colors">
-            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-primary text-black p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <button @click="nextSlide"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-colors">
-            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary text-black p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
             </svg>
           </button>
 
-          <!-- Slide indicators -->
-          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          <!-- Cute slide indicators -->
+          <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
             <button v-for="(ad, index) in advertisements" :key="index" @click="currentSlide = index"
-              :class="['w-3 h-3 rounded-full transition-colors', currentSlide === index ? 'bg-white' : 'bg-white/50']"></button>
+              :class="['w-4 h-4 rounded-full transition-all duration-300 border-2', 
+                      currentSlide === index ? 'bg-primary border-primary scale-125' : 'bg-white/70 dark:bg-black/70 border-primary/50 hover:scale-110']">
+            </button>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Category Links Section -->
-    <section class="section-padding">
+    <section class="section-padding bg-white dark:bg-black transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Choose Your Workspace
+            <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+            </svg>
           </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Find the perfect space for your work style and needs
           </p>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Meeting Rooms -->
           <router-link to="/meeting-rooms"
-            class="group bg-white rounded-xl p-6 shadow-card hover:shadow-lg transition-all duration-200 text-center">
+            class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
-              class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
-              <svg class="w-8 h-8 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Meeting Rooms</h3>
-            <p class="text-gray-600 text-sm">Professional meeting spaces</p>
+            <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Meeting Rooms</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-center">Professional spaces for productive team gatherings</p>
+            <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              Book Now
+            </div>
           </router-link>
 
           <!-- Hot Desk -->
           <router-link to="/hot-desk"
-            class="group bg-white rounded-xl p-6 shadow-card hover:shadow-lg transition-all duration-200 text-center">
+            class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
-              class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
-              <svg class="w-8 h-8 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Hot Desk</h3>
-            <p class="text-gray-600 text-sm">Flexible workspace solutions</p>
+            <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Hot Desk</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-center">Flexible workspace solutions for modern workers</p>
+            <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              Book Now
+            </div>
           </router-link>
 
           <!-- Dedicated Desk -->
           <router-link to="/dedicated-desk"
-            class="group bg-white rounded-xl p-6 shadow-card hover:shadow-lg transition-all duration-200 text-center">
+            class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
-              class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
-              <svg class="w-8 h-8 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Dedicated Desk</h3>
-            <p class="text-gray-600 text-sm">Collaborative workspaces</p>
+            <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Dedicated Desk</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-center">Your personal workspace in a collaborative environment</p>
+            <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              Book Now
+            </div>
           </router-link>
         </div>
       </div>
     </section>
 
     <!-- Featured Spaces -->
-    <section class="section-padding">
+    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Featured Workspaces
+            <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+            </svg>
           </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Discover premium dedicated desks in prime locations with all the amenities you need
           </p>
         </div>
 
         <div v-if="isLoadingSpaces" class="text-center py-12">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p class="mt-4 text-gray-600">Loading featured spaces...</p>
+          <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-opacity-30 border-t-primary"></div>
+          <p class="mt-6 text-gray-600 dark:text-gray-300">Loading featured spaces...</p>
         </div>
 
         <div v-else-if="featuredSpaces.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="space in featuredSpaces" :key="space.id" class="card overflow-hidden group cursor-pointer"
-            @click="viewSpace(space.id)">
-            <div class="aspect-[4/3] overflow-hidden">
+          <div v-for="space in featuredSpaces" :key="space.id" 
+               class="bg-white dark:bg-black rounded-3xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transform hover:-translate-y-2"
+               @click="viewSpace(space.id)">
+            <div class="relative aspect-[4/3] overflow-hidden">
               <img
                 :src="space.images && space.images.length > 0 ? space.images[0] : 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'"
                 :alt="space.name"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <!-- Featured badge -->
+              <div class="absolute top-4 left-4 bg-primary text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-md transform -rotate-2">
+                Featured
+              </div>
+              <!-- Like button -->
+              <button class="absolute top-4 right-4 bg-white dark:bg-black rounded-full p-2 shadow-lg hover:scale-110 transition-transform duration-200">
+                <svg class="w-5 h-5 text-gray-400 hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             </div>
             <div class="p-6">
               <div class="flex items-start justify-between mb-2">
-                <h3 class="text-xl font-semibold text-gray-900">{{ space.name }}</h3>
-                <button class="text-gray-400 hover:text-red-500 transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </button>
+                <h3 class="text-xl font-semibold text-black dark:text-white">{{ space.name }}</h3>
               </div>
-              <div class="flex items-center text-gray-600 mb-3">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="flex items-center text-gray-600 dark:text-gray-400 mb-3">
+                <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 </svg>
                 {{ space.location }}
               </div>
               <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400">
+                <div class="flex text-primary">
                   <svg v-for="star in 5" :key="star" class="w-4 h-4 fill-current" viewBox="0 0 20 20">
                     <path
                       d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 </div>
-                <span class="ml-2 text-sm text-gray-600">{{ space.rating }} ({{ space.reviews }} reviews)</span>
+                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ space.rating }} ({{ space.reviews }} reviews)</span>
               </div>
               <div class="flex items-center justify-between">
-                <div class="text-2xl font-bold text-gray-900">
-                  ${{ getStartingPrice(space) }}
-                  <span class="text-sm font-normal text-gray-600">/day</span>
+                <div class="text-2xl font-bold text-black dark:text-white">
+                  <span class="bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-full">${{ getStartingPrice(space) }}</span>
+                  <span class="text-sm font-normal text-gray-600 dark:text-gray-400">/day</span>
                 </div>
-                <button class="btn-primary text-sm">
+                <button class="bg-primary text-black px-4 py-2 rounded-full font-medium text-sm hover:scale-105 transform transition-all duration-200 shadow-md flex items-center">
                   View Details
+                  <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -259,70 +322,79 @@
         </div>
 
         <div v-else class="text-center py-12">
-          <p class="text-gray-600">No featured spaces available at the moment.</p>
+          <p class="text-gray-600 dark:text-gray-400">No featured spaces available at the moment.</p>
+          <button class="mt-4 bg-primary/20 dark:bg-primary/30 text-black dark:text-white px-6 py-2 rounded-full font-medium text-lg hover:bg-primary/30 transition-colors">
+            Try Again Later
+          </button>
         </div>
 
         <!-- See More Button -->
-        <div class="text-center mt-8">
+        <div class="text-center mt-12">
           <router-link to="/search"
-            class="bg-primary text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-            See More
+            class="bg-primary text-black px-10 py-4 rounded-full font-semibold text-lg hover:scale-105 transform transition-all duration-300 shadow-lg inline-flex items-center">
+            See More Spaces
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </router-link>
         </div>
       </div>
     </section>
 
     <!-- Why Choose Us -->
-    <section class="section-padding bg-gray-50">
+    <section class="section-padding bg-white dark:bg-black transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Why Choose {{ companyProfile.name }}?
+            <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+            </svg>
           </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             We make dedicated desk simple, flexible, and affordable for modern professionals
           </p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="text-center group">
+        <div class="grid md:grid-cols-3 gap-10">
+          <div class="text-center group cute-card hover:-translate-y-2 transition-all duration-300">
             <div
-              class="w-16 h-16 bg-gradient-to-br from-primary to-primary rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-200">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 border-2 border-primary shadow-lg">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-3">Flexible Booking</h3>
-            <p class="text-gray-600">
+            <h3 class="text-xl font-bold text-black dark:text-white mb-4">Flexible Booking</h3>
+            <p class="text-gray-600 dark:text-gray-400">
               Book by the hour, day, or week. Change or cancel your reservation anytime with our flexible policies.
             </p>
           </div>
 
-          <div class="text-center group">
+          <div class="text-center group cute-card hover:-translate-y-2 transition-all duration-300">
             <div
-              class="w-16 h-16 bg-gradient-to-br from-primary to-primary rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-200">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 border-2 border-primary shadow-lg">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-3">Premium Locations</h3>
-            <p class="text-gray-600">
+            <h3 class="text-xl font-bold text-black dark:text-white mb-4">Premium Locations</h3>
+            <p class="text-gray-600 dark:text-gray-400">
               Work from the best locations in the city. All our spaces are in prime business districts with easy access.
             </p>
           </div>
 
-          <div class="text-center group">
+          <div class="text-center group cute-card hover:-translate-y-2 transition-all duration-300">
             <div
-              class="w-16 h-16 bg-gradient-to-br from-primary to-primary rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-200">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 border-2 border-primary shadow-lg">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-3">24/7 Access</h3>
-            <p class="text-gray-600">
+            <h3 class="text-xl font-bold text-black dark:text-white mb-4">24/7 Access</h3>
+            <p class="text-gray-600 dark:text-gray-400">
               Access your workspace anytime with secure keycard entry. Perfect for early birds and night owls.
             </p>
           </div>
@@ -331,33 +403,53 @@
     </section>
 
     <!-- Testimonials -->
-    <section class="section-padding" v-if="testimonials.length > 0">
+    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="testimonials.length > 0">
       <div class="max-w-7xl mx-auto container-padding">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             What Our Members Say
+            <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+            </svg>
           </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Join thousands of professionals who love working with us
           </p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="testimonial in testimonials" :key="testimonial.id" class="bg-white p-6 rounded-xl shadow-card">
-            <div class="flex text-yellow-400 mb-4">
-              <svg v-for="star in testimonial.rating" :key="star" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
+          <div v-for="testimonial in testimonials" :key="testimonial.id" 
+               class="bg-white dark:bg-black p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transform hover:-translate-y-2">
+            <div class="mb-4 flex justify-between items-center">
+              <div class="flex text-primary">
+                <svg v-for="star in testimonial.rating" :key="star" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <div class="bg-primary/10 dark:bg-primary/20 p-2 rounded-full">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                </svg>
+              </div>
             </div>
-            <p class="text-gray-600 mb-6 leading-relaxed">
+            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed text-lg italic">
               "{{ testimonial.content }}"
             </p>
             <div class="flex items-center">
-              <img :src="testimonial.avatar" :alt="testimonial.name" class="w-12 h-12 rounded-full object-cover mr-4">
-              <div>
-                <h4 class="font-semibold text-gray-900">{{ testimonial.name }}</h4>
-                <p class="text-sm text-gray-600">{{ testimonial.role }}</p>
+              <div class="relative">
+                <img :src="testimonial.avatar" :alt="testimonial.name" 
+                     class="w-14 h-14 rounded-full object-cover border-2 border-primary">
+                <div class="absolute -right-1 -bottom-1 bg-primary rounded-full w-5 h-5 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h4 class="font-bold text-black dark:text-white">{{ testimonial.name }}</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ testimonial.role }}</p>
               </div>
             </div>
           </div>
@@ -367,46 +459,53 @@
 
     <!-- Newsletter -->
     <!-- About Section -->
-    <section id="about" class="section-padding scroll-mt-20">
+    <section id="about" class="section-padding scroll-mt-20 bg-white dark:bg-black transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             About {{ companyProfile.name }}
+            <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+            </svg>
           </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Your premium coworking solution for modern professionals
           </p>
         </div>
         
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <div class="relative">
-            <div class="aspect-[4/3] rounded-2xl overflow-hidden">
+            <div class="aspect-[4/3] rounded-3xl overflow-hidden border-2 border-primary shadow-xl transform hover:scale-[1.02] transition-all duration-300">
               <img src="https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
                 alt="Modern workspace" class="w-full h-full object-cover">
             </div>
-            <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg border border-gray-100">
-              <p class="font-bold text-primary">Est. 2020</p>
+            <div class="absolute -bottom-8 -right-8 bg-white dark:bg-black p-5 rounded-2xl shadow-lg border-2 border-primary transform hover:rotate-3 transition-all duration-300">
+              <p class="font-bold text-primary text-lg">Est. 2020</p>
             </div>
+            
+            <!-- Decorative element -->
+            <div class="absolute -top-6 -left-6 w-16 h-16 bg-primary/20 rounded-full"></div>
           </div>
           
           <div class="space-y-6">
-            <h3 class="text-2xl font-semibold text-gray-900">Creating Productive Work Environments</h3>
-            <p class="text-gray-600 leading-relaxed">
+            <h3 class="text-2xl font-bold text-black dark:text-white">Creating Productive Work Environments</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
               At {{ companyProfile.name }}, we believe in providing more than just a desk. Our mission is to create environments where 
               professionals thrive, connections are made, and productivity reaches new heights.
             </p>
-            <p class="text-gray-600 leading-relaxed">
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
               Founded in 2020, we've expanded to over 25 locations across major cities, serving thousands of 
               entrepreneurs, freelancers, and businesses looking for flexible, high-quality workspace solutions.
             </p>
-            <div class="grid grid-cols-2 gap-4 pt-4">
-              <div>
-                <p class="text-3xl font-bold text-primary">25+</p>
-                <p class="text-gray-600">Locations</p>
+            
+            <div class="grid grid-cols-2 gap-8 pt-6 mt-6 border-t-2 border-gray-100 dark:border-gray-800">
+              <div class="bg-white dark:bg-black rounded-2xl p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transition-all duration-300 shadow-md text-center">
+                <p class="text-4xl font-bold text-primary mb-2">25+</p>
+                <p class="text-gray-600 dark:text-gray-400 font-medium">Locations</p>
               </div>
-              <div>
-                <p class="text-3xl font-bold text-primary">5,000+</p>
-                <p class="text-gray-600">Happy Members</p>
+              <div class="bg-white dark:bg-black rounded-2xl p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transition-all duration-300 shadow-md text-center">
+                <p class="text-4xl font-bold text-primary mb-2">5,000+</p>
+                <p class="text-gray-600 dark:text-gray-400 font-medium">Happy Members</p>
               </div>
             </div>
           </div>
@@ -415,93 +514,95 @@
     </section>
 
     <!-- Contact & Newsletter Section -->
-    <section id="contact" class="section-padding bg-gray-50 scroll-mt-20">
+    <section id="contact" class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300 scroll-mt-20">
       <div class="max-w-7xl mx-auto container-padding">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-gray-900 mb-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Contact Us
+            <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+            </svg>
           </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Get in touch with our team or subscribe for updates
           </p>
         </div>
         
         <div class="grid md:grid-cols-2 gap-12">
           <!-- Contact Information -->
-          <div class="space-y-8">
+          <div class="bg-white dark:bg-black p-8 rounded-3xl shadow-lg border-2 border-gray-100 dark:border-gray-800 space-y-8">
             <div>
-              <h3 class="text-2xl font-semibold text-gray-900 mb-4">Get In Touch</h3>
-              <p class="text-gray-600 mb-6">
+              <h3 class="text-2xl font-bold text-black dark:text-white mb-4">Get In Touch</h3>
+              <p class="text-gray-600 dark:text-gray-300 mb-6 text-lg">
                 Have questions about our workspace solutions? Our team is ready to help you find
                 the perfect space for your needs.
               </p>
             </div>
             
-            <div class="space-y-4">
+            <div class="space-y-6">
               <!-- Email -->
-              <div class="flex items-start">
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors duration-300">
+                <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center mr-5">
+                  <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
                 <div>
-                  <h4 class="text-lg font-medium text-gray-900">Email Us</h4>
-                  <a :href="'mailto:' + companyProfile.email" class="text-gray-900 hover:underline">{{ companyProfile.email }}</a>
+                  <h4 class="text-lg font-bold text-black dark:text-white">Email Us</h4>
+                  <a :href="'mailto:' + companyProfile.email" class="text-primary hover:underline font-medium">{{ companyProfile.email }}</a>
                 </div>
               </div>
               
               <!-- Phone -->
-              <div class="flex items-start">
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors duration-300">
+                <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center mr-5">
+                  <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </div>
                 <div>
-                  <h4 class="text-lg font-medium text-gray-900">Call Us</h4>
-                  <a :href="'tel:' + companyProfile.phone" class="text-gray-900 hover:underline">{{ companyProfile.phone }}</a>
+                  <h4 class="text-lg font-bold text-black dark:text-white">Call Us</h4>
+                  <a :href="'tel:' + companyProfile.phone" class="text-primary hover:underline font-medium">{{ companyProfile.phone }}</a>
                 </div>
               </div>
               
               <!-- Location -->
-              <div class="flex items-start">
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors duration-300">
+                <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center mr-5">
+                  <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
                 <div>
-                  <h4 class="text-lg font-medium text-gray-900">Headquarters</h4>
-                  <p class="text-gray-600">{{ companyProfile.address }}</p>
-                  <!-- <p class="text-gray-600">123 Workspace Ave, Suite 400<br>San Francisco, CA 94107</p> -->
+                  <h4 class="text-lg font-bold text-black dark:text-white">Headquarters</h4>
+                  <p class="text-gray-600 dark:text-gray-400">{{ companyProfile.address }}</p>
                 </div>
               </div>
             </div>
             
             <!-- Social Media Links -->
             <div>
-              <h4 class="text-lg font-medium text-gray-900 mb-4">Follow Us</h4>
+              <h4 class="text-lg font-bold text-black dark:text-white mb-5">Follow Us</h4>
               <div class="flex space-x-4">
-                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
                   </svg>
                 </a>
-                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
                   </svg>
                 </a>
-                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M21.75 21.5H2.25A2.25 2.25 0 010 19.25V4.75A2.25 2.25 0 012.25 2.5h19.5A2.25 2.25 0 0124 4.75v14.5a2.25 2.25 0 01-2.25 2.25zM2.25 3.5a1.25 1.25 0 00-1.25 1.25v14.5a1.25 1.25 0 001.25 1.25h19.5a1.25 1.25 0 001.25-1.25V4.75a1.25 1.25 0 00-1.25-1.25H2.25z"/>
                     <path d="M8 17.5a.5.5 0 01-.5-.5v-7a.5.5 0 011 0v7a.5.5 0 01-.5.5zM5 8.5a3 3 0 116 0 3 3 0 01-6 0zm3-2a2 2 0 100 4 2 2 0 000-4zM18.5 17.5a.5.5 0 01-.5-.5v-4c0-1.103-.897-2-2-2s-2 .897-2 2v4a.5.5 0 01-1 0v-4a3 3 0 016 0v4a.5.5 0 01-.5.5z"/>
                   </svg>
                 </a>
-                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                   </svg>
                 </a>
@@ -510,72 +611,91 @@
           </div>
           
           <!-- Newsletter Subscription -->
-          <div class="bg-gradient-to-br from-primary to-green-800 rounded-2xl p-8 text-white shadow-xl">
-            <h3 class="text-2xl font-semibold mb-4">Stay Updated</h3>
-            <p class="text-white/90 mb-6">
-              Get the latest updates on new spaces, special offers, and workspace tips delivered to your inbox.
-            </p>
-            <div class="space-y-4">
-              <div>
-                <label for="newsletterName" class="block text-sm font-medium text-white/80 mb-1">Name</label>
-                <input type="text" id="newsletterName" v-model="newsletterName" placeholder="Your name" 
-                  class="w-full px-4 py-3 rounded-lg border-0 text-gray-900 focus:outline-none focus:ring-2 focus:ring-white/50">
-              </div>
-              <div>
-                <label for="newsletterEmail" class="block text-sm font-medium text-white/80 mb-1">Email Address</label>
-                <input type="email" id="newsletterEmail" v-model="newsletterEmail" placeholder="Your email" 
-                  class="w-full px-4 py-3 rounded-lg border-0 text-gray-900 focus:outline-none focus:ring-2 focus:ring-white/50">
-              </div>
-              <button 
-                @click="subscribeNewsletter" 
-                :disabled="isSubscribing || !newsletterEmail" 
-                class="w-full px-4 py-3 bg-white text-primary font-semibold rounded-lg hover:bg-white/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {{ isSubscribing ? 'Subscribing...' : 'Subscribe Now' }}
-              </button>
-              <div v-if="subscriptionMessage" class="mt-2 text-white/90 text-sm">
-                {{ subscriptionMessage }}
+          <div class="bg-white dark:bg-black rounded-3xl p-8 shadow-xl border-2 border-primary relative overflow-hidden">
+            <!-- Decorative elements -->
+            <div class="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full -translate-y-20 translate-x-20"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 rounded-full translate-y-16 -translate-x-16"></div>
+            
+            <div class="relative z-10">
+              <h3 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Stay Updated</h3>
+              <p class="text-gray-600 dark:text-white/90 mb-8 text-lg">
+                Get the latest updates on new spaces, special offers, and workspace tips delivered to your inbox.
+              </p>
+              <div class="space-y-5">
+                <div>
+                  <label for="newsletterName" class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Name</label>
+                  <input type="text" id="newsletterName" v-model="newsletterName" placeholder="Your name" 
+                    class="w-full px-5 py-4 rounded-full border-0 text-gray-900 dark:text-gray-800 bg-gray-100 dark:bg-white focus:outline-none focus:ring-2 focus:ring-primary shadow-inner placeholder-gray-400 dark:placeholder-gray-500">
+                </div>
+                <div>
+                  <label for="newsletterEmail" class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Email Address</label>
+                  <input type="email" id="newsletterEmail" v-model="newsletterEmail" placeholder="Your email" 
+                    class="w-full px-5 py-4 rounded-full border-0 text-gray-900 dark:text-gray-800 bg-gray-100 dark:bg-white focus:outline-none focus:ring-2 focus:ring-primary shadow-inner placeholder-gray-400 dark:placeholder-gray-500">
+                </div>
+                <button 
+                  @click="subscribeNewsletter" 
+                  :disabled="isSubscribing || !newsletterEmail" 
+                  class="w-full px-5 py-4 bg-primary text-black font-bold rounded-full hover:bg-opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-gray-800/30 dark:focus:ring-white/50 disabled:opacity-70 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg"
+                >
+                  <span class="flex items-center justify-center">
+                    <svg v-if="isSubscribing" class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {{ isSubscribing ? 'Subscribing...' : 'Subscribe Now' }}
+                  </span>
+                </button>
+                <div v-if="subscriptionMessage" class="mt-3 text-gray-700 dark:text-white/90 text-sm text-center bg-gray-100 dark:bg-primary/20 p-3 rounded-full">
+                  {{ subscriptionMessage }}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-      <div class="max-w-7xl mx-auto container-padding">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="bg-white dark:bg-black text-gray-800 dark:text-white py-16 relative overflow-hidden">
+      <!-- Decorative elements -->
+      <div class="absolute top-0 left-0 w-40 h-40 bg-primary/10 rounded-full"></div>
+      <div class="absolute bottom-0 right-0 w-60 h-60 bg-primary/5 rounded-full"></div>
+      
+      <div class="max-w-7xl mx-auto container-padding relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
           <!-- Brand & Description -->
-          <div class="space-y-4">
-            <h3 class="text-2xl font-heading font-bold">{{ companyProfile.name }}</h3>
-            <p class="text-gray-400 text-sm">
+          <div class="space-y-6">
+            <div class="flex items-center">
+              <h3 class="text-2xl font-heading font-bold text-primary mr-2">{{ companyProfile.name }}</h3>
+              <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
               Discover premium workspaces designed for productivity, flexibility, and collaboration. Book your perfect
               space today.
             </p>
             <div class="flex space-x-4">
               <a href="https://twitter.com/workspace" target="_blank"
-                class="text-gray-400 hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </a>
               <a href="https://facebook.com/workspace" target="_blank"
-                class="text-gray-400 hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                 </svg>
               </a>
               <a href="https://linkedin.com/company/workspace" target="_blank"
-                class="text-gray-400 hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                 </svg>
               </a>
               <a href="https://instagram.com/workspace" target="_blank"
-                class="text-gray-400 hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.948-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                 </svg>
@@ -584,49 +704,125 @@
           </div>
 
           <!-- Navigation -->
-          <div class="space-y-4">
-            <h4 class="text-lg font-semibold">Explore</h4>
-            <ul class="space-y-2 text-gray-400 text-sm">
-              <li><router-link to="/search-results" class="hover:text-white transition-colors">All Spaces</router-link>
+          <div class="space-y-6">
+            <h4 class="text-xl font-bold text-primary">Explore</h4>
+            <ul class="space-y-3">
+              <li>
+                <router-link to="/search-results" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                  All Spaces
+                </router-link>
               </li>
-              <li><router-link to="/meeting-rooms" class="hover:text-white transition-colors">Meeting
-                  Rooms</router-link></li>
-              <li><router-link to="/hot-desk" class="hover:text-white transition-colors">Hot Desks</router-link></li>
-              <li><router-link to="/dedicated-desk" class="hover:text-white transition-colors">Dedicated
-                  Desks</router-link></li>
+              <li>
+                <router-link to="/meeting-rooms" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                  Meeting Rooms
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/hot-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                  Hot Desks
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/dedicated-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                  Dedicated Desks
+                </router-link>
+              </li>
             </ul>
           </div>
 
           <!-- Contact -->
-          <div class="space-y-4">
-            <h4 class="text-lg font-semibold">Contact Us</h4>
-            <ul class="space-y-2 text-gray-400 text-sm">
-              <li><a :href="'mailto:' + companyProfile.email"
-                  class="hover:text-white transition-colors">{{ companyProfile.email }}</a></li>
-              <li><a :href="'tel:' + companyProfile.phone" class="hover:text-white transition-colors">{{ companyProfile.phone }}</a></li>
-              <li>{{ companyProfile.address }}</li>
+          <div class="space-y-6">
+            <h4 class="text-xl font-bold text-primary">Contact Us</h4>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <div class="bg-gray-100 dark:bg-primary/20 p-2 rounded-full mr-3 mt-1">
+                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <a :href="'mailto:' + companyProfile.email" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+                  {{ companyProfile.email }}
+                </a>
+              </li>
+              <li class="flex items-start">
+                <div class="bg-gray-100 dark:bg-primary/20 p-2 rounded-full mr-3 mt-1">
+                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <a :href="'tel:' + companyProfile.phone" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+                  {{ companyProfile.phone }}
+                </a>
+              </li>
+              <li class="flex items-start">
+                <div class="bg-gray-100 dark:bg-primary/20 p-2 rounded-full mr-3 mt-1">
+                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <span class="text-gray-600 dark:text-gray-300">{{ companyProfile.address }}</span>
+              </li>
             </ul>
           </div>
 
           <!-- Newsletter -->
-          <div class="space-y-4">
-            <h4 class="text-lg font-semibold">Stay Connected</h4>
-            <p class="text-gray-400 text-sm">Subscribe to our newsletter for the latest updates.</p>
-            <div class="flex flex-col gap-2">
-              <input v-model="footerNewsletterEmail" type="email" placeholder="Enter your email"
-                class="px-4 py-2 rounded-lg border-0 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary">
+          <div class="space-y-6">
+            <h4 class="text-xl font-bold text-primary">Stay Connected</h4>
+            <p class="text-gray-600 dark:text-gray-300">Subscribe to our newsletter for the latest updates.</p>
+            <div class="flex flex-col gap-3">
+              <div class="relative">
+                <input v-model="footerNewsletterEmail" type="email" placeholder="Enter your email"
+                  class="w-full px-5 py-3 rounded-full border-2 border-primary/50 focus:border-primary bg-white dark:bg-black/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
               <button @click="subscribeFooterNewsletter" :disabled="isSubscribing || !footerNewsletterEmail"
-                class="bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50">
+                class="px-5 py-3 bg-primary text-black font-bold rounded-full hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 shadow-lg">
                 Subscribe
               </button>
             </div>
-            <div v-if="footerSubscriptionMessage" class="text-sm text-gray-400">
+            <div v-if="footerSubscriptionMessage" class="text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-primary/20 p-2 rounded-full text-center">
               {{ footerSubscriptionMessage }}
             </div>
           </div>
         </div>
-        <div class="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-          <p>&copy; {{ currentYear }} {{ companyProfile.name }}. All rights reserved.</p>
+        <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-sm">
+          <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+            <div class="flex items-center text-primary">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              &copy; {{ currentYear }} {{ companyProfile.name }}. All rights reserved.
+            </div>
+            <div class="h-1 w-1 bg-primary/50 rounded-full hidden md:block"></div>
+            <div class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+              <a href="#" class="underline underline-offset-4 decoration-primary/30 hover:decoration-primary">Terms & Conditions</a>
+            </div>
+            <div class="h-1 w-1 bg-primary/50 rounded-full hidden md:block"></div>
+            <div class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+              <a href="#" class="underline underline-offset-4 decoration-primary/30 hover:decoration-primary">Privacy Policy</a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
@@ -637,6 +833,7 @@
 import { defineComponent } from 'vue';
 import LocationDropdown from '../components/LocationDropdown.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
+import ThemeToggle from '../components/ThemeToggle.vue';
 import type { SpaceDto, AdvertisementDto, TestimonialDto, CompanyProfileDto } from '../dto/response';
 
 interface SearchForm {
@@ -660,7 +857,8 @@ export default defineComponent({
 
   components: {
     LocationDropdown,
-    SpaceTypeDropdown
+    SpaceTypeDropdown,
+    ThemeToggle
   },
 
   data() {
@@ -746,6 +944,8 @@ export default defineComponent({
   mounted() {
     // Start slideshow after mounting
     this.startSlideshow();
+    
+    // Don't initialize theme here - it's handled by the theme store
   },
 
   beforeUnmount() {

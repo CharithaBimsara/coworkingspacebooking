@@ -1,31 +1,31 @@
 <template>
   <div class="relative" ref="dropdownContainer">
-    <label v-if="label" class="block text-sm font-medium text-black mb-3">{{ label }}</label>
+    <label v-if="label" class="block text-sm font-medium text-gray-800 dark:text-white mb-3">{{ label }}</label>
     <button
       @click="toggleDropdown"
-      :class="['input-field flex items-center justify-between w-full px-4 py-2', heightClass, 'bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-100']"
+      :class="['input-field flex items-center justify-between w-full px-4 py-2', heightClass, 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700']"
       type="button"
     >
       <span class="flex items-center">
-        <span v-if="selectedOption.icon" class="mr-2" v-html="selectedOption.icon"></span>
-        <span class="text-black">{{ selectedOption.label }}</span>
+        <span v-if="selectedOption.icon" class="mr-2 text-gray-700 dark:text-gray-300" v-html="selectedOption.icon"></span>
+        <span :class="{'text-gray-800 dark:text-white': selectedOption.value !== '', 'text-gray-500 dark:text-gray-400': selectedOption.value === ''}">{{ selectedOption.label }}</span>
       </span>
-      <svg class="w-4 h-4 ml-2 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-4 h-4 ml-2 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
     </button>
     <div
       v-if="showDropdown"
-      :class="['absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg z-50 max-h-24 overflow-y-auto custom-scrollbar', compact ? 'min-w-[140px]' : 'min-w-[220px]', compact ? '' : '']"
+      :class="['absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg z-50 max-h-24 overflow-y-auto custom-scrollbar', compact ? 'min-w-[140px]' : 'min-w-[220px]', compact ? '' : '']"
     >
       <button
         v-for="option in options"
         :key="option.value"
         @mousedown="selectOption(option)"
-        class="w-full text-left px-4 py-3 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 flex items-center"
+        class="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0 flex items-center"
       >
-        <span v-if="option.icon" class="mr-2" v-html="option.icon"></span>
-        <span class="text-black">{{ option.label }}</span>
+        <span v-if="option.icon" class="mr-2 text-gray-700 dark:text-gray-300" v-html="option.icon"></span>
+        <span class="text-gray-800 dark:text-white">{{ option.label }}</span>
       </button>
     </div>
   </div>
@@ -111,7 +111,7 @@ export default defineComponent({
   border-radius: 0.5rem;
   outline: none;
   /* transition: border-color 0.2s, box-shadow 0.2s; */
-  background: #FFFFFF; /* White background */
+  /* background: #FFFFFF; White background */
 }
 .input-field:focus {
   border-color: #D1D5DB; /* Lighter gray on focus */
