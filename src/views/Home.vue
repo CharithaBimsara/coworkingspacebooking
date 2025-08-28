@@ -26,7 +26,7 @@
                 </svg>
               </span>
             </h1>
-            <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+            <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
               Book desks, meeting rooms, and private offices in premium dedicated desks.
               Flexible booking, premium locations, and 24/7 access to boost your productivity.
             </p>
@@ -47,14 +47,14 @@
               </div>
 
               <button @click="searchSpaces" :disabled="isSearching"
-                class="w-full mt-6 bg-primary text-black py-4 px-8 rounded-full font-semibold text-lg hover:bg-primary/90 hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 shadow-lg">
+                class="w-full mt-6 bg-primary text-black py-3 px-6 rounded-full font-semibold text-sm hover:bg-primary/90 hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 shadow-lg">
                 <span class="flex items-center justify-center">
-                  <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" fill="none" viewBox="0 0 24 24">
+                  <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   {{ isSearching ? 'Searching...' : 'Search Spaces' }}
-                  <svg v-if="!isSearching" class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg v-if="!isSearching" class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </span>
@@ -80,8 +80,8 @@
                   </svg>
                 </div>
                 <div>
-                  <p class="font-semibold text-black dark:text-white">24/7 Access</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Available anytime</p>
+                  <p class="font-semibold text-black dark:text-white text-sm">24/7 Access</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">Available anytime</p>
                 </div>
               </div>
             </div>
@@ -94,8 +94,8 @@
                   </svg>
                 </div>
                 <div>
-                  <p class="font-semibold text-black dark:text-white">High-Speed WiFi</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">1GB+ connection</p>
+                  <p class="font-semibold text-black dark:text-white text-sm">High-Speed WiFi</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">1GB+ connection</p>
                 </div>
               </div>
             </div>
@@ -108,7 +108,7 @@
     <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="advertisements.length > 0">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-12">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+          <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Special Offers
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
@@ -126,10 +126,10 @@
                   <div class="absolute inset-0 flex items-center justify-center text-center text-white">
                     <div class="max-w-2xl px-6">
                       <div class="transform hover:scale-105 transition-all duration-300">
-                        <h3 class="text-3xl lg:text-4xl font-bold mb-4 text-white drop-shadow-lg">{{ ad.title }}</h3>
-                        <p class="text-xl mb-6 opacity-90 text-white/90">{{ ad.description }}</p>
+                        <h3 class="text-xl lg:text-2xl font-bold mb-4 text-white drop-shadow-lg">{{ ad.title }}</h3>
+                        <p class="text-base mb-6 opacity-90 text-white/90">{{ ad.description }}</p>
                         <button
-                          class="bg-primary text-black px-8 py-3 rounded-full font-semibold hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
+                          class="bg-primary text-black px-6 py-2 rounded-full font-semibold text-sm hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
                           {{ ad.buttonText }}
                         </button>
                       </div>
@@ -169,13 +169,13 @@
     <section class="section-padding bg-white dark:bg-black transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+          <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Choose Your Workspace
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Find the perfect space for your work style and needs
           </p>
         </div>
@@ -191,8 +191,8 @@
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Meeting Rooms</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-center">Professional spaces for productive team gatherings</p>
+            <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Meeting Rooms</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Professional spaces for productive team gatherings</p>
             <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -211,8 +211,8 @@
                   d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Hot Desk</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-center">Flexible workspace solutions for modern workers</p>
+            <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Hot Desk</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Flexible workspace solutions for modern workers</p>
             <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -231,8 +231,8 @@
                   d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Dedicated Desk</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-center">Your personal workspace in a collaborative environment</p>
+            <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Dedicated Desk</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Your personal workspace in a collaborative environment</p>
             <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -248,82 +248,90 @@
     <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+          <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Featured Workspaces
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Discover premium dedicated desks in prime locations with all the amenities you need
           </p>
         </div>
 
         <div v-if="isLoadingSpaces" class="text-center py-12">
-          <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-opacity-30 border-t-primary"></div>
-          <p class="mt-6 text-gray-600 dark:text-gray-300">Loading featured spaces...</p>
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary border-opacity-30 border-t-primary"></div>
+          <p class="mt-6 text-gray-600 dark:text-gray-300 text-sm">Loading featured spaces...</p>
         </div>
 
-        <div v-else-if="featuredSpaces.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div v-else-if="featuredSpaces.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div v-for="space in featuredSpaces" :key="space.id" 
-               class="bg-white dark:bg-black rounded-3xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transform hover:-translate-y-2"
+               class="card overflow-hidden group cursor-pointer hover:shadow-xl dark:hover:shadow-dark-md transform hover:-translate-y-1 transition-all duration-300 flex flex-col bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl"
                @click="viewSpace(space.id)">
-            <div class="relative aspect-[4/3] overflow-hidden">
+            <div class="relative aspect-[16/9] overflow-hidden rounded-t-2xl">
               <img
                 :src="space.images && space.images.length > 0 ? space.images[0] : 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'"
                 :alt="space.name"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <!-- Featured badge -->
-              <div class="absolute top-4 left-4 bg-primary text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-md transform -rotate-2">
+              <div class="absolute top-2 left-2 bg-primary text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
                 Featured
               </div>
               <!-- Like button -->
-              <button class="absolute top-4 right-4 bg-white dark:bg-black rounded-full p-2 shadow-lg hover:scale-110 transition-transform duration-200">
-                <svg class="w-5 h-5 text-gray-400 hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <button class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black transition-colors shadow-md hover:scale-110 transform text-gray-400 dark:text-gray-500 hover:text-primary">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clip-rule="evenodd" />
                 </svg>
               </button>
             </div>
-            <div class="p-6">
-              <div class="flex items-start justify-between mb-2">
-                <h3 class="text-xl font-semibold text-black dark:text-white">{{ space.name }}</h3>
-              </div>
-              <div class="flex items-center text-gray-600 dark:text-gray-400 mb-3">
-                <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                </svg>
-                {{ space.location }}
-              </div>
-              <div class="flex items-center mb-4">
-                <div class="flex text-primary">
-                  <svg v-for="star in 5" :key="star" class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+            
+            <div class="p-3 flex flex-col flex-grow">
+              <div class="flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight">
+                    {{ space.name }}
+                  </h3>
+                  <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-full text-xs font-bold text-gray-900 dark:text-white flex-shrink-0">
+                    ${{ getStartingPrice(space) }}
+                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">/day</span>
+                  </div>
                 </div>
-                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ space.rating }} ({{ space.reviews }} reviews)</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="text-2xl font-bold text-black dark:text-white">
-                  <span class="bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-full">${{ getStartingPrice(space) }}</span>
-                  <span class="text-sm font-normal text-gray-600 dark:text-gray-400">/day</span>
+
+                <div class="flex items-center justify-between mt-1.5">
+                  <div class="flex items-center text-gray-600 dark:text-gray-400 text-xs">
+                    <div class="p-0.5 bg-gray-100 dark:bg-gray-800 rounded-full mr-1.5 flex-shrink-0">
+                      <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      </svg>
+                    </div>
+                    <span class="truncate max-w-[120px]">{{ space.location }}</span>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <div class="flex text-yellow-400">
+                      <svg v-for="star in 5" :key="star" :class="['w-3 h-3', star <= space.rating ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                    <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ space.rating }} ({{ space.reviews }})</span>
+                  </div>
                 </div>
-                <button class="bg-primary text-black px-4 py-2 rounded-full font-medium text-sm hover:scale-105 transform transition-all duration-200 shadow-md flex items-center">
-                  View Details
-                  <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
               </div>
+
+              <button class="btn-primary text-xs w-full mt-3 py-1.5 px-3 rounded-lg hover:scale-105 transition-transform duration-300 shadow-sm">
+                View Details
+              </button>
             </div>
           </div>
         </div>
 
         <div v-else class="text-center py-12">
-          <p class="text-gray-600 dark:text-gray-400">No featured spaces available at the moment.</p>
-          <button class="mt-4 bg-primary/20 dark:bg-primary/30 text-black dark:text-white px-6 py-2 rounded-full font-medium text-lg hover:bg-primary/30 transition-colors">
+          <p class="text-gray-600 dark:text-gray-400 text-sm">No featured spaces available at the moment.</p>
+          <button class="mt-4 bg-primary/20 dark:bg-primary/30 text-black dark:text-white px-5 py-1.5 rounded-full font-medium text-sm hover:bg-primary/30 transition-colors">
             Try Again Later
           </button>
         </div>
@@ -331,9 +339,9 @@
         <!-- See More Button -->
         <div class="text-center mt-12">
           <router-link to="/search"
-            class="bg-primary text-black px-10 py-4 rounded-full font-semibold text-lg hover:scale-105 transform transition-all duration-300 shadow-lg inline-flex items-center">
+            class="bg-primary text-black px-8 py-3 rounded-full font-semibold text-sm hover:scale-105 transform transition-all duration-300 shadow-lg inline-flex items-center">
             See More Spaces
-            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
           </router-link>
@@ -345,13 +353,13 @@
     <section class="section-padding bg-white dark:bg-black transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+          <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Why Choose {{ companyProfile.name }}?
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             We make dedicated desk simple, flexible, and affordable for modern professionals
           </p>
         </div>
@@ -365,8 +373,8 @@
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-black dark:text-white mb-4">Flexible Booking</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Flexible Booking</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               Book by the hour, day, or week. Change or cancel your reservation anytime with our flexible policies.
             </p>
           </div>
@@ -379,8 +387,8 @@
                   d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-black dark:text-white mb-4">Premium Locations</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Premium Locations</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               Work from the best locations in the city. All our spaces are in prime business districts with easy access.
             </p>
           </div>
@@ -393,8 +401,8 @@
                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-black dark:text-white mb-4">24/7 Access</h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <h3 class="text-lg font-bold text-black dark:text-white mb-4">24/7 Access</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               Access your workspace anytime with secure keycard entry. Perfect for early birds and night owls.
             </p>
           </div>
@@ -406,13 +414,13 @@
     <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="testimonials.length > 0">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+          <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             What Our Members Say
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Join thousands of professionals who love working with us
           </p>
         </div>
@@ -434,7 +442,7 @@
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed text-lg italic">
+            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed text-base italic">
               "{{ testimonial.content }}"
             </p>
             <div class="flex items-center">
@@ -462,13 +470,13 @@
     <section id="about" class="section-padding scroll-mt-20 bg-white dark:bg-black transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+          <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             About {{ companyProfile.name }}
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Your premium coworking solution for modern professionals
           </p>
         </div>
@@ -488,24 +496,24 @@
           </div>
           
           <div class="space-y-6">
-            <h3 class="text-2xl font-bold text-black dark:text-white">Creating Productive Work Environments</h3>
-            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
+            <h3 class="text-xl font-bold text-black dark:text-white">Creating Productive Work Environments</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
               At {{ companyProfile.name }}, we believe in providing more than just a desk. Our mission is to create environments where 
               professionals thrive, connections are made, and productivity reaches new heights.
             </p>
-            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
               Founded in 2020, we've expanded to over 25 locations across major cities, serving thousands of 
               entrepreneurs, freelancers, and businesses looking for flexible, high-quality workspace solutions.
             </p>
             
             <div class="grid grid-cols-2 gap-8 pt-6 mt-6 border-t-2 border-gray-100 dark:border-gray-800">
               <div class="bg-white dark:bg-black rounded-2xl p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transition-all duration-300 shadow-md text-center">
-                <p class="text-4xl font-bold text-primary mb-2">25+</p>
-                <p class="text-gray-600 dark:text-gray-400 font-medium">Locations</p>
+                <p class="text-3xl font-bold text-primary mb-2">25+</p>
+                <p class="text-gray-600 dark:text-gray-400 font-medium text-sm">Locations</p>
               </div>
               <div class="bg-white dark:bg-black rounded-2xl p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transition-all duration-300 shadow-md text-center">
-                <p class="text-4xl font-bold text-primary mb-2">5,000+</p>
-                <p class="text-gray-600 dark:text-gray-400 font-medium">Happy Members</p>
+                <p class="text-3xl font-bold text-primary mb-2">5,000+</p>
+                <p class="text-gray-600 dark:text-gray-400 font-medium text-sm">Happy Members</p>
               </div>
             </div>
           </div>
@@ -517,13 +525,13 @@
     <section id="contact" class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300 scroll-mt-20">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
+          <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
             Contact Us
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Get in touch with our team or subscribe for updates
           </p>
         </div>
@@ -532,8 +540,8 @@
           <!-- Contact Information -->
           <div class="bg-white dark:bg-black p-8 rounded-3xl shadow-lg border-2 border-gray-100 dark:border-gray-800 space-y-8">
             <div>
-              <h3 class="text-2xl font-bold text-black dark:text-white mb-4">Get In Touch</h3>
-              <p class="text-gray-600 dark:text-gray-300 mb-6 text-lg">
+              <h3 class="text-xl font-bold text-black dark:text-white mb-4">Get In Touch</h3>
+              <p class="text-gray-600 dark:text-gray-300 mb-6 text-base">
                 Have questions about our workspace solutions? Our team is ready to help you find
                 the perfect space for your needs.
               </p>
@@ -548,8 +556,8 @@
                   </svg>
                 </div>
                 <div>
-                  <h4 class="text-lg font-bold text-black dark:text-white">Email Us</h4>
-                  <a :href="'mailto:' + companyProfile.email" class="text-primary hover:underline font-medium">{{ companyProfile.email }}</a>
+                  <h4 class="text-base font-bold text-black dark:text-white">Email Us</h4>
+                  <a :href="'mailto:' + companyProfile.email" class="text-primary hover:underline font-medium text-sm">{{ companyProfile.email }}</a>
                 </div>
               </div>
               
@@ -561,8 +569,8 @@
                   </svg>
                 </div>
                 <div>
-                  <h4 class="text-lg font-bold text-black dark:text-white">Call Us</h4>
-                  <a :href="'tel:' + companyProfile.phone" class="text-primary hover:underline font-medium">{{ companyProfile.phone }}</a>
+                  <h4 class="text-base font-bold text-black dark:text-white">Call Us</h4>
+                  <a :href="'tel:' + companyProfile.phone" class="text-primary hover:underline font-medium text-sm">{{ companyProfile.phone }}</a>
                 </div>
               </div>
               
@@ -575,15 +583,15 @@
                   </svg>
                 </div>
                 <div>
-                  <h4 class="text-lg font-bold text-black dark:text-white">Headquarters</h4>
-                  <p class="text-gray-600 dark:text-gray-400">{{ companyProfile.address }}</p>
+                  <h4 class="text-base font-bold text-black dark:text-white">Headquarters</h4>
+                  <p class="text-gray-600 dark:text-gray-400 text-sm">{{ companyProfile.address }}</p>
                 </div>
               </div>
             </div>
             
             <!-- Social Media Links -->
             <div>
-              <h4 class="text-lg font-bold text-black dark:text-white mb-5">Follow Us</h4>
+              <h4 class="text-base font-bold text-black dark:text-white mb-5">Follow Us</h4>
               <div class="flex space-x-4">
                 <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
                   <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
@@ -617,8 +625,8 @@
             <div class="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 rounded-full translate-y-16 -translate-x-16"></div>
             
             <div class="relative z-10">
-              <h3 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Stay Updated</h3>
-              <p class="text-gray-600 dark:text-white/90 mb-8 text-lg">
+              <h3 class="text-xl font-bold mb-6 text-gray-800 dark:text-white">Stay Updated</h3>
+              <p class="text-gray-600 dark:text-white/90 mb-8 text-base">
                 Get the latest updates on new spaces, special offers, and workspace tips delivered to your inbox.
               </p>
               <div class="space-y-5">
@@ -664,10 +672,10 @@
           <!-- Brand & Description -->
           <div class="space-y-6">
             <div class="flex items-center">
-              <h3 class="text-2xl font-heading font-bold text-primary mr-2">{{ companyProfile.name }}</h3>
+              <h3 class="text-xl font-heading font-bold text-primary mr-2">{{ companyProfile.name }}</h3>
               <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
+            <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
               Discover premium workspaces designed for productivity, flexibility, and collaboration. Book your perfect
               space today.
             </p>
@@ -705,10 +713,10 @@
 
           <!-- Navigation -->
           <div class="space-y-6">
-            <h4 class="text-xl font-bold text-primary">Explore</h4>
+            <h4 class="text-lg font-bold text-primary">Explore</h4>
             <ul class="space-y-3">
               <li>
-                <router-link to="/search-results" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                <router-link to="/search-results" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -716,7 +724,7 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/meeting-rooms" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                <router-link to="/meeting-rooms" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -724,7 +732,7 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/hot-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                <router-link to="/hot-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -732,7 +740,7 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/dedicated-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center">
+                <router-link to="/dedicated-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -744,7 +752,7 @@
 
           <!-- Contact -->
           <div class="space-y-6">
-            <h4 class="text-xl font-bold text-primary">Contact Us</h4>
+            <h4 class="text-lg font-bold text-primary">Contact Us</h4>
             <ul class="space-y-3">
               <li class="flex items-start">
                 <div class="bg-gray-100 dark:bg-primary/20 p-2 rounded-full mr-3 mt-1">
@@ -753,7 +761,7 @@
                       d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <a :href="'mailto:' + companyProfile.email" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+                <a :href="'mailto:' + companyProfile.email" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors text-sm">
                   {{ companyProfile.email }}
                 </a>
               </li>
@@ -764,7 +772,7 @@
                       d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </div>
-                <a :href="'tel:' + companyProfile.phone" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+                <a :href="'tel:' + companyProfile.phone" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors text-sm">
                   {{ companyProfile.phone }}
                 </a>
               </li>
@@ -776,15 +784,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <span class="text-gray-600 dark:text-gray-300">{{ companyProfile.address }}</span>
+                <span class="text-gray-600 dark:text-gray-300 text-sm">{{ companyProfile.address }}</span>
               </li>
             </ul>
           </div>
 
           <!-- Newsletter -->
           <div class="space-y-6">
-            <h4 class="text-xl font-bold text-primary">Stay Connected</h4>
-            <p class="text-gray-600 dark:text-gray-300">Subscribe to our newsletter for the latest updates.</p>
+            <h4 class="text-lg font-bold text-primary">Stay Connected</h4>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Subscribe to our newsletter for the latest updates.</p>
             <div class="flex flex-col gap-3">
               <div class="relative">
                 <input v-model="footerNewsletterEmail" type="email" placeholder="Enter your email"

@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
     <!-- Advanced Search Bar -->
-    <div class="bg-white border-b mr-5 ml-5 rounded-lg border-gray-200 fixed top-16 left-0 right-0 z-40 mx-5">
-      <div class="max-w-8xl  py-3">
-        <h1 class="text-base font-bold text-gray-800 mb-3">Search Your WorkSpace</h1>
+    <div class="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 fixed top-16 left-0 right-0 z-40 shadow-lg">
+      <div class="max-w-9xl py-4 px-3">
+        <!-- <h1 class="text-lg font-bold text-gray-800 dark:text-white mb-3">Search Your <span class="text-primary">WorkSpace</span></h1> -->
         <div class="flex flex-row items-center justify-start gap-3 w-full relative">
           <div class="relative min-w-[220px] max-w-[260px] flex flex-col justify-end">
-            <label class="block text-xs font-medium text-black mb-0.5">Space Type</label>
+            <label class="block text-xs font-medium text-black dark:text-white mb-0.5">Space Type</label>
             <SpaceTypeDropdown
               v-model="editSearchForm.spaceType"
               :options="spaceTypeOptions"
@@ -18,22 +18,22 @@
           </div>
 
           <div class="flex-grow min-w-[200px] flex flex-col justify-end">
-            <label class="block text-xs font-medium text-gray-700 mb-0.5">Date</label>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Date</label>
             <SingleDatePicker :modelValue="editSearchForm.date === null ? undefined : editSearchForm.date"
               @update:modelValue="editSearchForm.date = $event" placeholder="Date" class="text-xs py-0 px-0 w-full h-9" />
           </div>
 
           <div class="flex flex-col justify-end min-w-[280px]">
-            <label class="block text-xs font-medium text-gray-700 mb-1">Time Range</label>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time Range</label>
             <div class="h-8 flex items-center">
               <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" class="h-10" />
             </div>
           </div>
 
           <div class="flex-none mr-1 flex flex-col justify-end min-w-[100px]">
-            <label class="block text-xs font-medium text-gray-700 mb-0.5">Capacity</label>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Capacity</label>
             <input v-model.number="editSearchForm.capacity" type="number" min="1" placeholder="Capacity"
-              class="input-field text-xs py-1.5 px-2 w-full h-9">
+              class="input-field text-xs py-1.5 px-2 w-full h-9 bg-white dark:bg-gray-900 dark:text-white">
           </div>
 
           <div class="flex-shrink-0 flex flex-col justify-end min-w-[110px]">
@@ -53,37 +53,39 @@
           <!-- Mobile Filter Toggle -->
           <div class="md:hidden mb-4">
             <button @click="isFilterOpen = !isFilterOpen"
-              class="w-full flex items-center justify-between bg-white p-3 rounded-lg shadow-card">
-              <span class="text-lg font-semibold text-gray-900">Filters</span>
-              <svg class="w-6 h-6 text-gray-600 transform transition-transform"
-                :class="{ 'rotate-180': isFilterOpen }" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
-              </svg>
+              class="w-full flex items-center justify-between bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg dark:shadow-dark-card border-2 border-gray-100 dark:border-gray-800">
+              <span class="text-lg font-semibold text-gray-900 dark:text-white">Filters</span>
+              <div class="bg-primary/10 dark:bg-primary/20 p-2 rounded-full">
+                <svg class="w-5 h-5 text-primary transform transition-transform"
+                  :class="{ 'rotate-180': isFilterOpen }" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                </svg>
+              </div>
             </button>
           </div>
 
           <div
-            class="bg-white rounded-lg p-3 shadow-card fixed top-45 left-5 w-72 z-30 max-h-[calc(100vh-12rem)] overflow-y-auto"
+            class="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-lg dark:shadow-dark-card fixed top-45 left-5 w-72 z-30 max-h-[calc(100vh-12rem)] overflow-y-auto border-2 border-gray-100 dark:border-gray-800"
             :class="{ 'hidden md:block': !isFilterOpen }">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-sm font-semibold text-gray-900">Filters</h3>
-              <button @click="clearAllFilters" class="text-xs text-secondary-500">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-base font-bold text-gray-900 dark:text-white">Filters</h3>
+              <button @click="clearAllFilters" class="text-xs text-primary hover:underline font-medium">
                 Clear All
               </button>
             </div>
 
             <!-- Location Filter -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Location</h4>
+              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-2">Location</h4>
               <input v-model="filters.location" type="text" placeholder="Enter location"
-                class="input-field w-full text-sm py-1.5 px-2" @input="updateQueryAndReload">
+                class="input-field w-full text-sm py-1.5 px-2 bg-white dark:bg-gray-900 dark:text-white" @input="updateQueryAndReload">
             </div>
 
             <!-- Price Range -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Price Range (per day)</h4>
+              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-2">Price Range (per day)</h4>
               <div class="space-y-2">
-                <div class="flex items-center justify-between text-xs text-gray-600">
+                <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
                   <span>${{ priceRange.min }}</span>
                   <span>${{ priceRange.max }}</span>
                 </div>
@@ -94,44 +96,44 @@
 
             <!-- Facilities -->
             <div class="mb-3">
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Facilities</h4>
+              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-2">Facilities</h4>
               <div class="space-y-1">
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="High-Speed WiFi" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
                     :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
-                  <span class="ml-2 text-gray-700 text-xs">High-Speed WiFi</span>
+                  <span class="ml-2 text-gray-700 dark:text-gray-300 text-xs">High-Speed WiFi</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="4K Display" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
                     :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
-                  <span class="ml-2 text-gray-700 text-xs">4K Display</span>
+                  <span class="ml-2 text-gray-700 dark:text-gray-300 text-xs">4K Display</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Video Conferencing" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
                     :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
-                  <span class="ml-2 text-gray-700 text-xs">Video Conferencing</span>
+                  <span class="ml-2 text-gray-700 dark:text-gray-300 text-xs">Video Conferencing</span>
                 </label>
                 <label class="flex items-center">
                   <input v-model="selectedFacilities" value="Natural Light" type="checkbox"
-                    class="rounded border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
                     :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
-                  <span class="ml-2 text-gray-700 text-xs">Natural Light</span>
+                  <span class="ml-2 text-gray-700 dark:text-gray-300 text-xs">Natural Light</span>
                 </label>
               </div>
             </div>
 
             <!-- Rating -->
             <div>
-              <h4 class="font-medium text-gray-900 text-sm mb-2">Rating</h4>
+              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-2">Rating</h4>
               <div class="space-y-1">
                 <label class="flex items-center">
                   <input v-model="minRating" value="4" type="radio" name="rating"
-                    class="border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    class="border-gray-300 dark:border-gray-600 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
                     :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
-                  <span class="ml-2 text-gray-700 flex items-center text-xs">
+                  <span class="ml-2 text-gray-700 dark:text-gray-300 flex items-center text-xs">
                     4+ stars
                     <div class="flex ml-1 text-yellow-400">
                       <svg v-for="star in 4" :key="star" class="w-3 h-3 fill-current" viewBox="0 0 20 20">
@@ -143,9 +145,9 @@
                 </label>
                 <label class="flex items-center">
                   <input v-model="minRating" value="0" type="radio" name="rating"
-                    class="border-gray-300 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
+                    class="border-gray-300 dark:border-gray-600 text-primary focus:ring-primary checked:bg-primary checked:border-primary text-xs"
                     :style="{ accentColor: 'var(--color-primary, #000)' }" @change="updateQueryAndReload">
-                  <span class="ml-2 text-gray-700 text-xs">Any rating</span>
+                  <span class="ml-2 text-gray-700 dark:text-gray-300 text-xs">Any rating</span>
                 </label>
               </div>
             </div>
@@ -155,22 +157,27 @@
         <!-- Results Area -->
         <div class="md:col-span-3 relative mr-0 md:-ml-14 ml-0">
           <!-- Title and Sort -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
             <div>
-              <h2 class="text-lg font-semibold text-gray-900">{{ searchResultTitle }}</h2>
-              <div class="flex items-center gap-1.5 flex-wrap mt-1.5">
+              <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                {{ searchResultTitle }}
+                <div class="ml-2 bg-primary/20 text-primary text-sm px-2.5 py-1 rounded-full">
+                  {{ filteredSpaces.length }} spaces
+                </div>
+              </h2>
+              <div class="flex items-center gap-1.5 flex-wrap mt-2.5">
                 <span v-for="filter in activeFilters" :key="filter"
-                  class="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded-full text-xs">
+                  class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full text-xs font-medium">
                   {{ filter }}
-                  <button @click="removeFilter(filter)" class="ml-1 text-gray-600 hover:text-gray-900 text-xs">
+                  <button @click="removeFilter(filter)" class="ml-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full w-4 h-4 inline-flex items-center justify-center transition-colors">
                     &times;
                   </button>
                 </span>
               </div>
             </div>
-            <div class="flex items-center gap-3">
-              <label class="text-xs text-gray-600">Sort by:</label>
-              <select v-model="sortBy" class="input-field text-xs py-1.5 px-2" @change="applySorting">
+            <div class="flex items-center gap-3 bg-white dark:bg-gray-900 p-2 rounded-full shadow-sm border border-gray-100 dark:border-gray-800">
+              <label class="text-xs text-gray-600 dark:text-gray-300 ml-2">Sort by:</label>
+              <select v-model="sortBy" class="text-xs py-1.5 px-3 bg-white dark:bg-gray-900 dark:text-white rounded-full border-0 focus:ring-2 focus:ring-primary/50" @change="applySorting">
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="rating">Highest Rated</option>
@@ -180,21 +187,23 @@
           </div>
 
           <!-- Loading State -->
-          <div v-if="isLoading" class="text-center py-8">
-            <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-            <p class="mt-3 text-gray-600 text-sm">Searching spaces...</p>
+          <div v-if="isLoading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+            <p class="text-gray-600 dark:text-gray-400 text-base">Searching for the perfect spaces...</p>
+            <p class="text-gray-500 dark:text-gray-500 text-sm mt-1">This will just take a moment</p>
           </div>
 
           <!-- Space Cards Grid - 3 per row -->
-          <div v-else-if="filteredSpaces.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div v-else-if="filteredSpaces.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
             <div v-for="space in sortedSpaces" :key="space.id"
-              class="card overflow-hidden group cursor-pointer hover:shadow-md transition-all duration-200 flex flex-col"
+              class="card overflow-hidden group cursor-pointer hover:shadow-xl dark:hover:shadow-dark-md transform hover:-translate-y-1 transition-all duration-300 flex flex-col bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl"
               @click="viewSpace(space.id, space.productType)">
-              <div class="relative aspect-[4/3] overflow-hidden">
+              <div class="relative aspect-[16/9] overflow-hidden rounded-t-2xl">
                 <img :src="getSpaceImage(space)" :alt="space.name"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <button @click.stop="toggleFavorite(space.id)"
-                  :class="['absolute top-2 right-2 p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors', isFavorite(space.id) ? 'text-red-500' : 'text-gray-400']">
+                  :class="['absolute top-2 right-2 p-1.5 rounded-full bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black transition-colors shadow-md hover:scale-110 transform', isFavorite(space.id) ? 'text-red-500' : 'text-gray-400 dark:text-gray-500']">
                   <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                       d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
@@ -202,56 +211,60 @@
                   </svg>
                 </button>
                 <div class="absolute bottom-2 left-2">
-                  <span class="bg-white/90 text-gray-900 px-1.5 py-0.5 rounded-full text-xs font-medium">
+                  <span class="bg-primary text-black px-2 py-0.5 rounded-full text-xs font-medium shadow-md">
                     {{ formatSpaceType(space.productType) }}
                   </span>
                 </div>
               </div>
 
-              <div class="p-2.5 flex flex-col flex-grow">
+              <div class="p-3 flex flex-col flex-grow">
                 <div class="flex-grow">
-                  <div class="flex items-start justify-between mb-1">
-                    <h3 class="text-sm font-semibold text-gray-900 group-hover:text-primary transition-colors leading-tight">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight">
                       {{ space.name }}
                     </h3>
-                    <div class="text-sm font-bold text-gray-900 ml-2 flex-shrink-0">
+                    <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-full text-xs font-bold text-gray-900 dark:text-white flex-shrink-0">
                       ${{ getStartingPrice(space) }}
-                      <span class="text-xs font-normal text-gray-600 block">/{{ getPriceUnit(space.productType) }}</span>
+                      <span class="text-xs font-medium text-gray-700 dark:text-gray-300">/{{ getPriceUnit(space.productType) }}</span>
                     </div>
                   </div>
 
-                  <div class="flex items-center text-gray-600 text-xs mb-1.5">
-                    <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    </svg>
-                    <span class="truncate">{{ space.location }}</span>
-                  </div>
-
-                  <div class="flex items-center mb-2">
-                    <div class="flex text-yellow-400">
-                      <svg v-for="star in 5" :key="star" :class="['w-3 h-3', star <= space.rating ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
+                  <div class="flex items-center justify-between mt-1.5">
+                    <div class="flex items-center text-gray-600 dark:text-gray-400 text-xs">
+                      <div class="p-0.5 bg-gray-100 dark:bg-gray-800 rounded-full mr-1.5 flex-shrink-0">
+                        <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                      </div>
+                      <span class="truncate max-w-[120px]">{{ space.location }}</span>
                     </div>
-                    <span class="ml-1 text-xs text-gray-600">{{ space.rating }} ({{ space.reviews }})</span>
+                    
+                    <div class="flex items-center">
+                      <div class="flex text-yellow-400">
+                        <svg v-for="star in 5" :key="star" :class="['w-3 h-3', star <= space.rating ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </div>
+                      <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ space.rating }} ({{ space.reviews }})</span>
+                    </div>
                   </div>
 
-                  <div class="border-t border-gray-200 mt-2 pt-2">
+                  <div class="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <div class="flex flex-wrap gap-1">
                       <span v-for="feature in space.features.slice(0, 2)" :key="feature"
-                        class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
+                        class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-1.5 py-0.5 rounded-full text-[10px] font-medium">
                         {{ feature }}
                       </span>
                       <span v-if="space.features.length > 2"
-                        class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
+                        class="bg-primary/10 dark:bg-primary/20 text-primary px-1.5 py-0.5 rounded-full text-[10px] font-medium">
                         +{{ space.features.length - 2 }}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <button class="btn-primary text-xs w-full mt-3 py-2 px-3">
+                <button class="btn-primary text-xs w-full mt-2 py-1.5 px-3 rounded-lg hover:scale-105 transition-transform duration-300 shadow-sm">
                   Select
                 </button>
               </div>
@@ -259,93 +272,106 @@
           </div>
 
           <!-- No Results -->
-          <div v-else class="text-center py-8">
-            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div v-else class="text-center py-12 max-w-md mx-auto">
+            <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <h3 class="text-sm font-semibold text-gray-900 mb-1.5">No spaces found</h3>
-            <p class="text-gray-600 mb-3 text-xs">Try adjusting your filters or search criteria</p>
-            <button @click="clearAllFilters" class="btn-primary text-xs py-1.5 px-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No spaces found</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-5 text-base">We couldn't find any spaces matching your criteria. Try adjusting your filters or search for something different.</p>
+            <button @click="clearAllFilters" class="btn-primary text-sm py-2.5 px-6 shadow-lg hover:scale-105 transition-all duration-300">
               Clear All Filters
             </button>
 
             <!-- Suggestions from other locations -->
-            <div v-if="filters.location && allSpaces.length > 0">
-              <h4 class="mt-8 mb-2 text-sm font-semibold text-gray-900">Suggestions from other locations</h4>
-              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <div v-for="space in allSpaces.filter(s => !filters.location || !s.location.toLowerCase().includes(filters.location.toLowerCase()))"
+            <div v-if="filters.location && allSpaces.length > 0" class="mt-10">
+              <div class="flex items-center mb-5 bg-primary/10 dark:bg-primary/20 py-3 px-4 rounded-xl">
+                <div class="bg-primary/20 dark:bg-primary/30 p-2 rounded-full mr-3">
+                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 class="text-base font-bold text-gray-900 dark:text-white">
+                  Suggestions for you <span class="text-primary">✨</span>
+                </h4>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="space in allSpaces.filter(s => !filters.location || !s.location.toLowerCase().includes(filters.location.toLowerCase())).slice(0, 3)"
                   :key="space.id"
-                  class="card overflow-hidden group cursor-pointer hover:shadow-md transition-all duration-200 flex flex-col"
+                  class="card overflow-hidden group cursor-pointer hover:shadow-xl dark:hover:shadow-dark-md transform hover:-translate-y-1 transition-all duration-300 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl flex flex-row"
                   @click="viewSpace(space.id, space.productType)">
-                  <div class="relative aspect-[4/3] overflow-hidden">
+                  
+                  <div class="relative w-1/3 overflow-hidden">
                     <img :src="getSpaceImage(space)" :alt="space.name"
-                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    <button @click.stop="toggleFavorite(space.id)"
-                      :class="['absolute top-2 right-2 p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors', isFavorite(space.id) ? 'text-red-500' : 'text-gray-400']">
-                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                          d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </button>
-                    <div class="absolute bottom-2 left-2">
-                      <span class="bg-white/90 text-gray-900 px-1.5 py-0.5 rounded-full text-xs font-medium">
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-2 left-2">
+                      <span class="bg-primary text-black px-1.5 py-0.5 rounded-full text-xs font-medium shadow-sm">
                         {{ formatSpaceType(space.productType) }}
                       </span>
                     </div>
                   </div>
 
-                  <div class="p-2.5 flex flex-col flex-grow">
-                    <div class="flex-grow">
-                      <div class="flex items-start justify-between mb-1">
-                        <h3 class="text-sm font-semibold text-gray-900 group-hover:text-primary transition-colors leading-tight">
+                  <div class="p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div class="flex items-start justify-between">
+                        <h3 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight">
                           {{ space.name }}
                         </h3>
-                        <div class="text-sm font-bold text-gray-900 ml-2 flex-shrink-0">
-                          ${{ getStartingPrice(space) }}
-                          <span class="text-xs font-normal text-gray-600 block">/{{ getPriceUnit(space.productType) }}</span>
-                        </div>
+                        <button @click.stop="toggleFavorite(space.id)"
+                          :class="['ml-1 p-1 rounded-full', isFavorite(space.id) ? 'text-red-500' : 'text-gray-300 dark:text-gray-600']">
+                          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                              d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                              clip-rule="evenodd" />
+                          </svg>
+                        </button>
                       </div>
-
-                      <div class="flex items-center text-gray-600 text-xs mb-1.5">
-                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      
+                      <div class="flex items-center text-gray-600 dark:text-gray-400 text-xs mt-1">
+                        <svg class="w-3 h-3 mr-1 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         </svg>
-                        <span class="truncate">{{ space.location }}</span>
+                        <span class="truncate max-w-[130px]">{{ space.location }}</span>
                       </div>
 
-                      <div class="flex items-center mb-2">
-                        <div class="flex text-yellow-400">
-                          <svg v-for="star in 5" :key="star" :class="['w-3 h-3', star <= space.rating ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
+                      <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center">
+                          <div class="flex text-yellow-400">
+                            <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          </div>
+                          <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ space.rating }}</span>
                         </div>
-                        <span class="ml-1 text-xs text-gray-600">{{ space.rating }} ({{ space.reviews }})</span>
-                      </div>
-
-                      <div class="border-t border-gray-200 mt-2 pt-2">
-                        <div class="flex flex-wrap gap-1">
-                          <span v-for="feature in space.features.slice(0, 2)" :key="feature"
-                            class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
-                            {{ feature }}
-                          </span>
-                          <span v-if="space.features.length > 2"
-                            class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full text-xs leading-tight">
-                            +{{ space.features.length - 2 }}
-                          </span>
+                        <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-lg text-xs font-bold text-gray-900 dark:text-white">
+                          ${{ getStartingPrice(space) }}
                         </div>
                       </div>
                     </div>
-
-                    <button class="btn-primary text-xs w-full mt-3 py-2 px-3">
-                      Select
+                    
+                    <button class="mt-2 text-primary text-xs font-medium hover:underline flex items-center">
+                      View details
+                      <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
                     </button>
                   </div>
                 </div>
+              </div>
+              
+              <div class="flex justify-center mt-4">
+                <button @click="viewMoreSuggestions" class="bg-white dark:bg-gray-900 border border-primary text-primary px-4 py-1.5 rounded-full text-xs font-medium hover:bg-primary/5 transition-colors duration-300 flex items-center">
+                  Show more suggestions
+                  <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -1105,6 +1131,39 @@ export default defineComponent({
         console.error('Error navigating to space details:', error);
       }
     },
+    
+    viewMoreSuggestions(): void {
+      // Navigate to search results with broader parameters
+      const newFilters = new SearchFilters(
+        '', // clear location
+        this.filters.spaceType,
+        this.filters.dateRange,
+        this.filters.startTime,
+        this.filters.endTime,
+        this.filters.capacity
+      );
+      
+      const queryParams: Record<string, string | number | null | undefined> = {
+        spaceType: newFilters.spaceType,
+        capacity: newFilters.capacity,
+        startDate: newFilters.dateRange.startDate,
+        endDate: newFilters.dateRange.endDate,
+        startTime: newFilters.startTime,
+        endTime: newFilters.endTime
+      };
+      
+      // Remove undefined values
+      Object.keys(queryParams).forEach(key => {
+        if (queryParams[key] === null || queryParams[key] === undefined || queryParams[key] === '') {
+          delete queryParams[key];
+        }
+      });
+      
+      this.$router.push({
+        name: 'SearchResults',
+        query: queryParams
+      });
+    },
 
     toggleFavorite(id: number): void {
       const index = this.favoriteSpaceIds.indexOf(id);
@@ -1191,3 +1250,92 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shadow-card {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07), 0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+.dark .shadow-dark-card {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5), 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  border-color: var(--color-primary, #00FE01);
+}
+
+.dark .card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  border-color: var(--color-primary, #00FE01);
+}
+
+.btn-primary {
+  background-color: var(--color-primary, #00FE01);
+  color: black;
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Apply staggered animation to cards */
+.grid > .card {
+  animation-duration: 0.6s;
+}
+
+.grid > .card:nth-child(1) { animation-delay: 0.1s; }
+.grid > .card:nth-child(2) { animation-delay: 0.2s; }
+.grid > .card:nth-child(3) { animation-delay: 0.3s; }
+.grid > .card:nth-child(4) { animation-delay: 0.4s; }
+.grid > .card:nth-child(5) { animation-delay: 0.5s; }
+.grid > .card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Custom styling for inputs */
+.input-field {
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.dark .input-field {
+  border-color: #374151;
+  background-color: #1f2937;
+}
+
+.input-field:focus {
+  border-color: var(--color-primary, #00FE01);
+  box-shadow: 0 0 0 2px rgba(0, 254, 1, 0.2);
+  outline: none;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div class="custom-time-range-picker">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
+    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ label }}</label>
     <div class="flex items-center gap-2">
       <div class="relative">
         <input
@@ -9,10 +9,10 @@
           @focus="openDropdown('start')"
           @blur="onBlur('start')"
           readonly
-          class="custom-time-input"
+          class="custom-time-input dark:bg-gray-900 dark:text-white dark:border-gray-700"
           placeholder="Start time"
         />
-        <div v-if="showStartDropdown" class="dropdown custom-scrollbar absolute w-full left-0 mt-1">
+        <div v-if="showStartDropdown" class="dropdown custom-scrollbar absolute w-full left-0 mt-1 dark:bg-gray-800 dark:border-gray-700">
           <div 
             v-for="time in timeOptions" 
             :key="time" 
@@ -24,7 +24,7 @@
           </div>
         </div>
       </div>
-      <span class="mx-1">-</span>
+      <span class="mx-1 dark:text-white">-</span>
       <div class="relative">
         <input
           type="text"
@@ -34,7 +34,7 @@
           readonly
           :disabled="!startTime"
           :class="[
-            'custom-time-input', 
+            'custom-time-input dark:bg-gray-900 dark:text-white dark:border-gray-700', 
             { 
               'disabled': !startTime,
               'highlight-needed': shouldHighlightEndTime
@@ -42,7 +42,7 @@
           ]"
           :placeholder="!startTime ? 'End time' : 'Enter end time'"
         />
-        <div v-if="showEndDropdown && startTime" class="dropdown custom-scrollbar w-full absolute left-0 mt-1">
+        <div v-if="showEndDropdown && startTime" class="dropdown custom-scrollbar w-full absolute left-0 mt-1 dark:bg-gray-800 dark:border-gray-700">
           <div 
             v-for="time in availableEndTimeOptions" 
             :key="time" 
@@ -211,8 +211,8 @@ export default defineComponent({
   border-radius: 0.5rem;
   outline: none;
   font-size: 0.75rem; /* text-xs */
-  color: #111;
-  background: #fff;
+  /* color: #111; */
+  /* background: #fff; */
   cursor: pointer;
   /* transition: border-color 0.2s, box-shadow 0.2s; */
 }
@@ -221,13 +221,13 @@ export default defineComponent({
   /* box-shadow: 0 0 0 2px rgba(0,0,0,0.1); */
 }
 .custom-time-input.disabled {
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
   color: #9ca3af;
   cursor: not-allowed;
   border-color: #e5e7eb;
 }
 .custom-time-input:disabled {
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
   color: #9ca3af;
   cursor: not-allowed;
   border-color: #e5e7eb;
@@ -292,6 +292,11 @@ export default defineComponent({
   overflow-y: auto;
   margin-top: 0.25rem;
 }
+.dark .dropdown {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
 .dropdown-item {
   padding: 0.5rem 1rem;
   cursor: pointer;
@@ -302,14 +307,26 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
 }
+.dark .dropdown-item {
+  color: #e5e7eb;
+}
 .dropdown-item.selected,
 .dropdown-item:hover:not(.disabled) {
   background: #000;
   color: #fff;
 }
+.dark .dropdown-item.selected,
+.dark .dropdown-item:hover:not(.disabled) {
+  background: #00FE01;
+  color: #000;
+}
 .dropdown-item.disabled {
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
   color: #9ca3af;
   cursor: not-allowed;
+}
+.dark .dropdown-item.disabled {
+  background-color: #374151;
+  color: #6b7280;
 }
 </style>

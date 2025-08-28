@@ -569,7 +569,7 @@ export class NetworkManager {
             ]
           },
           {
-            id: 3,
+            id: 4,
             name: 'Dedicated Office Space',
             description: 'Private office space with 24/7 access',
             location: 'Galle Fort',
@@ -591,6 +591,32 @@ export class NetworkManager {
               { date: '2025-08-27', slots: [{ startTime: '00:00', endTime: '23:59' }] },
               { date: '2025-08-28', slots: [{ startTime: '00:00', endTime: '23:59' }] },
               { date: '2025-08-29', slots: [{ startTime: '00:00', endTime: '23:59' }] }
+            ]
+          },
+          {
+            id: 1,
+            name: 'Executive Meeting Room',
+            description: 'Professional meeting space with modern amenities for your business needs',
+            location: 'Kandy Lakeside',
+            address: '123 Kandy Street, Kandy',
+            productType: 'meeting-room',
+            images: [
+              'https://images.unsplash.com/photo-1517502884422-41eaead166d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            ],
+            rating: 4.8,
+            reviews: 124,
+            pricing: {
+              hourly: 25,
+              daily: 180
+            },
+            capacity: 12,
+            maxCapacity: 15,
+            features: ['wifi', 'High-Speed WiFi', 'projector', '4K Display', 'whiteboard', 'coffee', 'printing'],
+            isAvailable: true,
+            availability: [
+              { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] },
+              { date: '2025-08-28', slots: [{ startTime: '09:00', endTime: '17:00' }] },
+              { date: '2025-08-29', slots: [{ startTime: '09:00', endTime: '17:00' }] }
             ]
           }
         ];
