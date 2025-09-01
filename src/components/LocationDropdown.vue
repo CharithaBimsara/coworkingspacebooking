@@ -245,7 +245,7 @@ export default defineComponent({
 .input-field {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #E5E7EB; /* Light gray border */
+  border: 1px solid #D1D5DB; /* Light gray border */
   border-radius: 0.5rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -254,7 +254,7 @@ export default defineComponent({
 
 .input-field:focus {
   border-color: #D1D5DB; /* Lighter gray on focus */
-  box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.3); /* Subtle light gray shadow */
+  box-shadow: none
 }
 
 /* Custom scrollbar for dropdown */

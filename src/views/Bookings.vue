@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
     <div class="max-w-7xl mx-auto container-padding py-8">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 class="text-3xl font-heading font-bold text-gray-900 mb-2">My Bookings</h1>
-          <p class="text-gray-600">Manage your workspace reservations and booking history</p>
+          <h1 class="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-2">My Bookings</h1>
+          <p class="text-gray-600 dark:text-gray-400">Manage your workspace reservations and booking history</p>
         </div>
         <router-link to="/search" class="btn-primary mt-4 sm:mt-0">
           Book New Space
@@ -14,7 +14,7 @@
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-card">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700">
           <div class="flex items-center">
             <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,13 +22,13 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-2xl font-bold text-gray-900">{{ stats.totalBookings }}</p>
-              <p class="text-sm text-gray-600">Total Bookings</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.totalBookings }}</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Total Bookings</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-xl p-6 shadow-card">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700">
           <div class="flex items-center">
             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,13 +36,13 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-2xl font-bold text-gray-900">{{ stats.upcomingBookings }}</p>
-              <p class="text-sm text-gray-600">Upcoming</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.upcomingBookings }}</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Upcoming</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-xl p-6 shadow-card">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700">
           <div class="flex items-center">
             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,13 +50,13 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-2xl font-bold text-gray-900">{{ stats.favoriteSpaces }}</p>
-              <p class="text-sm text-gray-600">Favorite Spaces</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.favoriteSpaces }}</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Favorite Spaces</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-xl p-6 shadow-card">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700">
           <div class="flex items-center">
             <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,26 +64,26 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-2xl font-bold text-gray-900">${{ stats.totalSpent }}</p>
-              <p class="text-sm text-gray-600">Total Spent</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ stats.totalSpent }}</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Total Spent</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Filter Tabs and Controls -->
-      <div class="bg-white rounded-xl p-6 shadow-card mb-8">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700 mb-8">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <!-- Tabs -->
-          <div class="flex space-x-1 bg-gray-100 rounded-lg p-1">
+          <div class="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
             <button 
               v-for="tab in tabs" 
               :key="tab.id"
               @click="activeTab = tab.id"
-              :class="['px-4 py-2 rounded-md text-sm font-medium transition-colors', activeTab === tab.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900']"
+              :class="['px-4 py-2 rounded-md text-sm font-medium transition-colors', activeTab === tab.id ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white']"
             >
               {{ tab.name }}
-              <span v-if="tab.count" :class="['ml-2 px-2 py-0.5 rounded-full text-xs', activeTab === tab.id ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600']">
+              <span v-if="tab.count" :class="['ml-2 px-2 py-0.5 rounded-full text-xs', activeTab === tab.id ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-500 text-gray-600 dark:text-gray-300']">
                 {{ tab.count }}
               </span>
             </button>
@@ -97,9 +97,9 @@
                 v-model="searchQuery"
                 type="text" 
                 placeholder="Search bookings..."
-                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               >
-              <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -108,7 +108,7 @@
             <div class="flex items-center space-x-2">
               <button 
                 @click="viewMode = 'list'" 
-                :class="['p-2 rounded-lg transition-colors', viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200']"
+                :class="['p-2 rounded-lg transition-colors', viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600']"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -116,7 +116,7 @@
               </button>
               <button 
                 @click="viewMode = 'calendar'" 
-                :class="['p-2 rounded-lg transition-colors', viewMode === 'calendar' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200']"
+                :class="['p-2 rounded-lg transition-colors', viewMode === 'calendar' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600']"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -124,10 +124,10 @@
               </button>
             </div>
 
-            <!-- Export -->
+            <!-- Export
             <button @click="exportBookings" class="btn-primary mr-2">
               Export
-            </button>
+            </button> -->
 
           </div>
         </div>
@@ -155,13 +155,13 @@
       <div v-if="viewMode === 'list'">
         <!-- Loading State -->
         <div v-if="loading" class="space-y-4">
-          <div v-for="i in 3" :key="i" class="bg-white rounded-xl p-6 shadow-card animate-pulse">
+          <div v-for="i in 3" :key="i" class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700 animate-pulse">
             <div class="flex space-x-4">
-              <div class="w-20 h-20 bg-gray-200 rounded-lg"></div>
+              <div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
               <div class="flex-1 space-y-2">
-                <div class="h-4 bg-gray-200 rounded w-1/3"></div>
-                <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-                <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+                <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
               </div>
             </div>
           </div>
@@ -172,7 +172,7 @@
           <div 
             v-for="booking in filteredBookings" 
             :key="booking.id"
-            class="bg-white rounded-xl p-6 shadow-card hover:shadow-lg transition-shadow"
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow"
           >
             <div class="flex flex-col lg:flex-row lg:items-center gap-6">
               <!-- Space Image and Info -->
@@ -186,32 +186,32 @@
                 >
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 truncate">{{ booking.space.name }}</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">{{ booking.space.name }}</h3>
                     <span :class="['px-3 py-1 rounded-full text-sm font-medium', getStatusClass(booking.status)]">
                       {{ booking.status }}
                     </span>
                   </div>
-                  <div class="flex items-center text-gray-600 mb-1">
+                  <div class="flex items-center text-gray-600 dark:text-gray-400 mb-1">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
                     {{ booking.space.location }}
                   </div>
-                  <div class="flex items-center text-gray-600 mb-1">
+                  <div class="flex items-center text-gray-600 dark:text-gray-400 mb-1">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     {{ formatDate(booking.date) }} • {{ formatDuration(booking.duration) }}
                   </div>
-                  <div class="flex items-center text-gray-600">
+                  <div class="flex items-center text-gray-600 dark:text-gray-400">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                     {{ formatSpaceType(booking.spaceType) }} • {{ booking.guests }} guest{{ booking.guests > 1 ? 's' : '' }}
                   </div>
                   <div class="mt-2 flex flex-col gap-1">
-                    <span class="text-sm text-gray-500">Booking #{{ booking.id }}</span>
-                    <span v-if="booking.dateChanged" class="inline-block text-xs bg-purple-100 text-purple-700 rounded px-2 py-0.5 mt-1 font-medium">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Booking #{{ booking.id }}</span>
+                    <span v-if="booking.dateChanged" class="inline-block text-xs bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded px-2 py-0.5 mt-1 font-medium">
                       Date already changed
                     </span>
                   </div>
@@ -221,8 +221,8 @@
               <!-- Price and Actions -->
               <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-4 lg:gap-2">
                 <div class="text-right">
-                  <div class="text-xl font-bold text-gray-900">${{ booking.totalAmount }}</div>
-                  <div class="text-sm text-gray-600">Total paid</div>
+                  <div class="text-xl font-bold text-gray-900 dark:text-white">${{ booking.totalAmount }}</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">Total paid</div>
                 </div>
                 
                 <div class="flex flex-wrap gap-2">
@@ -235,7 +235,7 @@
                   
                   <button
                     @click="downloadReceipt(booking)"
-                    class="text-sm px-3 py-1 border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                    class="text-sm px-3 py-1 border border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                   >
                     Receipt
                   </button>
@@ -243,7 +243,7 @@
                   <button
                     v-if="booking.status === 'Confirmed' && canChangeDate(booking)"
                     @click="changeDateModal(booking)"
-                    class="text-sm px-3 py-1 border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                    class="text-sm px-3 py-1 border border-purple-300 dark:border-purple-600 text-purple-600 dark:text-purple-400 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
                   >
                     Change Date
                   </button>
@@ -251,7 +251,7 @@
                   <button
                     v-if="booking.status === 'Confirmed'"
                     @click="cancelBooking(booking)"
-                    class="text-sm px-3 py-1 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                    class="text-sm px-3 py-1 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   >
                     Cancel
                   </button>
@@ -259,7 +259,7 @@
                   <button
                     v-if="booking.status === 'Confirmed'"
                     @click="rebookSpace(booking)"
-                    class="text-sm px-3 py-1 border border-green-300 text-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                    class="text-sm px-3 py-1 border border-green-300 dark:border-green-600 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
                   >
                     Rebook
                   </button>
@@ -267,7 +267,7 @@
                   <button
                     v-if="booking.status === 'Completed' && !booking.hasReview"
                     @click="rateAndReview(booking)"
-                    class="text-sm px-3 py-1 border border-yellow-300 text-yellow-600 rounded-lg hover:bg-yellow-50 transition-colors"
+                    class="text-sm px-3 py-1 border border-yellow-300 dark:border-yellow-600 text-yellow-600 dark:text-yellow-400 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors"
                   >
                     Rate & Review
                   </button>
@@ -279,13 +279,13 @@
 
         <!-- Empty State -->
         <div v-else class="text-center py-12">
-          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ getEmptyStateTitle() }}</h3>
-          <p class="text-gray-600 mb-4">{{ getEmptyStateDescription() }}</p>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ getEmptyStateTitle() }}</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">{{ getEmptyStateDescription() }}</p>
           <router-link to="/search" class="btn-primary">
             Book Your First Space
           </router-link>
@@ -303,10 +303,10 @@
 
     <!-- Booking Details Modal -->
     <div v-if="selectedBooking" @click="selectedBooking = null" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div @click.stop class="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Booking Details</h2>
-          <button @click="selectedBooking = null" class="text-gray-400 hover:text-gray-600">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Booking Details</h2>
+          <button @click="selectedBooking = null" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -318,15 +318,15 @@
           <div class="flex space-x-4">
             <img v-if="selectedBooking.space.image" :src="selectedBooking.space.image" :alt="selectedBooking.space.name" class="w-24 h-24 rounded-lg object-cover">
             <div class="flex-1">
-              <h3 class="text-lg font-semibold text-gray-900">{{ selectedBooking.space.name }}</h3>
-              <p class="text-gray-600">{{ selectedBooking.space.location }}</p>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedBooking.space.name }}</h3>
+              <p class="text-gray-600 dark:text-gray-400">{{ selectedBooking.space.location }}</p>
               <div class="flex items-center mt-2">
                 <div class="flex text-yellow-400">
                   <svg v-for="star in 5" :key="star" :class="['w-4 h-4', star <= selectedBooking.space.rating ? 'fill-current' : 'stroke-current fill-none']" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 </div>
-                <span class="ml-2 text-sm text-gray-600">{{ selectedBooking.space.rating }}</span>
+                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ selectedBooking.space.rating }}</span>
               </div>
             </div>
           </div>
@@ -334,55 +334,55 @@
           <!-- Booking Info -->
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-sm font-medium text-gray-700">Booking ID</label>
-              <p class="text-gray-900">{{ selectedBooking.id }}</p>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Booking ID</label>
+              <p class="text-gray-900 dark:text-white">{{ selectedBooking.id }}</p>
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-700">Status</label>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
               <p :class="['font-medium', getStatusColor(selectedBooking.status)]">{{ selectedBooking.status }}</p>
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-700">Date</label>
-              <p class="text-gray-900">{{ formatDate(selectedBooking.date) }}</p>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+              <p class="text-gray-900 dark:text-white">{{ formatDate(selectedBooking.date) }}</p>
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-700">Duration</label>
-              <p class="text-gray-900">{{ formatDuration(selectedBooking.duration) }}</p>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Duration</label>
+              <p class="text-gray-900 dark:text-white">{{ formatDuration(selectedBooking.duration) }}</p>
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-700">Space Type</label>
-              <p class="text-gray-900">{{ formatSpaceType(selectedBooking.spaceType) }}</p>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Space Type</label>
+              <p class="text-gray-900 dark:text-white">{{ formatSpaceType(selectedBooking.spaceType) }}</p>
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-700">Guests</label>
-              <p class="text-gray-900">{{ selectedBooking.guests }}</p>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Guests</label>
+              <p class="text-gray-900 dark:text-white">{{ selectedBooking.guests }}</p>
             </div>
           </div>
           
           <!-- Price Breakdown -->
-          <div class="border-t pt-4">
-            <h4 class="font-semibold text-gray-900 mb-3">Price Breakdown</h4>
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Price Breakdown</h4>
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600">Base Price</span>
-                <span>${{ selectedBooking.basePrice }}</span>
+                <span class="text-gray-600 dark:text-gray-400">Base Price</span>
+                <span class="text-gray-900 dark:text-white">${{ selectedBooking.basePrice }}</span>
               </div>
               <div v-if="selectedBooking.extraFees > 0" class="flex justify-between">
-                <span class="text-gray-600">Extra Fees</span>
-                <span>${{ selectedBooking.extraFees }}</span>
+                <span class="text-gray-600 dark:text-gray-400">Extra Fees</span>
+                <span class="text-gray-900 dark:text-white">${{ selectedBooking.extraFees }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">Service Fee</span>
-                <span>${{ selectedBooking.serviceFee }}</span>
+                <span class="text-gray-600 dark:text-gray-400">Service Fee</span>
+                <span class="text-gray-900 dark:text-white">${{ selectedBooking.serviceFee }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">Taxes</span>
-                <span>${{ selectedBooking.taxes }}</span>
+                <span class="text-gray-600 dark:text-gray-400">Taxes</span>
+                <span class="text-gray-900 dark:text-white">${{ selectedBooking.taxes }}</span>
               </div>
-              <hr class="my-2">
+              <hr class="my-2 border-gray-200 dark:border-gray-700">
               <div class="flex justify-between font-semibold">
-                <span>Total</span>
-                <span>${{ selectedBooking.totalAmount }}</span>
+                <span class="text-gray-900 dark:text-white">Total</span>
+                <span class="text-gray-900 dark:text-white">${{ selectedBooking.totalAmount }}</span>
               </div>
             </div>
           </div>
@@ -392,10 +392,10 @@
 
     <!-- Date Change Modal -->
     <div v-if="showDateChangeModal" @click="showDateChangeModal = false" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div @click.stop class="bg-white rounded-xl p-6 w-full max-w-md">
+      <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Change Booking Date</h2>
-          <button @click="showDateChangeModal = false" class="text-gray-400 hover:text-gray-600">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Change Booking Date</h2>
+          <button @click="showDateChangeModal = false" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -403,15 +403,15 @@
         </div>
 
         <div class="mb-4">
-          <p class="text-gray-600 mb-2">Current date: {{ formatDate(bookingToChange?.date || '') }}</p>
-          <label class="block text-sm font-medium text-gray-700 mb-2">New Date</label>
+          <p class="text-gray-600 dark:text-gray-400 mb-2">Current date: {{ formatDate(bookingToChange?.date || '') }}</p>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">New Date</label>
           <input
             v-model="newDate"
             type="date"
             :min="new Date().toISOString().split('T')[0]"
-            class="input-field"
+            class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           >
-          <p class="text-xs text-gray-500 mt-1">Note: Date changes are subject to availability and may incur additional fees.</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Note: Date changes are subject to availability and may incur additional fees.</p>
         </div>
 
         <div class="flex justify-end gap-3">
@@ -427,10 +427,10 @@
 
     <!-- Profile Modal -->
     <div v-if="showProfileModal" @click="showProfileModal = false" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div @click.stop class="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Profile Settings</h2>
-          <button @click="showProfileModal = false" class="text-gray-400 hover:text-gray-600">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Profile Settings</h2>
+          <button @click="showProfileModal = false" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -440,28 +440,28 @@
         <form class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-              <input type="text" value="Demo" class="input-field">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name</label>
+              <input type="text" value="Demo" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-              <input type="text" value="User" class="input-field">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
+              <input type="text" value="User" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input type="email" value="demo@workspace.com" class="input-field">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+            <input type="email" value="demo@workspace.com" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-            <input type="tel" value="(555) 123-4567" class="input-field">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+            <input type="tel" value="(555) 123-4567" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Company (Optional)</label>
-            <input type="text" placeholder="Your company name" class="input-field">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company (Optional)</label>
+            <input type="text" placeholder="Your company name" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
           </div>
 
           <div class="flex justify-end gap-3 pt-4">
@@ -478,10 +478,10 @@
 
     <!-- Cards Management Modal -->
     <div v-if="showCardsModal" @click="showCardsModal = false" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div @click.stop class="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Manage Payment Cards</h2>
-          <button @click="showCardsModal = false" class="text-gray-400 hover:text-gray-600">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Manage Payment Cards</h2>
+          <button @click="showCardsModal = false" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -490,22 +490,22 @@
 
         <!-- Existing Cards -->
         <div class="space-y-4 mb-6">
-          <h3 class="font-medium text-gray-900">Saved Cards</h3>
+          <h3 class="font-medium text-gray-900 dark:text-white">Saved Cards</h3>
 
           <!-- Sample Card -->
-          <div class="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+          <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex items-center justify-between bg-gray-50 dark:bg-gray-700">
             <div class="flex items-center space-x-3">
               <div class="w-10 h-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded text-white flex items-center justify-center text-xs font-bold">
                 VISA
               </div>
               <div>
-                <p class="font-medium text-gray-900">•••• •••• •••• 4242</p>
-                <p class="text-sm text-gray-600">Expires 12/25</p>
+                <p class="font-medium text-gray-900 dark:text-white">•••• •••• •••• 4242</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Expires 12/25</p>
               </div>
             </div>
             <div class="flex items-center space-x-2">
-              <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Default</span>
-              <button class="text-red-600 hover:text-red-800">
+              <span class="text-xs bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 px-2 py-1 rounded-full">Default</span>
+              <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
@@ -515,28 +515,28 @@
         </div>
 
         <!-- Add New Card -->
-        <div class="border-t border-gray-200 pt-6">
-          <h3 class="font-medium text-gray-900 mb-4">Add New Card</h3>
+        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <h3 class="font-medium text-gray-900 dark:text-white mb-4">Add New Card</h3>
           <form class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
-              <input type="text" placeholder="1234 5678 9012 3456" class="input-field">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Card Number</label>
+              <input type="text" placeholder="1234 5678 9012 3456" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Expiry</label>
-                <input type="text" placeholder="MM/YY" class="input-field">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expiry</label>
+                <input type="text" placeholder="MM/YY" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
-                <input type="text" placeholder="123" class="input-field">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CVV</label>
+                <input type="text" placeholder="123" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Cardholder Name</label>
-              <input type="text" placeholder="Full name on card" class="input-field">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cardholder Name</label>
+              <input type="text" placeholder="Full name on card" class="input-field bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
             </div>
 
             <div class="flex justify-end gap-3">

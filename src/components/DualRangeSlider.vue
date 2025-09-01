@@ -103,6 +103,10 @@ export default defineComponent({
   border-radius: 2px;
 }
 
+.dark .slider-track {
+  background-color: #4b5563;
+}
+
 .slider-range {
   position: absolute;
   height: 4px;
@@ -122,6 +126,7 @@ export default defineComponent({
 
 .range-input::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 20px;
   height: 20px;
   background-color: #00fe01; /* primary color */
@@ -133,6 +138,7 @@ export default defineComponent({
 
 .range-input::-moz-range-thumb {
   -moz-appearance: none;
+  appearance: none;
   width: 20px;
   height: 20px;
   background-color: #4f46e5; /* primary color */

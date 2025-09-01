@@ -428,7 +428,14 @@ export default defineComponent({
   transition-property: color;
   transition-duration: 200ms;
 }
-
+.dark .nav-link {
+  color: #D1D5DB;
+  /* text-gray-400 */
+}
+.dark .nav-link:hover {
+  color: #00FE01;
+  /* text-gray-50 */
+}
 .nav-link:hover {
   color: #111827;
   /* text-gray-900 */

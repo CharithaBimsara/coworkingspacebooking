@@ -82,6 +82,11 @@ export default defineComponent({
   overflow: hidden;
 }
 
+.dark .floating-services-container {
+  background-color: #1f2937;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
 .floating-services-container.minimized {
   width: 200px;
   height: 60px;
@@ -96,6 +101,11 @@ export default defineComponent({
   background-color: #f9fafb;
 }
 
+.dark .panel-header {
+  border-bottom-color: #374151;
+  background-color: #111827;
+}
+
 .panel-header-btn {
     background: transparent;
     border: none;
@@ -103,6 +113,10 @@ export default defineComponent({
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
     color: #6b7280;
+}
+
+.dark .panel-header-btn {
+  color: #9ca3af;
 }
 
 .panel-content {
@@ -129,6 +143,11 @@ export default defineComponent({
     border-radius: 50%;
     border-left-color: #09f;
     animation: spin 1s ease infinite;
+}
+
+.dark .spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-left-color: #00fe01;
 }
 
 @keyframes spin {

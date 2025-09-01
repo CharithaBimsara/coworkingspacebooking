@@ -203,6 +203,13 @@ export default defineComponent({
   position: relative;
   width: 100%;
 }
+
+.dark .custom-time-input {
+  border-color: #4B5563 !important;
+  color: white;
+  font-size: 0.75rem; /* Compact size */
+}
+
 .custom-time-input {
   width: 160px;
   margin-top: 2px;
@@ -216,10 +223,7 @@ export default defineComponent({
   cursor: pointer;
   /* transition: border-color 0.2s, box-shadow 0.2s; */
 }
-.custom-time-input:focus {
-  border-color: #000;
-  /* box-shadow: 0 0 0 2px rgba(0,0,0,0.1); */
-}
+
 .custom-time-input.disabled {
   /* background-color: #f3f4f6; */
   color: #9ca3af;

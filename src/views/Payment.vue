@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
     <div class="max-w-8xl mx-auto container-padding py-8">
       <!-- Progress indicator with labels -->
       <div class="flex flex-col items-center justify-center mb-8">
@@ -10,7 +10,7 @@
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
             </div>
-            <span class="text-xs font-medium text-green-600 mt-2">Details</span>
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Details</span>
           </div>
           <div class="w-20 h-1 bg-green-500 mx-2"></div>
           <div class="flex flex-col items-center">
@@ -19,19 +19,19 @@
             </div>
             <span class="text-xs font-medium text-primary mt-2">Payment</span>
           </div>
-          <div class="w-20 h-1 bg-gray-300 mx-2"></div>
+          <div class="w-20 h-1 bg-gray-300 dark:bg-gray-600 mx-2"></div>
           <div class="flex flex-col items-center">
             <div class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full text-sm font-semibold">
               <span>3</span>
             </div>
-            <span class="text-xs font-medium text-gray-500 mt-2">Confirmation</span>
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Confirmation</span>
           </div>
         </div>
       </div>
       
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-heading font-bold text-gray-900 mb-2">Payment</h1>
-        <p class="text-gray-600">Secure payment to complete your booking</p>
+        <h1 class="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-2">Payment</h1>
+        <p class="text-gray-600 dark:text-gray-400">Secure payment to complete your booking</p>
       </div>
 
       <div class="grid lg:grid-cols-3 gap-8">
@@ -46,14 +46,14 @@
           <!-- Custom Payment Form (will be replaced by IPG when implemented) -->
           <div id="custom-payment-form">
             <!-- Payment Method Selection -->
-            <div class="bg-white rounded-xl p-6 shadow-card">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Payment Method</h2>
+            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-card border border-gray-50 dark:border-gray-800">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Payment Method</h2>
               
               <div class="space-y-4 mb-6">
                 <div 
                   @click="paymentMethod = 'card'"
                   class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
-                  :class="paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'"
+                  :class="paymentMethod === 'card' ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
                   role="radio"
                   :aria-checked="paymentMethod === 'card'"
                   tabindex="0"
@@ -68,8 +68,8 @@
                         </svg>
                       </div>
                       <div>
-                        <span class="font-medium text-gray-900">Credit or Debit Card</span>
-                        <p class="text-xs text-gray-500 mt-1">Secure and fast payment</p>
+                        <span class="font-medium text-gray-900 dark:text-white">Credit or Debit Card</span>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Secure and fast payment</p>
                       </div>
                     </div>
                     <div class="flex items-center space-x-1">
@@ -89,7 +89,7 @@
                 <div 
                   @click="paymentMethod = 'paypal'"
                   class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
-                  :class="paymentMethod === 'paypal' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'"
+                  :class="paymentMethod === 'paypal' ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
                   role="radio"
                   :aria-checked="paymentMethod === 'paypal'"
                   tabindex="0"
@@ -105,11 +105,11 @@
                         </svg>
                       </div>
                       <div>
-                        <span class="font-medium text-gray-900">PayPal</span>
-                        <p class="text-xs text-gray-500 mt-1">Fast checkout with your PayPal account</p>
+                        <span class="font-medium text-gray-900 dark:text-white">PayPal</span>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Fast checkout with your PayPal account</p>
                       </div>
                     </div>
-                    <div class="bg-blue-50 px-2 py-1 rounded text-xs text-blue-800 font-medium">
+                    <div class="bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded text-xs text-blue-800 dark:text-blue-300 font-medium">
                       Recommended
                     </div>
                   </div>
@@ -126,8 +126,8 @@
                           </svg>
                         </div>
                         <div>
-                          <span class="font-medium text-gray-900">More payment options</span>
-                          <p class="text-xs text-gray-500 mt-1">Coming soon</p>
+                          <span class="font-medium text-gray-900 dark:text-white">More payment options</span>
+                          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Coming soon</p>
                         </div>
                       </div>
                     </div>
@@ -138,12 +138,12 @@
             </div>
 
           <!-- Credit Card Form -->
-          <div v-if="paymentMethod === 'card'" class="bg-white rounded-xl p-6 shadow-card">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Card Information</h3>
+          <div v-if="paymentMethod === 'card'" class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-card border border-gray-50 dark:border-gray-800">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Card Information</h3>
             
             <form @submit.prevent="processPayment" class="space-y-5">
               <div>
-                <label for="card-number" class="block text-sm font-medium text-gray-700 mb-2">Card Number *</label>
+                <label for="card-number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Card Number *</label>
                 <div class="relative" :class="{'border-primary ring-2 ring-primary/20': cardFocus === 'number'}">
                   <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -187,7 +187,7 @@
               
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label for="expiry-date" class="block text-sm font-medium text-gray-700 mb-2">Expiry Date *</label>
+                  <label for="expiry-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expiry Date *</label>
                   <div class="relative" :class="{'border-primary ring-2 ring-primary/20': cardFocus === 'expiry'}">
                     <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -212,7 +212,7 @@
                   <p v-if="expiryError" class="mt-1 text-xs text-red-500">{{ expiryError }}</p>
                 </div>
                 <div>
-                  <label for="cvv" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="cvv" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <span>CVV *</span>
                     <span 
                       class="ml-1 inline-block" 
@@ -252,7 +252,7 @@
               </div>
               
               <div>
-                <label for="cardholder-name" class="block text-sm font-medium text-gray-700 mb-2">Cardholder Name *</label>
+                <label for="cardholder-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cardholder Name *</label>
                 <div class="relative" :class="{'border-primary ring-2 ring-primary/20': cardFocus === 'name'}">
                   <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -307,19 +307,19 @@
           </div>
 
           <!-- Billing Address -->
-          <div v-if="paymentMethod === 'card'" class="bg-white rounded-xl p-6 shadow-card">
+          <div v-if="paymentMethod === 'card'" class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-card border border-gray-50 dark:border-gray-800">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-gray-900">Billing Address</h3>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Billing Address</h3>
               <label class="flex items-center cursor-pointer">
                 <input v-model="sameAsGuest" type="checkbox" class="form-checkbox h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary mr-2 transition-all">
-                <span class="text-sm text-gray-600">Same as guest information</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">Same as guest information</span>
               </label>
             </div>
             
             <div class="space-y-4" :class="{ 'opacity-50 pointer-events-none': sameAsGuest }">
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label for="country" class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                  <label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country *</label>
                   <div class="relative">
                     <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -350,7 +350,7 @@
                   </div>
                 </div>
                 <div>
-                  <label for="zip-code" class="block text-sm font-medium text-gray-700 mb-2">ZIP Code *</label>
+                  <label for="zip-code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ZIP Code *</label>
                   <div class="relative">
                     <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -371,7 +371,7 @@
               </div>
               
               <div>
-                <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address *</label>
                 <div class="relative">
                   <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -392,7 +392,7 @@
               
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                  <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City *</label>
                   <div class="relative">
                     <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -411,7 +411,7 @@
                   </div>
                 </div>
                 <div>
-                  <label for="state" class="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                  <label for="state" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State *</label>
                   <div class="relative">
                     <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -489,16 +489,16 @@
           </div>
 
           <!-- PayPal Container -->
-          <div v-if="paymentMethod === 'paypal'" class="bg-white rounded-xl p-6 shadow-card">
+          <div v-if="paymentMethod === 'paypal'" class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-card border border-gray-50 dark:border-gray-800">
             <div class="flex flex-col items-center justify-center py-8">
-              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+              <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4">
                 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none">
                   <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-.548 3.508-.024.078a.641.641 0 0 1-.633.54z" fill="#253B80"/>
                   <path d="M23.048 7.667c-.028.179-.06.362-.096.55-1.237 6.351-5.469 8.545-10.874 8.545H9.928c-.661 0-1.218.48-1.321 1.132L7.4 25.901c-.021.106-.1.21-.207.21H1.86c-.306 0-.545-.29-.472-.637L4.113 5.689c.08-.314.491-.689.926-.689h8.926c1.89 0 3.175.194 4.113.637 2.557 1.207 3.858 3.408 3.858 3.408s.264-1.656-1.888-1.378z" fill="#179BD7"/>
                 </svg>
               </div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-2">PayPal</h3>
-              <p class="text-gray-600 text-center mb-6">You'll be redirected to PayPal to complete your payment securely.</p>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">PayPal</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-center mb-6">You'll be redirected to PayPal to complete your payment securely.</p>
               <!-- This div would be replaced by the PayPal SDK button in a real implementation -->
               <div class="w-full max-w-xs h-12 bg-blue-500 text-white font-medium rounded-md flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors">
                 Continue to PayPal
@@ -507,14 +507,14 @@
           </div>
 
           <!-- Security Notice -->
-          <div class="bg-white rounded-xl p-6 shadow-card">
-            <div class="flex items-center border-l-4 border-green-500 bg-green-50 p-4 rounded-r">
-              <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-card border border-gray-50 dark:border-gray-800">
+            <div class="flex items-center border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-4 rounded-r">
+              <svg class="w-6 h-6 text-green-600 dark:text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
               <div>
-                <p class="text-sm font-medium text-green-800">Your payment is secured with SSL encryption</p>
-                <p class="text-xs text-green-700 mt-1">We never store your complete payment information</p>
+                <p class="text-sm font-medium text-green-800 dark:text-green-300">Your payment is secured with SSL encryption</p>
+                <p class="text-xs text-green-700 dark:text-green-400 mt-1">We never store your complete payment information</p>
               </div>
             </div>
             
@@ -523,19 +523,19 @@
                 <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                <span class="text-xs text-gray-500">Secure payment</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Secure payment</span>
               </div>
               <div class="flex items-center space-x-3">
-                <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span class="text-xs text-gray-500">Trusted platform</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Trusted platform</span>
               </div>
               <div class="flex items-center space-x-3">
-                <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                <span class="text-xs text-gray-500">Multiple payment methods</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Multiple payment methods</span>
               </div>
             </div>
           </div>
@@ -543,12 +543,12 @@
 
         <!-- Order Summary Sidebar -->
         <div class="lg:col-span-1">
-          <div class="bg-white rounded-xl p-6 shadow-card sticky top-24">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
+          <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-card sticky top-24 border border-gray-50 dark:border-gray-800">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h2>
             
             <!-- Booking details -->
             <div v-if="bookingDetails.length > 0" class="space-y-5 mb-6">
-              <div v-for="(booking, index) in bookingDetails" :key="index" class="group bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
+              <div v-for="(booking, index) in bookingDetails" :key="index" class="group bg-gray-50 dark:bg-gray-800 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                 <div class="flex space-x-3">
                   <img 
                     v-if="booking.space && booking.space.images && booking.space.images.length > 0" 
@@ -563,15 +563,15 @@
                     class="w-20 h-20 rounded-lg object-cover shadow-sm group-hover:shadow transition-shadow"
                   >
                   <div class="flex-1 min-w-0">
-                    <h3 class="font-semibold text-gray-900 truncate">{{ booking.space?.name || 'Unknown Space' }}</h3>
-                    <div class="flex items-center text-sm text-gray-600 mt-1">
+                    <h3 class="font-semibold text-gray-900 dark:text-white truncate">{{ booking.space?.name || 'Unknown Space' }}</h3>
+                    <div class="flex items-center text-sm text-gray-600 dark:text-gray-400 mt-1">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       <span class="truncate">{{ booking.space?.location || 'Unknown Location' }}</span>
                     </div>
-                    <div class="flex items-center text-sm text-gray-600 mt-1">
+                    <div class="flex items-center text-sm text-gray-600 dark:text-gray-400 mt-1">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -584,8 +584,8 @@
                 </div>
               </div>
               
-              <div class="pt-4 border-t border-gray-200">
-                <div class="flex items-center text-sm text-gray-700 mb-1">
+              <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center text-sm text-gray-700 dark:text-gray-300 mb-1">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -595,10 +595,10 @@
             </div>
             
             <!-- Price breakdown -->
-            <div class="rounded-lg bg-gray-50 p-4 mb-6">
+            <div class="rounded-lg bg-gray-50 dark:bg-gray-800 p-4 mb-6">
               <div class="space-y-3">
                 <div v-for="(booking, index) in bookingDetails" :key="index" class="flex items-center justify-between text-sm">
-                  <span class="text-gray-700">{{ booking.space.name }}</span>
+                  <span class="text-gray-700 dark:text-gray-300">{{ booking.space.name }}</span>
                   <span class="font-medium">${{ booking.totalPrice || 0 }}</span>
                 </div>
                 
@@ -610,9 +610,9 @@
                 </div>
                 -->
                 
-                <div class="border-t border-gray-200 pt-3 mt-3">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
                   <div class="flex items-center justify-between">
-                    <span class="text-gray-900 font-medium">Total</span>
+                    <span class="text-gray-900 dark:text-white font-medium">Total</span>
                     <span class="text-xl font-bold text-primary">${{ totalAmount }}</span>
                   </div>
                 </div>
@@ -641,25 +641,25 @@
             <!-- Security features -->
             <div class="mt-6 space-y-3">
               <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-green-600 dark:text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                   </svg>
                 </div>
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">Money-back guarantee</p>
-                  <p class="text-xs text-gray-500">Full refund if canceled within 24 hours</p>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">Money-back guarantee</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">Full refund if canceled within 24 hours</p>
                 </div>
               </div>
               <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-blue-600 dark:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">Secure transaction</p>
-                  <p class="text-xs text-gray-500">Your payment is protected by industry-standard encryption</p>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">Secure transaction</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">Your payment is protected by industry-standard encryption</p>
                 </div>
               </div>
             </div>

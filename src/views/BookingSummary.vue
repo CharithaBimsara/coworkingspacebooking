@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
     <div class="max-w-8xl mx-auto container-padding py-8">
       <!-- Progress indicator -->
       <div class="flex flex-col items-center justify-center mb-8">
@@ -17,38 +17,38 @@
               class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full text-sm font-semibold cursor-pointer hover:bg-gray-200 transition-all">
               2
             </div>
-            <span class="text-xs font-medium text-gray-500 mt-1">Payment</span>
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Payment</span>
           </div>
-          <div class="w-16 h-1 bg-gray-300 mx-2"></div>
+          <div class="w-16 h-1 bg-gray-300 dark:bg-gray-600 mx-2"></div>
           <div class="flex flex-col items-center">
             <div
               class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full text-sm font-semibold cursor-pointer hover:bg-gray-200 transition-all">
               3
             </div>
-            <span class="text-xs font-medium text-gray-500 mt-1">Confirmation</span>
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Confirmation</span>
           </div>
         </div>
       </div>
 
       <div class="text-center mb-6">
-        <h1 class="text-2xl md:text-3xl font-heading font-bold text-gray-900 mb-2">Booking Summary</h1>
-        <p class="text-sm text-gray-600 max-w-md mx-auto">Review your booking details before proceeding to payment</p>
+        <h1 class="text-2xl md:text-3xl font-heading font-bold text-gray-900 dark:text-white mb-2">Booking Summary</h1>
+        <p class="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">Review your booking details before proceeding to payment</p>
       </div>
 
       <div class="grid lg:grid-cols-3 gap-8">
         <!-- Booking Details -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Guest Information -->
-          <div class="bg-white rounded-xl p-5 shadow-card border border-gray-50 transition-shadow hover:shadow-lg">
+          <div class="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-card border border-gray-50 dark:border-gray-800 transition-shadow hover:shadow-lg">
             <div v-if="!isAuthenticated">
               <div class="flex items-center mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <h2 class="text-lg font-semibold text-gray-900">Your Information</h2>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Your Information</h2>
               </div>
-              <div class="p-4 bg-gray-50 rounded-lg mb-4 border-l-4 border-primary">
-                <p class="text-xs text-gray-600">
+              <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4 border-l-4 border-primary">
+                <p class="text-xs text-gray-600 dark:text-gray-400">
                   Log in or register to track bookings. Guest bookings cannot be tracked.
                 </p>
                 <button @click="openAuthModal('login')" class="btn-secondary text-xs py-2 px-4 mt-2 rounded-full transition-all hover:shadow-md">
@@ -71,7 +71,7 @@
                 <form @submit.prevent="proceedToPayment" class="space-y-3">
                   <div class="grid sm:grid-cols-2 gap-4">
                     <div class="relative">
-                      <label class="block text-xs font-medium text-gray-700 mb-1">First Name *</label>
+                      <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">First Name *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,7 +84,7 @@
                       </div>
                     </div>
                     <div class="relative">
-                      <label class="block text-xs font-medium text-gray-700 mb-1">Last Name *</label>
+                      <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Last Name *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -99,7 +99,7 @@
                   </div>
                   <div class="grid sm:grid-cols-2 gap-4">
                     <div class="relative">
-                      <label class="block text-xs font-medium text-gray-700 mb-1">Email Address *</label>
+                      <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,7 +112,7 @@
                       </div>
                     </div>
                     <div class="relative">
-                      <label class="block text-xs font-medium text-gray-700 mb-1">Phone Number *</label>
+                      <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,8 +128,8 @@
                 </form>
               </div>
               <div v-else>
-                <div class="p-4 bg-red-50 rounded-lg border-l-4 border-red-500 mt-3">
-                  <p class="text-red-600 text-xs flex items-center">
+                <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border-l-4 border-red-500 mt-3">
+                  <p class="text-red-600 dark:text-red-400 text-xs flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -143,21 +143,21 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <h2 class="text-lg font-semibold text-gray-900">Your Information</h2>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Your Information</h2>
               </div>
-              <div class="p-4 bg-gray-50 rounded-lg border-l-4 border-green-500 flex items-center" v-if="currentUser">
+              <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-l-4 border-green-500 flex items-center" v-if="currentUser">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <p class="text-sm font-medium text-gray-800">Logged in as <span class="text-primary">{{ currentUser.email }}</span></p>
-                  <p class="text-xs text-gray-600 mt-0.5">We will use the information from your profile for this booking</p>
+                  <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Logged in as <span class="text-primary">{{ currentUser.email }}</span></p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">We will use the information from your profile for this booking</p>
                 </div>
               </div>
             </div>
           </div>
 
-           <!-- Add another service -->
+          <!-- Add another service -->
           <div class="text-center mt-6">
             <button @click="addAnotherService" class="btn-secondary text-sm py-3 px-5 rounded-full hover:shadow-md transition-all flex items-center mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -169,7 +169,7 @@
 
           <!-- Loop through each booking -->
           <div v-for="(booking, index) in bookingData" :key="index"
-  class="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 mb-4 overflow-hidden hover:shadow-lg group">
+  class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 mb-4 overflow-hidden hover:shadow-lg group">
   
   <!-- Top Section with Image and Main Info -->
   <div class="flex flex-col sm:flex-row">
@@ -195,11 +195,11 @@
       <!-- Header Row -->
       <div class="flex justify-between items-start mb-3">
         <div class="flex-1">
-          <h3 class="text-base md:text-lg font-semibold text-gray-900 cursor-pointer hover:text-primary transition-colors"
+          <h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-primary transition-colors"
             @click="goToSpaceDetails(booking.space?.id)">
             {{ booking.space?.name || 'Unknown Space' }}
           </h3>
-          <p class="text-xs text-gray-500 mt-0.5 flex items-center">
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -210,7 +210,7 @@
         
         <!-- Delete button -->
         <button @click.stop="booking.uniqueKey && removeBookingItem(booking.uniqueKey)"
-          class="ml-3 text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-gray-100 rounded-full">
+          class="ml-3 text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -220,9 +220,9 @@
       <!-- Info Cards -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
         <!-- Type -->
-        <div class="p-2 bg-gray-50 rounded-lg">
-          <span class="text-xs text-gray-500 block">Type</span>
-          <div class="font-medium text-gray-900 text-sm flex items-center mt-1">
+        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xs text-gray-500 dark:text-gray-400 block">Type</span>
+          <div class="font-medium text-gray-900 dark:text-white text-sm flex items-center mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
@@ -235,9 +235,9 @@
         </div>
         
         <!-- Date -->
-        <div class="p-2 bg-gray-50 rounded-lg">
-          <span class="text-xs text-gray-500 block">Date</span>
-          <div class="font-medium text-gray-900 text-sm flex items-center mt-1">
+        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xs text-gray-500 dark:text-gray-400 block">Date</span>
+          <div class="font-medium text-gray-900 dark:text-white text-sm flex items-center mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -246,9 +246,9 @@
         </div>
         
         <!-- Time/Package -->
-        <div class="p-2 bg-gray-50 rounded-lg">
-          <span class="text-xs text-gray-500 block">{{ booking.productType === 'meeting-room' ? 'Time' : 'Package' }}</span>
-          <div class="font-medium text-gray-900 text-sm flex items-center mt-1">
+        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xs text-gray-500 dark:text-gray-400 block">{{ booking.productType === 'meeting-room' ? 'Time' : 'Package' }}</span>
+          <div class="font-medium text-gray-900 dark:text-white text-sm flex items-center mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="booking.productType === 'meeting-room'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -259,9 +259,9 @@
         </div>
         
         <!-- Price -->
-        <div class="p-2 bg-gray-50 rounded-lg">
-          <span class="text-xs text-gray-500 block">Total Price</span>
-          <div class="font-bold text-gray-900 text-base flex items-center mt-1">
+        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xs text-gray-500 dark:text-gray-400 block">Total Price</span>
+          <div class="font-bold text-gray-900 dark:text-white text-base flex items-center mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -271,15 +271,15 @@
       </div>
       
       <!-- Features (if any) -->
-      <div v-if="booking.facilities && booking.facilities.length > 0" class="mt-4 pt-3 border-t border-gray-100">
+      <div v-if="booking.facilities && booking.facilities.length > 0" class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
         <div class="flex items-center gap-1.5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span class="text-xs font-medium text-gray-600">Amenities:</span>
+          <span class="text-xs font-medium text-gray-600 dark:text-gray-300">Amenities:</span>
           <div class="flex flex-wrap gap-1.5 ml-1">
             <span v-for="feature in booking.facilities" :key="feature" 
-              class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full hover:bg-gray-200 transition-colors">
+              class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               {{ feature }}
             </span>
           </div>
@@ -296,8 +296,8 @@
 
         <!-- Price Summary Sidebar -->
         <div class="lg:col-span-1">
-          <div class="bg-white rounded-xl p-5 shadow-card sticky top-24 border border-gray-50 hover:shadow-lg transition-shadow">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <div class="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-card sticky top-24 border border-gray-50 dark:border-gray-800 hover:shadow-lg transition-shadow">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
@@ -307,15 +307,15 @@
             <!-- Price breakdown -->
             <div class="space-y-3 mb-6">
               <div v-for="(booking, index) in bookingData" :key="index" 
-                class="mb-3 pb-3 border-b border-gray-100 last:border-b-0 last:mb-0 hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                class="mb-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 last:mb-0 hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors">
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-gray-800 font-medium text-sm line-clamp-1" :title="booking.space?.name || 'Unknown Product'">
+                  <span class="text-gray-800 dark:text-gray-200 font-medium text-sm line-clamp-1" :title="booking.space?.name || 'Unknown Product'">
                     {{ booking.space?.name || 'Unknown Product' }}
                   </span>
                   <span class="font-semibold text-sm">${{ booking.pricing?.total || booking.totalPrice || 0 }}</span>
                 </div>
 
-                <div v-if="booking.pricing" class="text-xs text-gray-600 space-y-1 pl-2 bg-white rounded-md p-2 border border-gray-100">
+                <div v-if="booking.pricing" class="text-xs text-gray-600 dark:text-gray-400 space-y-1 pl-2 bg-white dark:bg-gray-800 rounded-md p-2 border border-gray-100 dark:border-gray-700">
                   <div class="flex justify-between items-center">
                     <span class="flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -364,15 +364,15 @@
 
               <div class="relative">
                 <div class="absolute inset-0 flex items-center">
-                  <div class="w-full border-t border-gray-200"></div>
+                  <div class="w-full border-t border-gray-200 dark:border-gray-600"></div>
                 </div>
                 <div class="relative flex justify-center">
-                  <span class="bg-white px-2 text-xs text-gray-500">SUMMARY</span>
+                  <span class="bg-white dark:bg-gray-900 px-2 text-xs text-gray-500 dark:text-gray-400">SUMMARY</span>
                 </div>
               </div>
 
-              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg mt-3">
-                <span class="text-base font-bold text-gray-900 flex items-center">
+              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg mt-3">
+                <span class="text-base font-bold text-gray-900 dark:text-white flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
                   </svg>
@@ -384,7 +384,7 @@
             
             <!-- Promo code (uncommented and enhanced) -->
             <div class="mb-6 mt-4">
-              <label class="text-xs font-medium text-gray-700 mb-1 block">Have a promo code?</label>
+              <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Have a promo code?</label>
               <div class="flex gap-2">
                 <div class="relative flex-1">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -400,7 +400,7 @@
                 </button>
               </div>
               <div v-if="promoCodeMessage"
-                :class="['mt-2 text-sm flex items-center', promoCodeApplied ? 'text-green-600' : 'text-red-600']">
+                :class="['mt-2 text-sm flex items-center', promoCodeApplied ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400']">
                 <svg v-if="promoCodeApplied" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -456,7 +456,7 @@
             </div> -->
 
             <!-- Payment method preview (uncommented and enhanced) -->
-            <div class="mb-6">
+            <!-- <div class="mb-6">
               <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -490,7 +490,7 @@
                   </svg>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <!-- Proceed to Payment Button -->
             <button @click="proceedToPayment" :disabled="!isFormValid"
@@ -502,14 +502,14 @@
             </button>
 
             <!-- Cancellation policy -->
-            <div class="mt-5 p-4 bg-gray-50 rounded-lg border-l-4 border-gray-200">
-              <h4 class="font-semibold text-gray-900 mb-2 text-sm flex items-center">
+            <div class="mt-5 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-l-4 border-gray-200 dark:border-gray-600">
+              <h4 class="font-semibold text-gray-900 dark:text-white mb-2 text-sm flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Cancellation Policy
               </h4>
-              <ul class="text-xs text-gray-600 space-y-2 mt-1">
+              <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-2 mt-1">
                 <li class="flex items-start">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 text-green-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -600,7 +600,7 @@ export default defineComponent({
       return this.authStore.currentUser
     },
     allowGuestCheckout() {
-      return this.bookingData.every(item => item.productType === 'meeting-room')
+      return this.bookingData.every(item => item.productType === 'meeting-room' || item.productType === 'hot-desk')
     },
     totalAmount() {
       return this.bookingData.reduce((total, booking) => total + (booking.totalPrice || 0), 0)

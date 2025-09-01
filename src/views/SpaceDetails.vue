@@ -1,30 +1,30 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
     <!-- Loading State -->
     <div v-if="loading" class="max-w-8xl mx-auto px-2 sm:px-5 py-7">
       <div class="animate-pulse">
-        <div class="h-96 bg-gray-200 rounded-xl mb-8"></div>
+        <div class="h-96 bg-gray-200 dark:bg-gray-800 rounded-xl mb-8"></div>
         <div class="grid lg:grid-cols-3 gap-8">
           <div class="lg:col-span-2 space-y-6">
-            <div class="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div class="h-4 bg-gray-200 rounded w-full"></div>
-            <div class="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div class="h-8 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-2/3"></div>
           </div>
-          <div class="h-96 bg-gray-200 rounded-xl"></div>
+          <div class="h-96 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
         </div>
       </div>
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="max-w-8xl mx-auto px-2 sm:px-5 py-7 text-center">
-      <div class="bg-white rounded-xl p-8 shadow-card">
-        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-white dark:bg-gray-900 rounded-xl p-8 shadow-card dark:shadow-dark-card border border-gray-100 dark:border-gray-800">
+        <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
         </div>
-        <h2 class="text-base font-semibold text-gray-900 mb-2">Space Not Found</h2>
-        <p class="text-xs text-gray-600 mb-6">{{ error }}</p>
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Space Not Found</h2>
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-6">{{ error }}</p>
         <router-link to="/" class="btn-primary">
           Back to Home
         </router-link>
@@ -34,19 +34,19 @@
     <!-- Space Details Content -->
     <div v-else class="max-w-8xl mx-auto px-2 sm:px-5 py-7">
       <!-- Breadcrumb with improved navigation and visual feedback -->
-      <nav class="flex items-center flex-wrap mb-4 py-2 px-3 bg-white rounded-lg shadow-sm">
-        <router-link to="/" class="flex items-center hover:text-primary transition-colors text-xs font-medium">
+      <nav class="flex items-center flex-wrap mb-4 py-2 px-3 bg-white dark:bg-gray-900 rounded-lg shadow-sm dark:shadow-dark-sm border border-gray-100 dark:border-gray-800">
+        <router-link to="/" class="flex items-center hover:text-primary transition-colors text-xs font-medium text-gray-700 dark:text-gray-300">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
           Home
         </router-link>
-        <div class="mx-2 text-gray-400 flex items-center">
+        <div class="mx-2 text-gray-400 dark:text-gray-600 flex items-center">
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </div>
-        <router-link :to="getCategoryRoute()" class="flex items-center hover:text-primary transition-colors text-xs font-medium" @click.prevent="goToSearchResults">
+        <router-link :to="getCategoryRoute()" class="flex items-center hover:text-primary transition-colors text-xs font-medium text-gray-700 dark:text-gray-300" @click.prevent="goToSearchResults">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="productType === 'meeting-room'">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
@@ -58,12 +58,12 @@
           </svg>
           {{ getCategoryName() }}
         </router-link>
-        <div class="mx-2 text-gray-400 flex items-center">
+        <div class="mx-2 text-gray-400 dark:text-gray-600 flex items-center">
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </div>
-        <span class="text-gray-900 text-xs font-semibold flex items-center">
+        <span class="text-gray-900 dark:text-white text-xs font-semibold flex items-center">
           {{ space?.name || 'Loading...' }}
         </span>
       </nav>
@@ -90,26 +90,26 @@
                 <button 
                   v-if="getImageCount() > 1"
                   @click="previousImage"
-                  class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 p-2.5 rounded-full shadow-lg dark:shadow-dark-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50"
                   aria-label="Previous image"
                 >
-                  <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <button 
                   v-if="getImageCount() > 1"
                   @click="nextImage"
-                  class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 p-2.5 rounded-full shadow-lg dark:shadow-dark-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50"
                   aria-label="Next image"
                 >
-                  <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
                 
                 <!-- Enhanced image counter with better visibility -->
-                <div class="absolute bottom-4 right-4 bg-white/80 text-gray-900 px-3 py-1.5 rounded-full text-xs font-medium shadow-md backdrop-blur-sm">
+                <div class="absolute bottom-4 right-4 bg-white/80 dark:bg-gray-900/80 text-gray-900 dark:text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-md dark:shadow-dark-md backdrop-blur-sm">
                   {{ currentImageIndex + 1 }} / {{ getImageCount() }}
                 </div>
                 
@@ -145,63 +145,71 @@
                 <div v-if="getImageCount() > 5" 
                   class="w-20 h-20 sm:w-24 sm:h-20 rounded-lg bg-gray-100 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors flex-shrink-0 shadow-sm"
                   @click="currentImageIndex = 5">
-                  <span class="text-base font-bold text-gray-700">+{{ getImageCount() - 5 }}</span>
-                  <span class="text-xs text-gray-600">more</span>
+                  <span class="text-base font-bold text-gray-700 dark:text-gray-300">+{{ getImageCount() - 5 }}</span>
+                  <span class="text-xs text-gray-600 dark:text-gray-400">more</span>
                 </div>
               </div>
             </div>
           </div>
           
-          <!-- Enhanced Features/Amenities - Moved directly below the image gallery -->
-          <section>
-            <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+          <!-- Room Features & Amenities Section - Maps to response.features -->
+          <section v-if="space?.features && space.features.length > 0">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
-              {{ productType === 'meeting-room' || productType === 'hot-desk' ? 'Room Features & Amenities' : 'Amenities & Features' }}
+              Room Features & Amenities
             </h3>
             
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               <div 
                 v-for="(feature, index) in space?.features || []" 
                 :key="feature" 
-                class="flex items-center p-3.5 bg-white rounded-lg border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow transition-all duration-300 group"
-                :class="{'bg-gray-50': index % 2 === 0}"
+                class="flex items-center p-3.5 bg-white dark:bg-gray-900 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 shadow-sm dark:shadow-dark-sm hover:shadow dark:hover:shadow-dark transition-all duration-300 group"
+                :class="{'bg-gray-50 dark:bg-gray-800': index % 2 === 0}"
               >
-                <div class="w-8 h-8 rounded-full bg-primary bg-opacity-10 flex items-center justify-center mr-3 transform group-hover:scale-110 transition-transform duration-300">
-                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
+                <div class="w-8 h-8 rounded-full bg-primary bg-opacity-10 dark:bg-opacity-20 flex items-center justify-center mr-3 transform group-hover:scale-110 transition-transform duration-300">
+                  <component :is="'div'" v-html="getFeatureIcon(feature)" class="w-4 h-4 text-primary"></component>
                 </div>
-                <span class="font-medium text-gray-900 text-sm group-hover:text-primary transition-colors duration-200">{{ feature }}</span>
+                <span class="font-medium text-gray-900 dark:text-white text-sm group-hover:text-primary dark:group-hover:text-primary transition-colors duration-200">{{ getFeatureDisplayName(feature) }}</span>
               </div>
-              
-              <!-- If there are no features, show this placeholder -->
-              <div v-if="(space?.features || []).length === 0" class="col-span-full flex flex-col items-center justify-center py-8 bg-gray-50 rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <p class="text-gray-500 text-sm">Feature information will be available soon</p>
-              </div>
+            </div>
+          </section>
+
+          
+          <!-- Show placeholder only if no features -->
+          <section v-if="(!space?.features || space.features.length === 0)">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+              Features & Amenities
+            </h3>
+            
+            <div class="col-span-full flex flex-col items-center justify-center py-8 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300 dark:text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <p class="text-gray-500 dark:text-gray-400 text-sm">Feature information will be available soon</p>
             </div>
           </section>
           
           <!-- Enhanced Location & Access - Added below Room Features -->
           <section>
-            <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               Location & Access
             </h3>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="bg-white dark:bg-gray-900 rounded-xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-dark-sm hover:shadow-md dark:hover:shadow-dark-md transition-shadow duration-300">
               <div class="flex flex-col md:flex-row md:items-start gap-5">
                 <!-- Map Placeholder -->
-                <div class="w-full md:w-1/2 h-48 md:h-56 bg-gray-200 rounded-lg overflow-hidden relative">
+                <div class="w-full md:w-1/2 h-48 md:h-56 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden relative">
                   <!-- This would be replaced with an actual map component -->
-                  <div class="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-200 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div class="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-200 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                     </svg>
                   </div>
@@ -219,8 +227,10 @@
                   
                   <!-- Action Buttons -->
                   <div class="absolute bottom-3 right-3 flex space-x-2">
-                    <button class="bg-white rounded-md px-2.5 py-1 text-xs font-medium text-gray-700 shadow hover:bg-gray-50 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button 
+                      @click="openLocationInMap"
+                      class="bg-white dark:bg-gray-800 rounded-md px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 shadow hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
                       </svg>
                       View Full Map
@@ -229,23 +239,23 @@
                 </div>
                 
                 <div class="flex-1">
-                  <h4 class="font-semibold text-gray-900 mb-2 text-sm flex items-center">
+                  <h4 class="font-semibold text-gray-900 dark:text-white mb-2 text-sm flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
                     {{ space?.location || 'Loading...' }}
                   </h4>
-                  <p class="text-gray-600 mb-4 text-sm pl-5">{{ space?.address || 'Loading address...' }}</p>
+                  <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm pl-5">{{ space?.address || 'Loading address...' }}</p>
                   
                   <div class="grid md:grid-cols-2 gap-5">
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                      <h5 class="font-medium text-gray-900 mb-2 text-sm flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                      <h5 class="font-medium text-gray-900 dark:text-white mb-2 text-sm flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
                         Transportation
                       </h5>
-                      <ul class="space-y-2 text-sm text-gray-700">
+                      <ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                         <li class="flex items-start">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -273,7 +283,7 @@
                         </svg>
                         Nearby
                       </h5>
-                      <ul class="space-y-2 text-sm text-gray-700">
+                      <ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                         <li class="flex items-start">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-amber-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -302,7 +312,7 @@
           
           <!-- Customer Reviews Section - Added below Location & Access -->
           <section>
-            <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
@@ -310,14 +320,14 @@
             </h3>
             
             <!-- Ratings Summary Card -->
-            <div class="bg-white rounded-lg p-4 border border-gray-100 shadow-sm mb-4">
+            <div class="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-dark-sm mb-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-2xl font-bold text-gray-900">{{ space?.rating || 4.5 }}</div>
+                  <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ space?.rating || 4.5 }}</div>
                   <div class="flex text-yellow-400 mt-1">
                     <svg v-for="star in 5" :key="star" :class="[
                       'w-4 h-4 transition-transform',
-                      star <= (space?.rating || 4.5) ? 'fill-current' : 'text-gray-300',
+                      star <= (space?.rating || 4.5) ? 'fill-current' : 'text-gray-300 dark:text-gray-600',
                       star <= (space?.rating || 4.5) ? 'scale-105' : ''
                     ]" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -334,46 +344,46 @@
             
             <div class="space-y-4 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
               <div v-for="(review, index) in reviews" :key="review.id" 
-                   class="bg-white rounded-lg p-4 border border-gray-100 shadow-sm transition-all duration-300 hover:border-gray-200 hover:shadow-md"
-                   :class="{'bg-gradient-to-br from-white to-gray-50': index % 2 === 1}">
+                   class="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-dark-sm transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-md dark:hover:shadow-dark-md"
+                   :class="{'bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800': index % 2 === 1}">
                 <div class="flex items-start">
                   <div class="flex-shrink-0">
                     <img :src="review.avatar" :alt="review.name" 
-                         class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100 shadow-sm">
+                         class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700 shadow-sm dark:shadow-dark-sm">
                   </div>
                   <div class="ml-3 flex-1">
                     <div class="flex items-center justify-between">
-                      <h4 class="text-sm font-semibold text-gray-900">{{ review.name }}</h4>
-                      <div class="flex items-center bg-gray-50 rounded-full px-2 py-0.5">
+                      <h4 class="text-sm font-semibold text-gray-900 dark:text-white">{{ review.name }}</h4>
+                      <div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-full px-2 py-0.5">
                         <div class="flex text-yellow-400">
                           <svg v-for="star in 5" :key="star" :class="[
                             'w-3 h-3',
-                            star <= review.rating ? 'fill-current' : 'text-gray-300'
+                            star <= review.rating ? 'fill-current' : 'text-gray-300 dark:text-gray-600'
                           ]" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
                         </div>
                       </div>
                     </div>
-                    <p class="mt-1 text-xs text-gray-500 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       2 weeks ago
                     </p>
-                    <div class="mt-2 text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border-l-2 border-primary">
+                    <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border-l-2 border-primary">
                       {{ review.comment }}
                     </div>
                     
                     <!-- Helpful buttons -->
                     <div class="mt-2 flex items-center space-x-3 text-xs">
-                      <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+                      <button class="flex items-center text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                         </svg>
                         Helpful
                       </button>
-                      <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+                      <button class="flex items-center text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                         </svg>
@@ -385,13 +395,13 @@
               </div>
               
               <!-- Show if no reviews -->
-              <div v-if="reviews.length === 0" class="bg-white rounded-lg p-6 border border-gray-100 shadow-sm text-center">
-                <div class="w-14 h-14 mx-auto mb-3 bg-gray-50 rounded-full flex items-center justify-center">
-                  <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div v-if="reviews.length === 0" class="bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-dark-sm text-center">
+                <div class="w-14 h-14 mx-auto mb-3 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                  <svg class="w-7 h-7 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h4 class="text-base font-medium text-gray-900 mb-1">No Reviews Yet</h4>
+                <h4 class="text-base font-medium text-gray-900 dark:text-white mb-1">No Reviews Yet</h4>
                 <p class="text-sm text-gray-500 mb-3">Be the first to share your experience</p>
                 <button class="px-4 py-1.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors duration-300 shadow-sm">
                   Write a Review
@@ -403,11 +413,11 @@
 
         <!-- Right Column: Booking Widget -->
         <div class="lg:col-span-1 overflow-visible">
-          <div class="bg-white rounded-xl p-5 shadow-lg border border-gray-50 booking-widget space-y-4 sticky top-4">
+          <div class="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg dark:shadow-dark-lg border border-gray-50 dark:border-gray-800 booking-widget space-y-4 sticky top-4">
             <!-- Header with pricing badge -->
             <div class="flex items-start justify-between">
               <div class="flex-1 pr-3">
-                <h2 class="text-xl font-bold text-gray-900 leading-tight mb-2 flex items-center">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white leading-tight mb-2 flex items-center">
                   {{ space?.name || 'Loading...' }}
                   <span class="inline-flex ml-2 items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                     Available
@@ -444,8 +454,7 @@
               
               <!-- Price badge with enhanced styling -->
               <div class="px-4 py-1 mt-1 bg-primary bg-opacity-10 border border-primary rounded-lg flex flex-row items-center">
-     
-                <span class="text-black font-bold text-lg">{{ getDisplayPrice() }}</span>
+                <span class="text-black font-bold text-lg dark:text-white">{{ getDisplayPrice() }}</span>
               </div>
             </div>
 
@@ -460,7 +469,7 @@
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               </div>
-              <span class="ml-2.5 font-bold text-gray-900 text-sm">{{ space?.rating || 0 }}</span>
+              <span class="ml-2.5 font-bold text-gray-900 dark:text-white text-sm">{{ space?.rating || 0 }}</span>
               <span class="ml-1 text-gray-600 text-sm">({{ space?.reviews || 0 }} reviews)</span>
               
               <!-- Add quick-access review button -->
@@ -474,7 +483,7 @@
 
             <!-- Description with collapsible option -->
             <div class="bg-gray-50 p-3 rounded-lg">
-              <p class="text-gray-700 leading-relaxed text-sm line-clamp-3">
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm line-clamp-3">
                 {{ space?.description || 'Loading description...' }}
               </p>
               <button class="mt-1 text-xs font-medium text-primary hover:underline">
@@ -488,7 +497,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <h3 class="font-semibold text-gray-900 text-base">Booking Details</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white text-base">Booking Details</h3>
               </div>
               
               <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
@@ -522,17 +531,17 @@
                       <div class="relative">
                         <div 
                           @click="toggleStartDropdown"
-                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 bg-white rounded-md cursor-pointer hover:border-primary transition-colors duration-200 h-7"
+                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md cursor-pointer hover:border-primary transition-colors duration-200 h-7"
                           :class="{ 
                             'ring-1 ring-primary/20': showStartTimeDropdown,
-                            'text-gray-500': !bookingForm.timeRange.start
+                            'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.start
                           }"
                         >
-                          <span v-if="bookingForm.timeRange.start" class="text-gray-900 whitespace-nowrap">
+                          <span v-if="bookingForm.timeRange.start" class="text-gray-900 dark:text-white whitespace-nowrap">
                             {{ formatTimeDisplay(bookingForm.timeRange.start) }}
                           </span>
-                          <span v-else class="text-gray-500 whitespace-nowrap">Start</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <span v-else class="text-gray-500 dark:text-gray-400 whitespace-nowrap">Start</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                           </svg>
                         </div>
@@ -540,7 +549,7 @@
                         <!-- Start Time Dropdown with compact styling -->
                         <div 
                           v-if="showStartTimeDropdown" 
-                          class="absolute top-full left-0 w-[90px] bg-white border border-gray-200 rounded-sm shadow-xs z-1000 mt-0.5 overflow-hidden"
+                          class="absolute top-full left-0 w-[90px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-xs dark:shadow-dark-xs z-1000 mt-0.5 overflow-hidden"
                         >
                           <div class="max-h-32 overflow-y-auto custom-scrollbar-time overflow-x-hidden">
                             <div
@@ -569,17 +578,17 @@
                       <div class="relative">
                         <div 
                           @click="toggleEndDropdown"
-                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 bg-white rounded-md cursor-pointer hover:border-primary transition-colors duration-200 h-7"
+                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md cursor-pointer hover:border-primary transition-colors duration-200 h-7"
                           :class="{ 
                             'ring-1 ring-primary/20': showEndTimeDropdown,
-                            'text-gray-500': !bookingForm.timeRange.end,
+                            'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.end,
                             'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start 
                           }"
                         >
-                          <span v-if="bookingForm.timeRange.end" class="text-gray-900 whitespace-nowrap">
+                          <span v-if="bookingForm.timeRange.end" class="text-gray-900 dark:text-white whitespace-nowrap">
                             {{ formatTimeDisplay(bookingForm.timeRange.end) }}
                           </span>
-                          <span v-else class="text-gray-500 whitespace-nowrap">End</span>
+                          <span v-else class="text-gray-500 dark:text-gray-400 whitespace-nowrap">End</span>
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                           </svg>
@@ -588,7 +597,7 @@
                         <!-- End Time Dropdown with compact styling -->
                         <div 
                           v-if="showEndTimeDropdown && bookingForm.timeRange.start" 
-                          class="absolute top-full left-0 w-[90px] bg-white border border-gray-200 rounded-sm shadow-xs z-1000 mt-0.5 overflow-hidden"
+                          class="absolute top-full left-0 w-[90px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-xs dark:shadow-dark-xs z-1000 mt-0.5 overflow-hidden"
                         >
                           <div class="max-h-32 overflow-y-auto custom-scrollbar-time overflow-x-hidden">
                             <div
@@ -596,13 +605,13 @@
                               :key="time"
                               @click="selectEndTime(time)"
                               :class="[
-                                'py-0.5 px-1.5 cursor-pointer hover:bg-gray-50 transition-colors flex justify-between items-center',
+                                'py-0.5 px-1.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center',
                                 { 
-                                  'opacity-50 cursor-not-allowed bg-gray-50': disabledTimes.end.includes(time)
+                                  'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-700': disabledTimes.end.includes(time)
                                 }
                               ]"
                             >
-                              <span class="text-xs truncate max-w-[50px]" :class="{'text-gray-400': disabledTimes.end.includes(time), 'text-gray-700': !disabledTimes.end.includes(time)}">
+                              <span class="text-xs truncate max-w-[50px]" :class="{'text-gray-400 dark:text-gray-500': disabledTimes.end.includes(time), 'text-gray-700 dark:text-gray-300': !disabledTimes.end.includes(time)}">
                                 {{ formatTimeDisplay(time) }}
                               </span>
                               <span v-if="disabledTimes.end.includes(time)" class="text-[7px] text-red-500 ml-0.5 whitespace-nowrap">
@@ -625,117 +634,40 @@
                   <span class="text-xs font-medium text-blue-900">Duration: {{ calculateDurationInHours() }} hours</span>
                 </div>
 
-                <!-- Additional Facilities as Cards with visual enhancements -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2 mt-5 flex items-center">
+                <!-- Additional Facilities from API Response -->
+                <div v-if="uniqueAdditionalFacilities.length > 0">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-5 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                     </svg>
-                    Additional Amenities
+                    Additional Facilities
                   </label>
                   
-                  <div class="grid grid-cols-5 gap-2">
-                    <label class="relative overflow-hidden bg-white rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('tv') ? 'ring-2 ring-primary' : 'border border-gray-200 hover:border-gray-300'">
-                      <input v-model="selectedFacilities" value="tv" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z" />
-                            <path d="M8 15v1.5a.5.5 0 001 0V15h2v1.5a.5.5 0 001 0V15h1a1 1 0 100-2H7a1 1 0 100 2h1z" />
-                          </svg>
+                  <div class="grid grid-cols-3 gap-1">
+                    <label 
+                      v-for="(facility, index) in uniqueAdditionalFacilities" 
+                      :key="`facility-${index}-${facility}`" 
+                      class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group border-2"
+                      :class="selectedFacilities.includes(facility) ? 'border-primary ring-2 ring-primary/20 bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
+                    >
+                      <input v-model="selectedFacilities" :value="facility" type="checkbox" class="sr-only">
+                      <div class="p-1 text-center">
+                        <div class="mb-0.5 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-4 h-4 mx-auto flex items-center justify-center">
+                          <component :is="'div'" v-html="getAdditionalFacilityIcon(facility)" 
+                            :class="selectedFacilities.includes(facility) ? 'text-primary' : 'text-gray-500 dark:text-gray-400'"
+                            class="w-2.5 h-2.5"></component>
                         </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-800'">TV</span>
-                        <span class="text-xs font-medium text-green-600 block">+$25</span>
+                        <span class="text-xs font-light block mb-0.5 leading-tight" 
+                          :class="selectedFacilities.includes(facility) ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">
+                          {{ getFeatureDisplayName(facility) }}
+                        </span>
+                        <span class="text-xs font-light text-green-600 dark:text-green-500 block leading-tight">
+                          +${{ getAdditionalFacilityPrice(facility) }}
+                        </span>
                       </div>
-                      <div v-if="selectedFacilities.includes('tv')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
-                    
-                    <label class="relative overflow-hidden bg-white rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('printer') ? 'ring-2 ring-primary' : 'border border-gray-200 hover:border-gray-300'">
-                      <input v-model="selectedFacilities" value="printer" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zM5 14a1 1 0 001 1h8a1 1 0 001-1v-3H5v3z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-800'">Printer</span>
-                        <span class="text-xs font-medium text-green-600 block">+$15</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('printer')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
-                    
-                    <label class="relative overflow-hidden bg-white rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('catering') ? 'ring-2 ring-primary' : 'border border-gray-200 hover:border-gray-300'">
-                      <input v-model="selectedFacilities" value="catering" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-800'">Catering</span>
-                        <span class="text-xs font-medium text-green-600 block">+$50</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('catering')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
-                    
-                    <label class="relative overflow-hidden bg-white rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('wifi') ? 'ring-2 ring-primary' : 'border border-gray-200 hover:border-gray-300'">
-                      <input v-model="selectedFacilities" value="wifi" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('wifi') ? 'text-primary' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M17.778 8.222c-4.296-4.296-11.26-4.296-15.556 0A1 1 0 01.808 6.808c5.076-5.077 13.308-5.077 18.384 0a1 1 0 01-1.414 1.414zM14.95 11.05a7 7 0 00-9.9 0 1 1 0 01-1.414-1.414 9 9 0 0112.728 0 1 1 0 01-1.414 1.414zM12.12 13.88a3 3 0 00-4.242 0 1 1 0 01-1.415-1.415 5 5 0 017.072 0 1 1 0 01-1.415 1.415zM9 16a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('wifi') ? 'text-primary' : 'text-gray-800'">WiFi</span>
-                        <span class="text-xs font-medium text-green-600 block">+$10</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('wifi')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
-                    
-                    <label class="relative overflow-hidden bg-white rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('coffee') ? 'ring-2 ring-primary' : 'border border-gray-200 hover:border-gray-300'">
-                      <input v-model="selectedFacilities" value="coffee" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('coffee') ? 'text-primary' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 2a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V2z" />
-                            <path fill-rule="evenodd" d="M3 5h14v8a3 3 0 01-3 3H6a3 3 0 01-3-3V5zm5 1a1 1 0 00-1 1v5a1 1 0 002 0V7a1 1 0 00-1-1z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('coffee') ? 'text-primary' : 'text-gray-800'">Coffee</span>
-                        <span class="text-xs font-medium text-green-600 block">+$5</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('coffee')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div v-if="selectedFacilities.includes(facility)" class="absolute top-0.5 right-0.5">
+                        <div class="w-2.5 h-2.5 bg-primary rounded-full flex items-center justify-center">
+                          <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
@@ -752,7 +684,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <h3 class="font-semibold text-gray-900 text-base">Subscription Details</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white text-base">Subscription Details</h3>
               </div>
               
               <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
@@ -793,37 +725,37 @@
               
               <!-- Enhanced Package Selection with visual improvements -->
               <div class="subscription-plans mt-3">
-                <label class="block text-sm font-medium text-gray-700 mb-3 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
                   </svg>
                   Select Subscription Plan
                 </label>
                 
                 <div class="grid grid-cols-2 gap-4">
-                  <label class="relative overflow-hidden bg-white border-2 rounded-xl cursor-pointer transition-all duration-300 group subscription-plan-tile" 
-                         :class="selectedPackage === 'monthly' ? 'border-primary shadow-lg shadow-primary/20 bg-primary/5 scale-105' : 'border-gray-200 hover:border-gray-300 hover:shadow-md'">
+                  <label class="relative overflow-hidden bg-white dark:!bg-gray-800 border-2 rounded-xl cursor-pointer transition-all duration-300 group subscription-plan-tile" 
+                         :class="selectedPackage === 'monthly' ? 'border-primary shadow-lg shadow-primary/20 bg-primary/5 dark:bg-primary/10 scale-105' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md dark:hover:shadow-dark-md'">
                     <input v-model="selectedPackage" value="monthly" type="radio" class="sr-only">
                     <div class="p-4 text-center">
-                      <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="selectedPackage === 'monthly' ? 'text-primary' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="selectedPackage === 'monthly' ? 'text-primary' : 'text-gray-400 dark:text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
                       <div class="mb-2">
-                        <div class="text-base font-semibold text-gray-900 mb-1">Monthly Plan</div>
-                        <div class="text-xs text-gray-500">Flexible subscription</div>
+                        <div class="text-base font-semibold text-gray-900 dark:text-white mb-1">Monthly Plan</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Flexible subscription</div>
                       </div>
                       <div class="text-xl font-bold text-primary mb-1">${{ space?.pricing?.monthly || 2500 }}</div>
-                      <div class="text-xs text-gray-600">per month</div>
+                      <div class="text-xs text-gray-600 dark:text-gray-400">per month</div>
                       
-                      <div class="mt-3 text-xs text-gray-700 bg-gray-50 p-2 rounded-lg">
+                      <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
                         <ul class="space-y-1.5">
                           <li class="flex items-start">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            No long-term commitment
+                            sample
                           </li>
                           <li class="flex items-start">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -844,35 +776,35 @@
                     </div>
                   </label>
                   
-                  <label class="relative overflow-hidden bg-white border-2 rounded-xl cursor-pointer transition-all duration-300 group subscription-plan-tile" 
-                         :class="selectedPackage === 'annual' ? 'border-primary shadow-lg shadow-primary/20 bg-primary/5 scale-105' : 'border-gray-200 hover:border-gray-300 hover:shadow-md'">
+                  <label class="relative overflow-hidden bg-white dark:!bg-gray-800 border-2 rounded-xl cursor-pointer transition-all duration-300 group subscription-plan-tile" 
+                         :class="selectedPackage === 'annual' ? 'border-primary shadow-lg shadow-primary/20 bg-primary/5 dark:bg-primary/10 scale-105' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md dark:hover:shadow-dark-md'">
                     <input v-model="selectedPackage" value="annual" type="radio" class="sr-only">
                     <div class="p-4 text-center relative">
                       <div class="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-0.5 rounded-bl-lg rounded-tr-xl font-medium shadow-sm transform rotate-3">
                         Best Value
                       </div>
                       
-                      <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="selectedPackage === 'annual' ? 'text-primary' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="selectedPackage === 'annual' ? 'text-primary' : 'text-gray-400 dark:text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
                       
                       <div class="mb-2 mt-1">
-                        <div class="text-base font-semibold text-gray-900 mb-1">Annual Plan</div>
-                        <div class="text-xs text-gray-500">Best savings</div>
+                        <div class="text-base font-semibold text-gray-900 dark:text-white mb-1">Annual Plan</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Best savings</div>
                       </div>
                       <div class="text-xl font-bold text-primary mb-1">${{ space?.pricing?.annual || 27000 }}</div>
-                      <div class="text-xs text-gray-600">per year</div>
+                      <div class="text-xs text-gray-600 dark:text-gray-400">per year</div>
                       
-                      <div class="mt-2 bg-green-50 px-2 py-1 rounded-full inline-flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div class="mt-2 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full inline-flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-600 dark:text-green-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
                         </svg>
-                        <span class="text-xs font-medium text-green-800">Save ${{ getSavings() }}</span>
+                        <span class="text-xs font-medium text-green-800 dark:text-green-300">Save ${{ getSavings() }}</span>
                       </div>
                       
-                      <div class="mt-3 text-xs text-gray-700 bg-gray-50 p-2 rounded-lg">
+                      <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
                         <ul class="space-y-1.5">
                           <li class="flex items-start">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -961,12 +893,12 @@
                 </div>
                 
                 <!-- Payment info with enhanced visual cues -->
-                <div class="flex items-start mt-2 bg-amber-50 border border-amber-100 rounded-md p-2.5">
+                <div class="flex items-start mt-2 bg-amber-50 dark:bg-gray-800 dark:border border-gray-800 border border-amber-100 rounded-md p-2.5">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 mr-1.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <div class="text-xs text-amber-800">
-                    <span class="font-medium">Non-refundable booking.</span> Payment will be processed immediately upon confirmation.
+                  <div class="text-xs text-amber-800 dark:text-gray-100">
+                    <span class="font-medium ">Non-refundable booking.</span> Payment will be processed immediately upon confirmation.
                   </div>
                 </div>
               </div>
@@ -1048,8 +980,6 @@ import SingleDatePicker from '../components/SingleDatePicker.vue'
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue'
 import TeamSizeDropdown from '../components/TeamSizeDropdown.vue'
 import { NetworkManager } from '../api/networkManager'
-
-import { SpacesAPI } from '../api'
 import type { SpaceDto, ReviewDto, UserDto } from '../dto/response'
 import { getSpaceTypeEnum } from '../types/enums'
 import { useAuthStore } from '../stores/auth'
@@ -1140,9 +1070,13 @@ export default defineComponent({
     },
     
     facilitiesPrice(): number {
-      const prices: Record<string, number> = { tv: 25, printer: 15, catering: 50 }
+      // Hardcoded facilities prices (for backward compatibility)
+      const hardcodedPrices: Record<string, number> = { tv: 25, printer: 15, catering: 50, wifi: 10, coffee: 5 }
+      
       return this.selectedFacilities.reduce((total, facility) => {
-        return total + (prices[facility] || 0)
+        // First try hardcoded prices, then try additional facility prices
+        const price = hardcodedPrices[facility] || this.getAdditionalFacilityPrice(facility)
+        return total + price
       }, 0)
     },
     
@@ -1166,6 +1100,22 @@ export default defineComponent({
       return !!(this.bookingForm.date &&
                this.selectedPackage &&
                (this.productType !== 'dedicated-desk' || this.bookingForm.teamSize))
+    },
+    
+    uniqueAdditionalFacilities(): string[] {
+      if (!this.space?.additional_facilities) return []
+      
+      // Log the raw data for debugging
+      console.log('🔍 Raw additional_facilities:', this.space.additional_facilities)
+      console.log('🔍 Type of additional_facilities:', typeof this.space.additional_facilities)
+      console.log('🔍 Array.isArray check:', Array.isArray(this.space.additional_facilities))
+      
+      // Remove duplicates and empty values
+      const unique = [...new Set(this.space.additional_facilities.filter(f => f && f.trim()))]
+      console.log('✅ Unique additional_facilities:', unique)
+      console.log('✅ Unique count:', unique.length)
+      
+      return unique
     }
   },
   
@@ -1384,11 +1334,20 @@ export default defineComponent({
           return
         }
         
-        const response = await SpacesAPI.getSpaceDetails(spaceId, getSpaceTypeEnum(this.productType))
+        const networkManager = new NetworkManager()
+        const response = await networkManager.getSpaceDetailsById(spaceId)
         
-        if (response.success && response.space) {
-          this.space = response.space
-          this.reviews = response.recentReviews || []
+        if (response.success && response.data) {
+          this.space = response.data
+          // Handle reviews if they come in the response
+          if (Array.isArray(response.data.recentReviews)) {
+            this.reviews = response.data.recentReviews
+          } else if (Array.isArray(response.data.recent_ratings)) {
+            this.reviews = response.data.recent_ratings
+          } else {
+            // If no reviews in response, initialize with empty array
+            this.reviews = []
+          }
         } else {
           this.error = response.message || 'Space not found'
         }
@@ -1725,6 +1684,147 @@ export default defineComponent({
       } finally {
         this.isProcessing = false
       }
+    },
+
+    // Method to get feature icon based on feature name
+    getFeatureIcon(feature: string): string {
+      const featureIcons: Record<string, string> = {
+        'wifi': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.22c5.464-5.464 14.292-5.464 19.756 0"/></svg>',
+        'projector': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
+        'coffee': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 2a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V2z"/><path fill-rule="evenodd" d="M3 5h14v8a3 3 0 01-3 3H6a3 3 0 01-3-3V5zm5 1a1 1 0 00-1 1v5a1 1 0 002 0V7a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
+        'printing': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>',
+        'whiteboard': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>',
+        'parking': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.5a2.5 2.5 0 010 5H14m-6 2v4m0-4h.01M14 7v8a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2z"/></svg>',
+        'air-conditioning': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>',
+        'security': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
+        'kitchen': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>',
+        'locker': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>',
+        'reception': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>',
+        '24-7-access': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        'meeting-room-credits': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>',
+        'high-speed-wifi': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.22c5.464-5.464 14.292-5.464 19.756 0"/></svg>',
+        '4k-display': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>'
+      };
+
+      // Normalize feature name (lowercase, replace spaces with hyphens)
+      const normalizedFeature = feature.toLowerCase().replace(/\s+/g, '-');
+      
+      return featureIcons[normalizedFeature] || featureIcons[feature.toLowerCase()] || '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+    },
+
+    // Method to get clean display name for features
+    getFeatureDisplayName(feature: string): string {
+      const displayNames: Record<string, string> = {
+        'wifi': 'WiFi',
+        'high-speed-wifi': 'High-Speed WiFi',
+        'projector': 'Projector',
+        'coffee': 'Coffee Service',
+        'printing': 'Printing Services',
+        'whiteboard': 'Whiteboard',
+        'parking': 'Parking',
+        'air-conditioning': 'Air Conditioning',
+        'security': '24/7 Security',
+        'kitchen': 'Kitchen Access',
+        'locker': 'Personal Locker',
+        'reception': 'Reception Services',
+        '24-7-access': '24/7 Access',
+        'meeting-room-credits': 'Meeting Room Credits',
+        '4k-display': '4K Display'
+      };
+
+      // Normalize feature name
+      const normalizedFeature = feature.toLowerCase().replace(/\s+/g, '-');
+      
+      return displayNames[normalizedFeature] || displayNames[feature.toLowerCase()] || feature;
+    },
+
+    // Method to get icon for additional facilities (fallback to small generic icon)
+    getAdditionalFacilityIcon(facility: string): string {
+      // Try to get specific icon first from the main feature icons
+      const specificIcon = this.getFeatureIcon(facility);
+      
+      // Additional facility specific icons
+      const additionalFacilityIcons: Record<string, string> = {
+        'gym': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+        'lounge': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/></svg>',
+        'rooftop-terrace': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>',
+        'rooftop terrace': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>',
+        'library': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>',
+        'game-room': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        'game room': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        'creative-studio': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/></svg>',
+        'creative studio': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/></svg>',
+        'event-hall': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>',
+        'event hall': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>'
+      };
+
+      // Normalize facility name
+      const normalizedFacility = facility.toLowerCase().replace(/\s+/g, '-');
+      
+      // Check if we have a specific icon for this additional facility
+      if (additionalFacilityIcons[normalizedFacility] || additionalFacilityIcons[facility.toLowerCase()]) {
+        return additionalFacilityIcons[normalizedFacility] || additionalFacilityIcons[facility.toLowerCase()];
+      }
+      
+      // If no specific icon found, return a default amenity icon
+      const defaultIcon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+      
+      if (specificIcon === defaultIcon) {
+        // Return a small amenity icon for additional facilities
+        return '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+      }
+      
+      return specificIcon;
+    },
+
+    // Method to get price for additional facilities
+    getAdditionalFacilityPrice(facility: string): number {
+      // Sample prices for additional facilities - replace with backend data when available
+      const facilityPrices: Record<string, number> = {
+        'gym': 20,
+        'lounge': 15,
+        'rooftop-terrace': 30,
+        'rooftop terrace': 30,
+        'library': 10,
+        'game-room': 25,
+        'game room': 25,
+        'creative-studio': 35,
+        'creative studio': 35,
+        'event-hall': 50,
+        'event hall': 50,
+        'parking': 15,
+        'security': 10,
+        'kitchen': 20,
+        'conference-room': 40,
+        'conference room': 40,
+        'fitness-center': 20,
+        'fitness center': 20,
+        'spa': 45,
+        'pool': 35,
+        'restaurant': 25,
+        'cafe': 15,
+        'business-center': 30,
+        'business center': 30,
+        'meeting-room': 35,
+        'meeting room': 35
+      };
+
+      // Normalize facility name
+      const normalizedFacility = facility.toLowerCase().replace(/\s+/g, '-');
+      
+      // Return price from mapping or default price
+      return facilityPrices[normalizedFacility] || facilityPrices[facility.toLowerCase()] || 20;
+    },
+
+    // Method to open location in map
+    openLocationInMap(): void {
+      if (this.space?.locationUrl) {
+        window.open(this.space.locationUrl, '_blank');
+      } else if (this.space?.address) {
+        // Fallback to Google Maps search
+        const encodedAddress = encodeURIComponent(this.space.address);
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+      }
     }
   }
 })
@@ -2024,6 +2124,10 @@ export default defineComponent({
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
 }
 
+.dark .subscription-plan-tile {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
 .subscription-plan-tile:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
@@ -2084,6 +2188,82 @@ export default defineComponent({
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Dark mode support classes */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, 
+.dark .text-gray-900 {
+  color: #fff;
+}
+
+.dark .text-gray-800 {
+  color: #e5e7eb;
+}
+
+.dark .text-gray-700:not([class*="dark:"]), 
+.dark .text-gray-600 {
+  color: #d1d5db;
+}
+
+.dark .text-gray-500 {
+  color: #9ca3af;
+}
+
+/* Card and container styling for dark mode */
+.dark .bg-white {
+  background-color: #111827;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: #1f2937;
+}
+
+.dark .bg-gray-200 {
+  background-color: #374151;
+}
+
+/* Border colors for dark mode */
+.dark .border-gray-50,
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #1f2937;
+}
+
+/* Shadow utilities for dark mode */
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.dark .shadow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.dark .shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4), 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Fix for remaining text elements in dark mode */
+.dark label:not([class*="dark:"]) {
+  color: #d1d5db;
+}
+
+.dark ul:not([class*="dark:"]) {
+  color: #d1d5db;
+}
+
+.dark .compact-select-field span:not([class*="dark:"]) {
+  color: #d1d5db;
+}
+
+/* Fixes for dropdowns and form elements */
+.dark .bg-gray-50:not([class*="dark:"]) {
+  background-color: #1f2937;
+}
+
+.dark .border-gray-200:not([class*="dark:"]) {
+  border-color: #374151;
 }
 
 </style>

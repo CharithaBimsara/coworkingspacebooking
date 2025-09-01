@@ -473,16 +473,16 @@ export class SpacesAPI {
     try {
       // Convert request parameters to match NetworkManager search params format
       const searchParams = {
-        location: request.location,
-        spaceType: request.spaceType,
-        startDate: request.startDate,
-        endDate: request.endDate,
-        startTime: request.startTime,
-        endTime: request.endTime,
+        location_id: request.location_id, // Changed from locationId to location_id
+        type: request.type, // Changed from spaceType to type
+        date: request.date,
+        start_time: request.start_time, // Changed from startTime to start_time
+        end_time: request.end_time, // Changed from endTime to end_time
         capacity: request.capacity,
-        priceRange: request.priceRange,
+        min_daily_rate: request.min_daily_rate, // Changed from minPrice to min_daily_rate
+        max_daily_rate: request.max_daily_rate, // Changed from maxPrice to max_daily_rate
         facilities: request.facilities,
-        minRating: request.minRating
+        min_rating: request.min_rating ? (typeof request.min_rating === 'string' ? parseFloat(request.min_rating) : request.min_rating) : undefined // Ensure it's a number
       };
       
       console.log('Search request parameters:', searchParams);

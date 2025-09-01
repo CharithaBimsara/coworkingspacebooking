@@ -64,7 +64,7 @@
             @click="selectDate(date)"
             :disabled="date.disabled"
             :class="getDateClasses(date)"
-            class="h-7 text-xs rounded transition-colors focus:outline-none focus:ring-1 focus:ring-black"
+            class="h-7 text-xs rounded transition-colors focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white"
           >
             {{ date.day }}
           </button>
@@ -272,6 +272,8 @@ export default defineComponent({
 
 /* Ensure calendar dropdown has highest z-index and proper positioning */
 .single-date-picker {
+
+  
   position: relative;
 }
 

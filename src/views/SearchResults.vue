@@ -6,7 +6,7 @@
         <!-- <h1 class="text-lg font-bold text-gray-800 dark:text-white mb-3">Search Your <span class="text-primary">WorkSpace</span></h1> -->
         <div class="flex flex-row items-center justify-start gap-3 w-full relative">
           <div class="relative min-w-[220px] max-w-[260px] flex flex-col justify-end">
-            <label class="block text-xs font-medium text-black dark:text-white mb-0.5">Space Type</label>
+            <label class="block text-xs font-medium text-black dark:text-white mb-2 ml-0.5">Space Type</label>
             <SpaceTypeDropdown
               v-model="editSearchForm.spaceType"
               :options="spaceTypeOptions"
@@ -18,22 +18,28 @@
           </div>
 
           <div class="flex-grow min-w-[200px] flex flex-col justify-end">
-            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Date</label>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 ml-0.5">Date</label>
             <SingleDatePicker :modelValue="editSearchForm.date === null ? undefined : editSearchForm.date"
               @update:modelValue="editSearchForm.date = $event" placeholder="Date" class="text-xs py-0 px-0 w-full h-9" />
           </div>
 
           <div class="flex flex-col justify-end min-w-[280px]">
-            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time Range</label>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 ml-0.5">Time Range</label>
             <div class="h-8 flex items-center">
               <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" class="h-10" />
             </div>
           </div>
 
           <div class="flex-none mr-1 flex flex-col justify-end min-w-[100px]">
-            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Capacity</label>
-            <input v-model.number="editSearchForm.capacity" type="number" min="1" placeholder="Capacity"
-              class="input-field text-xs py-1.5 px-2 w-full h-9 bg-white dark:bg-gray-900 dark:text-white">
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 ml-0.5">Capacity</label>
+            <input v-model="editSearchForm.capacity"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              placeholder="Capacity"
+              class="input-field text-xs py-1.5 px-2 w-full h-9 bg-white dark:bg-gray-900 dark:text-white"
+              @input="editSearchForm.capacity = ((($event.target as HTMLInputElement)?.value || '').replace(/[^0-9]/g, '') || '') === '' ? null : parseInt((($event.target as HTMLInputElement)?.value || '').replace(/[^0-9]/g, ''), 10)"
+            >
           </div>
 
           <div class="flex-shrink-0 flex flex-col justify-end min-w-[110px]">
@@ -161,9 +167,9 @@
             <div>
               <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
                 {{ searchResultTitle }}
-                <div class="ml-2 bg-primary/20 text-primary text-sm px-2.5 py-1 rounded-full">
+                <!-- <div class="ml-2 bg-primary/20 text-primary text-sm px-2.5 py-1 rounded-full">
                   {{ filteredSpaces.length }} spaces
-                </div>
+                </div> -->
               </h2>
               <div class="flex items-center gap-1.5 flex-wrap mt-2.5">
                 <span v-for="filter in activeFilters" :key="filter"
@@ -175,14 +181,21 @@
                 </span>
               </div>
             </div>
-            <div class="flex items-center gap-3 bg-white dark:bg-gray-900 p-2 rounded-full shadow-sm border border-gray-100 dark:border-gray-800">
+            <div class="flex items-center gap-3 bg-white dark:bg-gray-900 p-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-800">
               <label class="text-xs text-gray-600 dark:text-gray-300 ml-2">Sort by:</label>
-              <select v-model="sortBy" class="text-xs py-1.5 px-3 bg-white dark:bg-gray-900 dark:text-white rounded-full border-0 focus:ring-2 focus:ring-primary/50" @change="applySorting">
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-                <option value="availability">Availability</option>
-              </select>
+              <div class="relative">
+                <select v-model="sortBy" class="text-xs py-1.5 px-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-primary rounded-full border-0 focus:ring-2 focus:ring-primary/50 sort-select appearance-none pr-8" @change="applySorting">
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Highest Rated</option>
+                  <option value="availability">Availability</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                  <svg class="h-4 w-4 text-gray-700 dark:text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -212,7 +225,7 @@
                 </button>
                 <div class="absolute bottom-2 left-2">
                   <span class="bg-primary text-black px-2 py-0.5 rounded-full text-xs font-medium shadow-md">
-                    {{ formatSpaceType(space.productType) }}
+                    {{ space.displayProductType || formatSpaceType(space.productType) }}
                   </span>
                 </div>
               </div>
@@ -237,7 +250,7 @@
                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         </svg>
                       </div>
-                      <span class="truncate max-w-[120px]">{{ space.location }}</span>
+                      <span class="truncate max-w-[120px]">{{ space.address || space.location }}</span>
                     </div>
                     
                     <div class="flex items-center">
@@ -246,19 +259,21 @@
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                       </div>
-                      <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ space.rating }} ({{ space.reviews }})</span>
+                      <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">
+                        {{ Number(space.rating).toFixed(1) }} ({{ space.reviews || 0 }})
+                      </span>
                     </div>
                   </div>
 
                   <div class="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <div class="flex flex-wrap gap-1">
-                      <span v-for="feature in space.features.slice(0, 2)" :key="feature"
+                      <span v-for="feature in (space.features || []).slice(0, 2)" :key="feature"
                         class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-1.5 py-0.5 rounded-full text-[10px] font-medium">
                         {{ feature }}
                       </span>
-                      <span v-if="space.features.length > 2"
+                      <span v-if="(space.features || []).length > 2"
                         class="bg-primary/10 dark:bg-primary/20 text-primary px-1.5 py-0.5 rounded-full text-[10px] font-medium">
-                        +{{ space.features.length - 2 }}
+                        +{{ (space.features || []).length - 2 }}
                       </span>
                     </div>
                   </div>
@@ -311,7 +326,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div class="absolute top-2 left-2">
                       <span class="bg-primary text-black px-1.5 py-0.5 rounded-full text-xs font-medium shadow-sm">
-                        {{ formatSpaceType(space.productType) }}
+                        {{ space.displayProductType || formatSpaceType(space.productType) }}
                       </span>
                     </div>
                   </div>
@@ -347,7 +362,7 @@
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                           </div>
-                          <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ space.rating }}</span>
+                          <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ Number(space.rating).toFixed(1) }}</span>
                         </div>
                         <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-lg text-xs font-bold text-gray-900 dark:text-white">
                           ${{ getStartingPrice(space) }}
@@ -553,6 +568,7 @@ export default defineComponent({
       filteredSpaces: [] as SpaceDto[],
       sortedSpaces: [] as SpaceDto[],
       favoriteSpaceIds: [] as number[],
+      locations: [] as Array<{ id: number; name: string; address: string; url: string }>, // Cache for locations
       spaceTypeOptions: [
         {
           value: '',
@@ -655,37 +671,94 @@ export default defineComponent({
       if (this.isLoading) {
         return;
       }
-      
+
       this.isLoading = true;
       try {
-        // Create search parameters object directly for NetworkManager
-        const searchParams = {
-          location: this.filters.location || undefined,
-          spaceType: this.filters.spaceType || undefined,
-          startDate: this.filters.dateRange.startDate || undefined,
-          endDate: this.filters.dateRange.endDate || undefined,
-          startTime: this.filters.startTime || undefined,
-          endTime: this.filters.endTime || undefined,
-          capacity: this.filters.capacity || undefined,
-          priceRange: this.priceRange.min !== 10 || this.priceRange.max !== 1000 
-            ? { min: this.priceRange.min, max: this.priceRange.max } 
-            : undefined,
-          facilities: this.selectedFacilities.length > 0 
-            ? this.selectedFacilities 
-            : undefined,
-          minRating: this.minRating !== '0' 
-            ? this.minRating 
-            : undefined
-        };
-        
-        console.log('Searching spaces with params:', searchParams);
+        // Load locations if not already cached
+        if (this.locations.length === 0) {
+          try {
+            this.locations = await NetworkManager.getLocations();
+            console.log('Loaded locations:', this.locations);
+          } catch (error) {
+            console.error('Error loading locations:', error);
+            this.locations = [];
+          }
+        }
+
+        // Find location ID for the selected location name
+        let locationId: number | undefined;
+        if (this.filters.location) {
+          const selectedLocation = this.locations.find(loc =>
+            loc.name.toLowerCase() === this.filters.location.toLowerCase()
+          );
+          if (selectedLocation) {
+            locationId = selectedLocation.id;
+            console.log(`Found location ID ${locationId} for location "${this.filters.location}"`);
+          } else {
+            console.warn(`Location "${this.filters.location}" not found in locations list`);
+          }
+        }
+
+        // Create search parameters object matching backend format
+        const searchParams: any = {};
+
+        // Always send date - use current date if not selected
+        const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        searchParams.date = this.filters.dateRange.startDate || currentDate;
+
+        // Only add space type if it's actually selected (not the default "all")
+        if (this.filters.spaceType && this.filters.spaceType !== 'all') {
+          const spaceTypeMapping: Record<string, string> = {
+            'meeting-room': 'MeetingRoom',
+            'hot-desk': 'HotDesk',
+            'dedicated-desk': 'DedicatedDesk'
+          };
+          searchParams.type = spaceTypeMapping[this.filters.spaceType];
+        }
+
+        // Only add location if one is actually selected
+        if (locationId !== undefined) {
+          searchParams.location_id = locationId;
+        }
+
+        // Only add time range if both start and end times are provided
+        if (this.filters.startTime && this.filters.endTime) {
+          searchParams.start_time = this.filters.startTime;
+          searchParams.end_time = this.filters.endTime;
+        }
+
+        // Only add capacity if it's actually set (not null or 0)
+        if (this.filters.capacity && this.filters.capacity > 0) {
+          searchParams.capacity = this.filters.capacity;
+        }
+
+        // Only add price range if it's not the default min/max values
+        if (this.priceRange.min > 10) { // Only if above minimum default
+          searchParams.min_daily_rate = this.priceRange.min;
+        }
+
+        if (this.priceRange.max < 1000) { // Only if below maximum default
+          searchParams.max_daily_rate = this.priceRange.max;
+        }
+
+        // Only add facilities if any are selected
+        if (this.selectedFacilities.length > 0) {
+          searchParams.facilities = this.selectedFacilities;
+        }
+
+        // Only add rating if it's not the default "0" (any rating)
+        if (this.minRating && this.minRating !== '0') {
+          searchParams.min_rating = parseFloat(this.minRating);
+        }
+
+        console.log('Searching spaces with params (matching backend format):', searchParams);
         if (this.selectedFacilities.length > 0) {
           console.log('Selected facilities:', this.selectedFacilities);
         }
-        
+
         // Call NetworkManager directly instead of going through SpacesAPI
         const response = await NetworkManager.searchSpaces(searchParams);
-        
+
         if (response.success) {
           this.allSpaces = response.spaces || [];
           console.log(`Loaded ${this.allSpaces.length} spaces:`, this.allSpaces);
@@ -726,12 +799,14 @@ export default defineComponent({
           return false;
         }
 
-        if (
-          this.selectedSpaceTypes.length > 0 &&
-          !this.selectedSpaceTypes.includes(space.productType)
-        ) {
-          return false;
-        }
+        // Don't filter by space type here since it's already filtered by the API call
+        // The selectedSpaceTypes filter is redundant when we're making API calls with type filter
+        // if (
+        //   this.selectedSpaceTypes.length > 0 &&
+        //   !this.selectedSpaceTypes.includes(space.productType)
+        // ) {
+        //   return false;
+        // }
 
         if (this.minRating !== '0' && space.rating < parseFloat(this.minRating)) {
           return false;
@@ -872,6 +947,8 @@ export default defineComponent({
         return true;
       });
       
+      console.log(`🔍 Filtering complete: ${this.filteredSpaces.length} spaces out of ${this.allSpaces.length} passed filters`);
+      
       this.applySorting();
     },
 
@@ -917,15 +994,20 @@ export default defineComponent({
 
     getStartingPrice(space: SpaceDto): number {
       if (space.productType === 'meeting-room') {
-        return space.pricing?.hourly || 0;
+        // For meeting rooms, prioritize hourly, then daily
+        return space.pricing?.hourly || space.pricing?.daily || 0;
       }
       if (space.productType === 'hot-desk') {
-        return space.pricing?.daily || 0;
+        // For hot desks, prioritize daily, then hourly
+        return space.pricing?.daily || space.pricing?.hourly || 0;
       }
       if (space.productType === 'dedicated-desk') {
-        return space.pricing?.monthly || 0;
+        // For dedicated desks, prioritize monthly, then daily
+        return space.pricing?.monthly || space.pricing?.daily || 0;
       }
-      return 0;
+      
+      // Fallback: try to find any available price
+      return space.pricing?.daily || space.pricing?.hourly || space.pricing?.monthly || 0;
     },
 
     getPriceUnit(productType: string): string {
@@ -1324,18 +1406,99 @@ export default defineComponent({
 /* Custom styling for inputs */
 .input-field {
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #D1D5DB;
   transition: all 0.2s ease;
 }
 
 .dark .input-field {
-  border-color: #374151;
-  background-color: #1f2937;
+  border-color: #374151 ;
+
 }
 
+
 .input-field:focus {
-  border-color: var(--color-primary, #00FE01);
-  box-shadow: 0 0 0 2px rgba(0, 254, 1, 0.2);
+
+  box-shadow: none;
   outline: none;
 }
+
+.dark .input-field:focus {
+
+  box-shadow: none;
+  outline: none;
+}
+
+/* SpaceTypeDropdown select focus border (only for SearchResults page) */
+select.input-field:focus {
+  border-color: #111827;
+  box-shadow: none;
+  outline: none;
+}
+.dark select.input-field:focus {
+  border-color: #fff;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Sort dropdown styling */
+.sort-select {
+  color: #111827 !important; /* Black text in light mode */
+}
+.dark .sort-select {
+  color: #00FE01 !important; /* Primary color in dark mode */
+}
+.sort-select option {
+  color: #111827 !important;
+  background-color: white !important;
+}
+.dark .sort-select option {
+  color: #00FE01 !important;
+  background-color: #1f2937 !important;
+}
+
+/* Override browser default option styling */
+select.sort-select option:checked,
+select.sort-select option:hover {
+  background-color: rgba(0, 254, 1, 0.1) !important;
+  color: #111827 !important;
+}
+
+.dark select.sort-select option:checked,
+.dark select.sort-select option:hover {
+  background-color: rgba(0, 254, 1, 0.3) !important;
+  color: #00FE01 !important;
+}
 </style>
+
+/* Custom dark mode for number input increment/decrement buttons */
+input[type="number"].custom-number-input::-webkit-inner-spin-button,
+input[type="number"].custom-number-input::-webkit-outer-spin-button {
+  background: #1f2937 !important;
+  border-radius: 0.25rem;
+  filter: invert(1) brightness(0.7);
+}
+
+.dark input[type="number"].custom-number-input::-webkit-inner-spin-button,
+.dark input[type="number"].custom-number-input::-webkit-outer-spin-button {
+  background: #374151 !important;
+  filter: invert(0.8) brightness(0.7);
+}
+
+/* For Firefox */
+input[type="number"].custom-number-input {
+  -moz-appearance: textfield;
+}
+
+/* For Edge/Chromium (force background for spin buttons) */
+@supports (-webkit-appearance: none) {
+  input[type="number"].custom-number-input::-webkit-inner-spin-button,
+  input[type="number"].custom-number-input::-webkit-outer-spin-button {
+    background: #1f2937 !important;
+    filter: invert(1) brightness(0.7);
+  }
+  .dark input[type="number"].custom-number-input::-webkit-inner-spin_button,
+  .dark input[type="number"].custom-number-input::-webkit-outer-spin-button {
+    background: #374151 !important;
+    filter: invert(0.8) brightness(0.7);
+  }
+}

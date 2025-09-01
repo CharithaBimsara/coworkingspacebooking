@@ -1,13 +1,13 @@
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="min-h-screen bg-white dark:bg-gray-900">
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-gray-50 to-white">
+    <section class="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
       <div class="max-w-7xl mx-auto container-padding py-16">
         <div class="text-center">
-          <h1 class="text-4xl lg:text-5xl font-heading font-bold text-gray-900 mb-6">
+          <h1 class="text-4xl lg:text-5xl font-heading font-bold text-gray-900 dark:text-white mb-6">
             Get in Touch
           </h1>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Have a question, suggestion, or just want to say hello? We'd love to hear from you.
           </p>
         </div>
@@ -19,29 +19,29 @@
       <div class="max-w-7xl mx-auto container-padding">
         <div class="grid lg:grid-cols-2 gap-16">
           <!-- Contact Form -->
-          <div class="bg-white">
-            <h2 class="text-2xl font-heading font-bold text-gray-900 mb-6">Send us a Message</h2>
+          <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-card">
+            <h2 class="text-2xl font-heading font-bold text-gray-900 dark:text-white mb-6">Send us a Message</h2>
             
             <form @submit.prevent="submitForm" class="space-y-6">
               <div class="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name *</label>
                   <input 
                     v-model="form.firstName" 
                     type="text" 
                     required
-                    :class="['input-field', errors.firstName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
+                    :class="['input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500', errors.firstName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
                     placeholder="Your first name"
                   >
                   <p v-if="errors.firstName" class="mt-1 text-sm text-red-600">{{ errors.firstName }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name *</label>
                   <input 
                     v-model="form.lastName" 
                     type="text" 
                     required
-                    :class="['input-field', errors.lastName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
+                    :class="['input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500', errors.lastName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
                     placeholder="Your last name"
                   >
                   <p v-if="errors.lastName" class="mt-1 text-sm text-red-600">{{ errors.lastName }}</p>
@@ -49,33 +49,33 @@
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address *</label>
                 <input 
                   v-model="form.email" 
                   type="email" 
                   required
-                  :class="['input-field', errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
+                  :class="['input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500', errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
                   placeholder="your@email.com"
                 >
                 <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
                 <input 
                   v-model="form.phone" 
                   type="tel" 
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                   placeholder="(555) 123-4567"
                 >
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject *</label>
                 <select 
                   v-model="form.subject" 
                   required
-                  :class="['input-field', errors.subject ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
+                  :class="['input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500', errors.subject ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
                 >
                   <option value="">Select a subject</option>
                   <option value="general">General Inquiry</option>
@@ -90,12 +90,12 @@
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message *</label>
                 <textarea 
                   v-model="form.message" 
                   rows="6"
                   required
-                  :class="['input-field resize-none', errors.message ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
+                  :class="['input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500 resize-none', errors.message ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '']"
                   placeholder="Tell us more about your inquiry..."
                 ></textarea>
                 <p v-if="errors.message" class="mt-1 text-sm text-red-600">{{ errors.message }}</p>
@@ -106,9 +106,9 @@
                   v-model="form.agreeToContact" 
                   type="checkbox" 
                   required
-                  class="rounded border-gray-300 text-primary focus:ring-primary mt-1"
+                  class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:focus:ring-gray-500 mt-1"
                 >
-                <label class="ml-3 text-sm text-gray-600">
+                <label class="ml-3 text-sm text-gray-600 dark:text-gray-300">
                   I agree to be contacted by WorkSpace regarding my inquiry. *
                 </label>
               </div>
@@ -130,14 +130,14 @@
             </form>
             
             <!-- Success Message -->
-            <div v-if="showSuccess" class="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div v-if="showSuccess" class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
               <div class="flex items-center">
-                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <p class="text-green-800 font-medium">Thank you for your message!</p>
+                <p class="text-green-800 dark:text-green-300 font-medium">Thank you for your message!</p>
               </div>
-              <p class="text-green-700 text-sm mt-1">We'll get back to you within 24 hours.</p>
+              <p class="text-green-700 dark:text-green-400 text-sm mt-1">We'll get back to you within 24 hours.</p>
             </div>
           </div>
 
@@ -145,7 +145,7 @@
           <div class="space-y-8">
             <!-- Quick Contact -->
             <div>
-              <h3 class="text-xl font-semibold text-gray-900 mb-6">Get in Touch</h3>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Get in Touch</h3>
               <div class="space-y-6">
                 <div class="flex items-start">
                   <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
@@ -154,8 +154,8 @@
                     </svg>
                   </div>
                   <div>
-                    <h4 class="font-semibold text-gray-900 mb-1">Email Us</h4>
-                    <p class="text-gray-600 mb-2">Get a response within 24 hours</p>
+                    <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Email Us</h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-2">Get a response within 24 hours</p>
                     <a href="mailto:hello@workspace.com" class="text-primary hover:text-primary/80 font-medium">
                       hello@workspace.com
                     </a>
@@ -169,8 +169,8 @@
                     </svg>
                   </div>
                   <div>
-                    <h4 class="font-semibold text-gray-900 mb-1">Call Us</h4>
-                    <p class="text-gray-600 mb-2">Mon-Fri, 9AM-6PM PST</p>
+                    <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Call Us</h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-2">Mon-Fri, 9AM-6PM PST</p>
                     <a href="tel:+15551234567" class="text-primary hover:text-primary/80 font-medium">
                       (555) 123-4567
                     </a>
@@ -184,8 +184,8 @@
                     </svg>
                   </div>
                   <div>
-                    <h4 class="font-semibold text-gray-900 mb-1">Live Chat</h4>
-                    <p class="text-gray-600 mb-2">Available during business hours</p>
+                    <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Live Chat</h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-2">Available during business hours</p>
                     <button class="text-primary hover:text-primary/80 font-medium">
                       Start Chat
                     </button>
@@ -196,11 +196,11 @@
 
             <!-- Office Locations -->
             <div>
-              <h3 class="text-xl font-semibold text-gray-900 mb-6">Our Offices</h3>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Our Offices</h3>
               <div class="space-y-6">
                 <div>
-                  <h4 class="font-semibold text-gray-900 mb-2">San Francisco HQ</h4>
-                  <p class="text-gray-600 leading-relaxed">
+                  <h4 class="font-semibold text-gray-900 dark:text-white mb-2">San Francisco HQ</h4>
+                  <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                     123 Innovation Street<br>
                     San Francisco, CA 94105<br>
                     United States
@@ -208,8 +208,8 @@
                 </div>
                 
                 <div>
-                  <h4 class="font-semibold text-gray-900 mb-2">New York Office</h4>
-                  <p class="text-gray-600 leading-relaxed">
+                  <h4 class="font-semibold text-gray-900 dark:text-white mb-2">New York Office</h4>
+                  <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                     456 Broadway Avenue<br>
                     New York, NY 10013<br>
                     United States
@@ -217,8 +217,8 @@
                 </div>
                 
                 <div>
-                  <h4 class="font-semibold text-gray-900 mb-2">London Office</h4>
-                  <p class="text-gray-600 leading-relaxed">
+                  <h4 class="font-semibold text-gray-900 dark:text-white mb-2">London Office</h4>
+                  <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                     789 Tech Square<br>
                     London, EC2A 4DP<br>
                     United Kingdom
@@ -228,24 +228,24 @@
             </div>
 
             <!-- Support Hours -->
-            <div class="bg-gray-50 p-6 rounded-xl">
-              <h3 class="text-lg font-semibold text-gray-900 mb-4">Support Hours</h3>
+            <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Support Hours</h3>
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-gray-600">Monday - Friday</span>
-                  <span class="font-medium text-gray-900">9:00 AM - 6:00 PM PST</span>
+                  <span class="text-gray-600 dark:text-gray-300">Monday - Friday</span>
+                  <span class="font-medium text-gray-900 dark:text-white">9:00 AM - 6:00 PM PST</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600">Saturday</span>
-                  <span class="font-medium text-gray-900">10:00 AM - 4:00 PM PST</span>
+                  <span class="text-gray-600 dark:text-gray-300">Saturday</span>
+                  <span class="font-medium text-gray-900 dark:text-white">10:00 AM - 4:00 PM PST</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600">Sunday</span>
-                  <span class="font-medium text-gray-900">Closed</span>
+                  <span class="text-gray-600 dark:text-gray-300">Sunday</span>
+                  <span class="font-medium text-gray-900 dark:text-white">Closed</span>
                 </div>
               </div>
-              <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                <p class="text-sm text-blue-800">
+              <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p class="text-sm text-blue-800 dark:text-blue-300">
                   <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -259,26 +259,26 @@
     </section>
 
     <!-- FAQ Section -->
-    <section class="section-padding bg-gray-50">
+    <section class="section-padding bg-gray-50 dark:bg-gray-800">
       <div class="max-w-4xl mx-auto container-padding">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-heading font-bold text-gray-900 mb-4">
+          <h2 class="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-4">
             Frequently Asked Questions
           </h2>
-          <p class="text-xl text-gray-600">
+          <p class="text-xl text-gray-600 dark:text-gray-300">
             Quick answers to common questions
           </p>
         </div>
 
         <div class="space-y-6">
-          <div v-for="(faq, index) in faqs" :key="index" class="bg-white rounded-xl p-6 shadow-card">
+          <div v-for="(faq, index) in faqs" :key="index" class="bg-white dark:bg-gray-700 rounded-xl p-6 shadow-card">
             <button 
               @click="toggleFaq(index)"
               class="flex items-center justify-between w-full text-left"
             >
-              <h3 class="text-lg font-semibold text-gray-900 pr-4">{{ faq.question }}</h3>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white pr-4">{{ faq.question }}</h3>
               <svg 
-                :class="['w-5 h-5 text-gray-500 transition-transform duration-200', openFaq === index ? 'rotate-180' : '']" 
+                :class="['w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200', openFaq === index ? 'rotate-180' : '']" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -287,7 +287,7 @@
               </svg>
             </button>
             
-            <div v-if="openFaq === index" class="mt-4 text-gray-600 leading-relaxed">
+            <div v-if="openFaq === index" class="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
               {{ faq.answer }}
             </div>
           </div>

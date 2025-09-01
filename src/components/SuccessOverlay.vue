@@ -5,22 +5,22 @@
     @click="closeOverlay"
   >
     <div 
-      class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center transform transition-all duration-300"
+      class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md mx-4 text-center transform transition-all duration-300"
       :class="show ? 'scale-100 opacity-100' : 'scale-95 opacity-0'"
       @click.stop
     >
       <!-- Success Icon -->
-      <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
       </div>
       
       <!-- Title -->
-      <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ title }}</h3>
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{{ title }}</h3>
       
       <!-- Message -->
-      <p class="text-gray-600 mb-6 leading-relaxed">{{ message }}</p>
+      <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{{ message }}</p>
       
       <!-- Action Buttons -->
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
@@ -128,5 +128,23 @@ export default defineComponent({
 
 .btn-secondary:hover {
   background-color: #E5E7EB;
+}
+
+/* Dark mode styles */
+.dark .btn-primary {
+  background-color: #00FE01;
+}
+
+.dark .btn-primary:hover {
+  background-color: #5B5CF6;
+}
+
+.dark .btn-secondary {
+  background-color: #374151;
+  color: #F3F4F6;
+}
+
+.dark .btn-secondary:hover {
+  background-color: #4B5563;
 }
 </style>

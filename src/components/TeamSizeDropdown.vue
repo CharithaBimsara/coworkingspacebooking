@@ -3,37 +3,37 @@
     <!-- <label v-if="label" class="block text-sm font-medium text-black-600 mb-1.5">{{ label }}</label> -->
     <button
       @click="toggleDropdown"
-      :class="['input-field flex items-center justify-between w-full px-3 py-2', heightClass, 'bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-100']"
+      :class="['input-field flex items-center justify-between w-full px-3 py-2', heightClass, 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-600 text-black dark:text-white']"
       type="button"
     >
       <span class="flex items-center">
         <span class="mr-2">
-          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </span>
-        <span class="text-black text-xs">{{ selectedOption.label }}</span>
+        <span class="text-black dark:text-white text-xs">{{ selectedOption.label }}</span>
       </span>
-      <svg class="w-4 h-4 ml-2 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-4 h-4 ml-2 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
     </button>
     <div
       v-if="showDropdown"
-      :class="['absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg z-50 max-h-48 overflow-y-auto custom-scrollbar', compact ? 'min-w-[140px]' : 'min-w-[220px]']"
+      :class="['absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg z-50 max-h-48 overflow-y-auto custom-scrollbar', compact ? 'min-w-[140px]' : 'min-w-[220px]']"
     >
       <button
         v-for="option in teamSizeOptions"
         :key="option.value"
         @mousedown="selectOption(option)"
-        class="w-full text-left px-3 py-2 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 flex items-center text-xs"
+        class="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-600 last:border-b-0 flex items-center text-xs"
       >
         <span class="mr-2">
-          <svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </span>
-        <span class="text-black text-xs">{{ option.label }}</span>
+        <span class="text-black dark:text-white text-xs">{{ option.label }}</span>
       </button>
     </div>
   </div>
@@ -130,14 +130,28 @@ export default defineComponent({
   background: #FFFFFF; /* White background */
 }
 
+.dark .input-field {
+  background: #1F2937; /* Dark gray background */
+  border-color: #374151; /* Darker gray border */
+  color: #FFFFFF; /* White text */
+}
+
 .input-field:focus {
   border-color: #D1D5DB; /* Lighter gray on focus */
+}
+
+.dark .input-field:focus {
+  border-color: #6B7280; /* Darker gray on focus */
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px !important;
   background: #FFFFFF !important; /* White scrollbar track */
   border-radius: 10px !important;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar {
+  background: #1F2937 !important; /* Dark scrollbar track */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -148,12 +162,25 @@ export default defineComponent({
   transition: background 0.2s;
 }
 
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6B7280 40%, #9CA3AF 100%) !important; /* Gray gradient for dark mode */
+  border: 2px solid #1F2937 !important; /* Dark border to match track */
+}
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #1A1A1A 40%, #333333 100%) !important; /* Darker black on hover */
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #4B5563 40%, #6B7280 100%) !important; /* Darker gray on hover */
 }
 
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #000000 #FFFFFF; /* Black thumb, white track */
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: #6B7280 #1F2937; /* Gray thumb, dark track */
 }
 </style>

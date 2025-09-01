@@ -47,9 +47,9 @@
               </div>
 
               <button @click="searchSpaces" :disabled="isSearching"
-                class="w-full mt-6 bg-primary text-black py-3 px-6 rounded-full font-semibold text-sm hover:bg-primary/90 hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 shadow-lg">
+                class="w-full mt-6 bg-primary text-black dark:text-white py-3 px-6 rounded-full font-semibold text-sm hover:bg-primary/90 hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 shadow-lg">
                 <span class="flex items-center justify-center">
-                  <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" fill="none" viewBox="0 0 24 24">
+                  <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-4 w-4 text-black dark:text-white" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -129,7 +129,7 @@
                         <h3 class="text-xl lg:text-2xl font-bold mb-4 text-white drop-shadow-lg">{{ ad.title }}</h3>
                         <p class="text-base mb-6 opacity-90 text-white/90">{{ ad.description }}</p>
                         <button
-                          class="bg-primary text-black px-6 py-2 rounded-full font-semibold text-sm hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
+                          class="bg-primary text-black dark:text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
                           {{ ad.buttonText }}
                         </button>
                       </div>
@@ -142,13 +142,13 @@
 
           <!-- Navigation arrows - updated with cuter styles -->
           <button @click="previousSlide"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-primary text-black p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-primary text-black dark:text-white p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <button @click="nextSlide"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary text-black p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary text-black dark:text-white p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
             </svg>
@@ -182,7 +182,7 @@
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Meeting Rooms -->
-          <router-link to="/meeting-rooms"
+          <router-link to="/search?spaceType=meeting-rooms"
             class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
               class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
@@ -202,7 +202,7 @@
           </router-link>
 
           <!-- Hot Desk -->
-          <router-link to="/hot-desk"
+          <router-link to="/search?spaceType=hot-desk"
             class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
               class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
@@ -222,7 +222,7 @@
           </router-link>
 
           <!-- Dedicated Desk -->
-          <router-link to="/dedicated-desk"
+          <router-link to="/search?spaceType=dedicated-desk"
             class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
               class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
@@ -266,7 +266,7 @@
 
         <div v-else-if="featuredSpaces.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div v-for="space in featuredSpaces" :key="space.id" 
-               class="card overflow-hidden group cursor-pointer hover:shadow-xl dark:hover:shadow-dark-md transform hover:-translate-y-1 transition-all duration-300 flex flex-col bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl"
+               class="card overflow-hidden group cursor-pointer hover:shadow-xl dark:hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex flex-col bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl"
                @click="viewSpace(space.id)">
             <div class="relative aspect-[16/9] overflow-hidden rounded-t-2xl">
               <img
@@ -275,7 +275,7 @@
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <!-- Featured badge -->
-              <div class="absolute top-2 left-2 bg-primary text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+              <div class="absolute top-2 left-2 bg-primary text-black dark:text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
                 Featured
               </div>
               <!-- Like button -->
@@ -339,7 +339,7 @@
         <!-- See More Button -->
         <div class="text-center mt-12">
           <router-link to="/search"
-            class="bg-primary text-black px-8 py-3 rounded-full font-semibold text-sm hover:scale-105 transform transition-all duration-300 shadow-lg inline-flex items-center">
+            class="bg-primary text-black dark:text-white px-8 py-3 rounded-full font-semibold text-sm hover:scale-105 transform transition-all duration-300 shadow-lg inline-flex items-center">
             See More Spaces
             <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -450,7 +450,7 @@
                 <img :src="testimonial.avatar" :alt="testimonial.name" 
                      class="w-14 h-14 rounded-full object-cover border-2 border-primary">
                 <div class="absolute -right-1 -bottom-1 bg-primary rounded-full w-5 h-5 flex items-center justify-center">
-                  <svg class="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-3 h-3 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
@@ -551,7 +551,7 @@
               <!-- Email -->
               <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors duration-300">
                 <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center mr-5">
-                  <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-7 h-7 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -564,7 +564,7 @@
               <!-- Phone -->
               <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors duration-300">
                 <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center mr-5">
-                  <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-7 h-7 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </div>
@@ -577,7 +577,7 @@
               <!-- Location -->
               <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors duration-300">
                 <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center mr-5">
-                  <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-7 h-7 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -594,23 +594,23 @@
               <h4 class="text-base font-bold text-black dark:text-white mb-5">Follow Us</h4>
               <div class="flex space-x-4">
                 <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
-                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
                   </svg>
                 </a>
                 <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
-                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
                   </svg>
                 </a>
                 <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
-                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M21.75 21.5H2.25A2.25 2.25 0 010 19.25V4.75A2.25 2.25 0 012.25 2.5h19.5A2.25 2.25 0 0124 4.75v14.5a2.25 2.25 0 01-2.25 2.25zM2.25 3.5a1.25 1.25 0 00-1.25 1.25v14.5a1.25 1.25 0 001.25 1.25h19.5a1.25 1.25 0 001.25-1.25V4.75a1.25 1.25 0 00-1.25-1.25H2.25z"/>
                     <path d="M8 17.5a.5.5 0 01-.5-.5v-7a.5.5 0 011 0v7a.5.5 0 01-.5.5zM5 8.5a3 3 0 116 0 3 3 0 01-6 0zm3-2a2 2 0 100 4 2 2 0 000-4zM18.5 17.5a.5.5 0 01-.5-.5v-4c0-1.103-.897-2-2-2s-2 .897-2 2v4a.5.5 0 01-1 0v-4a3 3 0 016 0v4a.5.5 0 01-.5.5z"/>
                   </svg>
                 </a>
                 <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
-                  <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                   </svg>
                 </a>
@@ -643,7 +643,7 @@
                 <button 
                   @click="subscribeNewsletter" 
                   :disabled="isSubscribing || !newsletterEmail" 
-                  class="w-full px-5 py-4 bg-primary text-black font-bold rounded-full hover:bg-opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-gray-800/30 dark:focus:ring-white/50 disabled:opacity-70 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg"
+                  class="w-full px-5 py-4 bg-primary text-black dark:text-white font-bold rounded-full hover:bg-opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-gray-800/30 dark:focus:ring-white/50 disabled:opacity-70 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg"
                 >
                   <span class="flex items-center justify-center">
                     <svg v-if="isSubscribing" class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -681,28 +681,28 @@
             </p>
             <div class="flex space-x-4">
               <a href="https://twitter.com/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </a>
               <a href="https://facebook.com/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                 </svg>
               </a>
               <a href="https://linkedin.com/company/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                 </svg>
               </a>
               <a href="https://instagram.com/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110">
+                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.948-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -716,7 +716,7 @@
             <h4 class="text-lg font-bold text-primary">Explore</h4>
             <ul class="space-y-3">
               <li>
-                <router-link to="/search-results" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
+                <router-link to="/search" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -724,7 +724,7 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/meeting-rooms" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
+                <router-link to="/search?spaceType=meeting-rooms" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -732,7 +732,7 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/hot-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
+                <router-link to="/search?spaceType=hot-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -740,7 +740,7 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/dedicated-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
+                <router-link to="/search?spaceType=dedicated-desk" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center text-sm">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -805,7 +805,7 @@
                 </div>
               </div>
               <button @click="subscribeFooterNewsletter" :disabled="isSubscribing || !footerNewsletterEmail"
-                class="px-5 py-3 bg-primary text-black font-bold rounded-full hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 shadow-lg">
+                class="px-5 py-3 bg-primary text-black dark:text-white font-bold rounded-full hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 shadow-lg">
                 Subscribe
               </button>
             </div>
@@ -1282,8 +1282,14 @@ export default defineComponent({
   transition-duration: 200ms;
 }
 
+.dark .card {
+  background-color: rgb(31 41 55);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 .btn-primary {
-  background-color: var(--color-primary);
+  background-color: var(--color-primary, #00FE01);
+  color: black;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;

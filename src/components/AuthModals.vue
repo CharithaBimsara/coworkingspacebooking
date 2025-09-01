@@ -1,15 +1,15 @@
 <template>
   <!-- Sign In Modal -->
   <div v-if="showSignIn" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click="closeModals">
-    <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4" @click.stop>
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4" @click.stop>
       <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-        <p class="text-gray-600">Sign in to your account</p>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
+        <p class="text-gray-600 dark:text-gray-300">Sign in to your account</p>
       </div>
 
       <form @submit.prevent="handleSignIn" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-black mb-1">Email</label>
+          <label class="block text-sm font-medium text-black dark:text-white mb-1">Email</label>
           <input
             v-model="signInForm.email"
             type="email"
@@ -20,7 +20,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-black mb-1">Password</label>
+          <label class="block text-sm font-medium text-black dark:text-white mb-1">Password</label>
           <input
             v-model="signInForm.password"
             type="password"
@@ -32,10 +32,10 @@
 
         <div class="flex items-center justify-between">
           <label class="flex items-center">
-            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+            <input type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">Remember me</span>
           </label>
-          <a href="#" class="text-sm font-bold text-black hover:text-gray-700">Forgot password?</a>
+          <a href="#" class="text-sm font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">Forgot password?</a>
         </div>
 
         <button type="submit" class="w-full btn-primary" :disabled="isSigningIn">
@@ -44,9 +44,9 @@
       </form>
 
       <div class="mt-6 text-center">
-        <p class="text-gray-600">
+        <p class="text-gray-600 dark:text-gray-300">
           Don't have an account?
-          <button @click="switchToSignUp" class="font-bold text-black hover:text-gray-700">
+          <button @click="switchToSignUp" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
             Sign up
           </button>
         </p>
@@ -56,16 +56,16 @@
 
   <!-- Sign Up Modal -->
   <div v-if="showSignUp" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click="closeModals">
-    <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4" @click.stop>
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4" @click.stop>
       <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Create Account</h2>
-        <p class="text-gray-600">Join our workspace community</p>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h2>
+        <p class="text-gray-600 dark:text-gray-300">Join our workspace community</p>
       </div>
 
       <form @submit.prevent="handleSignUp" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-black mb-1">First Name</label>
+            <label class="block text-sm font-medium text-black dark:text-white mb-1">First Name</label>
             <input
               v-model="signUpForm.firstName"
               type="text"
@@ -75,7 +75,7 @@
             >
           </div>
           <div>
-            <label class="block text-sm font-medium text-black mb-1">Last Name</label>
+            <label class="block text-sm font-medium text-black dark:text-white mb-1">Last Name</label>
             <input
               v-model="signUpForm.lastName"
               type="text"
@@ -87,7 +87,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-black mb-1">Email</label>
+          <label class="block text-sm font-medium text-black dark:text-white mb-1">Email</label>
           <input
             v-model="signUpForm.email"
             type="email"
@@ -98,7 +98,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-black mb-1">Password</label>
+          <label class="block text-sm font-medium text-black dark:text-white mb-1">Password</label>
           <input
             v-model="signUpForm.password"
             type="password"
@@ -109,7 +109,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-black mb-1">Confirm Password</label>
+          <label class="block text-sm font-medium text-black dark:text-white mb-1">Confirm Password</label>
           <input
             v-model="signUpForm.confirmPassword"
             type="password"
@@ -117,19 +117,17 @@
             class="input-field"
             placeholder="Confirm your password"
           >
-        </div>
-
-        <div>
+        </div>        <div>
           <label class="flex items-center">
             <input 
               v-model="signUpForm.agreeToTerms"
               type="checkbox" 
               required
-              class="rounded border-gray-300 text-primary focus:ring-primary"
+              class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary"
             >
-            <span class="ml-2 text-sm text-gray-600">
-              I agree to the <a href="#" class="font-bold text-black hover:text-gray-700">Terms of Service</a> and 
-              <a href="#" class="font-bold text-black hover:text-gray-700">Privacy Policy</a>
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">
+              I agree to the <a href="#" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">Terms of Service</a> and 
+              <a href="#" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">Privacy Policy</a>
             </span>
           </label>
         </div>
@@ -140,9 +138,9 @@
       </form>
 
       <div class="mt-6 text-center">
-        <p class="text-gray-600">
+        <p class="text-gray-600 dark:text-gray-300">
           Already have an account?
-          <button @click="switchToSignIn" class="font-bold text-black hover:text-gray-700">
+          <button @click="switchToSignIn" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
             Sign in
           </button>
         </p>
@@ -356,6 +354,17 @@ export default defineComponent({
 .input-field:focus {
   border-color: #D1D5DB; /* Lighter gray on focus */
   outline: none;
+}
+
+/* Dark mode styles */
+.dark .input-field {
+  border-color: #4B5563; /* Dark gray border */
+  background: #1F2937; /* Dark background */
+  color: #F9FAFB; /* Light text */
+}
+
+.dark .input-field:focus {
+  border-color: #6B7280; /* Lighter gray on focus in dark mode */
 }
 
 .btn-primary {

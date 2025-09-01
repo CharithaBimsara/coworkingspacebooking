@@ -2,9 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 import SearchResults from '../views/SearchResults.vue'
-import MeetingRooms from '../views/MeetingRooms.vue'
-import HotDesk from '../views/HotDesk.vue'
-import DedicatedDesk from '../views/DedicatedDesk.vue'
+
+
+
 import SpaceDetails from '../views/SpaceDetails.vue'
 import BookingSummary from '../views/BookingSummary.vue'
 import Payment from '../views/Payment.vue'
@@ -29,21 +29,9 @@ const routes: RouteRecordRaw[] = [
       name: 'SearchResults',
       component: SearchResults
     },
-    {
-      path: '/meeting-rooms',
-      name: 'MeetingRooms',
-      component: MeetingRooms
-    },
-    {
-      path: '/hot-desk',
-      name: 'HotDesk',
-      component: HotDesk
-    },
-    {
-      path: '/dedicated-desk',
-      name: 'DedicatedDesk',
-      component: DedicatedDesk
-    },
+    
+    
+   
     {
       path: '/space/:id',
       name: 'SpaceDetails',

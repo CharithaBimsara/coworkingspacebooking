@@ -99,6 +99,7 @@ export class SpaceDto {
   description: string;
   images: string[];
   features: string[];
+  additional_facilities?: string[]; // Add additional facilities
   pricing: {
     hourly?: number;
     daily?: number;
@@ -110,6 +111,10 @@ export class SpaceDto {
   isAvailable: boolean;
   availability: any[];
   productType: string;
+  displayProductType?: string; // Add display name for product type
+  locationUrl?: string; // Add location URL for map integration
+  recentReviews?: any[]; // Add recent reviews
+  recent_ratings?: any[]; // Add recent ratings (backend format)
 
   constructor(params: {
     id: number;
@@ -121,6 +126,7 @@ export class SpaceDto {
     description: string;
     images: string[];
     features: string[];
+    additional_facilities?: string[];
     pricing: {
       hourly?: number;
       daily?: number;
@@ -131,7 +137,11 @@ export class SpaceDto {
     maxCapacity?: number;
     isAvailable: boolean;
     productType: string;
+    displayProductType?: string;
     availability: any[];
+    locationUrl?: string;
+    recentReviews?: any[];
+    recent_ratings?: any[];
   }) {
     this.id = params.id;
     this.name = params.name;
@@ -142,12 +152,17 @@ export class SpaceDto {
     this.description = params.description;
     this.images = params.images;
     this.features = params.features;
+    this.additional_facilities = params.additional_facilities;
     this.pricing = params.pricing;
     this.capacity = params.capacity;
     this.maxCapacity = params.maxCapacity;
     this.isAvailable = params.isAvailable;
     this.productType = params.productType;
+    this.displayProductType = params.displayProductType;
     this.availability = params.availability;
+    this.locationUrl = params.locationUrl;
+    this.recentReviews = params.recentReviews;
+    this.recent_ratings = params.recent_ratings;
   }
 }
 

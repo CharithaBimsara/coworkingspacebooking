@@ -1,8 +1,8 @@
 
 <template>
-  <div class="bg-white rounded-xl p-6 shadow-card sticky top-32">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card sticky top-32">
     <div class="flex items-center justify-between mb-6">
-      <h3 class="text-lg font-semibold text-gray-900">Filters</h3>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Filters</h3>
       <button @click="clearAllFilters" class="text-sm text-primary hover:text-primary/80">
         Clear All
       </button>
@@ -10,7 +10,7 @@
 
     <!-- Date Range -->
     <div class="mb-6">
-      <h4 class="font-medium text-gray-900 mb-3">Date Range</h4>
+      <h4 class="font-medium text-gray-900 dark:text-white mb-3">Date Range</h4>
       <DateRangePicker
         v-model="filters.dateRange"
         placeholder="Select dates"
@@ -21,20 +21,20 @@
 
     <!-- Location -->
     <div class="mb-6">
-      <h4 class="font-medium text-gray-900 mb-3">Location</h4>
+      <h4 class="font-medium text-gray-900 dark:text-white mb-3">Location</h4>
       <input 
         v-model="filters.location" 
         type="text" 
         placeholder="Enter location"
-        class="input-field"
+        class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
         @input="applyFilters"
       >
     </div>
 
     <!-- Time -->
     <div class="mb-6">
-      <h4 class="font-medium text-gray-900 mb-3">Time</h4>
-      <select v-model="filters.time" class="input-field" @change="applyFilters">
+      <h4 class="font-medium text-gray-900 dark:text-white mb-3">Time</h4>
+      <select v-model="filters.time" class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500" @change="applyFilters">
         <option value="">Any time</option>
         <option value="morning">Morning (9AM-12PM)</option>
         <option value="afternoon">Afternoon (12PM-5PM)</option>
@@ -44,8 +44,8 @@
 
     <!-- Seating Capacity -->
     <div class="mb-6">
-      <h4 class="font-medium text-gray-900 mb-3">Seating Capacity</h4>
-      <select v-model="filters.seating" class="input-field" @change="applyFilters">
+      <h4 class="font-medium text-gray-900 dark:text-white mb-3">Seating Capacity</h4>
+      <select v-model="filters.seating" class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500" @change="applyFilters">
         <option value="">Any size</option>
         <option value="2-4">2-4 people</option>
         <option value="5-8">5-8 people</option>
@@ -56,7 +56,7 @@
 
     <!-- Rating -->
     <div>
-      <h4 class="font-medium text-gray-900 mb-3">Rating</h4>
+      <h4 class="font-medium text-gray-900 dark:text-white mb-3">Rating</h4>
       <div class="space-y-2">
         <label class="flex items-center">
           <input 
@@ -64,10 +64,10 @@
             value="4" 
             type="radio" 
             name="rating" 
-            class="border-gray-300 text-primary focus:ring-primary"
+            class="border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:focus:ring-gray-500"
             @change="applyFilters"
           >
-          <span class="ml-2 text-gray-700 flex items-center">
+          <span class="ml-2 text-gray-700 dark:text-gray-300 flex items-center">
             4+ stars
             <div class="flex ml-1 text-yellow-400">
               <svg v-for="star in 4" :key="star" class="w-4 h-4 fill-current" viewBox="0 0 20 20">
@@ -82,10 +82,10 @@
             value="0" 
             type="radio" 
             name="rating" 
-            class="border-gray-300 text-primary focus:ring-primary"
+            class="border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:focus:ring-gray-500"
             @change="applyFilters"
           >
-          <span class="ml-2 text-gray-700">Any rating</span>
+          <span class="ml-2 text-gray-700 dark:text-gray-300">Any rating</span>
         </label>
       </div>
     </div>

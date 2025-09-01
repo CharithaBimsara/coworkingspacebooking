@@ -29,31 +29,37 @@ export class SignUpRequestDto {
 
 // Search Request DTOs
 export class SearchSpacesRequestDto {
-  location?: string;
-  spaceType?: string;
-  startDate?: string;
-  endDate?: string;
-  startTime?: string;
-  endTime?: string;
+  location_id?: number; // Changed from locationId to location_id
+  type?: string; // Changed from spaceType to type
+  date?: string;
+  start_time?: string; // Changed from startTime to start_time
+  end_time?: string; // Changed from endTime to end_time
   capacity?: number;
-  priceRange?: {
-    min: number;
-    max: number;
-  };
+  min_daily_rate?: number; // Changed from minPrice to min_daily_rate
+  max_daily_rate?: number; // Changed from maxPrice to max_daily_rate
   facilities?: string[];
-  minRating?: number | string;
+  min_rating?: number; // Changed from minRating to min_rating
 
   constructor(params: Partial<SearchSpacesRequestDto> = {}) {
-    this.location = params.location;
-    this.spaceType = params.spaceType;
-    this.startDate = params.startDate;
-    this.endDate = params.endDate;
-    this.startTime = params.startTime;
-    this.endTime = params.endTime;
+    this.location_id = params.location_id;
+    this.type = params.type;
+    this.date = params.date;
+    this.start_time = params.start_time;
+    this.end_time = params.end_time;
     this.capacity = params.capacity;
-    this.priceRange = params.priceRange;
+    this.min_daily_rate = params.min_daily_rate;
+    this.max_daily_rate = params.max_daily_rate;
     this.facilities = params.facilities;
-    this.minRating = params.minRating;
+    this.min_rating = params.min_rating;
+  }
+}
+
+// Product Details Request DTO
+export class ProductDetailsRequestDto {
+  id: number;
+
+  constructor(id: number) {
+    this.id = id;
   }
 }
 

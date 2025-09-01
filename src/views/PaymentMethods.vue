@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto container-padding py-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Payment Methods</h1>
-            <p class="text-gray-600 mt-1">Manage your payment cards and billing information</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Payment Methods</h1>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Manage your payment cards and billing information</p>
           </div>
-          <router-link to="/my-bookings" class="btn-secondary">
+          <router-link to="/my-bookings" class="btn-secondary dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-500">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -20,9 +20,9 @@
 
     <div class="max-w-4xl mx-auto container-padding py-8">
       <!-- Payment Methods List -->
-      <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-card p-6 mb-8">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Saved Payment Methods</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Saved Payment Methods</h2>
           <button @click="showAddCardModal = true" class="btn-primary">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -32,11 +32,11 @@
         </div>
 
         <div v-if="paymentMethods.length === 0" class="text-center py-12">
-          <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">No payment methods</h3>
-          <p class="text-gray-600 mb-4">Add a payment method to make bookings easier</p>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment methods</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4">Add a payment method to make bookings easier</p>
           <button @click="showAddCardModal = true" class="btn-primary">
             Add Your First Card
           </button>
@@ -46,12 +46,12 @@
           <div
             v-for="method in paymentMethods"
             :key="method.id"
-            class="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+            class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-4">
                 <!-- Card Icon -->
-                <div class="w-12 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded flex items-center justify-center">
+                <div class="w-12 h-8 bg-gradient-to-r from-primary to-green-600 rounded flex items-center justify-center">
                   <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
                   </svg>
@@ -59,18 +59,18 @@
                 
                 <div>
                   <div class="flex items-center space-x-2">
-                    <span class="font-medium text-gray-900">•••• •••• •••• {{ method.lastFour }}</span>
+                    <span class="font-medium text-gray-900 dark:text-white">•••• •••• •••• {{ method.lastFour }}</span>
                     <span
                       v-if="method.isDefault"
-                      class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full"
+                      class="bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 text-xs font-medium px-2 py-1 rounded-full"
                     >
                       Default
                     </span>
                   </div>
-                  <div class="text-sm text-gray-600">
+                  <div class="text-sm text-gray-600 dark:text-gray-300">
                     {{ method.brand.toUpperCase() }} • Expires {{ method.expiryMonth }}/{{ method.expiryYear }}
                   </div>
-                  <div class="text-sm text-gray-500">{{ method.holderName }}</div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ method.holderName }}</div>
                 </div>
               </div>
 
@@ -84,7 +84,7 @@
                 </button>
                 <button
                   @click="editPaymentMethod(method)"
-                  class="text-gray-600 hover:text-gray-900 p-2"
+                  class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white p-2"
                   title="Edit"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,72 +107,72 @@
       </div>
 
       <!-- Billing Address -->
-      <div class="bg-white rounded-xl shadow-card p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">Billing Address</h2>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-card p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Billing Address</h2>
         
         <form @submit.prevent="updateBillingAddress" class="space-y-6">
           <div class="grid md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name</label>
               <input
                 v-model="billingForm.firstName"
                 type="text"
                 required
-                class="input-field"
+                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
               >
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
               <input
                 v-model="billingForm.lastName"
                 type="text"
                 required
-                class="input-field"
+                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
               >
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Company (Optional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company (Optional)</label>
             <input
               v-model="billingForm.company"
               type="text"
-              class="input-field"
+              class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
             >
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Address Line 1</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address Line 1</label>
             <input
               v-model="billingForm.addressLine1"
               type="text"
               required
-              class="input-field"
+              class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
             >
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Address Line 2 (Optional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address Line 2 (Optional)</label>
             <input
               v-model="billingForm.addressLine2"
               type="text"
-              class="input-field"
+              class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
             >
           </div>
 
           <div class="grid md:grid-cols-3 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
               <input
                 v-model="billingForm.city"
                 type="text"
                 required
-                class="input-field"
+                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
               >
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
-              <select v-model="billingForm.state" required class="input-field">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
+              <select v-model="billingForm.state" required class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500">
                 <option value="">Select State</option>
                 <option value="CA">California</option>
                 <option value="NY">New York</option>
@@ -182,12 +182,12 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ZIP Code</label>
               <input
                 v-model="billingForm.zipCode"
                 type="text"
                 required
-                class="input-field"
+                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
               >
             </div>
           </div>
@@ -211,12 +211,12 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="closeModals"
     >
-      <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-4">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
             {{ showEditCardModal ? 'Edit Payment Method' : 'Add New Payment Method' }}
           </h3>
-          <button @click="closeModals" class="text-gray-400 hover:text-gray-600">
+          <button @click="closeModals" class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -225,23 +225,23 @@
 
         <form @submit.prevent="savePaymentMethod" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Cardholder Name</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cardholder Name</label>
             <input
               v-model="cardForm.holderName"
               type="text"
               required
-              class="input-field"
+              class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
               placeholder="John Doe"
             >
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Card Number</label>
             <input
               v-model="cardForm.cardNumber"
               type="text"
               required
-              class="input-field"
+              class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
               placeholder="1234 5678 9012 3456"
               maxlength="19"
               @input="formatCardNumber"
@@ -250,24 +250,24 @@
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expiry Date</label>
               <input
                 v-model="cardForm.expiry"
                 type="text"
                 required
-                class="input-field"
+                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                 placeholder="MM/YY"
                 maxlength="5"
                 @input="formatExpiry"
               >
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CVV</label>
               <input
                 v-model="cardForm.cvv"
                 type="text"
                 required
-                class="input-field"
+                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                 placeholder="123"
                 maxlength="4"
               >
@@ -279,9 +279,9 @@
               v-model="cardForm.isDefault"
               type="checkbox"
               id="setDefault"
-              class="rounded border-gray-300 text-primary focus:ring-primary"
+              class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:focus:ring-gray-500"
             >
-            <label for="setDefault" class="ml-2 text-sm text-gray-700">
+            <label for="setDefault" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
               Set as default payment method
             </label>
           </div>
@@ -290,7 +290,7 @@
             <button
               type="button"
               @click="closeModals"
-              class="btn-secondary"
+              class="btn-secondary dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-500"
             >
               Cancel
             </button>
@@ -562,7 +562,8 @@ export default defineComponent({
 }
 
 .btn-primary {
-  background-color: #6366F1;
+    background-color: var(--color-primary, #00FE01);
+  color: black;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -575,7 +576,8 @@ export default defineComponent({
 }
 
 .btn-primary:hover {
-  background-color: #5B5CF6;
+  background-color: var(--color-primary, #00FE01);
+  color: black;
 }
 
 .btn-primary:disabled {

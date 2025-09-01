@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto container-padding py-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Profile Settings</h1>
-            <p class="text-gray-600 mt-1">Manage your account information and preferences</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Manage your account information and preferences</p>
           </div>
           <router-link to="/my-bookings" class="btn-primary">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
                 'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                 activeTab === tab.id
                   ? 'bg-primary text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
               ]"
             >
               <div class="flex items-center">
@@ -45,8 +45,8 @@
         <!-- Main Content -->
         <div class="lg:col-span-3">
           <!-- Personal Information -->
-          <div v-if="activeTab === 'personal'" class="bg-white rounded-xl shadow-card p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Personal Information</h2>
+          <div v-if="activeTab === 'personal'" class="bg-white dark:bg-gray-800 rounded-xl shadow-card p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Personal Information</h2>
             
             <form @submit.prevent="updateProfile" class="space-y-6">
               <!-- Profile Picture -->
@@ -75,8 +75,8 @@
                   >
                 </div>
                 <div>
-                  <h3 class="text-lg font-medium text-gray-900">{{ profileForm.firstName }} {{ profileForm.lastName }}</h3>
-                  <p class="text-gray-600">{{ profileForm.email }}</p>
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ profileForm.firstName }} {{ profileForm.lastName }}</h3>
+                  <p class="text-gray-600 dark:text-gray-300">{{ profileForm.email }}</p>
                   <button type="button" @click="triggerFileUpload" class="text-primary hover:text-primary/80 text-sm font-medium mt-1">
                     Change photo
                   </button>
@@ -86,61 +86,61 @@
               <!-- Form Fields -->
               <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name</label>
                   <input
                     v-model="profileForm.firstName"
                     type="text"
                     required
-                    class="input-field"
+                    class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                   >
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
                   <input
                     v-model="profileForm.lastName"
                     type="text"
                     required
-                    class="input-field"
+                    class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                   >
                 </div>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                 <input
                   v-model="profileForm.email"
                   type="email"
                   required
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                 >
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
                 <input
                   v-model="profileForm.phone"
                   type="tel"
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                   placeholder="+1 (555) 123-4567"
                 >
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company</label>
                 <input
                   v-model="profileForm.company"
                   type="text"
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                   placeholder="Your company name"
                 >
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Job Title</label>
                 <input
                   v-model="profileForm.jobTitle"
                   type="text"
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                   placeholder="Your job title"
                 >
               </div>
@@ -158,37 +158,37 @@
           </div>
 
           <!-- Security Settings -->
-          <div v-if="activeTab === 'security'" class="bg-white rounded-xl shadow-card p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Security Settings</h2>
+          <div v-if="activeTab === 'security'" class="bg-white dark:bg-gray-800 rounded-xl shadow-card p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Security Settings</h2>
             
             <form @submit.prevent="updatePassword" class="space-y-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
                 <input
                   v-model="passwordForm.currentPassword"
                   type="password"
                   required
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                 >
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">New Password</label>
                 <input
                   v-model="passwordForm.newPassword"
                   type="password"
                   required
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                 >
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm New Password</label>
                 <input
                   v-model="passwordForm.confirmPassword"
                   type="password"
                   required
-                  class="input-field"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
                 >
               </div>
 
@@ -205,47 +205,47 @@
           </div>
 
           <!-- Preferences -->
-          <div v-if="activeTab === 'preferences'" class="bg-white rounded-xl shadow-card p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Preferences</h2>
+          <div v-if="activeTab === 'preferences'" class="bg-white dark:bg-gray-800 rounded-xl shadow-card p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Preferences</h2>
             
             <div class="space-y-6">
               <!-- Notifications -->
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Notifications</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Notifications</h3>
                 <div class="space-y-4">
                   <label class="flex items-center justify-between">
                     <div>
-                      <div class="font-medium text-gray-900">Email Notifications</div>
-                      <div class="text-sm text-gray-600">Receive booking confirmations and updates via email</div>
+                      <div class="font-medium text-gray-900 dark:text-white">Email Notifications</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-300">Receive booking confirmations and updates via email</div>
                     </div>
                     <input
                       v-model="preferences.emailNotifications"
                       type="checkbox"
-                      class="rounded border-gray-300 text-primary focus:ring-primary"
+                      class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:focus:ring-gray-500"
                     >
                   </label>
                   
                   <label class="flex items-center justify-between">
                     <div>
-                      <div class="font-medium text-gray-900">SMS Notifications</div>
-                      <div class="text-sm text-gray-600">Receive booking reminders via SMS</div>
+                      <div class="font-medium text-gray-900 dark:text-white">SMS Notifications</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-300">Receive booking reminders via SMS</div>
                     </div>
                     <input
                       v-model="preferences.smsNotifications"
                       type="checkbox"
-                      class="rounded border-gray-300 text-primary focus:ring-primary"
+                      class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:focus:ring-gray-500"
                     >
                   </label>
                   
                   <label class="flex items-center justify-between">
                     <div>
-                      <div class="font-medium text-gray-900">Marketing Emails</div>
-                      <div class="text-sm text-gray-600">Receive promotional offers and workspace updates</div>
+                      <div class="font-medium text-gray-900 dark:text-white">Marketing Emails</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-300">Receive promotional offers and workspace updates</div>
                     </div>
                     <input
                       v-model="preferences.marketingEmails"
                       type="checkbox"
-                      class="rounded border-gray-300 text-primary focus:ring-primary"
+                      class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:focus:ring-gray-500"
                     >
                   </label>
                 </div>
@@ -253,11 +253,11 @@
 
               <!-- Language & Region -->
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Language & Region</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Language & Region</h3>
                 <div class="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Language</label>
-                    <select v-model="preferences.language" class="input-field">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Language</label>
+                    <select v-model="preferences.language" class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500">
                       <option value="en">English</option>
                       <option value="es">Spanish</option>
                       <option value="fr">French</option>
@@ -265,8 +265,8 @@
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
-                    <select v-model="preferences.timezone" class="input-field">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Timezone</label>
+                    <select v-model="preferences.timezone" class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500">
                       <option value="America/New_York">Eastern Time</option>
                       <option value="America/Chicago">Central Time</option>
                       <option value="America/Denver">Mountain Time</option>

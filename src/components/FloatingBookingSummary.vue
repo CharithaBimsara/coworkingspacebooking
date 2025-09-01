@@ -6,8 +6,11 @@
     @mouseenter="showSummary"
     @click="showSummary"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+    <!-- Cart Icon -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7A1 1 0 007 17h10a1 1 0 00.95-.68L21 13M7 13V6a1 1 0 011-1h5a1 1 0 011 1v7" />
+      <circle cx="9" cy="21" r="1" fill="currentColor" />
+      <circle cx="20" cy="21" r="1" fill="currentColor" />
     </svg>
     <div class="peek-badge">{{ bookingData.length }}</div>
   </div>
@@ -27,11 +30,11 @@
   >
     <div v-if="isExpanded" class="summary-content">
       <!-- Expanded content will be based on BookingSummary.vue -->
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">Booking Summary</h2>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Booking Summary</h2>
       <div v-if="bookingData.length > 0">
         <div v-for="(booking, index) in bookingData" :key="index" class="mb-4">
           <p class="font-semibold">{{ booking.space?.name }}</p>
-          <p class="text-sm text-gray-600">{{ formatProductType(booking.productType) }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">{{ formatProductType(booking.productType) }}</p>
         </div>
         <div class="flex items-center justify-between font-bold text-lg mt-4 pt-4 border-t">
           <span>Total</span>
@@ -52,14 +55,14 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <h3 class="font-medium">Your Booking</h3>
+              <h3 class="font-medium text-gray-900 dark:text-white">Your Booking</h3>
             </div>
             <span class="text-green-500 font-bold">${{ totalAmount }}</span>
           </div>
         </div>
         
         <div class="mini-body" v-if="bookingData.length > 0">
-          <div class="space-label">
+          <div class="space-label text-gray-600 dark:text-gray-300">
             {{ bookingData.length }} {{ bookingData.length === 1 ? 'space' : 'spaces' }} booked
           </div>
           <div class="mini-item" v-for="(booking, index) in bookingDataPreview" :key="index">
@@ -73,11 +76,11 @@
           </div>
         </div>
         <div class="mini-body" v-else>
-          <div class="empty-state">No spaces booked yet</div>
+          <div class="empty-state text-gray-600 dark:text-gray-400">No spaces booked yet</div>
         </div>
         
         <div class="mini-footer">
-          <span class="view-text">
+          <span class="view-text text-gray-700 dark:text-gray-300">
             <span v-if="isSearchPage">← Return to Summary</span>
             <span v-else>View Booking Summary</span>
           </span>
@@ -386,15 +389,29 @@ export default defineComponent({
   border-right: 3px solid #4aff35; /* Green accent like in image */
 }
 
+.dark .mini-booking-summary {
+  background-color: #1f2937;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
 .mini-booking-summary:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.dark .mini-booking-summary:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
 }
 
 .mini-header {
   background-color: white;
   padding: 12px;
   border-bottom: 1px solid #f0f0f0;
+}
+
+.dark .mini-header {
+  background-color: #111827;
+  border-bottom-color: #374151;
 }
 
 .mini-body {
@@ -408,6 +425,11 @@ export default defineComponent({
   padding: 10px 12px;
   text-align: center;
   border-top: 1px solid #f0f0f0;
+}
+
+.dark .mini-footer {
+  background-color: #111827;
+  border-top-color: #374151;
 }
 
 .mini-item {
@@ -432,10 +454,26 @@ export default defineComponent({
   letter-spacing: 0.05em;
 }
 
+.space-label.text-gray-600.dark\:text-gray-300 {
+  color: #6b7280;
+}
+
+.dark .space-label.text-gray-600.dark\:text-gray-300 {
+  color: #9ca3af;
+}
+
 .view-text {
   font-size: 14px;
   font-weight: 500;
   color: var(--primary-color, #4f46e5);
+}
+
+.view-text.text-gray-700.dark\:text-gray-300 {
+  color: var(--primary-color, #4f46e5);
+}
+
+.dark .view-text.text-gray-700.dark\:text-gray-300 {
+  color: var(--primary-color, #00fe01);
 }
 
 .empty-state {
@@ -445,12 +483,24 @@ export default defineComponent({
   padding: 10px 0;
 }
 
+.empty-state.text-gray-600.dark\:text-gray-400 {
+  color: #6b7280;
+}
+
+.dark .empty-state.text-gray-600.dark\:text-gray-400 {
+  color: #9ca3af;
+}
+
 .more-items {
   font-size: 12px;
   color: #6b7280;
   text-align: center;
   margin-top: 6px;
   font-style: italic;
+}
+
+.dark .more-items {
+  color: #9ca3af;
 }
 
 @keyframes pulse {
@@ -507,6 +557,11 @@ export default defineComponent({
   cursor: default;
   z-index: 1100;
   animation: expand 0.3s ease-out;
+}
+
+.dark .floating-summary.is-expanded {
+  background-color: #1f2937;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
 @keyframes expand {
