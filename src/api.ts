@@ -473,29 +473,29 @@ export class SpacesAPI {
     try {
       // Convert request parameters to match NetworkManager search params format
       const searchParams = {
-        location_id: request.location_id, // Changed from locationId to location_id
-        type: request.type, // Changed from spaceType to type
-        date: request.date,
-        start_time: request.start_time, // Changed from startTime to start_time
-        end_time: request.end_time, // Changed from endTime to end_time
+        location: request.location,
+        spaceType: request.spaceType,
+        startDate: request.startDate,
+        endDate: request.endDate,
+        startTime: request.startTime,
+        endTime: request.endTime,
         capacity: request.capacity,
-        min_daily_rate: request.min_daily_rate, // Changed from minPrice to min_daily_rate
-        max_daily_rate: request.max_daily_rate, // Changed from maxPrice to max_daily_rate
+        priceRange: request.priceRange,
         facilities: request.facilities,
-        min_rating: request.min_rating ? (typeof request.min_rating === 'string' ? parseFloat(request.min_rating) : request.min_rating) : undefined // Ensure it's a number
+        minRating: request.minRating
       };
       
       console.log('Search request parameters:', searchParams);
       
-      // Call NetworkManager searchSpaces
+      // Call NetworkManager getSpaces
       const { NetworkManager } = await import('./api/networkManager');
-      const result = await NetworkManager.searchSpaces(searchParams);
+      const result = await NetworkManager.getSpaces(searchParams);
       
       // Map the response to SearchSpacesResponseDto
       return new SearchSpacesResponseDto(
         result.success,
-        result.spaces,
-        result.totalCount || result.spaces.length,
+        result.spaces || [],
+        result.totalCount || (result.spaces ? result.spaces.length : 0),
         {
           location: request.location,
           spaceType: request.spaceType,

@@ -5,6 +5,10 @@
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
         <p class="text-gray-600 dark:text-gray-300">Sign in to your account</p>
+        <!-- Context Message -->
+        <div v-if="contextMessage" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+          <p class="text-sm text-blue-800 dark:text-blue-200">{{ contextMessage }}</p>
+        </div>
       </div>
 
       <form @submit.prevent="handleSignIn" class="space-y-4">
@@ -60,6 +64,10 @@
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h2>
         <p class="text-gray-600 dark:text-gray-300">Join our workspace community</p>
+        <!-- Context Message -->
+        <div v-if="contextMessage" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+          <p class="text-sm text-blue-800 dark:text-blue-200">{{ contextMessage }}</p>
+        </div>
       </div>
 
       <form @submit.prevent="handleSignUp" class="space-y-4">
@@ -186,6 +194,10 @@ export default defineComponent({
     redirectPath: {
       type: String as PropType<string>,
       default: '/my-bookings'
+    },
+    contextMessage: {
+      type: String as PropType<string>,
+      default: ''
     }
   },
   

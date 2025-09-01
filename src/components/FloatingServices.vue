@@ -19,8 +19,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import SpaceList from './SpaceList.vue';
-import { SpacesAPI } from '../api';
-import { SearchSpacesRequestDto } from '../dto/request';
+import { NetworkManager } from '../api/networkManager';
 import type { SpaceDto } from '../dto/response';
 
 export default defineComponent({
@@ -48,8 +47,7 @@ export default defineComponent({
     async loadSpaces() {
       this.isLoading = true;
       try {
-        const searchRequest = new SearchSpacesRequestDto({});
-        const response = await SpacesAPI.searchSpaces(searchRequest);
+        const response = await NetworkManager.getSpaces({});
         if (response.success) {
           this.spaces = response.spaces || [];
         } else {

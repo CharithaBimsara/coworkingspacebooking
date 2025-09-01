@@ -402,7 +402,7 @@ export default defineComponent({
         this.companyProfile = profileData;
         this.companyName = profileData.name;
         this.logoUrl = profileData.logoUrl;
-        console.log('Set hardcoded company profile in header:', this.companyProfile);
+        // Using hardcoded data until API is ready
         
         // Turn off loading immediately
         this.isHeaderLoading = false;

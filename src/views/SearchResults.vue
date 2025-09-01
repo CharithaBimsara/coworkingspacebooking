@@ -225,7 +225,7 @@
                 </button>
                 <div class="absolute bottom-2 left-2">
                   <span class="bg-primary text-black px-2 py-0.5 rounded-full text-xs font-medium shadow-md">
-                    {{ space.displayProductType || formatSpaceType(space.productType) }}
+                    {{ formatSpaceType(space.productType) }}
                   </span>
                 </div>
               </div>
@@ -250,7 +250,7 @@
                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         </svg>
                       </div>
-                      <span class="truncate max-w-[120px]">{{ space.address || space.location }}</span>
+                      <span class="truncate max-w-[120px]">{{ space.location }}</span>
                     </div>
                     
                     <div class="flex items-center">
@@ -259,21 +259,19 @@
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                       </div>
-                      <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">
-                        {{ Number(space.rating).toFixed(1) }} ({{ space.reviews || 0 }})
-                      </span>
+                      <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ space.rating }} ({{ space.reviews }})</span>
                     </div>
                   </div>
 
                   <div class="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <div class="flex flex-wrap gap-1">
-                      <span v-for="feature in (space.features || []).slice(0, 2)" :key="feature"
+                      <span v-for="feature in space.features.slice(0, 2)" :key="feature"
                         class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-1.5 py-0.5 rounded-full text-[10px] font-medium">
                         {{ feature }}
                       </span>
-                      <span v-if="(space.features || []).length > 2"
+                      <span v-if="space.features.length > 2"
                         class="bg-primary/10 dark:bg-primary/20 text-primary px-1.5 py-0.5 rounded-full text-[10px] font-medium">
-                        +{{ (space.features || []).length - 2 }}
+                        +{{ space.features.length - 2 }}
                       </span>
                     </div>
                   </div>
@@ -326,7 +324,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div class="absolute top-2 left-2">
                       <span class="bg-primary text-black px-1.5 py-0.5 rounded-full text-xs font-medium shadow-sm">
-                        {{ space.displayProductType || formatSpaceType(space.productType) }}
+                        {{ formatSpaceType(space.productType) }}
                       </span>
                     </div>
                   </div>
@@ -362,7 +360,7 @@
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                           </div>
-                          <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ Number(space.rating).toFixed(1) }}</span>
+                          <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">{{ space.rating }}</span>
                         </div>
                         <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-lg text-xs font-bold text-gray-900 dark:text-white">
                           ${{ getStartingPrice(space) }}
@@ -568,7 +566,6 @@ export default defineComponent({
       filteredSpaces: [] as SpaceDto[],
       sortedSpaces: [] as SpaceDto[],
       favoriteSpaceIds: [] as number[],
-      locations: [] as Array<{ id: number; name: string; address: string; url: string }>, // Cache for locations
       spaceTypeOptions: [
         {
           value: '',
@@ -671,94 +668,66 @@ export default defineComponent({
       if (this.isLoading) {
         return;
       }
-
+      
       this.isLoading = true;
       try {
-        // Load locations if not already cached
-        if (this.locations.length === 0) {
-          try {
-            this.locations = await NetworkManager.getLocations();
-            console.log('Loaded locations:', this.locations);
-          } catch (error) {
-            console.error('Error loading locations:', error);
-            this.locations = [];
-          }
-        }
-
-        // Find location ID for the selected location name
-        let locationId: number | undefined;
-        if (this.filters.location) {
-          const selectedLocation = this.locations.find(loc =>
-            loc.name.toLowerCase() === this.filters.location.toLowerCase()
-          );
-          if (selectedLocation) {
-            locationId = selectedLocation.id;
-            console.log(`Found location ID ${locationId} for location "${this.filters.location}"`);
-          } else {
-            console.warn(`Location "${this.filters.location}" not found in locations list`);
-          }
-        }
-
-        // Create search parameters object matching backend format
+        // Create search parameters object directly for NetworkManager
         const searchParams: any = {};
-
-        // Always send date - use current date if not selected
-        const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        searchParams.date = this.filters.dateRange.startDate || currentDate;
-
-        // Only add space type if it's actually selected (not the default "all")
-        if (this.filters.spaceType && this.filters.spaceType !== 'all') {
-          const spaceTypeMapping: Record<string, string> = {
-            'meeting-room': 'MeetingRoom',
-            'hot-desk': 'HotDesk',
-            'dedicated-desk': 'DedicatedDesk'
-          };
-          searchParams.type = spaceTypeMapping[this.filters.spaceType];
+        
+        // Map location to location_id if needed (you might need to get the location ID from a list)
+        if (this.filters.location) {
+          // For now, we'll pass the location as a string, but you might need to convert to ID
+          searchParams.location_name = this.filters.location;
         }
-
-        // Only add location if one is actually selected
-        if (locationId !== undefined) {
-          searchParams.location_id = locationId;
+        
+        // Map space type to the format expected by NetworkManager
+        if (this.filters.spaceType) {
+          searchParams.type = this.filters.spaceType;
         }
-
-        // Only add time range if both start and end times are provided
-        if (this.filters.startTime && this.filters.endTime) {
+        
+        // Send single date instead of start/end date range
+        if (this.filters.dateRange.startDate) {
+          searchParams.date = this.filters.dateRange.startDate;
+        }
+        
+        // Send start and end times as separate fields
+        if (this.filters.startTime) {
           searchParams.start_time = this.filters.startTime;
+        }
+        
+        if (this.filters.endTime) {
           searchParams.end_time = this.filters.endTime;
         }
-
-        // Only add capacity if it's actually set (not null or 0)
-        if (this.filters.capacity && this.filters.capacity > 0) {
+        
+        // Add capacity filter
+        if (this.filters.capacity) {
           searchParams.capacity = this.filters.capacity;
         }
-
-        // Only add price range if it's not the default min/max values
-        if (this.priceRange.min > 10) { // Only if above minimum default
+        
+        // Add price range filters
+        if (this.priceRange.min !== 10 || this.priceRange.max !== 1000) {
           searchParams.min_daily_rate = this.priceRange.min;
-        }
-
-        if (this.priceRange.max < 1000) { // Only if below maximum default
           searchParams.max_daily_rate = this.priceRange.max;
         }
-
-        // Only add facilities if any are selected
+        
+        // Add facilities filter
         if (this.selectedFacilities.length > 0) {
           searchParams.facilities = this.selectedFacilities;
         }
-
-        // Only add rating if it's not the default "0" (any rating)
-        if (this.minRating && this.minRating !== '0') {
+        
+        // Add minimum rating filter
+        if (this.minRating !== '0') {
           searchParams.min_rating = parseFloat(this.minRating);
         }
-
-        console.log('Searching spaces with params (matching backend format):', searchParams);
+        
+        console.log('Searching spaces with params:', searchParams);
         if (this.selectedFacilities.length > 0) {
           console.log('Selected facilities:', this.selectedFacilities);
         }
-
-        // Call NetworkManager directly instead of going through SpacesAPI
-        const response = await NetworkManager.searchSpaces(searchParams);
-
+        
+        // Call NetworkManager with the recommended getSpaces() method
+        const response = await NetworkManager.getSpaces(searchParams);
+        
         if (response.success) {
           this.allSpaces = response.spaces || [];
           console.log(`Loaded ${this.allSpaces.length} spaces:`, this.allSpaces);
@@ -799,14 +768,12 @@ export default defineComponent({
           return false;
         }
 
-        // Don't filter by space type here since it's already filtered by the API call
-        // The selectedSpaceTypes filter is redundant when we're making API calls with type filter
-        // if (
-        //   this.selectedSpaceTypes.length > 0 &&
-        //   !this.selectedSpaceTypes.includes(space.productType)
-        // ) {
-        //   return false;
-        // }
+        if (
+          this.selectedSpaceTypes.length > 0 &&
+          !this.selectedSpaceTypes.includes(space.productType)
+        ) {
+          return false;
+        }
 
         if (this.minRating !== '0' && space.rating < parseFloat(this.minRating)) {
           return false;
@@ -833,121 +800,24 @@ export default defineComponent({
           }
         }
 
-        // Date range filter
-        if (this.filters.dateRange.startDate && this.filters.dateRange.endDate) {
-          const startDate = new Date(this.filters.dateRange.startDate);
-          const endDate = new Date(this.filters.dateRange.endDate);
-          let isAvailable = true;
-          
-          // Debug date availability
-          console.log(`Checking date availability for space ${space.id} (${space.name})`);
-          console.log(`Requested dates: ${this.filters.dateRange.startDate} to ${this.filters.dateRange.endDate}`);
-          console.log(`Space availability:`, space.availability);
-          
-          for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-            const dateString = d.toISOString().split('T')[0];
-            console.log(`Checking date: ${dateString}`);
-            
-            // Check if the space has this date in its availability
-            const dayAvailability = space.availability.find(a => a.date === dateString);
-            
-            if (!dayAvailability) {
-              console.log(`Space ${space.id} has no availability for date ${dateString}`);
-              isAvailable = false;
-              break;
-            }
-            
-            // Check if the date has slots (our mock data has 'slots', not 'timeSlots')
-            const slotsArray = dayAvailability.slots || dayAvailability.timeSlots;
-            const hasSlots = slotsArray && slotsArray.length > 0;
-            
-            if (!hasSlots) {
-              console.log(`Space ${space.id} has no slots for date ${dateString}`);
-              isAvailable = false;
-              break;
-            }
-            
-            console.log(`Space ${space.id} is available for date ${dateString}`);
-          }
-          
-          if (!isAvailable) {
-            return false;
-          }
-        }
+        // Since the API already filters by date on the backend,
+        // we don't need to do additional date filtering on the frontend.
+        // The API returns only spaces that are available for the requested date.
 
+        // Only filter time slots if we have both start and end time
         if (
           this.filters.startTime &&
           this.filters.endTime &&
           this.filters.dateRange.startDate &&
           this.filters.dateRange.startDate === this.filters.dateRange.endDate
         ) {
-          const selectedDate = this.filters.dateRange.startDate;
-          console.log(`Checking time availability for space ${space.id} on ${selectedDate}: ${this.filters.startTime}-${this.filters.endTime}`);
-          
-          const dayAvailability = space.availability.find(a => a.date === selectedDate);
-          if (!dayAvailability) {
-            console.log(`Space ${space.id} has no availability for date ${selectedDate}`);
-            return false;
-          }
-          
-          // Check if the mock data uses 'slots' or 'timeSlots'
-          const slotsArray = dayAvailability.slots || dayAvailability.timeSlots;
-          if (!slotsArray || slotsArray.length === 0) {
-            console.log(`Space ${space.id} has no time slots for date ${selectedDate}`);
-            return false;
-          }
-          
-          console.log(`Space ${space.id} time slots:`, slotsArray);
-
-          const startMinutes =
-            parseInt(this.filters.startTime.split(':')[0]) * 60 +
-            parseInt(this.filters.startTime.split(':')[1]);
-          const endMinutes =
-            parseInt(this.filters.endTime.split(':')[0]) * 60 +
-            parseInt(this.filters.endTime.split(':')[1]);
-            
-          console.log(`Requested time in minutes: ${startMinutes}-${endMinutes}`);
-
-          // Check if any time slot overlaps with the requested time range
-          const isTimeSlotAvailable = slotsArray.some((slot: any) => {
-            // Handle both formats: {time, available} and {startTime, endTime}
-            let slotStartMinutes, slotEndMinutes;
-            
-            if (slot.startTime && slot.endTime) {
-              slotStartMinutes = parseInt(slot.startTime.split(':')[0]) * 60 + 
-                                parseInt(slot.startTime.split(':')[1]);
-              slotEndMinutes = parseInt(slot.endTime.split(':')[0]) * 60 + 
-                              parseInt(slot.endTime.split(':')[1]);
-                              
-              console.log(`Slot time in minutes (startTime/endTime format): ${slotStartMinutes}-${slotEndMinutes}`);
-              
-              // The slot covers the requested time if it starts before/at requested start and ends after/at requested end
-              return slotStartMinutes <= startMinutes && slotEndMinutes >= endMinutes;
-            } else if (slot.time) {
-              slotStartMinutes = parseInt(slot.time.split(':')[0]) * 60 + parseInt(slot.time.split(':')[1]);
-              
-              console.log(`Slot time in minutes (time format): ${slotStartMinutes}`);
-              
-              // Using the original logic for backward compatibility
-              return slot.available && slotStartMinutes >= startMinutes && slotStartMinutes < endMinutes;
-            }
-            
-            console.log('Unrecognized slot format:', slot);
-            return false;
-          });
-
-          if (!isTimeSlotAvailable) {
-            console.log(`Space ${space.id} has no suitable time slots for the requested time range`);
-            return false;
-          }
-          
-          console.log(`Space ${space.id} is available for the requested time range`);
+          // This would be for time slot checking, but since the API doesn't return
+          // detailed availability slots, we'll skip this for now.
+          // The API should handle time filtering on the backend.
         }
 
         return true;
       });
-      
-      console.log(`🔍 Filtering complete: ${this.filteredSpaces.length} spaces out of ${this.allSpaces.length} passed filters`);
       
       this.applySorting();
     },
@@ -994,20 +864,15 @@ export default defineComponent({
 
     getStartingPrice(space: SpaceDto): number {
       if (space.productType === 'meeting-room') {
-        // For meeting rooms, prioritize hourly, then daily
-        return space.pricing?.hourly || space.pricing?.daily || 0;
+        return space.pricing?.hourly || 0;
       }
       if (space.productType === 'hot-desk') {
-        // For hot desks, prioritize daily, then hourly
-        return space.pricing?.daily || space.pricing?.hourly || 0;
+        return space.pricing?.daily || 0;
       }
       if (space.productType === 'dedicated-desk') {
-        // For dedicated desks, prioritize monthly, then daily
-        return space.pricing?.monthly || space.pricing?.daily || 0;
+        return space.pricing?.monthly || 0;
       }
-      
-      // Fallback: try to find any available price
-      return space.pricing?.daily || space.pricing?.hourly || space.pricing?.monthly || 0;
+      return 0;
     },
 
     getPriceUnit(productType: string): string {
@@ -1026,7 +891,7 @@ export default defineComponent({
     getSpaceImage(space: SpaceDto): string {
       return space.images && space.images.length > 0
         ? space.images[0]
-        : 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+        : '/logo.png'; // Use site logo as fallback instead of hardcoded image
     },
 
     formatSpaceType(type: string): string {

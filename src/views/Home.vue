@@ -843,6 +843,7 @@ import LocationDropdown from '../components/LocationDropdown.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import type { SpaceDto, AdvertisementDto, TestimonialDto, CompanyProfileDto } from '../dto/response';
+import { NetworkManager } from '../api/networkManager';
 
 interface SearchForm {
   location: string;
@@ -943,9 +944,11 @@ export default defineComponent({
   },
 
   beforeMount() {
-    // Use hardcoded values instead of loading from API
+    // Load locations from API
+    this.loadLocationsFromApi();
+    // Use hardcoded values for everything else
     this.setHardcodedValues();
-    // Turn off loading state immediately
+    // Turn off loading state after setting values
     this.isLoading = false;
   },
   
@@ -962,52 +965,29 @@ export default defineComponent({
 
   methods: {
     /**
-     * How to call backend APIs and map data for Home page:
-     *
-     * // 1. Get all locations for dropdown
-     * // const locationsRes = await networkManager.getLocations();
-     * // this.locationOptions = locationsRes; // string[]
-     *
-     * // 2. Get all space types for dropdown
-     * // const spaceTypesRes = await networkManager.getSpaceTypes();
-     * // this.spaceTypeOptions = spaceTypesRes; // Array<{ value, label, icon }>
-     *
-     * // 3. Get hero images for slideshow
-     * // const heroImagesRes = await networkManager.getHeroImages();
-     * // this.heroImages = heroImagesRes; // Array<{ src, alt }>
-     *
-     * // 4. Get advertisements for offers/partners
-     * // const adsRes = await networkManager.getAdvertisements();
-     * // this.advertisements = adsRes; // AdvertisementDto[]
-     *
-     * // 5. Get featured workspaces
-     * // const featuredRes = await networkManager.getFeaturedSpaces();
-     * // this.featuredSpaces = featuredRes; // SpaceDto[]
-     *
-     * // 6. Get testimonials
-     * // const testimonialsRes = await networkManager.getTestimonials();
-     * // this.testimonials = testimonialsRes; // TestimonialDto[]
-     *
-     * // 7. Subscribe to newsletter
-     * // const subRes = await networkManager.subscribeNewsletter(email);
-     * // if (subRes.success) { ... }
-     *
-     * // 8. Get branding (logo, website name)
-     * // const brandingRes = await networkManager.getBranding();
-     * // this.logoUrl = brandingRes.logoUrl;
-     * // this.websiteName = brandingRes.websiteName;
-     *
-     * // 9. Get footer contact details
-     * // const contactRes = await networkManager.getFooterContact();
-     * // this.footerEmail = contactRes.email;
-     * // this.footerPhone = contactRes.phone;
-     * // this.footerAddress = contactRes.address;
-     *
-     * When backend is ready, uncomment the above and remove the mock/demo data.
+     * Load locations from API for the location dropdown
      */
-    // Removed loadHomePageData method - using hardcoded values instead
+    async loadLocationsFromApi(): Promise<void> {
+      try {
+        console.log('Loading locations from API...');
+        const locationsResponse = await NetworkManager.getLocations();
+        
+        if (Array.isArray(locationsResponse) && locationsResponse.length > 0) {
+          // Extract location names from the response
+          this.locations = locationsResponse.map(location => location.name);
+          console.log('Loaded locations from API:', this.locations);
+        } else {
+          console.log('No locations returned from API, using default values');
+          this.locations = ['Colombo', 'Kandy', 'Galle', 'Negombo', 'Jaffna'];
+        }
+      } catch (error) {
+        console.error('Error loading locations from API:', error);
+        // Use default locations as fallback
+        this.locations = ['Colombo', 'Kandy', 'Galle', 'Negombo', 'Jaffna'];
+      }
+    },
     
-    // Instead of API calls, set hardcoded values
+    // Instead of API calls, set hardcoded values for everything except locations
     setHardcodedValues(): void {
       // Set hardcoded company profile
       this.companyProfile = {
@@ -1120,8 +1100,7 @@ export default defineComponent({
         }
       ];
       
-      // Set hardcoded locations
-      this.locations = ['Colombo', 'Kandy', 'Galle', 'Negombo', 'Jaffna'];
+      // Locations are loaded from API in loadLocationsFromApi method
       
       // Set hardcoded advertisements
       this.advertisements = [
@@ -1239,8 +1218,40 @@ export default defineComponent({
     onLocationChange(location: string): void {
       if (location) {
         console.log('Selected location:', location);
+        
+        // Store the selected location in searchForm
+        this.searchForm.location = location;
+        
+        // We could filter spaces by location here if needed in the future:
+        // this.filterSpacesByLocation(location);
+        
+        // Or load spaces specific to this location from the API:
+        // this.loadSpacesForLocation(location);
       }
     }
+    
+    // Method prepared for future implementation
+    // async loadSpacesForLocation(locationName: string): Promise<void> {
+    //   try {
+    //     // First find the location ID for the selected location name
+    //     const locationResponse = await NetworkManager.getLocations();
+    //     const locationInfo = locationResponse.find(loc => loc.name === locationName);
+    //     
+    //     if (locationInfo?.id) {
+    //       // Then load spaces for this location ID
+    //       const spacesResponse = await NetworkManager.getSpaces({
+    //         location_id: locationInfo.id
+    //       });
+    //       
+    //       if (spacesResponse.success && spacesResponse.spaces) {
+    //         // Update featured spaces with the results
+    //         this.featuredSpaces = spacesResponse.spaces;
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error('Error loading spaces for location:', error);
+    //   }
+    // }
   }
 });
 </script>
