@@ -107,26 +107,18 @@ export default defineComponent({
 .input-field {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #D1D5DB;/* Light gray border */
   border-radius: 0.5rem;
   outline: none;
-  box-shadow: none;
-  /* transition: border-color 0.2s, box-shadow 0.2s; */
+  transition: border-color 0.2s, box-shadow 0.2s;
   /* background: #FFFFFF; White background */
 }
 
-
-.dark .input-field {
-  border-color: #4B5563 !important;
-  color: white;
-  font-size: 0.75rem; /* Compact size */
-}
-
-
 .input-field:focus {
   border-color: #D1D5DB; /* Lighter gray on focus */
-  /* box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.3);  */
+  box-shadow: none
 }
+
+/* Custom scrollbar for dropdown */
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px !important;
   background: #FFFFFF !important; /* White scrollbar track */

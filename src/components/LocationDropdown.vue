@@ -33,7 +33,7 @@
     
     <!-- Dropdown -->
     <div 
-      v-if="showDropdown && (filteredLocations.length > 0 || isLoading)"
+      v-if="showDropdown && (filteredLocations.length > 0 || isLoading || locations.length === 0)"
   class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto custom-scrollbar min-w-[260px]"
     >
       <!-- Loading state -->
@@ -61,13 +61,22 @@
           </div>
         </button>
         
-        <!-- No results -->
+        <!-- No search results -->
         <div v-if="filteredLocations.length === 0 && searchQuery" class="p-4 text-center text-sm text-gray-800 dark:text-white">
           <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <p>No locations found for "{{ searchQuery }}"</p>
           <p class="text-xs mt-1 text-gray-600 dark:text-gray-400">Try a different search term</p>
+        </div>
+        
+        <!-- No locations available at all -->
+        <div v-else-if="locations.length === 0 && !isLoading" class="p-4 text-center text-sm text-gray-800 dark:text-white">
+          <svg class="w-8 h-8 text-amber-500 dark:text-amber-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <p>Location service is temporarily unavailable</p>
+          <p class="text-xs mt-1 text-gray-600 dark:text-gray-400">Please try again later or type your location</p>
         </div>
       </div>
     </div>
@@ -76,14 +85,17 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import type { PropType } from 'vue'
 
 interface Location {
   id: number
   name: string
-  description: string
-  city: string
-  state: string
-  country: string
+  description?: string
+  city?: string
+  state?: string
+  country?: string
+  address?: string
+  url?: string
 }
 
 export default defineComponent({
@@ -103,7 +115,7 @@ export default defineComponent({
       default: 'Enter location'
     },
     locations: {
-      type: Array as () => string[],
+      type: Array as PropType<Location[]>,
       default: () => []
     }
   },
@@ -112,77 +124,29 @@ export default defineComponent({
   
   data() {
     return {
-      searchQuery: '',
+      searchQuery: this.modelValue || '',
       showDropdown: false,
       isLoading: false,
-      // Keep these as fallback if no locations are passed via props
-      fallbackLocations: [
-        {
-          id: 1,
-          name: 'Downtown, San Francisco',
-          description: 'Financial District, CA',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 2,
-          name: 'Mission Bay, San Francisco',
-          description: 'Tech Hub, CA',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 3,
-          name: 'SOMA, San Francisco',
-          description: 'South of Market, CA',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 4,
-          name: 'Financial District, San Francisco',
-          description: 'Business Center, CA',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'USA'
-        },
-        {
-          id: 5,
-          name: 'Union Square, San Francisco',
-          description: 'Shopping District, CA',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'USA'
-        }
-      ] as Location[]
+      selectedLocation: null as Location | null
     }
   },
   
   computed: {
     filteredLocations(): Location[] {
-      // Use API locations if available, otherwise fallback to hardcoded ones
-      const locationsToUse = this.locations.length > 0 ? 
-        this.locations.map((loc, index) => ({ 
-          id: index + 1, 
-          name: loc, 
-          description: '', 
-          city: loc.split(',')[0] || loc,
-          state: '',
-          country: ''
-        })) : 
-        this.fallbackLocations;
+      // No fallback locations - rely on parent component to handle API failures
+      if (!this.locations.length) {
+        return [];
+      }
 
       if (!this.searchQuery) {
-        return locationsToUse.slice(0, 5) // Show top 5 locations
+        return this.locations.slice(0, 5) // Show top 5 locations
       }
       
       const query = this.searchQuery.toLowerCase()
-      return locationsToUse.filter(location => 
+      return this.locations.filter((location: Location) => 
         location.name.toLowerCase().includes(query) ||
-        location.city.toLowerCase().includes(query)
+        (location.city && location.city.toLowerCase().includes(query)) ||
+        (location.address && location.address.toLowerCase().includes(query))
       )
     }
   },
@@ -190,7 +154,9 @@ export default defineComponent({
   watch: {
     modelValue: {
       handler(newValue) {
-        this.searchQuery = newValue
+        if (typeof newValue === 'string') {
+          this.searchQuery = newValue
+        }
       },
       immediate: true
     }
@@ -220,13 +186,20 @@ export default defineComponent({
     
     selectLocation(location: Location): void {
       this.searchQuery = location.name
+      this.selectedLocation = location
+      
+      // Emit the name as a string for v-model compatibility
       this.$emit('update:modelValue', location.name)
+      
+      // Emit the full location object for the @change event
       this.$emit('change', location)
+      
       this.showDropdown = false
     },
     
     clearSearch(): void {
       this.searchQuery = ''
+      this.selectedLocation = null
       this.$emit('update:modelValue', '')
       this.$emit('change', null)
     },
@@ -245,7 +218,6 @@ export default defineComponent({
 .input-field {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #D1D5DB; /* Light gray border */
   border-radius: 0.5rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;

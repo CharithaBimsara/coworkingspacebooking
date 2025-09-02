@@ -265,9 +265,9 @@
 
                   <div class="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <div class="flex flex-wrap gap-1">
-                      <span v-for="feature in space.features.slice(0, 2)" :key="feature"
+                      <span v-for="feature in space.features.slice(0, 2)" :key="getFeatureKey(feature)"
                         class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-1.5 py-0.5 rounded-full text-[10px] font-medium">
-                        {{ feature }}
+                        {{ getFeatureName(feature) }}
                       </span>
                       <span v-if="space.features.length > 2"
                         class="bg-primary/10 dark:bg-primary/20 text-primary px-1.5 py-0.5 rounded-full text-[10px] font-medium">
@@ -457,6 +457,13 @@ const getQueryParam = (param: LocationQueryValue | LocationQueryValue[] | undefi
 };
 
 // Class definitions
+// Interface for the new facility features structure
+interface Facility {
+  facility_id: number;
+  facility_name: string;
+  icon?: string;
+}
+
 class SearchFilters {
   location: string;
   spaceType: string;
@@ -663,6 +670,20 @@ export default defineComponent({
   },
 
   methods: {
+    getFeatureKey(feature: any): string | number {
+      if (typeof feature === 'object' && feature !== null && 'facility_id' in feature) {
+        return feature.facility_id;
+      }
+      return typeof feature === 'string' ? feature : JSON.stringify(feature);
+    },
+    
+    getFeatureName(feature: any): string {
+      if (typeof feature === 'object' && feature !== null && 'facility_name' in feature) {
+        return feature.facility_name;
+      }
+      return String(feature);
+    },
+    
     async loadSpaces(): Promise<void> {
       // Prevent multiple simultaneous calls
       if (this.isLoading) {
@@ -784,10 +805,10 @@ export default defineComponent({
           !this.selectedFacilities.every(facility => {
             // Case-insensitive and partial matching for facilities
             const facilityLower = facility.toLowerCase();
-            return space.features.some(feature => 
-              feature.toLowerCase().includes(facilityLower) || 
-              facilityLower.includes(feature.toLowerCase())
-            );
+            return space.features.some(feature => {
+              const featureName = this.getFeatureName(feature).toLowerCase();
+              return featureName.includes(facilityLower) || facilityLower.includes(featureName);
+            });
           })
         ) {
           return false;

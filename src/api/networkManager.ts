@@ -3,9 +3,10 @@
 // Handles: product listing/searching/filtering, space details, locations, and booked time slots
 
 import type { SpaceDto } from '../dto/response';
+import { AdvertisementDto } from '../dto/response';
 
 export class NetworkManager {
-  private static readonly BASE_URL = 'http://192.168.2.30:9011/api';
+  private static readonly BASE_URL = 'http://localhost:9011/api';
   private static lastRawResponseData: any = null;
 
   /**
@@ -303,7 +304,7 @@ export class NetworkManager {
           displayProductType = 'Meeting Room';
           break;
         case 'HotDesk':
-        case 'HotDesk':
+        case 'HotDesks':
           productType = 'hot-desk';
           displayProductType = 'Hot Desk';
           break;
@@ -397,6 +398,20 @@ export class NetworkManager {
       return `${baseServerUrl}${img}`;
     });
   }
+  
+  /**
+   * Helper method to process a single image URL for advertisements
+   */
+  private static processAdImageUrl(imagePath: string): string {
+    // If it's already an absolute URL or empty, return as is
+    if (!imagePath || imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    
+    // Otherwise, prefix with base URL (without the /api part)
+    const baseServerUrl = NetworkManager.BASE_URL.replace('/api', '');
+    return `${baseServerUrl}${imagePath}`;
+  }
 
   /**
    * Get booked time slots for a specific space and date.
@@ -447,6 +462,63 @@ export class NetworkManager {
     } catch (error) {
       console.error('Error fetching booked time slots:', error);
       return [];
+    }
+  }
+  
+  /**
+   * Get advertisements for home page
+   * Backend returns:
+   *   {
+   *     "status_code": 200,
+   *     "message": "Advertising retrieved successfully",
+   *     "data": [
+   *       {
+   *         "company_name": "Paymedia",
+   *         "image_path": "/uploads/products/26e5ed95-47cc-40e6-b4a1-8ead852ddd7c.png",
+   *         "description": "This is the test ads"
+   *       },
+   *       ...
+   *     ]
+   *   }
+   * Returns: Array of AdvertisementDto objects
+   */
+  static async getAdvertisements(): Promise<AdvertisementDto[]> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/advertising/get-all`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200 && Array.isArray(data.data)) {
+        // Convert API response to AdvertisementDto objects
+        return data.data.map((ad: any, index: number) => {
+          // Process the image path to make it an absolute URL
+          const imagePath = ad.image_path || '';
+          const processedImageUrl = this.processAdImageUrl(imagePath);
+          
+          return new AdvertisementDto({
+            id: index + 1, // Generate an ID since it's not in the response
+            title: ad.company_name, // Map company_name to title
+            description: ad.description,
+            buttonText: 'Learn More', // Default button text
+            image: processedImageUrl, // Use the processed absolute URL
+            link: '#' // Default link
+          });
+        });
+      } else {
+        throw new Error(data.message || 'Failed to fetch advertisements');
+      }
+    } catch (error) {
+      console.error('Error fetching advertisements:', error);
+      throw error;
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
+  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300 pb-20 sm:pb-24 lg:pb-0">
     <!-- Loading State -->
     <div v-if="loading" class="max-w-8xl mx-auto px-2 sm:px-5 py-7">
       <div class="animate-pulse">
@@ -68,16 +68,16 @@
         </span>
       </nav>
 
-      <!-- Main Content Grid Layout -->
-      <div class="grid lg:grid-cols-3 gap-8 items-start">
+      <!-- Main Content Grid Layout - Enhanced for better responsiveness -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 items-start">
         <!-- Left Column: Images and Features -->
-        <div class="lg:col-span-2 space-y-6 overflow-y-auto scrollbar-hide">
-          <!-- Image Gallery Section with Enhanced Design -->
+        <div class="lg:col-span-2 space-y-4 md:space-y-6 overflow-y-auto scrollbar-hide">
+          <!-- Image Gallery Section with Enhanced Design and Responsive Layout -->
           <div class="bg-white dark:bg-gray-900 rounded-2xl p-1 shadow-lg dark:shadow-dark-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
             <div class="flex flex-col sm:flex-row gap-1">
               <!-- Main Image Display with enhanced visual design -->
               <div class="flex-1">
-                <div class="relative w-full h-[480px] rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 group shadow-inner">
+                <div class="relative w-full h-[300px] sm:h-[400px] md:h-[480px] rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 group shadow-inner">
                   <!-- Beautiful gradient overlay -->
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 opacity-0 group-hover:opacity-100 transition-all duration-500 z-10"></div>
                   
@@ -127,15 +127,15 @@
                 </div>
               </div>
               
-              <!-- Enhanced Thumbnail Gallery -->
-              <div v-if="getImageCount() > 1" class="flex sm:flex-col gap-1 w-full sm:w-28 p-1">
+              <!-- Enhanced Responsive Thumbnail Gallery -->
+              <div v-if="getImageCount() > 1" class="flex flex-row sm:flex-col gap-1 w-full sm:w-24 md:w-28 p-1 overflow-x-auto sm:overflow-y-auto sm:overflow-x-hidden scrollbar-thin">
                 <div class="flex sm:flex-col gap-1">
                   <button 
                     v-for="(image, index) in getImages().slice(0, 5)" 
                     :key="index"
                     @click="currentImageIndex = index"
                     :class="[
-                      'w-20 h-20 sm:w-24 sm:h-20 rounded-lg overflow-hidden transition-all duration-300 flex-shrink-0 border-2',
+                      'w-16 h-16 xs:w-18 xs:h-18 sm:w-20 sm:h-20 md:w-24 md:h-20 rounded-lg overflow-hidden transition-all duration-300 flex-shrink-0 border-2',
                       currentImageIndex === index 
                         ? 'border-primary shadow-lg shadow-primary/25 scale-105' 
                         : 'border-transparent opacity-70 hover:opacity-100 hover:scale-105 hover:shadow-md hover:border-gray-200 dark:hover:border-gray-600'
@@ -176,30 +176,33 @@
               </div>
             </div>
             
-            <div class="grid sm:grid-cols-2 lg:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
               <div 
                 v-for="(feature, index) in space?.features || []" 
-                :key="feature" 
-                class="group flex items-center p-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-md transition-all duration-300 cursor-pointer"
+                :key="(typeof feature === 'object' && feature !== null) ? (feature as Facility).facility_id || index : String(feature)" 
+                class="group flex items-center p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 rounded-lg sm:rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-md transition-all duration-300 cursor-pointer"
                 :class="{'from-primary/5 to-primary/10 dark:from-primary/10 dark:to-gray-700': index % 3 === 0}"
               >
-                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary/20 to-primary/30 dark:from-primary/30 dark:to-primary/40 flex items-center justify-center mr-4 group-hover:scale-110 transition-all duration-300 shadow-sm">
-                  <svg class="w-5 h-5 text-primary group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-primary/20 to-primary/30 dark:from-primary/30 dark:to-primary/40 flex items-center justify-center mr-3 md:mr-4 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                  <svg v-if="typeof feature === 'object' && feature !== null && (feature as Facility).icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-primary group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="(feature as Facility).icon" />
+                  </svg>
+                  <svg v-else class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-primary group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span class="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary dark:group-hover:text-primary transition-colors duration-200">{{ feature }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white text-xs xs:text-sm group-hover:text-primary dark:group-hover:text-primary transition-colors duration-200 line-clamp-1">{{ getFeatureName(feature) }}</span>
               </div>
               
-              <!-- Enhanced empty state -->
-              <div v-if="(space?.features || []).length === 0" class="col-span-full flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-600">
-                <div class="w-16 h-16 bg-gradient-to-r from-primary/20 to-primary/30 dark:from-primary/30 dark:to-primary/40 rounded-full flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <!-- Enhanced empty state - more responsive -->
+              <div v-if="(space?.features || []).length === 0" class="col-span-full flex flex-col items-center justify-center py-8 sm:py-10 md:py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-lg sm:rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-600">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-primary/20 to-primary/30 dark:from-primary/30 dark:to-primary/40 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Features Coming Soon</h4>
-                <p class="text-gray-500 dark:text-gray-400 text-center max-w-xs">We're working on adding detailed feature information for this space</p>
+                <h4 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2">Features Coming Soon</h4>
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center max-w-xs px-4">We're working on adding detailed feature information for this space</p>
               </div>
             </div>
           </div>
@@ -328,31 +331,31 @@
             </div>
           </div>
           
-          <!-- Enhanced Customer Reviews Section with Modern Design -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg dark:shadow-dark-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl dark:hover:shadow-dark-xl transition-all duration-300">
-            <div class="flex items-center mb-6">
-              <div class="w-10 h-10 bg-gradient-to-r from-primary to-primary/80 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <!-- Enhanced Customer Reviews Section with Modern Design - Responsive -->
+          <div id="reviews" class="bg-white dark:bg-gray-900 rounded-lg sm:rounded-xl md:rounded-2xl p-4 sm:p-5 md:p-6 shadow-md sm:shadow-lg dark:shadow-dark-lg border border-gray-100 dark:border-gray-800 hover:shadow-lg sm:hover:shadow-xl dark:hover:shadow-dark-xl transition-all duration-300">
+            <div class="flex items-center mb-4 sm:mb-5 md:mb-6">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-r from-primary to-primary/80 rounded-lg sm:rounded-xl flex items-center justify-center mr-2 sm:mr-3 shadow-md sm:shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
               </div>
               <div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Customer Reviews</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Real experiences from our community</p>
+                <h3 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Customer Reviews</h3>
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Real experiences from our community</p>
               </div>
             </div>
             
-            <!-- Enhanced Ratings Summary Card -->
-            <div class="bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 rounded-xl p-5 border border-primary/20 dark:border-primary/30 mb-6 shadow-sm">
-              <div class="flex items-center justify-between">
+            <!-- Enhanced Ratings Summary Card - Responsive -->
+            <div class="bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-5 border border-primary/20 dark:border-primary/30 mb-4 sm:mb-5 md:mb-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                 <div>
-                  <div class="flex items-baseline space-x-2">
-                    <span class="text-3xl font-bold text-gray-900 dark:text-white">{{ space?.rating || 4.5 }}</span>
-                    <span class="text-lg text-gray-500 dark:text-gray-400">/ 5</span>
+                  <div class="flex items-baseline space-x-1 sm:space-x-2">
+                    <span class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{{ space?.rating || 4.5 }}</span>
+                    <span class="text-base sm:text-lg text-gray-500 dark:text-gray-400">/ 5</span>
                   </div>
-                  <div class="flex text-yellow-400 mt-2 space-x-1">
+                  <div class="flex text-yellow-400 mt-1 sm:mt-2 space-x-0.5 sm:space-x-1">
                     <svg v-for="star in 5" :key="star" :class="[
-                      'w-5 h-5 transition-all duration-300',
+                      'w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300',
                       star <= (space?.rating || 4.5) ? 'fill-current scale-110 drop-shadow-sm' : 'text-gray-300 dark:text-gray-600'
                     ]" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -372,86 +375,62 @@
               </div>
             </div>
             
-            <!-- Enhanced Reviews List -->
-            <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <!-- Modernized Reviews List -->
+            <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               <div v-for="(review, index) in reviews" :key="review.id" 
-                   class="group bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 rounded-xl p-5 border border-gray-100 dark:border-gray-700 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-                   :class="{'from-primary/5 to-primary/10 dark:from-primary/10 dark:to-gray-700': index % 3 === 0}">
-                <div class="flex items-start space-x-4">
+                   class="group bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-200 hover:shadow-md"
+                   :class="{'from-primary/5 to-primary/10 dark:from-primary/5 dark:to-gray-800': index % 3 === 0}">
+                <div class="flex items-center space-x-3">
                   <div class="flex-shrink-0">
-                    <div class="relative">
-                      <img :src="review.avatar" :alt="review.name" 
-                           class="w-12 h-12 rounded-full object-cover ring-3 ring-white dark:ring-gray-600 shadow-lg group-hover:ring-primary/50 transition-all duration-300">
-                      <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"></div>
-                    </div>
+                    <img :src="review.avatar" :alt="review.name" 
+                         class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-700 shadow-md group-hover:ring-primary/40 transition-all duration-200">
                   </div>
                   <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between mb-2">
-                      <h4 class="text-base font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors duration-200">{{ review.name }}</h4>
-                      <div class="flex items-center bg-white dark:bg-gray-800 rounded-full px-3 py-1.5 shadow-sm border border-gray-200 dark:border-gray-600">
-                        <div class="flex text-yellow-400 space-x-0.5">
+                    <div class="flex items-center justify-between">
+                      <h4 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors duration-200">{{ review.name }}</h4>
+                      <div class="flex items-center">
+                        <div class="flex text-primary space-x-0.5">
                           <svg v-for="star in 5" :key="star" :class="[
-                            'w-4 h-4 transition-transform duration-200',
-                            star <= review.rating ? 'fill-current scale-110' : 'text-gray-300 dark:text-gray-600'
+                            'w-3.5 h-3.5 transition-transform duration-200',
+                            star <= review.rating ? 'fill-current' : 'text-gray-300 dark:text-gray-600'
                           ]" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
                         </div>
-                        <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ review.rating }}</span>
+                        <span class="ml-1.5 text-xs font-medium text-gray-700 dark:text-gray-300">{{ review.rating }}</span>
                       </div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center mb-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      2 weeks ago
-                    </p>
-                    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border-l-4 border-primary shadow-sm">
-                      <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ review.comment }}</p>
-                    </div>
-                    
-                    <!-- Enhanced action buttons -->
-                    <div class="mt-4 flex items-center space-x-4">
-                      <button class="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all duration-200 bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 hover:bg-primary/10 dark:hover:bg-primary/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                        </svg>
-                        Helpful
-                      </button>
-                      <button class="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-all duration-200 bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 hover:bg-primary/10 dark:hover:bg-primary/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                        </svg>
-                        Reply
-                      </button>
+                    <div class="mt-2 bg-white/50 dark:bg-gray-800/50 rounded-md p-3 border-l-3 border-primary/70 shadow-sm">
+                      <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">{{ review.comment }}</p>
                     </div>
                   </div>
                 </div>
               </div>
               
-              <!-- Enhanced empty state -->
-              <div v-if="reviews.length === 0" class="text-center py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-600">
-                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-primary/20 to-primary/30 dark:from-primary/30 dark:to-primary/40 rounded-full flex items-center justify-center shadow-lg">
-                  <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <!-- Modernized empty state -->
+              <div v-if="reviews.length === 0" class="text-center py-8 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-r from-primary/20 to-primary/40 dark:from-primary/30 dark:to-primary/20 rounded-full flex items-center justify-center shadow-md">
+                  <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No Reviews Yet</h4>
-                <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">Be the first to share your experience and help others discover this amazing space</p>
-                <button class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary to-primary/80 rounded-xl hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No Reviews Yet</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-4 max-w-xs mx-auto">Be the first to share your experience with this space</p>
+                <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary rounded-full hover:bg-primary/90 transition-all duration-200 shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
-                  Write the First Review
+                  Write a Review
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Right Column: Booking Widget -->
+        <!-- Right Column: Booking Widget - More Responsive -->
         <div class="lg:col-span-1 overflow-visible">
-          <div class="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-lg dark:shadow-dark-lg border border-gray-50 dark:border-gray-800 booking-widget space-y-4 sticky top-4">
+          <!-- Desktop version (visible only on large screens) -->
+          <div class="hidden lg:block bg-white dark:bg-gray-900 rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-md sm:shadow-lg dark:shadow-dark-lg border border-gray-50 dark:border-gray-800 booking-widget space-y-3 sm:space-y-4 sticky top-2 sm:top-3 md:top-4">
             <!-- Header with pricing badge -->
             <div class="flex items-start justify-between">
               <div class="flex-1 pr-3">
@@ -511,7 +490,7 @@
               <span class="ml-1 text-gray-600 text-sm">({{ space?.reviews || 0 }} reviews)</span>
               
               <!-- Add quick-access review button -->
-              <button class="ml-auto text-xs font-medium text-primary hover:underline flex items-center">
+              <button @click="scrollToReviews" class="ml-auto text-xs font-medium text-primary hover:underline flex items-center">
                 See reviews
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -529,16 +508,16 @@
               </button>
             </div>
 
-            <!-- Enhanced Meeting Room Booking Form with better UI/UX -->
-            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-4">
+            <!-- Enhanced Meeting Room Booking Form with better UI/UX - Responsive -->
+            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-3 sm:space-y-4">
               <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <h3 class="font-semibold text-gray-900 dark:text-white text-base">Booking Details</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Booking Details</h3>
               </div>
               
-              <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
                 <!-- Date and Time Selection with improved visual cues -->
                 <div class="grid grid-cols-2 gap-3 mb-3">
                   <div>
@@ -793,16 +772,16 @@
               </div>
             </div>
 
-            <!-- Enhanced Dedicated Desk Booking Form -->
-            <div v-else-if="productType === 'dedicated-desk'" class="space-y-4 dedicated-desk-form">
+            <!-- Enhanced Dedicated Desk Booking Form - Responsive -->
+            <div v-else-if="productType === 'dedicated-desk'" class="space-y-3 sm:space-y-4 dedicated-desk-form">
               <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <h3 class="font-semibold text-gray-900 dark:text-white text-base">Subscription Details</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Subscription Details</h3>
               </div>
               
-              <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
                 <!-- Date and Team Size in Same Row with improved visual organization -->
                 <div class="grid grid-cols-2 gap-3 mb-4">
                   <div>
@@ -976,7 +955,7 @@
                 <!-- Selected Facilities with enhanced styling -->
                 <div v-if="selectedFacilities.length > 0" class="pt-1 pb-2">
                   <div class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Selected Amenities</div>
-                  <div v-for="facility in selectedFacilities" :key="facility" 
+                  <div v-for="facility in selectedFacilities" :key="typeof facility === 'object' ? (facility as Facility).facility_id || String(facility) : String(facility)" 
                        class="flex items-center justify-between text-sm text-gray-600 mb-1.5 bg-gray-50 px-3 py-1.5 rounded-md">
                     <div class="flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-primary mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1085,6 +1064,451 @@
       @switch-to-signup="switchToSignUp"
       @switch-to-signin="switchToSignIn"
     />
+
+    <!-- Modern Mobile/Tablet Booking Button (fixed at bottom) -->
+    <div class="lg:hidden fixed bottom-4 left-0 right-0 z-40 px-4">
+      <div class="relative">
+        <!-- Floating price indicator -->
+        <div class="absolute -top-8 right-3 bg-white dark:bg-gray-800 px-3 py-1 rounded-t-lg shadow-lg border border-gray-100 dark:border-gray-700 transform translate-y-1">
+          <span class="font-bold text-primary text-sm">{{ getDisplayPrice() }}</span>
+        </div>
+        
+        <!-- Modern button with glassmorphism effect -->
+        <button 
+          @click="showMobileBookingModal = true" 
+          class="flex items-center justify-between w-full rounded-xl backdrop-blur-md 
+            bg-gradient-to-r from-primary/90 to-primary/80 py-3.5 px-6 text-black dark:text-white 
+            font-semibold shadow-lg border border-primary/30 transition-all duration-300
+            transform hover:scale-[1.01] active:scale-[0.99]"
+        >
+          <div class="flex items-center space-x-2">
+            <span class="bg-white dark:bg-gray-900 p-1.5 rounded-lg shadow-inner">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </span>
+            <div class="flex flex-col">
+              <span class="font-bold text-base">Book Now</span>
+              <span class="text-xs opacity-90">Instant confirmation</span>
+            </div>
+          </div>
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Booking Modal -->
+    <div 
+      v-if="showMobileBookingModal" 
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex flex-col justify-end lg:hidden"
+      @click.self="showMobileBookingModal = false"
+    >
+      <div 
+        class="bg-white dark:bg-gray-900 rounded-t-xl p-5 shadow-lg dark:shadow-dark-lg border-t border-x border-gray-50 dark:border-gray-800 space-y-3 sm:space-y-4 max-h-[90vh] overflow-y-auto booking-modal-slide-up"
+      >
+        <!-- Minimalist Modal Header with only close button -->
+        <div class="flex justify-end">
+          <button 
+            @click="showMobileBookingModal = false"
+            class="rounded-full p-2 bg-white dark:bg-gray-800 text-primary hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-black focus:outline-none transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700"
+            aria-label="Close booking modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Booking Header -->
+       
+        
+        <!-- Header with pricing badge -->
+        <div class="flex items-start justify-between">
+          <div class="flex-1 pr-3">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ space?.name }}</h2>
+            <div class="flex items-center mt-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">{{ space?.location }}</span>
+            </div>
+          </div>
+          <div class="bg-primary/10 dark:bg-primary/20 text-primary rounded-full px-3 py-1 text-xs font-bold">
+            {{ getDisplayPrice() }}
+          </div>
+        </div>
+
+        <!-- Meeting Room and Hot Desk Booking Form -->
+        <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-3">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Booking Details</h3>
+          </div>
+          
+          <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+            <!-- Date and Time Selection -->
+            <div class="grid grid-cols-1 gap-3 mb-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Date
+                </label>
+                <SingleDatePicker
+                  v-model="bookingForm.date"
+                  placeholder="Select date"
+                  :min-date="today"
+                  @change="onDateChange"
+                  class="compact-date-picker w-full"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Time
+                </label>
+                <!-- Use the same time picker as desktop for consistent behavior -->
+                <div class="grid grid-cols-2 gap-2 relative">
+                  <!-- Start Time Dropdown -->
+                  <div class="relative">
+                    <div 
+                      @click="toggleStartDropdown"
+                      class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 px-2.5 py-2 w-full cursor-pointer"
+                      :class="{
+                        'ring-2 ring-primary/20': showStartTimeDropdown,
+                        'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.start
+                      }"
+                    >
+                      <span v-if="bookingForm.timeRange.start" class="text-xs text-gray-900 dark:text-white">
+                        {{ formatTimeDisplay(bookingForm.timeRange.start) }}
+                      </span>
+                      <span v-else class="text-xs text-gray-500 dark:text-gray-400">Start Time</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" :class="{'text-primary transform rotate-180': showStartTimeDropdown}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                    
+                    <!-- Start Time Dropdown with unified styling -->
+                    <div 
+                      v-if="showStartTimeDropdown" 
+                      class="absolute top-full left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg dark:shadow-dark-lg z-1000 mt-0.5 overflow-hidden"
+                    >
+                      <div class="max-h-48 overflow-y-auto custom-scrollbar overflow-x-hidden">
+                        <div v-if="!bookingForm.date" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                          Select a date first
+                        </div>
+                        <div v-else-if="generateTimeSlots().length === 0" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                          No available times
+                        </div>
+                        <div
+                          v-for="time in generateTimeSlots()" 
+                          :key="time"
+                          @click="selectStartTime(time)"
+                          :class="[
+                            'py-1.5 px-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center',
+                            bookingForm.timeRange.start === time ? 'bg-primary/10 text-primary' : '',
+                            { 'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-700': disabledTimes.start.includes(time) }
+                          ]"
+                        >
+                          <span class="text-xs" :class="{'text-gray-400 dark:text-gray-500': disabledTimes.start.includes(time), 'text-gray-700 dark:text-gray-300': !disabledTimes.start.includes(time)}">
+                            {{ formatTimeDisplay(time) }}
+                          </span>
+                          <span v-if="disabledTimes.start.includes(time)" class="text-[7px] text-red-500 ml-0.5 whitespace-nowrap">
+                            booked
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- End Time Dropdown -->
+                  <div class="relative">
+                    <div 
+                      @click="toggleEndDropdown"
+                      class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 px-2.5 py-2 w-full cursor-pointer"
+                      :class="{
+                        'ring-2 ring-primary/20': showEndTimeDropdown,
+                        'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.end,
+                        'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start 
+                      }"
+                    >
+                      <span v-if="bookingForm.timeRange.end" class="text-xs text-gray-900 dark:text-white">
+                        {{ formatTimeDisplay(bookingForm.timeRange.end) }}
+                      </span>
+                      <span v-else class="text-xs text-gray-500 dark:text-gray-400">End Time</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" :class="{'text-primary transform rotate-180': showEndTimeDropdown}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                    
+                    <!-- End Time Dropdown with unified styling -->
+                    <div 
+                      v-if="showEndTimeDropdown && bookingForm.timeRange.start" 
+                      class="absolute top-full left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg dark:shadow-dark-lg z-1000 mt-0.5 overflow-hidden"
+                    >
+                      <div class="max-h-48 overflow-y-auto custom-scrollbar overflow-x-hidden">
+                        <div v-if="!bookingForm.timeRange.start" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                          Select a start time first
+                        </div>
+                        <div
+                          v-for="time in generateTimeSlots()" 
+                          :key="time"
+                          @click="selectEndTime(time)"
+                          :class="[
+                            'py-1.5 px-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center',
+                            bookingForm.timeRange.end === time ? 'bg-primary/10 text-primary' : '',
+                            { 
+                              'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-700': disabledTimes.end.includes(time) || shouldDisableEndTime(time)
+                            }
+                          ]"
+                        >
+                          <span class="text-xs" :class="{'text-gray-400 dark:text-gray-500': disabledTimes.end.includes(time) || shouldDisableEndTime(time), 'text-gray-700 dark:text-gray-300': !disabledTimes.end.includes(time) && !shouldDisableEndTime(time)}">
+                            {{ formatTimeDisplay(time) }}
+                          </span>
+                          <span v-if="disabledTimes.end.includes(time)" class="text-[7px] text-red-500 ml-0.5 whitespace-nowrap">
+                            booked
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Duration Display -->
+            <div v-if="bookingForm.timeRange.start && bookingForm.timeRange.end && calculateDurationInHours() > 0" 
+              class="text-center py-1 px-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-md border border-blue-100 dark:border-blue-800 mb-2 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 text-blue-600 dark:text-blue-400 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="text-xs font-medium text-blue-700 dark:text-blue-300">Duration: {{ calculateDurationInHours() }} hour(s)</span>
+            </div>
+
+            <!-- Enhanced Facilities Selection -->
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  Additional Facilities
+                </label>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-2">
+                <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
+                      :class="selectedFacilities.includes('tv') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
+                  <input v-model="selectedFacilities" value="tv" type="checkbox" class="sr-only">
+                  <div class="p-2 text-center">
+                    <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
+                      <svg class="w-4 h-4" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 4.5A2.5 2.5 0 014.5 2h11A2.5 2.5 0 0118 4.5v10a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 012 14.5v-10z" />
+                      </svg>
+                    </div>
+                    <span class="text-xs font-medium block" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">TV/Display</span>
+                    <span class="text-xs font-medium text-green-600 block">+${{ facilityPrice('tv') }}</span>
+                  </div>
+                  <div v-if="selectedFacilities.includes('tv')" class="absolute top-1 right-1">
+                    <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                      <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </label>
+                
+                <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
+                      :class="selectedFacilities.includes('printer') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
+                  <input v-model="selectedFacilities" value="printer" type="checkbox" class="sr-only">
+                  <div class="p-2 text-center">
+                    <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
+                      <svg class="w-4 h-4" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <span class="text-xs font-medium block" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">Printer</span>
+                    <span class="text-xs font-medium text-green-600 block">+${{ facilityPrice('printer') }}</span>
+                  </div>
+                  <div v-if="selectedFacilities.includes('printer')" class="absolute top-1 right-1">
+                    <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                      <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </label>
+                
+                <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
+                      :class="selectedFacilities.includes('catering') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
+                  <input v-model="selectedFacilities" value="catering" type="checkbox" class="sr-only">
+                  <div class="p-2 text-center">
+                    <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
+                      <svg class="w-4 h-4" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                      </svg>
+                    </div>
+                    <span class="text-xs font-medium block" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">Catering</span>
+                    <span class="text-xs font-medium text-green-600 block">+${{ facilityPrice('catering') }}</span>
+                  </div>
+                  <div v-if="selectedFacilities.includes('catering')" class="absolute top-1 right-1">
+                    <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                      <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Price Summary -->
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 mb-3">
+              <div class="flex justify-between mb-1">
+                <span class="text-xs text-gray-600 dark:text-gray-400">Base price</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">${{ roomBasePrice }}</span>
+              </div>
+              <div class="flex justify-between mb-1" v-if="facilitiesPrice > 0">
+                <span class="text-xs text-gray-600 dark:text-gray-400">Facilities</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">+${{ facilitiesPrice }}</span>
+              </div>
+              <div class="pt-2 mt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total</span>
+                <span class="text-lg font-bold text-primary">${{ totalPrice }}</span>
+              </div>
+            </div>
+            
+            <!-- Book Now Button -->
+            <button 
+              @click="proceedToBooking"
+              :disabled="!isBookingFormValid || isProcessing"
+              class="w-full mt-3 py-2.5 px-4 bg-primary text-white font-medium text-sm rounded-lg shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+            >
+              <span v-if="isProcessing" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+              <span v-else>Book Now</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Dedicated Desk Booking Form -->
+        <div v-else-if="productType === 'dedicated-desk'" class="space-y-3">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Subscription Details</h3>
+          </div>
+          
+          <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+            <!-- Date and Team Size in Same Row -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Start Date
+                </label>
+                <SingleDatePicker
+                  v-model="bookingForm.date"
+                  placeholder="Select start date"
+                  :min-date="today"
+                  @change="onDateChange"
+                  class="compact-date-picker w-full"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  Team Size
+                </label>
+                <TeamSizeDropdown v-model="bookingForm.teamSize" class="w-full" />
+              </div>
+            </div>
+            
+            <!-- Plan Duration Selection with enhanced visuals -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Subscription Length
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <button 
+                  v-for="(duration, index) in ['1 Month', '3 Months', '6 Months']" 
+                  :key="index"
+                  @click="selectPackage(duration)"
+                  type="button" 
+                  :class="[
+                    'py-1.5 px-2 rounded-lg text-xs font-medium focus:outline-none border transition-all duration-200',
+                    selectedPackage === duration ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'
+                  ]"
+                >
+                  {{ duration }}
+                </button>
+              </div>
+            </div>
+            
+            <!-- Total Price Display -->
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 mb-3">
+              <div class="flex justify-between mb-1">
+                <span class="text-xs text-gray-600 dark:text-gray-400">Base price</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">${{ getPackagePrice() }}</span>
+              </div>
+              <div class="flex justify-between mb-1">
+                <span class="text-xs text-gray-600 dark:text-gray-400">Team size</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ bookingForm.teamSize || '1' }} people</span>
+              </div>
+              <div class="flex justify-between mb-1">
+                <span class="text-xs text-gray-600 dark:text-gray-400">Duration</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ selectedPackage || '1 Month' }}</span>
+              </div>
+              <div class="pt-2 mt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total</span>
+                <span class="text-lg font-bold text-primary">${{ totalPrice }}</span>
+              </div>
+            </div>
+            
+            <!-- Subscribe Now Button -->
+            <button 
+              @click="proceedToSubscription"
+              :disabled="!isSubscriptionFormValid || isProcessing"
+              class="w-full py-2 px-4 bg-primary text-white font-medium text-sm rounded-lg shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+            >
+              <span v-if="isProcessing" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+              <span v-else>Subscribe Now</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1095,6 +1519,13 @@ import SingleDatePicker from '../components/SingleDatePicker.vue'
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue'
 import TeamSizeDropdown from '../components/TeamSizeDropdown.vue'
 import { NetworkManager } from '../api/networkManager'
+
+// Facility interface for the new API response format
+interface Facility {
+  facility_id: number;
+  facility_name: string;
+  icon?: string;
+}
 
 import type { SpaceDto, ReviewDto, UserDto } from '../dto/response'
 import { useAuthStore } from '../stores/auth'
@@ -1126,12 +1557,19 @@ export default defineComponent({
       showGallery: false,
       showAuthModal: false,
       showSignUpModal: false,
+      showMobileBookingModal: false,
       currentUser: null as UserDto | null,
       productType: 'meeting-room',
       isLoadingAvailability: false,
       isLoadingBookedSlots: false,
       bookedTimeSlots: [] as Array<{ startTime: string; endTime: string }>,
       disabledTimes: {
+        start: [] as string[],
+        end: [] as string[]
+      },
+      
+      // Available time slots
+      availableTimes: {
         start: [] as string[],
         end: [] as string[]
       },
@@ -1246,6 +1684,19 @@ export default defineComponent({
   },
   
   methods: {
+    scrollToReviews() {
+      const reviewsElement = document.getElementById('reviews');
+      if (reviewsElement) {
+        reviewsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    
+    getFeatureName(feature: any): string {
+      if (typeof feature === 'object' && feature !== null && 'facility_name' in feature) {
+        return (feature as Facility).facility_name;
+      }
+      return String(feature);
+    },
     async fetchBookedTimeSlots() {
       if (!this.bookingForm.date) return;
 
@@ -1416,6 +1867,17 @@ export default defineComponent({
         default:
           return 'Price not available'
       }
+    },
+
+    formatPrice(price?: number): string {
+      if (price === undefined) return '$0'
+      return `$${price}`
+    },
+    
+    // This is a simplification - in your real app, you should return the actual booking component
+    bookingComponent() {
+      // Simply returning a div since we don't have access to the real booking components
+      return 'div'
     },
     
     async loadSpaceDetails(): Promise<void> {
@@ -1663,17 +2125,33 @@ export default defineComponent({
       }
     },
     
-    facilityDisplayName(facility: string): string {
+    facilityDisplayName(facility: any): string {
+      // If facility is an object with facility_name property, return that
+      if (typeof facility === 'object' && facility !== null && 'facility_name' in facility) {
+        return (facility as Facility).facility_name;
+      }
+      
+      // Otherwise use the lookup table for string-based facilities
       const names: Record<string, string> = {
         tv: 'TV/Display',
         printer: 'Printer Access',
         catering: 'Catering Service'
       }
-      return names[facility] || facility
+      return names[String(facility)] || String(facility)
     },
-    facilityPrice(facility: string): number {
+    facilityPrice(facility: any): number {
       const prices: Record<string, number> = { tv: 25, printer: 15, catering: 50 }
-      return prices[facility] || 0
+      
+      // Get the facility key for pricing lookup
+      let facilityKey: string;
+      if (typeof facility === 'object' && facility !== null && 'facility_id' in facility) {
+        // If facility has a facility_name, use that for price lookup
+        facilityKey = (facility as Facility).facility_name?.toLowerCase() || '';
+      } else {
+        facilityKey = String(facility);
+      }
+      
+      return prices[facilityKey] || 0
     },
     
     async proceedToBooking(): Promise<void> {
@@ -1722,6 +2200,9 @@ export default defineComponent({
           }
         }
 
+        // Close the mobile booking modal if open
+        this.showMobileBookingModal = false
+        
         bookingStore.setBookingDetails(bookingDetails)
         await this.$router.push({ name: 'BookingSummary' })
       } catch (error) {
@@ -1781,6 +2262,9 @@ export default defineComponent({
           }
         }
 
+        // Close the mobile booking modal if open
+        this.showMobileBookingModal = false
+        
         bookingStore.setBookingDetails(subscriptionDetails)
         await this.$router.push({ name: 'BookingSummary' })
       } catch (error) {
@@ -1800,6 +2284,11 @@ export default defineComponent({
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
         window.open(mapsUrl, '_blank');
       }
+    },
+    
+    // Method to handle package selection
+    selectPackage(duration: string): void {
+      this.selectedPackage = duration;
     }
   }
 })
@@ -2377,4 +2866,32 @@ export default defineComponent({
     rgba(0, 0, 0, 0.1) 100%);
 }
 
+/* Mobile booking modal animation */
+.booking-modal-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Enhanced mobile form styles */
+.compact-date-picker {
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .booking-modal-slide-up {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
 </style>

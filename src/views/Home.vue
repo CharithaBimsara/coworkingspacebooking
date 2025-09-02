@@ -36,8 +36,24 @@
               <div class="grid sm:grid-cols-2 gap-4">
                 <!-- Location -->
                 <div class="space-y-2 mt-1">
-                  <LocationDropdown v-model="searchForm.location" label="Location"
-                    placeholder="Where do you want to work?" :locations="locations" @change="onLocationChange" />
+                  <!-- LocationDropdown always visible -->
+                  <LocationDropdown 
+                    v-model="searchForm.location" 
+                    label="Location"
+                    placeholder="Where do you want to work?" 
+                    :locations="locations" 
+                    @change="onLocationChange" 
+                  />
+                  
+                  <!-- API Error Message -->
+                  <p v-if="locationApiError" class="text-amber-600 dark:text-amber-400 text-xs mt-1">
+                    Location service is temporarily unavailable
+                  </p>
+                  
+                  <!-- Warning for stale cached data -->
+                  <p v-if="showLocationWarning && !locationApiError" class="text-amber-600 dark:text-amber-400 text-xs mt-1">
+                    {{ locationErrorMessage }}
+                  </p>
                 </div>
 
                 <!-- Space Type -->
@@ -127,11 +143,7 @@
                     <div class="max-w-2xl px-6">
                       <div class="transform hover:scale-105 transition-all duration-300">
                         <h3 class="text-xl lg:text-2xl font-bold mb-4 text-white drop-shadow-lg">{{ ad.title }}</h3>
-                        <p class="text-base mb-6 opacity-90 text-white/90">{{ ad.description }}</p>
-                        <button
-                          class="bg-primary text-black dark:text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-opacity-90 transition-all transform hover:-translate-y-1 shadow-lg">
-                          {{ ad.buttonText }}
-                        </button>
+                        <p class="text-base opacity-90 text-white/90">{{ ad.description }}</p>
                       </div>
                     </div>
                   </div>
@@ -182,7 +194,7 @@
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Meeting Rooms -->
-          <router-link to="/search?spaceType=meeting-rooms"
+          <router-link to="/search?spaceType=meeting-room"
             class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
               class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
@@ -354,7 +366,7 @@
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
           <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
-            Why Choose {{ companyProfile.name }}?
+            Why Choose Us?
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
@@ -618,31 +630,36 @@
             </div>
           </div>
           
-          <!-- Newsletter Subscription -->
+          <!-- Contact Form -->
           <div class="bg-white dark:bg-black rounded-3xl p-8 shadow-xl border-2 border-primary relative overflow-hidden">
             <!-- Decorative elements -->
             <div class="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full -translate-y-20 translate-x-20"></div>
             <div class="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 rounded-full translate-y-16 -translate-x-16"></div>
             
             <div class="relative z-10">
-              <h3 class="text-xl font-bold mb-6 text-gray-800 dark:text-white">Stay Updated</h3>
+              <h3 class="text-xl font-bold mb-6 text-gray-800 dark:text-white">Send Us a Message</h3>
               <p class="text-gray-600 dark:text-white/90 mb-8 text-base">
-                Get the latest updates on new spaces, special offers, and workspace tips delivered to your inbox.
+                Have questions or need assistance? Send us a message and we'll get back to you as soon as possible.
               </p>
               <div class="space-y-5">
                 <div>
-                  <label for="newsletterName" class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Name</label>
-                  <input type="text" id="newsletterName" v-model="newsletterName" placeholder="Your name" 
-                    class="w-full px-5 py-4 rounded-full border-0 text-gray-900 dark:text-gray-800 bg-gray-100 dark:bg-white focus:outline-none focus:ring-2 focus:ring-primary shadow-inner placeholder-gray-400 dark:placeholder-gray-500">
+                  <label for="contactName" class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Name</label>
+                  <input type="text" id="contactName" v-model="newsletterName" placeholder="Your name" 
+                    class="w-full px-5 py-4 rounded-full border-0 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary shadow-inner placeholder-gray-400 dark:placeholder-gray-400">
                 </div>
                 <div>
-                  <label for="newsletterEmail" class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Email Address</label>
-                  <input type="email" id="newsletterEmail" v-model="newsletterEmail" placeholder="Your email" 
-                    class="w-full px-5 py-4 rounded-full border-0 text-gray-900 dark:text-gray-800 bg-gray-100 dark:bg-white focus:outline-none focus:ring-2 focus:ring-primary shadow-inner placeholder-gray-400 dark:placeholder-gray-500">
+                  <label for="contactEmail" class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Email Address</label>
+                  <input type="email" id="contactEmail" v-model="newsletterEmail" placeholder="Your email" 
+                    class="w-full px-5 py-4 rounded-full border-0 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary shadow-inner placeholder-gray-400 dark:placeholder-gray-400">
+                </div>
+                <div>
+                  <label for="contactMessage" class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Message</label>
+                  <textarea id="contactMessage" v-model="messageContent" placeholder="Your message" rows="4"
+                    class="w-full px-5 py-4 rounded-2xl border-0 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary shadow-inner placeholder-gray-400 dark:placeholder-gray-400"></textarea>
                 </div>
                 <button 
-                  @click="subscribeNewsletter" 
-                  :disabled="isSubscribing || !newsletterEmail" 
+                  @click="sendContactMessage" 
+                  :disabled="isSubscribing || !newsletterEmail || !messageContent" 
                   class="w-full px-5 py-4 bg-primary text-black dark:text-white font-bold rounded-full hover:bg-opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-gray-800/30 dark:focus:ring-white/50 disabled:opacity-70 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg"
                 >
                   <span class="flex items-center justify-center">
@@ -650,7 +667,7 @@
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {{ isSubscribing ? 'Subscribing...' : 'Subscribe Now' }}
+                    {{ isSubscribing ? 'Sending...' : 'Send Message' }}
                   </span>
                 </button>
                 <div v-if="subscriptionMessage" class="mt-3 text-gray-700 dark:text-white/90 text-sm text-center bg-gray-100 dark:bg-primary/20 p-3 rounded-full">
@@ -668,7 +685,7 @@
       <div class="absolute bottom-0 right-0 w-60 h-60 bg-primary/5 rounded-full"></div>
       
       <div class="max-w-7xl mx-auto container-padding relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
           <!-- Brand & Description -->
           <div class="space-y-6">
             <div class="flex items-center">
@@ -788,31 +805,6 @@
               </li>
             </ul>
           </div>
-
-          <!-- Newsletter -->
-          <div class="space-y-6">
-            <h4 class="text-lg font-bold text-primary">Stay Connected</h4>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">Subscribe to our newsletter for the latest updates.</p>
-            <div class="flex flex-col gap-3">
-              <div class="relative">
-                <input v-model="footerNewsletterEmail" type="email" placeholder="Enter your email"
-                  class="w-full px-5 py-3 rounded-full border-2 border-primary/50 focus:border-primary bg-white dark:bg-black/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50">
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              </div>
-              <button @click="subscribeFooterNewsletter" :disabled="isSubscribing || !footerNewsletterEmail"
-                class="px-5 py-3 bg-primary text-black dark:text-white font-bold rounded-full hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 shadow-lg">
-                Subscribe
-              </button>
-            </div>
-            <div v-if="footerSubscriptionMessage" class="text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-primary/20 p-2 rounded-full text-center">
-              {{ footerSubscriptionMessage }}
-            </div>
-          </div>
         </div>
         <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-sm">
           <div class="flex flex-col md:flex-row items-center justify-center gap-4">
@@ -882,15 +874,19 @@ export default defineComponent({
       isSubscribing: false,
       newsletterName: '',
       newsletterEmail: '',
+      messageContent: '',
       subscriptionMessage: '',
-      footerNewsletterEmail: '',
-      footerSubscriptionMessage: '',
       currentSlide: 0,
       slideInterval: null as number | null,
       advertisements: [] as AdvertisementDto[],
       featuredSpaces: [] as SpaceDto[],
+      // Location API state management
+      locationApiError: false,
+      showLocationWarning: false,
+      locationErrorMessage: '',
       testimonials: [] as TestimonialDto[],
-      locations: [] as string[], // Real locations from API
+      locations: [] as { id: number; name: string; address: string; url: string }[], // Real locations from API
+      _selectedLocationObject: null as { id: number; name: string; address: string; url: string } | null, // To store full location object
       companyProfile: {
         name: 'WorkSpace',
         email: 'support@workspace.com',
@@ -952,9 +948,15 @@ export default defineComponent({
     this.isLoading = false;
   },
   
-  mounted() {
+  async mounted() {
     // Start slideshow after mounting
     this.startSlideshow();
+    
+    // Load locations and advertisements
+    await Promise.all([
+      this.loadLocationsFromApi(),
+      this.loadAdvertisementsFromApi()
+    ]);
     
     // Don't initialize theme here - it's handled by the theme store
   },
@@ -965,26 +967,235 @@ export default defineComponent({
 
   methods: {
     /**
-     * Load locations from API for the location dropdown
+     * Load advertisements from API
+     * Implements error handling with fallback to default content
      */
-    async loadLocationsFromApi(): Promise<void> {
+    async loadAdvertisementsFromApi() {
       try {
+        // Check for cached advertisements
+        const cachedData = localStorage.getItem('cached_advertisements');
+        
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            const cacheAge = Date.now() - parsed.timestamp;
+            
+            // Use cache if it's less than 1 hour old
+            if (cacheAge < 60 * 60 * 1000) {
+              this.advertisements = parsed.data;
+              console.log('Using cached advertisements data');
+              
+              // Make API call in background to update cache
+              this.refreshAdvertisementCache();
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing cached advertisements:', e);
+            // Continue with API call if cache parsing fails
+          }
+        }
+        
+        console.log('Loading advertisements from API...');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+        
+        try {
+          const advertisements = await NetworkManager.getAdvertisements();
+          
+          // Clear the timeout since the request completed
+          clearTimeout(timeoutId);
+          
+          if (advertisements && advertisements.length > 0) {
+            this.advertisements = advertisements;
+            
+            // Cache the results
+            localStorage.setItem('cached_advertisements', JSON.stringify({
+              timestamp: Date.now(),
+              data: advertisements
+            }));
+          } else {
+            // Use fallback hardcoded advertisements if API returns empty array
+            this.setFallbackAdvertisements();
+          }
+        } catch (error) {
+          // If API call fails, use fallback advertisements
+          console.error('Error fetching advertisements:', error);
+          this.setFallbackAdvertisements();
+        }
+      } catch (error) {
+        console.error('Error in loadAdvertisementsFromApi:', error);
+        // Ensure we always have some advertisements to display
+        this.setFallbackAdvertisements();
+      }
+    },
+    
+    /**
+     * Refresh advertisement cache in the background
+     */
+    async refreshAdvertisementCache() {
+      try {
+        const advertisements = await NetworkManager.getAdvertisements();
+        
+        if (advertisements && advertisements.length > 0) {
+          // Update UI with new data
+          this.advertisements = advertisements;
+          
+          // Update cache
+          localStorage.setItem('cached_advertisements', JSON.stringify({
+            timestamp: Date.now(),
+            data: advertisements
+          }));
+        }
+      } catch (error) {
+        console.error('Error refreshing advertisement cache:', error);
+        // Don't update UI on background refresh failure
+      }
+    },
+    
+    /**
+     * Set fallback hardcoded advertisements when API fails
+     */
+    setFallbackAdvertisements() {
+      this.advertisements = [
+        {
+          id: 1,
+          title: 'Summer Discount',
+          description: 'Get 20% off on all workspace bookings this summer',
+          image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+          buttonText: 'Learn More',
+          link: '/promotions/summer'
+        },
+        {
+          id: 2,
+          title: 'Corporate Packages',
+          description: 'Special rates for businesses with 10+ employees',
+          image: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+          buttonText: 'View Packages',
+          link: '/corporate'
+        }
+      ];
+    },
+    
+    /**
+     * Load locations from API for the location dropdown
+     * Implements production-level error handling with caching, retry, and user feedback
+     */
+    async loadLocationsFromApi(retryCount = 0): Promise<void> {
+      try {
+        // Check for cached locations first
+        const cachedData = localStorage.getItem('cached_locations');
+        
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            const cacheAge = Date.now() - parsed.timestamp;
+            
+            // Use cache if it's less than 24 hours old
+            if (cacheAge < 24 * 60 * 60 * 1000) {
+              this.locations = parsed.data;
+              console.log('Using cached locations data');
+              
+              // Make API call in background to update cache
+              this.refreshLocationCache();
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing cached locations:', e);
+            // Continue with API call if cache parsing fails
+          }
+        }
+        
         console.log('Loading locations from API...');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        const locationsResponse = await NetworkManager.getLocations();
+        clearTimeout(timeoutId);
+        
+        if (Array.isArray(locationsResponse) && locationsResponse.length > 0) {
+          console.log('Loaded locations from API:', locationsResponse.length, 'locations');
+          this.locations = locationsResponse;
+          
+          // Store in cache with timestamp
+          localStorage.setItem('cached_locations', JSON.stringify({
+            data: locationsResponse,
+            timestamp: Date.now()
+          }));
+        } else {
+          console.warn('API returned empty locations array');
+          this.handleLocationApiFailure('No locations available');
+        }
+      } catch (error) {
+        console.error(`Error loading locations from API (attempt ${retryCount + 1}):`, error);
+        
+        // Retry logic with exponential backoff (max 3 retries)
+        if (retryCount < 2) {
+          const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s
+          console.log(`Retrying in ${backoffTime}ms...`);
+          
+          setTimeout(() => {
+            this.loadLocationsFromApi(retryCount + 1);
+          }, backoffTime);
+          return;
+        }
+        
+        this.handleLocationApiFailure(error instanceof Error ? error.message : 'Unknown error');
+      }
+    },
+    
+    /**
+     * Refresh location cache in the background
+     */
+    async refreshLocationCache(): Promise<void> {
+      try {
         const locationsResponse = await NetworkManager.getLocations();
         
         if (Array.isArray(locationsResponse) && locationsResponse.length > 0) {
-          // Extract location names from the response
-          this.locations = locationsResponse.map(location => location.name);
-          console.log('Loaded locations from API:', this.locations);
-        } else {
-          console.log('No locations returned from API, using default values');
-          this.locations = ['Colombo', 'Kandy', 'Galle', 'Negombo', 'Jaffna'];
+          // Update the locations if we got new data
+          this.locations = locationsResponse;
+          
+          // Store in cache with timestamp
+          localStorage.setItem('cached_locations', JSON.stringify({
+            data: locationsResponse,
+            timestamp: Date.now()
+          }));
         }
       } catch (error) {
-        console.error('Error loading locations from API:', error);
-        // Use default locations as fallback
-        this.locations = ['Colombo', 'Kandy', 'Galle', 'Negombo', 'Jaffna'];
+        // Silent fail for background refresh - we already have cached data
+        console.warn('Background location cache refresh failed:', error);
       }
+    },
+    
+    /**
+     * Handle location API failure with graceful degradation
+     */
+    handleLocationApiFailure(errorMessage: string): void {
+      console.warn('Location API failure:', errorMessage);
+      
+      // First try to use cached data regardless of age
+      const cachedData = localStorage.getItem('cached_locations');
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          this.locations = parsed.data;
+          console.log('Using expired cached locations data due to API failure');
+          
+          // Add notification about stale data
+          this.showLocationWarning = true;
+          this.locationErrorMessage = 'Using previously saved location data. Some information may not be up to date.';
+          
+          return;
+        } catch (e) {
+          console.error('Error parsing cached locations:', e);
+        }
+      }
+      
+      // If no cache available, show error message but keep dropdown
+      // This will display empty locations in the dropdown with the error message
+      this.locations = [];
+      
+      // Set error state for UI feedback
+      this.locationApiError = true;
     },
     
     // Instead of API calls, set hardcoded values for everything except locations
@@ -1100,27 +1311,7 @@ export default defineComponent({
         }
       ];
       
-      // Locations are loaded from API in loadLocationsFromApi method
-      
-      // Set hardcoded advertisements
-      this.advertisements = [
-        {
-          id: 1,
-          title: 'Summer Discount',
-          description: 'Get 20% off on all workspace bookings this summer',
-          image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-          buttonText: 'Learn More',
-          link: '/promotions/summer'
-        },
-        {
-          id: 2,
-          title: 'Corporate Packages',
-          description: 'Special rates for businesses with 10+ employees',
-          image: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-          buttonText: 'View Packages',
-          link: '/corporate'
-        }
-      ];
+      // Both locations and advertisements are loaded from API in their respective methods
     },
 
     searchSpaces(): void {
@@ -1143,16 +1334,18 @@ export default defineComponent({
       .catch(error => console.error('Error navigating to space details:', error));
     },
 
-    subscribeNewsletter(): void {
-      if (!this.newsletterEmail) return;
+    sendContactMessage(): void {
+      if (!this.newsletterEmail || !this.messageContent) return;
 
       this.isSubscribing = true;
       this.subscriptionMessage = '';
       
-      // Mock successful subscription without API call
+      // Mock successful message sending without API call
       setTimeout(() => {
-        this.subscriptionMessage = 'Successfully subscribed!';
+        this.subscriptionMessage = 'Message sent successfully! We\'ll get back to you soon.';
         this.newsletterEmail = '';
+        this.newsletterName = '';
+        this.messageContent = '';
         this.isSubscribing = false;
         
         // Clear message after delay
@@ -1162,24 +1355,7 @@ export default defineComponent({
       }, 500); // Simulate network delay
     },
 
-    subscribeFooterNewsletter(): void {
-      if (!this.footerNewsletterEmail) return;
-
-      this.isSubscribing = true;
-      this.footerSubscriptionMessage = '';
-      
-      // Mock successful subscription without API call
-      setTimeout(() => {
-        this.footerSubscriptionMessage = 'Successfully subscribed!';
-        this.footerNewsletterEmail = '';
-        this.isSubscribing = false;
-        
-        // Clear message after delay
-        setTimeout(() => {
-          this.footerSubscriptionMessage = '';
-        }, 5000);
-      }, 500); // Simulate network delay
-    },
+    // Footer newsletter subscription removed
 
     nextSlide(): void {
       if (this.advertisements.length > 0) {
@@ -1215,18 +1391,21 @@ export default defineComponent({
       return 0;
     },
 
-    onLocationChange(location: string): void {
+    onLocationChange(location: { id: number; name: string; address: string; url: string }): void {
       if (location) {
         console.log('Selected location:', location);
         
-        // Store the selected location in searchForm
-        this.searchForm.location = location;
+        // Store the location name as a string for v-model compatibility
+        this.searchForm.location = location.name;
+        
+        // Store the full location object for future use if needed
+        this._selectedLocationObject = location;
         
         // We could filter spaces by location here if needed in the future:
-        // this.filterSpacesByLocation(location);
+        // this.filterSpacesByLocation(location.id);
         
         // Or load spaces specific to this location from the API:
-        // this.loadSpacesForLocation(location);
+        // this.loadSpacesForLocation(location.id);
       }
     }
     

@@ -122,13 +122,13 @@ export default defineComponent({
       return route.name === 'BookingSummary';
     });
 
-    // Show the floating summary if:
-    // 1. We have items in the booking AND
-    // 2. The user clicked "Add another service" button AND
-    // 3. We're not on the BookingSummary page itself
+    // Show the floating summary when:
+    // 1. There are items in the booking
+    // 2. We're either adding more services or the user isn't on the BookingSummary page
+    // 3. The component is expanded
     const shouldShowSummary = computed(() => {
       const hasItems = bookingData.value.length > 0;
-      const addAnotherClicked = checkAddAnotherServiceFlag();
+      const isAddingMore = bookingStore.isAddingMoreServices;
       const isOnBookingSummaryPage = route.name === 'BookingSummary';
       
       // Update hasBookingItems for tracking changes
@@ -139,13 +139,13 @@ export default defineComponent({
         return false;
       }
       
-      // Show on all pages when conditions are met, except BookingSummary page
-      if (addAnotherClicked && !isOnBookingSummaryPage) {
-        return true;
+      // Don't show on BookingSummary page, unless explicitly adding more services
+      if (isOnBookingSummaryPage && !isAddingMore) {
+        return false;
       }
       
-      // Always show when expanded regardless of page
-      return isExpanded.value;
+      // Always show when adding more services or when expanded
+      return isAddingMore || isExpanded.value || !isOnBookingSummaryPage;
     })
     
     // Preview data - limited to first 2 bookings for the mini view
@@ -243,11 +243,14 @@ export default defineComponent({
       // Start hidden
       isHidden.value = true;
       
-      // Check if "Add Another Service" was clicked
-      const addAnotherServiceClicked = checkAddAnotherServiceFlag();
+      // Check if there are booking items and if we're adding more services or not on BookingSummary
+      const hasItems = bookingData.value.length > 0;
+      const isAddingMore = bookingStore.isAddingMoreServices;
+      const isOnBookingSummaryPage = route.name === 'BookingSummary';
+      const shouldShow = hasItems && (isAddingMore || !isOnBookingSummaryPage);
       
-      // If "Add Another Service" was clicked, show for longer then minimize to peek indicator
-      if (addAnotherServiceClicked) {
+      // If we should show, display the component and then minimize after a delay
+      if (shouldShow) {
         setTimeout(() => {
           isHidden.value = false;
           // Hide after 3 seconds of initial display if user isn't interacting
@@ -258,15 +261,8 @@ export default defineComponent({
           }, 3000);
         }, 1000);
       } else {
-        // Standard behavior if not coming from "Add Another Service"
-        setTimeout(() => {
-          isHidden.value = false;
-          setTimeout(() => {
-            if (!isHovering.value) {
-              isHidden.value = true;
-            }
-          }, 2000);
-        }, 1500);
+        // Keep hidden if we shouldn't show
+        isHidden.value = true;
       }
     });
     
