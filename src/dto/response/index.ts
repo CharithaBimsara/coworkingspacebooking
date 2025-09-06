@@ -111,8 +111,25 @@ export class SpaceDto {
   availability: any[];
   productType: string;
   // Additional properties used in NetworkManager
-  displayProductType?: string; 
-  additional_facilities?: string[];
+  displayProductType?: string;
+  additional_facilities?: Array<{
+    facility_id: number;
+    facility_name: string;
+    hourly_price?: number;
+    icon?: string;
+  }>;
+  default_facilities?: Array<{
+    facility_id: number;
+    facility_name: string;
+    hourly_price?: number;
+    icon?: string;
+  }>;
+  facilities?: Array<{
+    facility_id: number;
+    facility_name: string;
+    hourly_price?: number;
+    icon?: string;
+  }>;
   recent_ratings?: any[];
   start_operation_time?: string;
   end_operation_time?: string;
@@ -142,7 +159,18 @@ export class SpaceDto {
     availability: any[];
     // Optional properties
     displayProductType?: string;
-    additional_facilities?: string[];
+    additional_facilities?: Array<{
+      facility_id: number;
+      facility_name: string;
+      hourly_price?: number;
+      icon?: string;
+    }>;
+    default_facilities?: Array<{
+      facility_id: number;
+      facility_name: string;
+      hourly_price?: number;
+      icon?: string;
+    }>;
     recent_ratings?: any[];
     start_operation_time?: string;
     end_operation_time?: string;

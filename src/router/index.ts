@@ -11,6 +11,7 @@ import Payment from '../views/Payment.vue'
 import ProfileSettings from '../views/ProfileSettings.vue'
 import PaymentMethods from '../views/PaymentMethods.vue'
 import { useThemeStore } from '../stores/theme'
+import { useAuthStore } from '../stores/auth'
 
 // Lazy load components that might not exist yet
 const BookingConfirmation = () => import('../views/BookingConfirmation.vue').catch(() => import('../views/Home.vue'))
@@ -110,7 +111,21 @@ router.beforeEach((to, from, next) => {
     console.log('Theme store not available during navigation');
   }
   
-  next();
+  // Check authentication for protected routes
+  const protectedRoutes = ['/my-bookings', '/profile', '/payment-methods'];
+  const isProtectedRoute = protectedRoutes.includes(to.path) || to.path.startsWith('/profile/');
+  
+  // Check if user is authenticated by checking localStorage
+  const userStr = localStorage.getItem('workspace_user');
+  const authToken = localStorage.getItem('auth_token');
+  const isAuthenticated = !!userStr && !!authToken;
+  
+  if (isProtectedRoute && !isAuthenticated) {
+    // Redirect to home page if trying to access protected route without being authenticated
+    next('/');
+  } else {
+    next();
+  }
 });
 
 export default router

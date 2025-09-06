@@ -1,5 +1,14 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300 pb-20 sm:pb-24 lg:pb-0">
+    <!-- Review Dialog -->
+    <ReviewDialog 
+      v-if="showReviewDialog && space" 
+      :spaceId="space.id" 
+      :spaceName="space.name"
+      @close="showReviewDialog = false"
+      @show-signup="showSignUpModal = true; showReviewDialog = false"
+      @review-submitted="handleReviewSubmitted"
+    />
     <!-- Loading State -->
     <div v-if="loading" class="max-w-8xl mx-auto px-2 sm:px-5 py-7">
       <div class="animate-pulse">
@@ -177,25 +186,43 @@
             </div>
             
             <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
+              <!-- Use default_facilities directly if available -->
               <div 
-                v-for="(feature, index) in space?.features || []" 
-                :key="(typeof feature === 'object' && feature !== null) ? (feature as Facility).facility_id || index : String(feature)" 
+                v-for="(facility, index) in (space as any)?.default_facilities || space?.features || []" 
+                :key="(typeof facility === 'object' && facility !== null) ? facility.facility_id || index : String(facility)"
                 class="group flex items-center p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 rounded-lg sm:rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-md transition-all duration-300 cursor-pointer"
                 :class="{'from-primary/5 to-primary/10 dark:from-primary/10 dark:to-gray-700': index % 3 === 0}"
               >
                 <div class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-primary/20 to-primary/30 dark:from-primary/30 dark:to-primary/40 flex items-center justify-center mr-3 md:mr-4 group-hover:scale-110 transition-all duration-300 shadow-sm">
-                  <svg v-if="typeof feature === 'object' && feature !== null && (feature as Facility).icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-primary group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="(feature as Facility).icon" />
+                  <!-- Display SVG with dynamic path from API -->
+                  <svg v-if="typeof facility === 'object' && facility !== null && facility.icon" 
+                      class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-primary group-hover:rotate-12 transition-transform duration-300" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24">
+                    <path 
+                      stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      :d="facility.icon" />
                   </svg>
+                  <!-- Fallback icon if no icon is provided -->
                   <svg v-else class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-primary group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span class="font-semibold text-gray-900 dark:text-white text-xs xs:text-sm group-hover:text-primary dark:group-hover:text-primary transition-colors duration-200 line-clamp-1">{{ getFeatureName(feature) }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white text-xs xs:text-sm group-hover:text-primary dark:group-hover:text-primary transition-colors duration-200 line-clamp-1">
+                  {{ getFeatureName(facility) }}
+                </span>
               </div>
               
               <!-- Enhanced empty state - more responsive -->
-              <div v-if="(space?.features || []).length === 0" class="col-span-full flex flex-col items-center justify-center py-8 sm:py-10 md:py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-lg sm:rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-600">
+              <div v-if="(!((space as any)?.default_facilities && (space as any).default_facilities.length) && !(space?.features && space.features.length))" class="col-span-full flex flex-col items-center justify-center py-8 sm:py-10 md:py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-lg sm:rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-600">
+                <p class="text-gray-500 dark:text-gray-400 text-center">
+                  <span class="block text-lg font-medium mb-2">No amenities available</span>
+                  <span class="text-sm">This space has no listed features or amenities</span>
+                </p>
+              
                 <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-primary/20 to-primary/30 dark:from-primary/30 dark:to-primary/40 rounded-full flex items-center justify-center mb-3 sm:mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -340,7 +367,10 @@
                 </svg>
               </div>
               <div>
-                <h3 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Customer Reviews</h3>
+                <div class="flex items-center justify-between">
+                  <h3 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Customer Reviews</h3>
+                 
+                </div>
                 <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Real experiences from our community</p>
               </div>
             </div>
@@ -364,7 +394,9 @@
                   <div class="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">Based on {{ reviews.length || 0 }} reviews</div>
                 </div>
                 
-                <button class="px-4 py-2.5 text-sm font-semibold text-primary bg-white dark:bg-gray-800 border-2 border-primary rounded-xl hover:bg-primary hover:text-white dark:hover:text-gray-900 transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105">
+                <button
+                 @click="showReviewDialog = true"
+                class="px-4 py-2.5 text-sm font-semibold text-primary bg-white dark:bg-gray-800 border-2 border-primary rounded-xl hover:bg-primary hover:text-white dark:hover:text-gray-900 transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105">
                   <span class="flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -416,7 +448,9 @@
                 </div>
                 <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No Reviews Yet</h4>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-4 max-w-xs mx-auto">Be the first to share your experience with this space</p>
-                <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary rounded-full hover:bg-primary/90 transition-all duration-200 shadow-md">
+                <button 
+                  @click="showReviewDialog = true"
+                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary rounded-full hover:bg-primary/90 transition-all duration-200 shadow-md">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
@@ -660,113 +694,67 @@
                     Additional Amenities
                   </label>
                   
-                  <div class="grid grid-cols-5 gap-2">
-                    <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('tv') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
-                      <input v-model="selectedFacilities" value="tv" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z" />
-                            <path d="M8 15v1.5a.5.5 0 001 0V15h2v1.5a.5.5 0 001 0V15h1a1 1 0 100-2H7a1 1 0 100 2h1z" />
-                          </svg>
+                  <!-- Loading skeleton -->
+                  <div v-if="facilitiesLoading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                    <div v-for="i in 5" :key="i" class="animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg p-2 h-20">
+                      <div class="mb-2 bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto"></div>
+                      <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-1"></div>
+                      <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto"></div>
+                    </div>
+                  </div>
+                  
+                  <!-- Dynamic facilities from API -->
+                  <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                    <template v-if="availableFacilities.length > 0">
+                      <label 
+                        v-for="facility in availableFacilities" 
+                        :key="facility.facility_id"
+                        class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
+                        :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
+                      >
+                        <input 
+                          v-model="selectedFacilities" 
+                          :value="facility.facility_name.toLowerCase()" 
+                          type="checkbox" 
+                          class="sr-only"
+                        >
+                        <div class="p-2 text-center">
+                          <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
+                            <svg 
+                              class="w-4 h-4" 
+                              :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" 
+                              fill="currentColor" 
+                              viewBox="0 0 20 20"
+                            >
+                              <path :d="facility.icon" />
+                            </svg>
+                          </div>
+                          <span 
+                            class="text-xs font-medium block" 
+                            :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'text-primary' : 'text-gray-800 dark:text-gray-300'"
+                          >
+                            {{ facility.facility_name }}
+                          </span>
+                          <span class="text-xs font-medium text-green-600 dark:text-green-500 block">
+                            +${{ facilityPrice(facility) }}/hr
+                          </span>
                         </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">TV</span>
-                        <span class="text-xs font-medium text-green-600 dark:text-green-500 block">+$25</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('tv')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
+                        <div v-if="selectedFacilities.includes(facility.facility_name.toLowerCase())" class="absolute top-1 right-1">
+                          <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                            <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
                         </div>
-                      </div>
-                    </label>
+                      </label>
+                    </template>
                     
-                    <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('printer') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
-                      <input v-model="selectedFacilities" value="printer" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zM5 14a1 1 0 001 1h8a1 1 0 001-1v-3H5v3z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">Printer</span>
-                        <span class="text-xs font-medium text-green-600 dark:text-green-500 block">+$15</span>
+                    <!-- Fallback for when no facilities are available -->
+                    <template v-else>
+                      <div class="col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">No facilities available</p>
                       </div>
-                      <div v-if="selectedFacilities.includes('printer')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
-                    
-                    <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('catering') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
-                      <input v-model="selectedFacilities" value="catering" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">Catering</span>
-                        <span class="text-xs font-medium text-green-600 block">+$50</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('catering')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
-                    
-                    <label class="relative overflow-hidden bg-white rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('wifi') ? 'ring-2 ring-primary' : 'border border-gray-200 hover:border-gray-300'">
-                      <input v-model="selectedFacilities" value="wifi" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('wifi') ? 'text-primary' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M17.778 8.222c-4.296-4.296-11.26-4.296-15.556 0A1 1 0 01.808 6.808c5.076-5.077 13.308-5.077 18.384 0a1 1 0 01-1.414 1.414zM14.95 11.05a7 7 0 00-9.9 0 1 1 0 01-1.414-1.414 9 9 0 0112.728 0 1 1 0 01-1.414 1.414zM12.12 13.88a3 3 0 00-4.242 0 1 1 0 01-1.415-1.415 5 5 0 017.072 0 1 1 0 01-1.415 1.415zM9 16a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('wifi') ? 'text-primary' : 'text-gray-800'">WiFi</span>
-                        <span class="text-xs font-medium text-green-600 block">+$10</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('wifi')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
-                    
-                    <label class="relative overflow-hidden bg-white rounded-lg cursor-pointer transition-all duration-300 group" 
-                          :class="selectedFacilities.includes('coffee') ? 'ring-2 ring-primary' : 'border border-gray-200 hover:border-gray-300'">
-                      <input v-model="selectedFacilities" value="coffee" type="checkbox" class="sr-only">
-                      <div class="p-2 text-center">
-                        <div class="mb-1 text-center bg-gray-50 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                          <svg class="w-4 h-4" :class="selectedFacilities.includes('coffee') ? 'text-primary' : 'text-gray-500'" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 2a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V2z" />
-                            <path fill-rule="evenodd" d="M3 5h14v8a3 3 0 01-3 3H6a3 3 0 01-3-3V5zm5 1a1 1 0 00-1 1v5a1 1 0 002 0V7a1 1 0 00-1-1z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                        <span class="text-xs font-medium block" :class="selectedFacilities.includes('coffee') ? 'text-primary' : 'text-gray-800'">Coffee</span>
-                        <span class="text-xs font-medium text-green-600 block">+$5</span>
-                      </div>
-                      <div v-if="selectedFacilities.includes('coffee')" class="absolute top-1 right-1">
-                        <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </label>
+                    </template>
                   </div>
                 </div>
               </div>
@@ -963,7 +951,7 @@
                       </svg>
                       <span>{{ facilityDisplayName(facility) }}</span>
                     </div>
-                    <span class="font-medium text-primary">+${{ facilityPrice(facility) }}</span>
+                    <span class="font-medium text-primary">+${{ facilityPrice(facility) }} × {{ calculateDurationInHours() }}h = ${{ facilityPrice(facility) * calculateDurationInHours() }}</span>
                   </div>
                 </div>
                 
@@ -1380,7 +1368,7 @@
                 <span class="text-xs font-medium text-gray-800 dark:text-gray-200">${{ roomBasePrice }}</span>
               </div>
               <div class="flex justify-between mb-1" v-if="facilitiesPrice > 0">
-                <span class="text-xs text-gray-600 dark:text-gray-400">Facilities</span>
+                <span class="text-xs text-gray-600 dark:text-gray-400">Facilities ({{ calculateDurationInHours() }}h)</span>
                 <span class="text-xs font-medium text-gray-800 dark:text-gray-200">+${{ facilitiesPrice }}</span>
               </div>
               <div class="pt-2 mt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
@@ -1524,6 +1512,7 @@ import { NetworkManager } from '../api/networkManager'
 interface Facility {
   facility_id: number;
   facility_name: string;
+  hourly_price?: number;
   icon?: string;
 }
 
@@ -1531,6 +1520,7 @@ import type { SpaceDto, ReviewDto, UserDto } from '../dto/response'
 import { useAuthStore } from '../stores/auth'
 import { useBookingStore } from '../stores/booking'
 import { useSpacesStore } from '../stores/spaces'
+import ReviewDialog from '../components/ReviewDialog.vue'
 
 interface BookingForm {
   date: string | undefined
@@ -1545,7 +1535,8 @@ export default defineComponent({
     AuthModals,
     SingleDatePicker,
     CustomTimeRangePicker,
-    TeamSizeDropdown
+    TeamSizeDropdown,
+    ReviewDialog
   },
   
   data() {
@@ -1558,6 +1549,7 @@ export default defineComponent({
       showAuthModal: false,
       showSignUpModal: false,
       showMobileBookingModal: false,
+      showReviewDialog: false,
       currentUser: null as UserDto | null,
       productType: 'meeting-room',
       isLoadingAvailability: false,
@@ -1591,6 +1583,10 @@ export default defineComponent({
       space: null as SpaceDto | null,
       reviews: [] as ReviewDto[],
       
+      // Facilities data from API
+      availableFacilities: [] as Array<{ facility_id: number; facility_name: string; hourly_price?: number; icon?: string }>,
+      facilitiesLoading: false,
+      
       // timeSlots removed
     }
   },
@@ -1623,9 +1619,27 @@ export default defineComponent({
     },
     
     facilitiesPrice(): number {
-      const prices: Record<string, number> = { tv: 25, printer: 15, catering: 50 }
-      return this.selectedFacilities.reduce((total, facility) => {
-        return total + (prices[facility] || 0)
+      // Get the booking duration
+      const duration = this.calculateDurationInHours();
+      
+      // If duration is 0, don't calculate facilities price
+      if (duration <= 0) {
+        return 0;
+      }
+      
+      return this.selectedFacilities.reduce((total, selectedFacility) => {
+        // Find the matching facility in availableFacilities
+        const facilityData = this.availableFacilities.find(
+          f => f.facility_name.toLowerCase() === selectedFacility.toLowerCase()
+        );
+        
+        // Get the hourly price for this facility
+        const facilityHourlyPrice = this.facilityPrice(selectedFacility);
+        
+        // Multiply by duration to get total price for this facility
+        const facilityTotalPrice = facilityHourlyPrice * duration;
+        
+        return total + facilityTotalPrice;
       }, 0)
     },
     
@@ -1672,8 +1686,10 @@ export default defineComponent({
     // Set default package selection
     this.selectedPackage = 'monthly'
 
-    // Load space details
+    // Load space details (which will also load facilities)
     await this.loadSpaceDetails()
+    
+    // The space details are loaded in loadSpaceDetails method
     
     // Add click outside listener for dropdowns
     document.addEventListener('click', this.handleClickOutside)
@@ -1692,9 +1708,37 @@ export default defineComponent({
     },
     
     getFeatureName(feature: any): string {
-      if (typeof feature === 'object' && feature !== null && 'facility_name' in feature) {
-        return (feature as Facility).facility_name;
+      // Make sure we're handling facility objects correctly
+      if (typeof feature === 'object' && feature !== null) {
+        // Check if it has a facility_name property (API format)
+        if ('facility_name' in feature && feature.facility_name) {
+          return String(feature.facility_name);
+        }
+        
+        // Check for name property (alternate format)
+        if ('name' in feature && feature.name) {
+          return String(feature.name);
+        }
+        
+        // If we have an ID but no name, create a readable name
+        if ('facility_id' in feature && feature.facility_id) {
+          const name = String(feature.facility_id).replace(/_/g, ' ').toLowerCase()
+            .split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+          return name;
+        }
+        
+        // Handle any other object type (for backward compatibility)
+        return JSON.stringify(feature);
       }
+      
+      // Handle string values with nice formatting
+      if (typeof feature === 'string') {
+        const formattedName = feature.replace(/_/g, ' ').toLowerCase()
+          .split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        return formattedName;
+      }
+      
+      // Handle any other primitive values
       return String(feature);
     },
     async fetchBookedTimeSlots() {
@@ -1912,8 +1956,64 @@ export default defineComponent({
             this.reviews = response.recentReviews || []
           }
           
-          console.log('Loaded space details:', this.space)
-          console.log('Mapped reviews:', this.reviews)
+          // Load facilities from the space response if available
+          console.log("Checking for facilities in space:", this.space);
+          
+          // Cast the space object to access its properties safely
+          const spaceData = this.space as any;
+          if (spaceData.default_facilities && Array.isArray(spaceData.default_facilities) && spaceData.default_facilities.length > 0) {
+            // Keep default_facilities directly accessible on the space object
+            // Make sure all facilities have icons
+            spaceData.default_facilities = spaceData.default_facilities.map((facility: any) => ({
+              facility_id: facility.facility_id,
+              facility_name: facility.facility_name,
+              hourly_price: facility.hourly_price || 0,
+              icon: facility.icon || this.getFacilityIcon((facility.facility_name || '').toLowerCase())
+            }));
+            
+            // Also map to features for backward compatibility
+            if (!this.space.features) {
+              this.space.features = [];
+            }
+            
+            // Create a deep copy for features to avoid reference issues
+            this.space.features = JSON.parse(JSON.stringify(spaceData.default_facilities));
+          } else if (spaceData.facilities && Array.isArray(spaceData.facilities) && spaceData.facilities.length > 0) {
+            // Fallback to old facilities property if default_facilities is not available
+            if (!this.space.features) {
+              this.space.features = [];
+            }
+            
+            this.space.features = spaceData.facilities.map((facility: any) => ({
+              facility_id: facility.facility_id,
+              facility_name: facility.facility_name,
+              hourly_price: facility.hourly_price || 0,
+              icon: facility.icon || this.getFacilityIcon(facility.facility_name.toLowerCase())
+            }));
+          }
+          
+          // Process additional_facilities for Additional Amenities section
+          if (spaceData.additional_facilities && Array.isArray(spaceData.additional_facilities) && spaceData.additional_facilities.length > 0) {
+            this.availableFacilities = spaceData.additional_facilities.map((facility: any) => ({
+              facility_id: facility.facility_id,
+              facility_name: facility.facility_name,
+              hourly_price: facility.hourly_price || 0,
+              icon: facility.icon || this.getFacilityIcon(facility.facility_name.toLowerCase())
+            }));
+          } else if (spaceData.facilities && Array.isArray(spaceData.facilities) && spaceData.facilities.length > 0) {
+            // Fallback to old facilities property if additional_facilities is not available
+            // This is for backward compatibility
+            this.availableFacilities = spaceData.facilities.map((facility: any) => ({
+              facility_id: facility.facility_id,
+              facility_name: facility.facility_name,
+              hourly_price: facility.hourly_price || 0,
+              icon: facility.icon || this.getFacilityIcon(facility.facility_name.toLowerCase())
+            }));
+          } else {
+            this.availableFacilities = [];
+          }
+          
+          this.facilitiesLoading = false;
         } else {
           this.error = response.message || 'Space not found'
         }
@@ -1923,6 +2023,32 @@ export default defineComponent({
       } finally {
         this.loading = false
       }
+    },
+    
+    // loadFacilities method removed as we now get facilities directly from space details
+    
+    // Helper method to get icon for a facility
+    getFacilityIcon(facilityName: string): string {
+      const icons: Record<string, string> = {
+        'tv': 'M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z M8 15v1.5a.5.5 0 001 0V15h2v1.5a.5.5 0 001 0V15h1a1 1 0 100-2H7a1 1 0 100 2h1z',
+        'wifi': 'M17.778 8.222c-4.296-4.296-11.26-4.296-15.556 0A1 1 0 01.808 6.808c5.076-5.077 13.308-5.077 18.384 0a1 1 0 01-1.414 1.414zM14.95 11.05a7 7 0 00-9.9 0 1 1 0 01-1.414-1.414 9 9 0 0112.728 0 1 1 0 01-1.414 1.414zM12.12 13.88a3 3 0 00-4.242 0 1 1 0 01-1.415-1.415 5 5 0 017.072 0 1 1 0 01-1.415 1.415zM9 16a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z',
+        'printer': 'M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zM5 14a1 1 0 001 1h8a1 1 0 001-1v-3H5v3z',
+        'coffee': 'M3 2a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V2z M3 5h14v8a3 3 0 01-3 3H6a3 3 0 01-3-3V5zm5 1a1 1 0 00-1 1v5a1 1 0 002 0V7a1 1 0 00-1-1z',
+        'catering': 'M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z'
+      }
+      
+      // Normalize the facility name for matching
+      const normalizedName = facilityName.toLowerCase()
+      
+      // Check for partial matches (e.g., "wifi premium" should match "wifi")
+      for (const [key, icon] of Object.entries(icons)) {
+        if (normalizedName.includes(key)) {
+          return icon
+        }
+      }
+      
+      // Default icon if no match found
+      return 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z'
     },
     
     getCategoryRoute(): string {
@@ -2140,18 +2266,30 @@ export default defineComponent({
       return names[String(facility)] || String(facility)
     },
     facilityPrice(facility: any): number {
-      const prices: Record<string, number> = { tv: 25, printer: 15, catering: 50 }
-      
       // Get the facility key for pricing lookup
       let facilityKey: string;
+      let facilityObject: Facility | undefined;
+      
       if (typeof facility === 'object' && facility !== null && 'facility_id' in facility) {
-        // If facility has a facility_name, use that for price lookup
+        // If facility is already a facility object
         facilityKey = (facility as Facility).facility_name?.toLowerCase() || '';
+        facilityObject = facility as Facility;
       } else {
-        facilityKey = String(facility);
+        // If facility is a string, find the matching facility in availableFacilities
+        facilityKey = String(facility).toLowerCase();
+        facilityObject = this.availableFacilities.find(
+          f => f.facility_name.toLowerCase() === facilityKey
+        );
       }
       
-      return prices[facilityKey] || 0
+      // Get the price from the facility object if available
+      let price = 0;
+      if (facilityObject && (facilityObject as any).hourly_price) {
+        price = Math.round((facilityObject as any).hourly_price);
+      }
+      
+      // If no price found, return 0
+      return price || 0
     },
     
     async proceedToBooking(): Promise<void> {
@@ -2283,6 +2421,31 @@ export default defineComponent({
         const encodedAddress = encodeURIComponent(this.space.address);
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
         window.open(mapsUrl, '_blank');
+      }
+    },
+    
+    handleReviewSubmitted(review: any): void {
+      // Create a new review object from the response
+      const newReview = {
+        id: Date.now(), // Generate a temporary ID
+        name: review.first_name,
+        rating: review.value,
+        comment: review.review_description,
+        date: new Date().toISOString().split('T')[0],
+        avatar: review.user_avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(review.first_name)
+      };
+      
+      // Add the new review to the reviews array
+      this.reviews = [newReview, ...this.reviews];
+      
+      // Update the space rating if needed
+      if (this.space) {
+        const totalReviews = this.reviews.length;
+        const totalRating = this.reviews.reduce((sum, review) => sum + review.rating, 0);
+        this.space.rating = parseFloat((totalRating / totalReviews).toFixed(1));
+        
+        // Update the number of reviews
+        this.space.reviews = totalReviews;
       }
     },
     

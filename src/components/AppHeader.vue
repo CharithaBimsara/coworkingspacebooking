@@ -284,8 +284,11 @@ export default defineComponent({
       this.closeUserMenu()
       this.closeMobileMenu()
 
-      // Redirect to home if on protected route
-      if (this.currentRoute.path === '/my-bookings') {
+      // Redirect to home if on a protected route
+      if (this.currentRoute.path === '/my-bookings' || 
+          this.currentRoute.path === '/profile' ||
+          this.currentRoute.path.startsWith('/profile/') ||
+          this.currentRoute.path === '/payment-methods') {
         this.router?.push('/')
       }
     },

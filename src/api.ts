@@ -38,6 +38,7 @@ import {
 } from './dto/response';
 
 import { SpaceType, getSpaceTypeString, getSpaceTypeEnum } from './types/enums';
+import { NetworkManager } from './api/networkManager';
 
 // Real API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.workspace.com/v1';
@@ -374,29 +375,43 @@ export class AuthAPI {
   }
   */
 
-  // Mock implementation
+  // Implementation using NetworkManager
   static async signIn(request: SignInRequestDto): Promise<AuthResponseDto> {
     try {
-      await delay(1000);
-
-      // Mock successful response
-      const mockUser = new UserDto({
-        id: Date.now(),
-        firstName: request.email.split('@')[0] || 'Demo',
-        lastName: 'User',
-        email: request.email,
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-      });
-
+      // Import NetworkManager here to avoid circular dependencies
+      const { NetworkManager } = await import('./api/networkManager');
+      
+      // Use NetworkManager to authenticate
+      const result = await NetworkManager.loginUser(request.email, request.password);
+      
+      if (result.success && result.user && result.token) {
+        // Create user DTO from the API response
+        const user = new UserDto({
+          id: result.user.id,
+          firstName: result.user.first_name || request.email.split('@')[0],
+          lastName: result.user.last_name || '',
+          email: result.user.email,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(result.user.first_name || '')}+${encodeURIComponent(result.user.last_name || '')}&background=6366f1&color=fff`
+        });
+        
+        return new AuthResponseDto(
+          true,
+          result.message,
+          user,
+          result.token
+        );
+      }
+      
       return new AuthResponseDto(
-        true,
-        'Successfully signed in',
-        mockUser,
-        'mock-jwt-token'
+        false, 
+        result.message || 'Failed to sign in. Please check your credentials and try again.'
       );
     } catch (error) {
       console.error('Sign in error:', error);
-      return new AuthResponseDto(false, 'Failed to sign in. Please check your credentials and try again.');
+      return new AuthResponseDto(
+        false, 
+        error instanceof Error ? error.message : 'Failed to sign in. Please check your credentials and try again.'
+      );
     }
   }
 
@@ -418,32 +433,44 @@ export class AuthAPI {
   }
   */
 
-  // Mock implementation
+  // Implementation using NetworkManager
   static async signUp(request: SignUpRequestDto): Promise<AuthResponseDto> {
     try {
-      await delay(1000);
-
-      if (request.password !== request.confirmPassword) {
-        return new AuthResponseDto(false, 'Passwords do not match');
-      }
-
-      const mockUser = new UserDto({
-        id: Date.now(),
-        firstName: request.firstName,
-        lastName: request.lastName,
-        email: request.email,
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+      // Call NetworkManager's registerUser method
+      const result = await NetworkManager.registerUser({
+        FirstName: request.firstName,
+        LastName: request.lastName,
+        Email: request.email,
+        Password: request.password,
+        // Send empty strings for optional fields
+        Phone: "",
+        Company: "",
+        JobTitle: "",
+        Bio: ""
+        // Avatar is not included, will default to empty string in NetworkManager
       });
 
-      return new AuthResponseDto(
-        true,
-        'Account created successfully',
-        mockUser,
-        'mock-jwt-token'
-      );
+      if (result.success) {
+        // After successful registration, we return a success message
+        // We don't immediately log the user in - they need to use the login form
+        return new AuthResponseDto(
+          true,
+          result.message || 'Account created successfully! Please sign in with your new credentials.',
+          undefined,
+          undefined
+        );
+      } else {
+        return new AuthResponseDto(
+          false,
+          result.message || 'Failed to create account. Please try again.'
+        );
+      }
     } catch (error) {
       console.error('Sign up error:', error);
-      return new AuthResponseDto(false, 'Failed to create account. Please try again.');
+      return new AuthResponseDto(
+        false, 
+        error instanceof Error ? error.message : 'Failed to create account. Please try again.'
+      );
     }
   }
 }

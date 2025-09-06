@@ -5,8 +5,26 @@
 import type { SpaceDto } from '../dto/response';
 import { AdvertisementDto } from '../dto/response';
 
+// Interface for booking data returned by the API
+interface BookingData {
+  booking_id: number;
+  user_id: number;
+  first_name?: string | null;
+  product_id: number;
+  payment_id: number;
+  total_price: number;
+  facility_ids: number[];
+  booking_date: string;
+  start_time: string;
+  end_time: string;
+  is_onetime_changed: boolean;
+  product_name?: string;
+  product_image?: string;
+  location_name?: string;
+}
+
 export class NetworkManager {
-  private static readonly BASE_URL = 'http://localhost:9011/api';
+  private static readonly BASE_URL = 'http://192.168.8.132:9011/api';
   private static lastRawResponseData: any = null;
 
   /**
@@ -37,20 +55,32 @@ export class NetworkManager {
 
       const data = await response.json();
 
-      if (data.status_code === 200 && Array.isArray(data.data)) {
+      if ((data.status_code === 200 || data.statusCode === 200) && Array.isArray(data.data)) {
         // Return full location objects with id, name, address, and url
-        return data.data.map((location: any) => ({
-          id: location.id,
-          name: location.name,
-          address: location.address,
-          url: location.url
-        }));
+        return data.data.map((location: any) => {
+          // Create address from street, town, district components
+          const addressParts = [
+            location.street || location.street_two,
+            location.town,
+            location.district
+          ].filter(Boolean);
+          
+          return {
+            id: location.id,
+            name: location.name,
+            // Create address by joining components, or use address if it exists
+            address: location.address || addressParts.join(', '),
+            url: location.url,
+            description: `${location.town || ''}, ${location.district || ''}`.trim()
+          };
+        });
       } else {
-        throw new Error(data.message || 'Failed to fetch locations');
+        throw new Error(data.message || data.statusCode || 'Failed to fetch locations');
       }
     } catch (error) {
       console.error('Error fetching locations:', error);
-      throw error;
+      // Return empty array instead of throwing error to prevent app crash
+      return [];
     }
   }
 
@@ -126,6 +156,12 @@ export class NetworkManager {
           if (data.data.recent_ratings && Array.isArray(data.data.recent_ratings)) {
             transformedSpace.recent_ratings = data.data.recent_ratings;
           }
+          
+          // Make sure facilities are properly assigned from the API response
+          if (data.data.facilities && Array.isArray(data.data.facilities)) {
+            transformedSpace.facilities = data.data.facilities;
+            console.log("Added facilities to transformed space:", transformedSpace.facilities);
+          }
 
           return {
             success: true,
@@ -160,7 +196,7 @@ export class NetworkManager {
 
         // Add other parameters conditionally
         if (params.location_id !== undefined) {
-          requestBody.locationId = params.location_id;
+          requestBody.location_id = params.location_id;  // Changed to match API format
         }
 
         if (params.date) {
@@ -171,11 +207,11 @@ export class NetworkManager {
 
         // Add start and end time as separate fields (not operation times)
         if (params.start_time) {
-          requestBody.startTime = params.start_time;
+          requestBody.start_time = params.start_time;  // Changed to match API format
         }
 
         if (params.end_time) {
-          requestBody.endTime = params.end_time;
+          requestBody.end_time = params.end_time;  // Changed to match API format
         }
 
         if (params.capacity !== undefined && params.capacity !== null) {
@@ -183,19 +219,27 @@ export class NetworkManager {
         }
 
         if (params.min_daily_rate !== undefined) {
-          requestBody.minPrice = params.min_daily_rate; // Changed to match new API format
+          requestBody.min_daily_rate = params.min_daily_rate;  // Changed to match API format
         }
 
         if (params.max_daily_rate !== undefined) {
-          requestBody.maxPrice = params.max_daily_rate; // Changed to match new API format
+          requestBody.max_daily_rate = params.max_daily_rate;  // Changed to match API format
         }
 
         if (params.min_rating !== undefined) {
-          requestBody.minRating = params.min_rating; // Changed to match new API format
+          requestBody.min_rating = params.min_rating;  // Changed to match API format
         }
 
         if (params.facilities && params.facilities.length > 0) {
-          requestBody.facilities = params.facilities;
+          // When facilities come in as strings (facility names), use them directly
+          // When they come as objects with facility_name, extract just the names
+          requestBody.facilities = params.facilities.map((facility: any) => {
+            if (typeof facility === 'object' && facility !== null && facility.facility_name) {
+              return facility.facility_name;
+            }
+            return facility;
+          });
+          console.log('Sending facilities to API:', requestBody.facilities);
         }
         
         // Real API implementation
@@ -233,6 +277,12 @@ export class NetworkManager {
         if (data.status_code === 200) {
           // Transform API response to match our SpaceDto format
           const transformedSpaces = this.transformApiSpacesToSpaceDto(data.data || []);
+          
+          console.log('Transformed spaces with facilities:', transformedSpaces.map(s => ({
+            id: s.id,
+            name: s.name,
+            facilities: s.facilities
+          })));
 
           return {
             success: true,
@@ -293,41 +343,37 @@ export class NetworkManager {
       // Map product type to our internal format and get display name
       let productType = '';
       let displayProductType = '';
-      const apiProductType = (apiSpace.productType || '').toLowerCase();
+      const apiProductType = (apiSpace.productType || apiSpace.type || '').toLowerCase();
       
-      switch (apiSpace.productType) {
-        case 'MeetingRoom':
-        case 'MeetingRooms':
-        case 'meeting':
-        case 'meetingroom':
-          productType = 'meeting-room';
-          displayProductType = 'Meeting Room';
-          break;
-        case 'HotDesk':
-        case 'HotDesks':
-          productType = 'hot-desk';
-          displayProductType = 'Hot Desk';
-          break;
-        case 'DedicatedDesk':
-        case 'DedicatedDesks':
-          productType = 'dedicated-desk';
-          displayProductType = 'Dedicated Desk';
-          break;
-        default:
-          // Fallback mapping for unknown types
-          if (apiProductType.includes('meeting')) {
-            productType = 'meeting-room';
-            displayProductType = 'Meeting Room';
-          } else if (apiProductType.includes('hot') || (apiProductType.includes('desk') && !apiProductType.includes('dedicated'))) {
-            productType = 'hot-desk';
-            displayProductType = 'Hot Desk';
-          } else if (apiProductType.includes('dedicated')) {
-            productType = 'dedicated-desk';
-            displayProductType = 'Dedicated Desk';
-          } else {
-            productType = apiProductType.replace(/\s+/g, '-');
-            displayProductType = apiSpace.productType || '';
-          }
+      // First check for type field in case productType isn't available
+      if (!apiSpace.productType && apiSpace.type) {
+        apiSpace.productType = apiSpace.type;
+      }
+      
+      // Comprehensive type detection with common variations and typos
+      if (apiProductType.includes('meeting') || apiProductType === 'meetingroom' || apiProductType === 'meetingrooms') {
+        productType = 'meeting-room';
+        displayProductType = 'Meeting Room';
+      } 
+      else if (apiProductType.includes('hot') || 
+        (apiProductType.includes('desk') && !apiProductType.includes('dedicated'))) {
+        productType = 'hot-desk';
+        displayProductType = 'Hot Desk';
+      } 
+      else if (apiProductType.includes('dedicated')) {
+        productType = 'dedicated-desk';
+        displayProductType = 'Dedicated Desk';
+      } 
+      else {
+        // Default case for unknown types - convert to kebab case and title case
+        productType = apiProductType.replace(/\s+/g, '-').toLowerCase();
+        
+        // Make display product type Title Case
+        displayProductType = apiSpace.productType || apiSpace.type || '';
+        displayProductType = displayProductType
+          .split(/[\s-_]+/)
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
       }
 
       // Handle features and additional_facilities separately (DO NOT mix them!)
@@ -339,14 +385,13 @@ export class NetworkManager {
       }
       
       // Handle additional facilities - keep them separate from features
-      let additional_facilities: string[] = [];
+      let additional_facilities = [];
       if (Array.isArray(apiSpace.additional_facilities)) {
         additional_facilities = [...apiSpace.additional_facilities];
       }
       
-      // Remove duplicates
+      // Remove duplicates from features (additional_facilities are now objects, not strings)
       features = [...new Set(features)];
-      additional_facilities = [...new Set(additional_facilities)];
       
       // Extract operation times if available
       let start_operation_time = apiSpace.start_operation_time || null;
@@ -355,26 +400,89 @@ export class NetworkManager {
       // Process images - add base URL to relative paths
       const processedImages = NetworkManager.processImageUrls(apiSpace.images || []);
 
+      // Handle default_facilities from the API response
+      let facilities = [];
+      if (apiSpace.default_facilities && Array.isArray(apiSpace.default_facilities)) {
+        // Map default facilities to the proper format if they're not already in the correct format
+        facilities = apiSpace.default_facilities.map((f: any) => {
+          if (typeof f === 'string') {
+            return {
+              facility_id: 0, // Default ID
+              facility_name: f,
+              hourly_price: 0,
+              icon: null
+            };
+          } else {
+            return {
+              facility_id: f.facility_id || 0,
+              facility_name: f.facility_name || f,
+              hourly_price: f.hourly_price || 0,
+              icon: f.icon || null
+            };
+          }
+        });
+        
+        // Extract facility names from default_facilities and add to features for backwards compatibility
+        const facilityNames = facilities.map((f: any) => f.facility_name);
+        if (facilityNames.length > 0) {
+          features = [...new Set([...features, ...facilityNames])];
+        }
+      }
+
+      // Add additional_facilities if available
+      if (apiSpace.additional_facilities && Array.isArray(apiSpace.additional_facilities)) {
+        // Map additional facilities to the proper format if they're not already in the correct format
+        additional_facilities = apiSpace.additional_facilities.map((f: any) => {
+          if (typeof f === 'string') {
+            return {
+              facility_id: 0, // Default ID
+              facility_name: f,
+              hourly_price: 0,
+              icon: null
+            };
+          } else {
+            return {
+              facility_id: f.facility_id || 0,
+              facility_name: f.facility_name || f,
+              hourly_price: f.hourly_price || 0,
+              icon: f.icon || null
+            };
+          }
+        });
+        
+        // Also extract names from additional_facilities for features array (backward compatibility)
+        const additionalFacilityNames = additional_facilities
+          .filter((f: any) => f && f.facility_name)
+          .map((f: any) => f.facility_name);
+        
+        if (additionalFacilityNames.length > 0) {
+          features = [...new Set([...features, ...additionalFacilityNames])];
+        }
+      }
+
       const transformedSpace: SpaceDto = {
         id: apiSpace.id,
         name: apiSpace.name || apiSpace.product_description || `Space ${apiSpace.id}`,
-        description: apiSpace.discription || apiSpace.product_description || '',
-        location: apiSpace.locationName || apiSpace.location || apiSpace.address || '', // Use locationName first, then fallbacks
+        description: apiSpace.product_description || apiSpace.discription || '',  // Changed priority to match API
+        location: apiSpace.location_name || apiSpace.locationName || apiSpace.location || apiSpace.address || '', // Added location_name from API
         address: apiSpace.address || '',
-        productType: productType,
+        productType: productType || apiSpace.type?.toLowerCase() || '', // Use API's type field if productType is not set
         displayProductType: displayProductType, // Add display name for product type
         images: processedImages,
-        rating: Number(apiSpace.rating) || 0, // Ensure rating is a number
-        reviews: Number(apiSpace.reviews) || Number(apiSpace.review_count) || 0, // Handle different review field names
+        rating: Number(apiSpace.average_rating) || Number(apiSpace.rating) || 0, // Use average_rating from API first
+        reviews: Number(apiSpace.total_reviews) || Number(apiSpace.reviews) || Number(apiSpace.review_count) || 0, // Use total_reviews from API first
         pricing: pricing,
         capacity: Number(apiSpace.capacity) || 0,
         maxCapacity: Number(apiSpace.maxCapacity) || Number(apiSpace.capacity) || 0,
-        features: features, // Use ONLY the features array from response.features
-        additional_facilities: additional_facilities, // Use ONLY additional_facilities array from response.additional_facilities
+        features: features, // Use features array from response.features
+        additional_facilities: additional_facilities, // Use additional_facilities array from API
+        default_facilities: facilities, // Use default_facilities from API response
+        facilities: facilities, // Keep facilities for backward compatibility
         isAvailable: true, // Assume available if returned by search
         availability: availability,
         start_operation_time: start_operation_time,
-        end_operation_time: end_operation_time
+        end_operation_time: end_operation_time,
+        recent_ratings: apiSpace.recent_ratings || [] // Include recent ratings from API response
       };
       return transformedSpace;
     });
@@ -411,6 +519,52 @@ export class NetworkManager {
     // Otherwise, prefix with base URL (without the /api part)
     const baseServerUrl = NetworkManager.BASE_URL.replace('/api', '');
     return `${baseServerUrl}${imagePath}`;
+  }
+  
+  /**
+   * Get all facilities for filtering
+   * Endpoint: /facility/get-facility-list
+   * Method: POST
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Facilities retrieved successfully",
+   *   "data": [
+   *     {
+   *       "facility_id": 1,
+   *       "facility_name": "TV",
+   *       "description": null
+   *     },
+   *     ...
+   *   ]
+   * }
+   */
+  static async getFacilities(): Promise<Array<{ facility_id: number; facility_name: string; description?: string }>> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/facility/get-facility-list`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200 && Array.isArray(data.data)) {
+        // Return facilities list from API
+        return data.data;
+      } else {
+        console.warn('Failed to fetch facilities:', data.message);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching facilities:', error);
+      return [];
+    }
   }
 
   /**
@@ -492,12 +646,13 @@ export class NetworkManager {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`Advertisement API returned status ${response.status}. Using fallback data.`);
+        return this.getFallbackAdvertisements();
       }
 
       const data = await response.json();
 
-      if (data.status_code === 200 && Array.isArray(data.data)) {
+      if ((data.status_code === 200 || data.statusCode === 200) && Array.isArray(data.data)) {
         // Convert API response to AdvertisementDto objects
         return data.data.map((ad: any, index: number) => {
           // Process the image path to make it an absolute URL
@@ -514,11 +669,1200 @@ export class NetworkManager {
           });
         });
       } else {
-        throw new Error(data.message || 'Failed to fetch advertisements');
+        console.warn('Invalid advertisement data format. Using fallback data.');
+        return this.getFallbackAdvertisements();
       }
     } catch (error) {
       console.error('Error fetching advertisements:', error);
-      throw error;
+      return this.getFallbackAdvertisements();
     }
+  }
+  
+  /**
+   * Register a new user
+   * Endpoint: /users/create
+   * Method: POST
+   * Request:
+   * {
+   *   "FirstName": "charitha",
+   *   "LastName": "bimsara",
+   *   "Email": "charithabimsara@gmail.com",
+   *   "Password": "Bimsara99",
+   *   "Phone": "",  // Optional
+   *   "Company": "", // Optional
+   *   "JobTitle": "", // Optional
+   *   "Bio": "", // Optional
+   *   "Avatar": "" // Optional
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Request processed successfully",
+   *   "data": "User created successfully"
+   * }
+   */
+  static async registerUser(userData: {
+    FirstName: string;
+    LastName: string;
+    Email: string;
+    Password: string;
+    Phone?: string;
+    Company?: string;
+    JobTitle?: string;
+    Bio?: string;
+    Avatar?: File | string;
+  }): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      console.log('Registration data:', userData);
+      
+      // Always use FormData for this API endpoint
+      const formData = new FormData();
+      
+      // Add required fields
+      formData.append('FirstName', userData.FirstName);
+      formData.append('LastName', userData.LastName);
+      formData.append('Email', userData.Email);
+      formData.append('Password', userData.Password);
+      
+      // Add optional fields (empty strings if not provided)
+      formData.append('Phone', userData.Phone || '');
+      formData.append('Company', userData.Company || '');
+      formData.append('JobTitle', userData.JobTitle || '');
+      formData.append('Bio', userData.Bio || '');
+      
+      // Handle Avatar if it exists
+      if (userData.Avatar instanceof File) {
+        formData.append('Avatar', userData.Avatar);
+      } else if (userData.Avatar) {
+        formData.append('Avatar', userData.Avatar);
+      } else {
+        formData.append('Avatar', '');
+      }
+      
+      // Let the browser set the correct Content-Type with boundary
+      const headers = {};
+
+      // Log the form data entries for debugging
+      console.log('FormData entries:');
+      for (const pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[0] === 'Password' ? '******' : pair[1]));
+      }
+      
+      const response = await fetch(`${this.BASE_URL}/users/create`, {
+        method: 'POST',
+        headers,
+        body: formData
+      });      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid registration data. Please check your information.';
+            break;
+          case 409:
+            errorMessage = 'Email already registered. Please use a different email address.';
+            break;
+          case 422:
+            errorMessage = 'Validation error. Please check all required fields.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Registration failed. Please try again.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+      
+      const data = await response.json();
+      
+      if (data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Registration successful!'
+        };
+      } else {
+        // Handle API-specific error messages
+        let errorMessage = data.message || 'Registration failed. Please try again.';
+        
+        // Check for common registration errors in the message
+        if (errorMessage.toLowerCase().includes('email') && 
+            (errorMessage.toLowerCase().includes('exists') || 
+             errorMessage.toLowerCase().includes('taken') || 
+             errorMessage.toLowerCase().includes('already'))) {
+          errorMessage = 'This email is already registered. Please use a different email address.';
+        } else if (errorMessage.toLowerCase().includes('password')) {
+          errorMessage = 'Password does not meet requirements. Please choose a stronger password.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to register';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (error instanceof Error) {
+        if (error.message.toLowerCase().includes('timeout')) {
+          errorMessage = 'Registration request timed out. Please try again.';
+        }
+      }
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+  
+  /**
+   * Update user profile
+   * Endpoint: /users/update
+   * Method: POST
+   * Request: FormData with fields:
+   * {
+   *   "Id": 1,
+   *   "FirstName": "Updated First",
+   *   "LastName": "Updated Last",
+   *   "Email": "updated@example.com",
+   *   "Phone": "1234567890",
+   *   "Company": "Updated Company",
+   *   "JobTitle": "Updated Job",
+   *   "Bio": "Updated Bio",
+   *   "Avatar": File or string
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Profile updated successfully"
+   * }
+   */
+  static async updateUserProfile(userData: {
+    Id: number;
+    FirstName?: string;
+    LastName?: string;
+    Email?: string;
+    Phone?: string;
+    Company?: string;
+    JobTitle?: string;
+    Bio?: string;
+    Avatar?: File | string;
+  }): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      console.log('Profile update data:', userData);
+      
+      // Always use FormData for this API endpoint
+      const formData = new FormData();
+      
+      // Add required user ID
+      formData.append('Id', userData.Id.toString());
+      
+      // Add optional fields if they exist
+      if (userData.FirstName !== undefined) formData.append('FirstName', userData.FirstName);
+      if (userData.LastName !== undefined) formData.append('LastName', userData.LastName);
+      if (userData.Email !== undefined) formData.append('Email', userData.Email);
+      if (userData.Phone !== undefined) formData.append('Phone', userData.Phone || '');
+      if (userData.Company !== undefined) formData.append('Company', userData.Company || '');
+      if (userData.JobTitle !== undefined) formData.append('JobTitle', userData.JobTitle || '');
+      if (userData.Bio !== undefined) formData.append('Bio', userData.Bio || '');
+      
+      // Handle Avatar if it exists
+      if (userData.Avatar instanceof File) {
+        formData.append('Avatar', userData.Avatar);
+      } else if (userData.Avatar) {
+        try {
+          // If it's a base64 string from a FileReader, we need to convert it to a file
+          if (typeof userData.Avatar === 'string' && userData.Avatar.startsWith('data:image')) {
+            const response = await fetch(userData.Avatar);
+            const blob = await response.blob();
+            const file = new File([blob], 'profile-image.jpg', { type: blob.type });
+            formData.append('Avatar', file);
+          } else {
+            formData.append('Avatar', userData.Avatar);
+          }
+        } catch (error) {
+          console.error('Error processing avatar:', error);
+          // If there's an error processing the avatar, skip it rather than failing the whole update
+          console.log('Skipping avatar upload due to processing error');
+        }
+      }
+      
+      // Let the browser set the correct Content-Type with boundary
+      const headers = {};
+
+      // Log the form data entries for debugging
+      console.log('FormData entries for profile update:');
+      for (const pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[0] === 'Password' ? '******' : pair[1]));
+      }
+      
+      const response = await fetch(`${this.BASE_URL}/users/update`, {
+        method: 'POST',
+        headers,
+        body: formData
+      });
+      
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid profile data. Please check your information.';
+            break;
+          case 404:
+            errorMessage = 'User not found. Please login again.';
+            break;
+          case 409:
+            errorMessage = 'Email already in use. Please use a different email address.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Profile update failed. Please try again.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+      
+      const data = await response.json();
+      
+      if (data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Profile updated successfully!'
+        };
+      } else {
+        // Handle API-specific error messages
+        let errorMessage = data.message || 'Profile update failed. Please try again.';
+        
+        // Check for common profile update errors in the message
+        if (errorMessage.toLowerCase().includes('email') && 
+            (errorMessage.toLowerCase().includes('exists') || 
+             errorMessage.toLowerCase().includes('taken') || 
+             errorMessage.toLowerCase().includes('already'))) {
+          errorMessage = 'This email is already in use. Please use a different email address.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+    } catch (error) {
+      console.error('Profile update error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to update profile';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+
+  /**
+   * Get user details by ID
+   * Endpoint: /users/get-by-id
+   * Method: POST
+   * Request: FormData with field:
+   * {
+   *   "Id": 1
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "User retrieved successfully",
+   *   "data": {
+   *     "id": 3,
+   *     "first_name": "nissanka",
+   *     "last_name": "Nadun",
+   *     "email": "n@gmail.com",
+   *     "phone": "0719934597",
+   *     "company": "Paymedia",
+   *     "job_title": "SE",
+   *     "bio": "I am SE",
+   *     "avatar": "/uploads/users/cf8a535f-9c5e-451d-af1c-c0aa8a8f78fe.jpeg",
+   *     "is_active": true
+   *   }
+   * }
+   */
+  static async getUserById(userId: number): Promise<{
+    success: boolean;
+    message: string;
+    user?: {
+      id: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone?: string;
+      company?: string;
+      jobTitle?: string;
+      bio?: string;
+      avatar?: string;
+      isActive?: boolean;
+    };
+  }> {
+    try {
+      // Always use FormData for this API endpoint
+      const formData = new FormData();
+      
+      // Add user ID
+      formData.append('Id', userId.toString());
+      
+      const response = await fetch(`${this.BASE_URL}/users/get-by-id`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid user ID.';
+            break;
+          case 404:
+            errorMessage = 'User not found.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Failed to fetch user details.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+      
+      const data = await response.json();
+      
+      if (data.status_code === 200 && data.data) {
+        // Transform snake_case to camelCase
+        const userData = data.data;
+        
+        return {
+          success: true,
+          message: data.message || 'User details retrieved successfully',
+          user: {
+            id: userData.id,
+            firstName: userData.first_name,
+            lastName: userData.last_name,
+            email: userData.email,
+            phone: userData.phone,
+            company: userData.company,
+            jobTitle: userData.job_title,
+            bio: userData.bio,
+            avatar: userData.avatar ? (userData.avatar.startsWith('http') ? userData.avatar : this.processAdImageUrl(userData.avatar)) : '',
+            isActive: userData.is_active
+          }
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve user details'
+        };
+      }
+    } catch (error) {
+      console.error('Get user by ID error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to retrieve user details';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+
+  /**
+   * Login user with email and password
+   * Endpoint: /users/login
+   * Method: POST
+   * Request:
+   * {
+   *   "email": "charithabimsara@gmail.com",
+   *   "password": "Bimsara99"
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Login successful",
+   *   "data": {
+   *     "id": 2,
+   *     "email": "charithabimsara@gmail.com",
+   *     "first_name": "charitha",
+   *     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   *   }
+   * }
+   */
+  static async loginUser(email: string, password: string): Promise<{
+    success: boolean;
+    message: string;
+    user?: {
+      id: number;
+      email: string;
+      first_name: string;
+      last_name?: string;
+    };
+    token?: string;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password
+        })
+      });
+
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid login request. Please check your email format.';
+            break;
+          case 401:
+            errorMessage = 'Incorrect email or password. Please try again.';
+            break;
+          case 403:
+            errorMessage = 'Your account is locked. Please contact support.';
+            break;
+          case 404:
+            errorMessage = 'Account not found. Please check your email address.';
+            break;
+          case 429:
+            errorMessage = 'Too many login attempts. Please try again later.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Login failed. Please try again.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+
+      const data = await response.json();
+
+      // Check if the API returned a successful response
+      if (data.status_code === 200 && data.data) {
+        // Store the basic user info
+        const basicUserInfo = {
+          id: data.data.id,
+          email: data.data.email,
+          first_name: data.data.first_name,
+          last_name: data.data.last_name
+        };
+
+        // Try to get complete user details - but this is just to save in localStorage
+        // for other parts of the app that might need it later
+        try {
+          // We have the user ID from login response, now fetch complete details
+          const userDetailsResponse = await this.getUserById(data.data.id);
+          
+          if (userDetailsResponse.success && userDetailsResponse.user) {
+            // Save the full user data to localStorage for use elsewhere in the app
+            localStorage.setItem('user_details', JSON.stringify(userDetailsResponse.user));
+          }
+        } catch (detailsError) {
+          console.warn('Error fetching user details after login:', detailsError);
+        }
+        
+        // Return the basic user info that matches the expected type
+        return {
+          success: true,
+          message: data.message || 'Login successful',
+          user: basicUserInfo,
+          token: data.data.token
+        };
+      } else {
+        // Handle API-specific error messages
+        let errorMessage = 'Login failed';
+        
+        // Use the API's error message if available
+        if (data.message) {
+          errorMessage = data.message;
+        } 
+        // Handle specific error codes that might come from the backend
+        else if (data.status_code) {
+          switch (data.status_code) {
+            case 401:
+              errorMessage = 'Incorrect email or password. Please try again.';
+              break;
+            case 403:
+              errorMessage = 'Your account is locked or not activated.';
+              break;
+            case 422:
+              errorMessage = 'Invalid login information provided.';
+              break;
+            default:
+              errorMessage = 'Login failed. Please check your credentials.';
+          }
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      
+      // Provide more user-friendly error messages based on the error type
+      let errorMessage = 'Failed to login';
+      
+      if (error instanceof TypeError && error.message.includes('NetworkError')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        errorMessage = 'Unable to connect to the server. Please try again later.';
+      } else if (error instanceof Error) {
+        // For other types of errors, use the error message but make it user-friendly
+        if (error.message.toLowerCase().includes('timeout')) {
+          errorMessage = 'Login request timed out. Please try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+  
+  // Helper method to process bookings with product details
+  private static async processBookingsWithDetails(bookings: BookingData[]): Promise<BookingData[]> {
+    return await Promise.all(
+      bookings.map(async (booking: BookingData) => {
+        try {
+          // Get product details
+          const productResponse = await this.getSpaces({ id: booking.product_id });
+          
+          if (productResponse.success && productResponse.space) {
+            return {
+              ...booking,
+              product_name: productResponse.space.name || 'Unknown Space',
+              product_image: productResponse.space.images && productResponse.space.images.length > 0 
+                ? productResponse.space.images[0] 
+                : '',
+              location_name: productResponse.space.location || ''
+            };
+          }
+          
+          return booking;
+        } catch (error) {
+          console.warn(`Error fetching details for booking ${booking.booking_id}:`, error);
+          return booking;
+        }
+      })
+    );
+  }
+
+  /**
+   * Get upcoming bookings for a user
+   * Endpoint: /booking/get-upcoming-bookings
+   * Method: POST
+   * Request:
+   * {
+   *   "user_id": 3
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Request processed successfully",
+   *   "data": [
+   *     {
+   *       "booking_id": 1,
+   *       "user_id": 3,
+   *       "first_name": null,
+   *       "product_id": 1,
+   *       "payment_id": 0,
+   *       "total_price": 150,
+   *       "facility_ids": [1],
+   *       "booking_date": "2025-09-25",
+   *       "start_time": "09:00:00",
+   *       "end_time": "11:00:00",
+   *       "is_onetime_changed": false
+   *     }
+   *   ]
+   * }
+   */
+  static async getUpcomingBookings(userId: number): Promise<{
+    success: boolean;
+    message: string;
+    bookings: Array<BookingData>;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/booking/get-upcoming-bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId
+        })
+      });
+
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid request. Please check your user ID.';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized. Please sign in again.';
+            break;
+          case 404:
+            errorMessage = 'No bookings found.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Failed to fetch upcoming bookings.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage,
+          bookings: []
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200 && Array.isArray(data.data)) {
+        const bookings = data.data;
+        
+        // Fetch additional product details for each booking to display in the UI
+        const bookingsWithDetails = await Promise.all(
+          bookings.map(async (booking: BookingData) => {
+            try {
+              // Get product details
+              const productResponse = await this.getSpaces({ id: booking.product_id });
+              
+              if (productResponse.success && productResponse.space) {
+                return {
+                  ...booking,
+                  product_name: productResponse.space.name || 'Unknown Space',
+                  product_image: productResponse.space.images && productResponse.space.images.length > 0 
+                    ? productResponse.space.images[0] 
+                    : '',
+                  location_name: productResponse.space.location || ''
+                };
+              }
+              
+              return booking;
+            } catch (error) {
+              console.warn(`Error fetching details for booking ${booking.booking_id}:`, error);
+              return booking;
+            }
+          })
+        );
+        
+        return {
+          success: true,
+          message: data.message || 'Upcoming bookings retrieved successfully',
+          bookings: bookingsWithDetails
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve upcoming bookings',
+          bookings: []
+        };
+      }
+    } catch (error) {
+      console.error('Get upcoming bookings error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to retrieve upcoming bookings';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage,
+        bookings: []
+      };
+    }
+  }
+
+  /**
+   * Get past bookings for a user
+   * Endpoint: /booking/get-past-bookings
+   * Method: POST
+   * Request:
+   * {
+   *   "user_id": 3
+   * }
+   * 
+   * Response structure is the same as get-upcoming-bookings
+   */
+  static async getPastBookings(userId: number): Promise<{
+    success: boolean;
+    message: string;
+    bookings: Array<BookingData>;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/booking/get-past-bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId
+        })
+      });
+
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid request. Please check your user ID.';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized. Please sign in again.';
+            break;
+          case 404:
+            errorMessage = 'No past bookings found.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Failed to fetch past bookings.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage,
+          bookings: []
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200 && Array.isArray(data.data)) {
+        const bookings = data.data;
+        
+        // Fetch additional product details for each booking to display in the UI
+        const bookingsWithDetails = await Promise.all(
+          bookings.map(async (booking: BookingData) => {
+            try {
+              // Get product details
+              const productResponse = await this.getSpaces({ id: booking.product_id });
+              
+              if (productResponse.success && productResponse.space) {
+                return {
+                  ...booking,
+                  product_name: productResponse.space.name || 'Unknown Space',
+                  product_image: productResponse.space.images && productResponse.space.images.length > 0 
+                    ? productResponse.space.images[0] 
+                    : '',
+                  location_name: productResponse.space.location || ''
+                };
+              }
+              
+              return booking;
+            } catch (error) {
+              console.warn(`Error fetching details for booking ${booking.booking_id}:`, error);
+              return booking;
+            }
+          })
+        );
+        
+        return {
+          success: true,
+          message: data.message || 'Past bookings retrieved successfully',
+          bookings: bookingsWithDetails
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve past bookings',
+          bookings: []
+        };
+      }
+    } catch (error) {
+      console.error('Get past bookings error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to retrieve past bookings';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage,
+        bookings: []
+      };
+    }
+  }
+
+  /**
+   * Get canceled bookings for a user
+   * Endpoint: /booking/get-canceled-bookings
+   * Method: POST
+   * Request:
+   * {
+   *   "user_id": 3
+   * }
+   * 
+   * Response structure is the same as get-upcoming-bookings
+   */
+  static async getCanceledBookings(userId: number): Promise<{
+    success: boolean;
+    message: string;
+    bookings: Array<BookingData>;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/booking/get-canceled-bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId
+        })
+      });
+
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid request. Please check your user ID.';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized. Please sign in again.';
+            break;
+          case 404:
+            errorMessage = 'No canceled bookings found.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Failed to fetch canceled bookings.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage,
+          bookings: []
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200 && Array.isArray(data.data)) {
+        const bookings = data.data;
+        
+        // Fetch additional product details for each booking to display in the UI
+        const bookingsWithDetails = await Promise.all(
+          bookings.map(async (booking: BookingData) => {
+            try {
+              // Get product details
+              const productResponse = await this.getSpaces({ id: booking.product_id });
+              
+              if (productResponse.success && productResponse.space) {
+                return {
+                  ...booking,
+                  product_name: productResponse.space.name || 'Unknown Space',
+                  product_image: productResponse.space.images && productResponse.space.images.length > 0 
+                    ? productResponse.space.images[0] 
+                    : '',
+                  location_name: productResponse.space.location || ''
+                };
+              }
+              
+              return booking;
+            } catch (error) {
+              console.warn(`Error fetching details for booking ${booking.booking_id}:`, error);
+              return booking;
+            }
+          })
+        );
+        
+        return {
+          success: true,
+          message: data.message || 'Canceled bookings retrieved successfully',
+          bookings: bookingsWithDetails
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve canceled bookings',
+          bookings: []
+        };
+      }
+    } catch (error) {
+      console.error('Get canceled bookings error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to retrieve canceled bookings';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage,
+        bookings: []
+      };
+    }
+  }
+
+  /**
+   * Add a rating/review for a product
+   * Endpoint: /rating/add-rating
+   * Method: POST
+   * Request:
+   * {
+   *   "product_id": 1,
+   *   "user_id": 3,
+   *   "first_name": "John", // Optional, used if user is not logged in
+   *   "value": 5,
+   *   "review_description": "Great space!"
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Rating added successfully",
+   *   "data": {
+   *     "value": 5,
+   *     "review_description": "Great space!",
+   *     "first_name": "John",
+   *     "user_id": 3,
+   *     "user_avatar": "/uploads/users/abc123.jpeg"
+   *   }
+   * }
+   */
+  static async addRating(ratingData: {
+    product_id: number;
+    user_id: number;
+    first_name?: string;
+    value: number;
+    review_description: string;
+  }): Promise<{
+    success: boolean;
+    message: string;
+    review?: {
+      value: number;
+      review_description: string;
+      first_name: string;
+      user_id: number;
+      user_avatar?: string;
+    };
+  }> {
+    try {
+      const token = localStorage.getItem('auth_token');
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add auth token if available
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`${this.BASE_URL}/rating/add-rating`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(ratingData)
+      });
+      
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid review data. Please check all fields.';
+            break;
+          case 401:
+            errorMessage = 'You must be logged in to leave a review.';
+            break;
+          case 403:
+            errorMessage = 'You do not have permission to review this space.';
+            break;
+          case 404:
+            errorMessage = 'Space not found.';
+            break;
+          case 409:
+            errorMessage = 'You have already reviewed this space.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = 'Failed to submit review. Please try again.';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+      
+      const data = await response.json();
+      
+      if (data.status_code === 200 && data.data) {
+        return {
+          success: true,
+          message: data.message || 'Review submitted successfully!',
+          review: {
+            value: data.data.value,
+            review_description: data.data.review_description,
+            first_name: data.data.first_name,
+            user_id: data.data.user_id,
+            user_avatar: data.data.user_avatar
+          }
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to submit review'
+        };
+      }
+    } catch (error) {
+      console.error('Add rating error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to submit review';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+  
+  /**
+   * Provides fallback advertisement data when the API fails
+   */
+  private static getFallbackAdvertisements(): AdvertisementDto[] {
+    return [
+      new AdvertisementDto({
+        id: 1,
+        title: 'Special Offer',
+        description: 'Get 20% off on your first booking',
+        buttonText: 'Book Now',
+        image: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8b2ZmaWNlJTIwc3BhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
+        link: '/promotions/summer'
+      }),
+      new AdvertisementDto({
+        id: 2,
+        title: 'New Locations',
+        description: 'We\'ve expanded to 5 new locations',
+        buttonText: 'Explore',
+        image: 'https://images.unsplash.com/photo-1572025442646-866d16c84a54?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8b2ZmaWNlJTIwc3BhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
+        link: '/locations'
+      })
+    ];
   }
 }

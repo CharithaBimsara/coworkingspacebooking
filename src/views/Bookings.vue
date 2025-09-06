@@ -104,6 +104,18 @@
               </svg>
             </div>
 
+            <!-- Refresh Button -->
+            <button 
+              @click="fetchUpcomingBookings"
+              :disabled="loading"
+              :class="['p-2 rounded-lg transition-colors', loading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-600']"
+              title="Refresh bookings"
+            >
+              <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+            
             <!-- View Toggle -->
             <div class="flex items-center space-x-2">
               <button 
@@ -167,6 +179,24 @@
           </div>
         </div>
 
+        <!-- Error State -->
+        <div v-else-if="errorMessage" class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-red-200 dark:border-red-700 mb-6">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-red-100 dark:bg-red-800/30 rounded-full flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Error Loading Bookings</h3>
+              <p class="text-gray-600 dark:text-gray-400">{{ errorMessage }}</p>
+            </div>
+          </div>
+          <button @click="fetchUpcomingBookings" class="mt-4 btn-primary text-sm px-4 py-2">
+            Try Again
+          </button>
+        </div>
+        
         <!-- Bookings List -->
         <div v-else-if="filteredBookings.length > 0" class="space-y-6">
           <div 
@@ -201,16 +231,16 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    {{ formatDate(booking.date) }} • {{ formatDuration(booking.duration) }}
+                    {{ formatDate(booking.date) }} 
                   </div>
                   <div class="flex items-center text-gray-600 dark:text-gray-400">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
-                    {{ formatSpaceType(booking.spaceType) }} • {{ booking.guests }} guest{{ booking.guests > 1 ? 's' : '' }}
+                    {{ formatSpaceType(booking.spaceType) }}
                   </div>
                   <div class="mt-2 flex flex-col gap-1">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Booking #{{ booking.id }}</span>
+                    <!-- <span class="text-sm text-gray-500 dark:text-gray-400">Booking #{{ booking.id }}</span> -->
                     <span v-if="booking.dateChanged" class="inline-block text-xs bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded px-2 py-0.5 mt-1 font-medium">
                       Date already changed
                     </span>
@@ -353,10 +383,7 @@
               <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Space Type</label>
               <p class="text-gray-900 dark:text-white">{{ formatSpaceType(selectedBooking.spaceType) }}</p>
             </div>
-            <div>
-              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Guests</label>
-              <p class="text-gray-900 dark:text-white">{{ selectedBooking.guests }}</p>
-            </div>
+            
           </div>
           
           <!-- Price Breakdown -->
@@ -574,6 +601,8 @@ import BookingCalendar from '../components/BookingCalendar.vue'
 import { generatePDFReceipt } from '../utils/pdfReceipt'
 import SuccessOverlay from '../components/SuccessOverlay.vue'
 import CancelBooking from '../components/CancelBooking.vue'
+import { BookingManager } from '../api/bookingManager'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 
@@ -610,141 +639,233 @@ const tabs = ref([
   { id: 'cancelled', name: 'Cancelled', count: 1 }
 ])
 
-// Sample bookings data
-const allBookings = ref([
-  {
-    id: 'WS12345678',
-    status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Cancelled',
-    date: '2024-12-20',
-    duration: 'daily',
-    spaceType: 'hot-desk',
-    guests: 1,
-    totalAmount: 85,
-    basePrice: 65,
-    extraFees: 0,
-    serviceFee: 8,
-    taxes: 12,
-    hasReview: false,
-    dateChanged: false,
-    space: {
-      id: 1,
-      name: 'The Innovation Hub',
-      location: 'Downtown, San Francisco',
-      rating: 4.9,
-      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
-    }
-  },
-  {
-    id: 'WS12345679',
-    status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Cancelled',
-    date: '2024-12-22',
-    duration: 'weekly',
-    spaceType: 'private-office',
-    guests: 4,
-    totalAmount: 520,
-    basePrice: 450,
-    extraFees: 15,
-    serviceFee: 47,
-    taxes: 8,
-    hasReview: false,
-    dateChanged: false,
-    space: {
-      id: 2,
-      name: 'Creative Commons',
-      location: 'SOMA, San Francisco',
-      rating: 4.8,
-      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
-    }
-  },
-  {
-    id: 'WS12345680',
-    status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Cancelled',
-    date: '2024-12-25',
-    duration: 'daily',
-    spaceType: 'meeting-room',
-    guests: 8,
-    totalAmount: 165,
-    basePrice: 120,
-    extraFees: 35,
-    serviceFee: 16,
-    taxes: 4,
-    hasReview: false,
-    dateChanged: false,
-    space: {
-      id: 3,
-      name: 'Tech Valley Workspace',
-      location: 'Palo Alto, CA',
-      rating: 4.9,
-      image: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
-    }
-  },
-  {
-    id: 'WS12345677',
-    status: 'Completed' as 'Confirmed' | 'Completed' | 'Cancelled',
-    date: '2024-12-15',
-    duration: 'daily',
-    spaceType: 'dedicated-desk',
-    guests: 1,
-    totalAmount: 95,
-    basePrice: 75,
-    extraFees: 0,
-    serviceFee: 8,
-    taxes: 12,
-    hasReview: true,
-    dateChanged: false,
-    space: {
-      id: 4,
-      name: 'The Productivity Lab',
-      location: 'Mission Bay, SF',
-      rating: 4.7,
-      image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
-    }
-  },
-  {
-    id: 'WS12345676',
-    status: 'Completed' as 'Confirmed' | 'Completed' | 'Cancelled',
-    date: '2024-12-10',
-    duration: 'daily',
-    spaceType: 'hot-desk',
-    guests: 1,
-    totalAmount: 75,
-    basePrice: 55,
-    extraFees: 0,
-    serviceFee: 6,
-    taxes: 14,
-    hasReview: false,
-    dateChanged: false,
-    space: {
-      id: 5,
-      name: 'Startup Central',
-      location: 'South Beach, SF',
-      rating: 4.8,
-      image: 'https://images.unsplash.com/photo-1531973576160-7125cd663d86?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
-    }
-  },
-  {
-    id: 'WS12345675',
-    status: 'Cancelled' as 'Confirmed' | 'Completed' | 'Cancelled',
-    date: '2024-12-08',
-    duration: 'daily',
-    spaceType: 'private-office',
-    guests: 2,
-    totalAmount: 95,
-    basePrice: 75,
-    extraFees: 5,
-    serviceFee: 8,
-    taxes: 7,
-    hasReview: false,
-    dateChanged: false,
-    space: {
-      id: 6,
-      name: 'Executive Suites',
-      location: 'Financial District, SF',
-      rating: 4.9,
-      image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+// Bookings data
+const allBookings = ref<any[]>([])
+const errorMessage = ref('')
+
+// Function to transform API booking data to UI format
+const transformBookingData = (booking: any, status: 'Confirmed' | 'Completed' | 'Cancelled') => {
+  // Determine space type based on product data if available
+  let spaceType = 'hot-desk' // default
+  if (booking.product_name) {
+    const name = booking.product_name.toLowerCase()
+    if (name.includes('meeting') || name.includes('conference')) {
+      spaceType = 'meeting-room'
+    } else if (name.includes('private') || name.includes('office')) {
+      spaceType = 'private-office'
+    } else if (name.includes('dedicated')) {
+      spaceType = 'dedicated-desk'
     }
   }
-])
+  
+  // Format dates and calculate duration
+  const duration = calculateDuration(booking.start_time, booking.end_time)
+  
+  return {
+    id: `BK${booking.booking_id}`,
+    status: status,
+    date: booking.booking_date,
+    duration: duration,
+    spaceType: spaceType,
+    guests: 1, // Default value, can be adjusted if API provides this information
+    totalAmount: booking.total_price,
+    basePrice: booking.total_price * 0.8, // Estimate if not provided
+    extraFees: 0,
+    serviceFee: booking.total_price * 0.1, // Estimate if not provided
+    taxes: booking.total_price * 0.1, // Estimate if not provided
+    hasReview: false,
+    dateChanged: booking.is_onetime_changed,
+    paymentId: booking.payment_id,
+    facilityIds: booking.facility_ids || [],
+    space: {
+      id: booking.product_id,
+      name: booking.product_name || `Space ${booking.product_id}`,
+      location: booking.location_name || 'Location not specified',
+      rating: 4.5, // Default value
+      image: booking.product_image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+    }
+  }
+}
+
+// Function to fetch all bookings for the user
+const fetchAllBookings = async () => {
+  loading.value = true
+  errorMessage.value = ''
+  try {
+    const authStore = useAuthStore()
+    const user = authStore.currentUser
+    
+    if (!user) {
+      errorMessage.value = 'Please sign in to view your bookings'
+      loading.value = false
+      return
+    }
+    
+    // Reset bookings
+    allBookings.value = []
+    
+    // Fetch all three types of bookings in parallel
+    const [upcomingResponse, pastResponse, canceledResponse] = await Promise.all([
+      BookingManager.getUpcomingBookings(user.id),
+      BookingManager.getPastBookings(user.id),
+      BookingManager.getCanceledBookings(user.id)
+    ])
+    
+    // Process upcoming bookings
+    console.log('Upcoming bookings response:', upcomingResponse);
+    if (upcomingResponse.success && upcomingResponse.bookings.length > 0) {
+      const upcomingBookings = upcomingResponse.bookings.map(booking => 
+        transformBookingData(booking, 'Confirmed')
+      )
+      console.log('Transformed upcoming bookings:', upcomingBookings);
+      allBookings.value = [...allBookings.value, ...upcomingBookings]
+    }
+    
+    // Process past bookings
+    if (pastResponse.success && pastResponse.bookings.length > 0) {
+      const pastBookings = pastResponse.bookings.map(booking => 
+        transformBookingData(booking, 'Completed')
+      )
+      allBookings.value = [...allBookings.value, ...pastBookings]
+    }
+    
+    // Process canceled bookings
+    if (canceledResponse.success && canceledResponse.bookings.length > 0) {
+      const canceledBookings = canceledResponse.bookings.map(booking => 
+        transformBookingData(booking, 'Cancelled')
+      )
+      allBookings.value = [...allBookings.value, ...canceledBookings]
+    }
+    
+    // If no bookings were found in any category
+    if (allBookings.value.length === 0) {
+      // Check if all API calls were successful but returned no data
+      const allSuccessful = upcomingResponse.success && pastResponse.success && canceledResponse.success;
+      
+      if (allSuccessful) {
+        console.log('All API calls successful but no bookings found');
+        // No need to show sample data - user truly has no bookings
+      } else {
+        // At least one API call failed
+        const errorMsg = [
+          upcomingResponse.success ? '' : upcomingResponse.message,
+          pastResponse.success ? '' : pastResponse.message,
+          canceledResponse.success ? '' : canceledResponse.message
+        ].filter(Boolean).join('; ')
+        
+        errorMessage.value = errorMsg || 'Failed to load your bookings'
+        
+        // Use sample data as fallback only if all API calls failed
+        if (!upcomingResponse.success && !pastResponse.success && !canceledResponse.success) {
+          console.log('All API calls failed, using sample data');
+          useSampleBookingData();
+        }
+      }
+    }
+    
+    // Update the tabs count
+    updateTabCounts()
+  } catch (error) {
+    console.error('Error fetching bookings:', error)
+    errorMessage.value = 'An error occurred while fetching your bookings'
+    
+    // Use sample data as fallback in case of API failure
+    useSampleBookingData()
+  } finally {
+    loading.value = false
+  }
+}
+
+// Function to fetch user's upcoming bookings from API (for backward compatibility)
+const fetchUpcomingBookings = fetchAllBookings
+
+// Helper function to calculate duration based on start and end times
+const calculateDuration = (startTime: string, endTime: string): 'hourly' | 'daily' | 'weekly' | 'monthly' => {
+  if (!startTime || !endTime) return 'daily' // Default
+  
+  // Parse hours
+  const startHour = parseInt(startTime.split(':')[0])
+  const endHour = parseInt(endTime.split(':')[0])
+  
+  // Calculate hours difference
+  const hoursDiff = endHour - startHour
+  
+  if (hoursDiff <= 4) return 'hourly'
+  return 'daily' // For now, default to daily for longer bookings
+}
+
+// Update tab counts based on actual bookings
+const updateTabCounts = () => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  
+  let upcomingCount = 0
+  let pastCount = 0
+  let cancelledCount = 0
+  
+  allBookings.value.forEach(booking => {
+    const bookingDate = new Date(booking.date)
+    bookingDate.setHours(0, 0, 0, 0)
+    
+    if (booking.status === 'Confirmed' && bookingDate >= today) {
+      upcomingCount++
+    } else if (booking.status === 'Completed' || (booking.status === 'Confirmed' && bookingDate < today)) {
+      pastCount++
+    } else if (booking.status === 'Cancelled') {
+      cancelledCount++
+    }
+  })
+  
+  // Update tabs with accurate counts
+  tabs.value = [
+    { id: 'upcoming', name: 'Upcoming', count: upcomingCount },
+    { id: 'past', name: 'Past', count: pastCount },
+    { id: 'cancelled', name: 'Cancelled', count: cancelledCount }
+  ]
+  
+  // Update stats
+  stats.value = {
+    ...stats.value,
+    totalBookings: allBookings.value.length,
+    upcomingBookings: upcomingCount
+  }
+}
+
+// Fallback function for sample data
+const useSampleBookingData = () => {
+  console.log('USING SAMPLE DATA - API DATA UNAVAILABLE');
+  
+  // Set a flag in session storage to indicate we're showing sample data
+  sessionStorage.setItem('using_sample_booking_data', 'true');
+  
+  allBookings.value = [
+    {
+      id: 'SAMPLE123',
+      status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Cancelled',
+      date: '2024-12-20',
+      duration: 'daily',
+      spaceType: 'hot-desk',
+      guests: 1,
+      totalAmount: 85,
+      basePrice: 65,
+      extraFees: 0,
+      serviceFee: 8,
+      taxes: 12,
+      hasReview: false,
+      dateChanged: false,
+      space: {
+        id: 1,
+        name: '[SAMPLE] The Innovation Hub',
+        location: 'Downtown, San Francisco',
+        rating: 4.9,
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+      }
+    }
+  ]
+  
+  // Update counts for sample data
+  updateTabCounts()
+}
 
 // Computed properties
 const filteredBookings = computed(() => {
@@ -897,6 +1018,37 @@ const cancelBooking = (booking: any) => {
   showCancelModal.value = true
 }
 
+const confirmCancelBooking = async () => {
+  if (!bookingToCancel.value) return
+
+  try {
+    const bookingId = parseInt(bookingToCancel.value.id.replace('BK', ''))
+    const response = await BookingManager.cancelBooking(bookingId)
+    
+    if (response.success) {
+      // Update the booking status in the UI
+      bookingToCancel.value.status = 'Cancelled'
+      showCancelModal.value = false
+      
+      // Show success message
+      successOverlayTitle.value = 'Booking Cancelled'
+      successOverlayMessage.value = 'Your booking has been successfully cancelled.'
+      showSuccessOverlay.value = true
+      
+      // Update the tabs count after cancellation
+      updateTabCounts()
+      
+      // Reset
+      bookingToCancel.value = null
+    } else {
+      alert(`Error: ${response.message}`)
+    }
+  } catch (error) {
+    console.error('Error cancelling booking:', error)
+    alert('Failed to cancel booking. Please try again.')
+  }
+}
+
 const confirmCancellation = () => {
   if (bookingToCancel.value) {
     bookingToCancel.value.status = 'Cancelled'
@@ -958,6 +1110,17 @@ const exportBookings = () => {
 
 const downloadReceipt = async (booking: any) => {
   try {
+    // Get user data from auth store for receipt
+    const authStore = useAuthStore()
+    const user = authStore.currentUser
+    let userDetails: any = null
+    try {
+      userDetails = JSON.parse(localStorage.getItem('user_details') || '{}')
+    } catch (e) {
+      userDetails = {}
+    }
+    
+    // Map booking data to the format expected by the PDF generator
     const mappedBooking: any = {
       spaceId: booking.space.id,
       productType: booking.spaceType,
@@ -968,11 +1131,12 @@ const downloadReceipt = async (booking: any) => {
       totalPrice: booking.totalAmount,
     };
 
+    // Add booking details based on the space type
     if (booking.spaceType === 'meeting-room') {
       mappedBooking.booking = {
         startDate: booking.date,
         endDate: booking.date,
-        startTime: '09:00', // Placeholder, not available in BookingItem
+        startTime: booking.start_time || '09:00', // Use actual start time if available
         duration: booking.duration,
       };
     } else {
@@ -983,14 +1147,19 @@ const downloadReceipt = async (booking: any) => {
       };
     }
 
+    // Build receipt data with real user information
     const receiptData = {
       bookings: [mappedBooking],
       bookingId: booking.id,
-      paymentMethod: 'Credit Card', // Assuming default, as this data is not in the booking object
+      paymentMethod: booking.paymentId ? `Payment #${booking.paymentId}` : 'Credit Card',
       confirmedAt: new Date().toISOString(),
       totalAmount: booking.totalAmount,
-      guestInfo: { firstName: 'Demo', lastName: 'User' } // Assuming default guest info
+      guestInfo: { 
+        firstName: userDetails?.firstName || user?.firstName || 'Guest', 
+        lastName: userDetails?.lastName || user?.lastName || ''
+      }
     }
+    
     await generatePDFReceipt(receiptData)
   } catch (error) {
     console.error('Failed to generate PDF receipt:', error)
@@ -1033,26 +1202,47 @@ const openCardsModal = () => {
   showCardsModal.value = true
 }
 
+// Use auth store
+const authStore = useAuthStore()
+
 const handleLogout = () => {
   if (confirm('Are you sure you want to logout?')) {
-    localStorage.removeItem('workspace_user')
+    // Use auth store to properly clear user data
+    authStore.clearUser()
+    
     // Clear any session booking data
     sessionStorage.removeItem('bookingDetails')
     sessionStorage.removeItem('bookingConfirmation')
+    
+    // Navigate to home
     router.push({ name: 'Home' })
   }
   showProfileMenu.value = false
 }
 
-// Add any new bookings from session storage
+// Add any new bookings from session storage only if we don't have API data
 const addSessionBookings = () => {
   const confirmation = sessionStorage.getItem('bookingConfirmation');
   if (confirmation) {
     try {
       const confirmationData = JSON.parse(confirmation);
+      
+      // Check if this booking already exists in our API data
+      // First check if we have a booking ID in the confirmation
+      if (confirmationData.bookingId) {
+        const bookingIdExists = allBookings.value.some(b => 
+          b.id === `BK${confirmationData.bookingId}` || b.id === confirmationData.bookingId);
+        
+        if (bookingIdExists) {
+          console.log('Booking from session storage already exists in API data');
+          return; // Skip if already exists
+        }
+      }
+      
+      // If no booking ID or not found, proceed to add as new booking
       const images = confirmationData.space?.images || ['https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'];
       const newBooking = {
-        id: confirmationData.bookingId || 'WS' + Date.now().toString().slice(-8),
+        id: confirmationData.bookingId ? `BK${confirmationData.bookingId}` : 'WS' + Date.now().toString().slice(-8),
         status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Cancelled',
         date: confirmationData.booking?.date || confirmationData.startDate || new Date().toISOString().split('T')[0],
         duration: confirmationData.productType === 'meeting-room' ? 'hourly' : 'monthly',
@@ -1075,14 +1265,9 @@ const addSessionBookings = () => {
         }
       };
 
-      // Add to beginning of bookings if not already exists
-      const exists = allBookings.value.find(b => b.id === newBooking.id);
-      if (!exists) {
-        allBookings.value.unshift(newBooking);
-        stats.value.totalBookings = allBookings.value.length;
-        stats.value.upcomingBookings = allBookings.value.filter(b =>
-          b.status === 'Confirmed' && new Date(b.date) >= new Date()).length;
-      }
+      console.log('Adding session booking to list:', newBooking);
+      allBookings.value.unshift(newBooking);
+      updateTabCounts();
     } catch (error) {
       console.log('Error parsing booking confirmation:', error);
     }
@@ -1091,11 +1276,12 @@ const addSessionBookings = () => {
 
 // Initialize
 onMounted(() => {
-  // Add any session bookings first
-  addSessionBookings()
-
-  setTimeout(() => {
-    loading.value = false
-  }, 800)
+  // Fetch all bookings from APIs first
+  fetchAllBookings().then(() => {
+    // Only add session bookings if we don't have any API bookings
+    if (allBookings.value.length === 0) {
+      addSessionBookings()
+    }
+  })
 })
 </script>

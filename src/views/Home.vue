@@ -82,7 +82,7 @@
           <div class="relative animate-fade-in">
             <div class="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary/20 rounded-3xl overflow-hidden border-2 border-primary transform hover:scale-[1.02] transition-all duration-300">
               <img 
-                :src="companyProfile.image || heroImages[0].src" 
+                src="/src/assets/img/hero.jpg" 
                 :alt="companyProfile.name" 
                 class="w-full h-full object-cover"
               >
@@ -261,19 +261,19 @@
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
           <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
-            Featured Workspaces
+            Top-Rated Workspaces
             <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
           <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
-            Discover premium dedicated desks in prime locations with all the amenities you need
+            Discover our highest-rated spaces with exceptional reviews from our community
           </p>
         </div>
 
         <div v-if="isLoadingSpaces" class="text-center py-12">
           <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary border-opacity-30 border-t-primary"></div>
-          <p class="mt-6 text-gray-600 dark:text-gray-300 text-sm">Loading featured spaces...</p>
+          <p class="mt-6 text-gray-600 dark:text-gray-300 text-sm">Loading top-rated spaces...</p>
         </div>
 
         <div v-else-if="featuredSpaces.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -286,9 +286,12 @@
                 :alt="space.name"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <!-- Featured badge -->
-              <div class="absolute top-2 left-2 bg-primary text-black dark:text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
-                Featured
+              <!-- Top Rated badge -->
+              <div class="absolute top-2 left-2 bg-primary text-black dark:text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md flex items-center gap-1">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                Top Rated
               </div>
               <!-- Like button -->
               <button class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black transition-colors shadow-md hover:scale-110 transform text-gray-400 dark:text-gray-500 hover:text-primary">
@@ -496,7 +499,7 @@
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <div class="relative">
             <div class="aspect-[4/3] rounded-3xl overflow-hidden border-2 border-primary shadow-xl transform hover:scale-[1.02] transition-all duration-300">
-              <img src="https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+              <img src="/src/assets/img/hero.jpg" 
                 alt="Modern workspace" class="w-full h-full object-cover">
             </div>
             <div class="absolute -bottom-8 -right-8 bg-white dark:bg-black p-5 rounded-2xl shadow-lg border-2 border-primary transform hover:rotate-3 transition-all duration-300">
@@ -848,11 +851,6 @@ interface SpaceTypeOption {
   icon: string;
 }
 
-interface HeroImage {
-  src: string;
-  alt: string;
-}
-
 export default defineComponent({
   name: 'HomePage',
 
@@ -915,21 +913,7 @@ export default defineComponent({
           label: 'Dedicated Desk',
           icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
         }
-      ] as SpaceTypeOption[],
-      heroImages: [
-        {
-          src: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-          alt: 'Modern dedicated desk'
-        },
-        {
-          src: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-          alt: 'Professional meeting room'
-        },
-        {
-          src: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-          alt: 'Flexible hot desk'
-        }
-      ] as HeroImage[]
+      ] as SpaceTypeOption[]
     };
   },
 
@@ -952,10 +936,11 @@ export default defineComponent({
     // Start slideshow after mounting
     this.startSlideshow();
     
-    // Load locations and advertisements
+    // Load locations, advertisements, and featured spaces
     await Promise.all([
       this.loadLocationsFromApi(),
-      this.loadAdvertisementsFromApi()
+      this.loadAdvertisementsFromApi(),
+      this.loadFeaturedSpaces()
     ]);
     
     // Don't initialize theme here - it's handled by the theme store
@@ -1206,82 +1191,11 @@ export default defineComponent({
         email: 'contact@squarehub.com',
         phone: '+1 (123) 456-7890',
         address: '123 Workspace Avenue, Business District, Colombo',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        image: '/src/assets/img/hero.jpg'
       };
       
-      // Set hardcoded featured spaces
-      this.featuredSpaces = [
-        {
-          id: 1,
-          name: 'Executive Meeting Room',
-          description: 'Professional meeting space with modern amenities for your business needs',
-          location: 'Kandy Lakeside',
-          address: '123 Kandy Street, Kandy',
-          productType: 'meeting-room',
-          images: [
-            'https://images.unsplash.com/photo-1517502884422-41eaead166d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          rating: 4.8,
-          reviews: 124,
-          pricing: {
-            hourly: 25,
-            daily: 180
-          },
-          capacity: 12,
-          maxCapacity: 15,
-          features: ['wifi', 'High-Speed WiFi', 'projector', '4K Display', 'whiteboard', 'coffee', 'printing'],
-          isAvailable: true,
-          availability: [
-            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
-          ]
-        },
-        {
-          id: 2,
-          name: 'Hot Desk Premium',
-          description: 'Flexible workspace for professionals on the go',
-          location: 'Colombo Central',
-          address: '45 Main Street, Colombo',
-          productType: 'hot-desk',
-          images: [
-            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          rating: 4.5,
-          reviews: 89,
-          pricing: {
-            daily: 35
-          },
-          capacity: 1,
-          maxCapacity: 1,
-          features: ['wifi', 'coffee', 'printing', 'locker'],
-          isAvailable: true,
-          availability: [
-            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
-          ]
-        },
-        {
-          id: 3,
-          name: 'Dedicated Office Space',
-          description: 'Private office space with 24/7 access',
-          location: 'Galle Fort',
-          address: '78 Fort Road, Galle',
-          productType: 'dedicated-desk',
-          images: [
-            'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          rating: 4.9,
-          reviews: 45,
-          pricing: {
-            monthly: 350
-          },
-          capacity: 1,
-          maxCapacity: 1,
-          features: ['wifi', 'coffee', 'printing', 'parking', '24-7-access', 'meeting-room-credits'],
-          isAvailable: true,
-          availability: [
-            { date: '2025-08-27', slots: [{ startTime: '00:00', endTime: '23:59' }] }
-          ]
-        }
-      ];
+      // Load featured spaces from API instead of using hardcoded values
+      this.loadFeaturedSpaces();
       
       // Set hardcoded testimonials
       this.testimonials = [
@@ -1407,6 +1321,114 @@ export default defineComponent({
         // Or load spaces specific to this location from the API:
         // this.loadSpacesForLocation(location.id);
       }
+    },
+    
+    /**
+     * Loads the top 3 highest-rated spaces from the API for the featured spaces section
+     */
+    async loadFeaturedSpaces(): Promise<void> {
+      try {
+        this.isLoadingSpaces = true;
+        
+        // Call the API to get all spaces
+        const response = await NetworkManager.getSpaces({});
+        
+        if (response.success && response.spaces && response.spaces.length > 0) {
+          // Sort spaces by rating (highest first)
+          const sortedSpaces = [...response.spaces].sort((a, b) => b.rating - a.rating);
+          
+          // Take only the top 3 spaces
+          this.featuredSpaces = sortedSpaces.slice(0, 3);
+          
+          console.log('Loaded top-rated featured spaces:', this.featuredSpaces);
+        } else {
+          console.warn('No spaces returned from API, using fallback data');
+          this.setFallbackFeaturedSpaces();
+        }
+      } catch (error) {
+        console.error('Error loading featured spaces:', error);
+        this.setFallbackFeaturedSpaces();
+      } finally {
+        this.isLoadingSpaces = false;
+      }
+    },
+    
+    /**
+     * Sets fallback featured spaces when API fails
+     */
+    setFallbackFeaturedSpaces(): void {
+      this.featuredSpaces = [
+        {
+          id: 1,
+          name: 'Executive Meeting Room',
+          description: 'Professional meeting space with modern amenities for your business needs',
+          location: 'Kandy Lakeside',
+          address: '123 Kandy Street, Kandy',
+          productType: 'meeting-room',
+          images: [
+            'https://images.unsplash.com/photo-1517502884422-41eaead166d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+          ],
+          rating: 4.8,
+          reviews: 124,
+          pricing: {
+            hourly: 25,
+            daily: 180
+          },
+          capacity: 12,
+          maxCapacity: 15,
+          features: ['wifi', 'High-Speed WiFi', 'projector', '4K Display', 'whiteboard', 'coffee', 'printing'],
+          isAvailable: true,
+          availability: [
+            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
+          ]
+        },
+        {
+          id: 2,
+          name: 'Hot Desk Premium',
+          description: 'Flexible workspace for professionals on the go',
+          location: 'Colombo Central',
+          address: '45 Main Street, Colombo',
+          productType: 'hot-desk',
+          images: [
+            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+          ],
+          rating: 4.5,
+          reviews: 89,
+          pricing: {
+            daily: 35
+          },
+          capacity: 1,
+          maxCapacity: 1,
+          features: ['wifi', 'coffee', 'printing', 'locker'],
+          isAvailable: true,
+          availability: [
+            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
+          ]
+        },
+        {
+          id: 3,
+          name: 'Dedicated Office Space',
+          description: 'Private office space with 24/7 access',
+          location: 'Galle Fort',
+          address: '78 Fort Road, Galle',
+          productType: 'dedicated-desk',
+          images: [
+            'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+          ],
+          rating: 4.9,
+          reviews: 45,
+          pricing: {
+            monthly: 350
+          },
+          capacity: 1,
+          maxCapacity: 1,
+          features: ['wifi', 'coffee', 'printing', 'parking', '24-7-access', 'meeting-room-credits'],
+          isAvailable: true,
+          availability: [
+            { date: '2025-08-27', slots: [{ startTime: '00:00', endTime: '23:59' }] }
+          ]
+        }
+      ];
     }
     
     // Method prepared for future implementation

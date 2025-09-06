@@ -56,7 +56,7 @@
             </svg>
             <div>
               <div class="font-medium text-sm text-gray-800 dark:text-white">{{ location.name }}</div>
-              <div class="text-sm text-gray-600 dark:text-gray-300">{{ location.description }}</div>
+              <div class="text-sm text-gray-600 dark:text-gray-300">{{ location.description || location.address }}</div>
             </div>
           </div>
         </button>
@@ -146,7 +146,8 @@ export default defineComponent({
       return this.locations.filter((location: Location) => 
         location.name.toLowerCase().includes(query) ||
         (location.city && location.city.toLowerCase().includes(query)) ||
-        (location.address && location.address.toLowerCase().includes(query))
+        (location.address && location.address.toLowerCase().includes(query)) ||
+        (location.description && location.description.toLowerCase().includes(query))
       )
     }
   },

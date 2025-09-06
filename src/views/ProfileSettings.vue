@@ -145,6 +145,16 @@
                 >
               </div>
 
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bio</label>
+                <textarea
+                  v-model="profileForm.bio"
+                  rows="3"
+                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                  placeholder="Tell us about yourself"
+                ></textarea>
+              </div>
+
               <div class="flex justify-end">
                 <button
                   type="submit"
@@ -202,6 +212,29 @@
                 </button>
               </div>
             </form>
+          </div>
+
+          <!-- Sign Out -->
+          <div v-if="activeTab === 'signout'" class="bg-white dark:bg-gray-800 rounded-xl shadow-card p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Sign Out</h2>
+            
+            <div class="mb-6">
+              <p class="text-gray-600 dark:text-gray-300 mb-4">
+                Are you sure you want to sign out? You will be redirected to the homepage.
+              </p>
+              
+              <div class="flex items-center">
+                <button 
+                  @click="handleSignOut" 
+                  class="btn-danger"
+                >
+                  <span class="flex items-center">
+                    <LogOutIcon class="w-4 h-4 mr-2" />
+                    Sign Out
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Preferences -->
@@ -305,12 +338,25 @@
 import { defineComponent } from 'vue'
 import SuccessOverlay from '../components/SuccessOverlay.vue'
 import { useAuthStore } from '../stores/auth'
+// Note: NetworkManager is dynamically imported in the updateProfile method to avoid circular dependencies
+
+// Define the LogOutIcon component
+const LogOutIcon = {
+  template: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+      <polyline points="16 17 21 12 16 7"></polyline>
+      <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
+  `
+}
 
 export default defineComponent({
   name: 'ProfileSettings',
   
   components: {
-    SuccessOverlay
+    SuccessOverlay,
+    LogOutIcon
   },
   
   data() {
@@ -322,6 +368,7 @@ export default defineComponent({
       showSuccessOverlay: false,
       successTitle: '',
       successMessage: '',
+      avatarFile: null as File | null,
       
       tabs: [
         {
@@ -334,6 +381,7 @@ export default defineComponent({
           name: 'Security',
           icon: 'LockIcon'
         },
+        
         // {
         //   id: 'preferences',
         //   name: 'Preferences',
@@ -342,12 +390,14 @@ export default defineComponent({
       ],
       
       profileForm: {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        phone: '+1 (555) 123-4567',
-        company: 'Tech Startup Inc.',
-        jobTitle: 'Product Manager',
+        id: 0,
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        company: '',
+        jobTitle: '',
+        bio: '',
         avatar: ''
       },
       
@@ -378,18 +428,30 @@ export default defineComponent({
   },
   
   methods: {
+    handleSignOut(): void {
+      const authStore = useAuthStore()
+      
+      // Clear user data
+      authStore.clearUser()
+      
+      // Redirect to home page using Vue Router instance
+      this.$router.push('/')
+    },
+    
     loadUserProfile(): void {
       const authStore = useAuthStore()
       const user = authStore.currentUser
       
       if (user) {
         this.profileForm = {
-          firstName: user.firstName || 'John',
-          lastName: user.lastName || 'Doe',
-          email: user.email || 'john.doe@example.com',
+          id: user.id || 0,
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          email: user.email || '',
           phone: user.phone || '',
           company: user.company || '',
           jobTitle: user.jobTitle || '',
+          bio: user.bio || '',
           avatar: user.avatar || ''
         }
       }
@@ -402,7 +464,10 @@ export default defineComponent({
     handleFileUpload(event: Event): void {
       const file = (event.target as HTMLInputElement).files?.[0]
       if (file) {
-        // In a real app, you would upload this to a server
+        // Store the original file for sending to API
+        this.avatarFile = file;
+        
+        // Create a preview for display
         const reader = new FileReader()
         reader.onload = (e) => {
           this.profileForm.avatar = e.target?.result as string
@@ -415,29 +480,59 @@ export default defineComponent({
       this.isUpdating = true
       
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        // Import NetworkManager
+        const { NetworkManager } = await import('../api/networkManager');
         
-        // Update auth store
-        const authStore = useAuthStore()
-        if (authStore.currentUser) {
-          authStore.updateUser({
-            ...authStore.currentUser,
-            firstName: this.profileForm.firstName,
-            lastName: this.profileForm.lastName,
-            email: this.profileForm.email,
-            phone: this.profileForm.phone,
-            company: this.profileForm.company,
-            jobTitle: this.profileForm.jobTitle,
-            avatar: this.profileForm.avatar
-          })
+        // Call the API
+        const result = await NetworkManager.updateUserProfile({
+          Id: this.profileForm.id,
+          FirstName: this.profileForm.firstName,
+          LastName: this.profileForm.lastName,
+          Email: this.profileForm.email,
+          Phone: this.profileForm.phone,
+          Company: this.profileForm.company,
+          JobTitle: this.profileForm.jobTitle,
+          Bio: this.profileForm.bio,
+          Avatar: this.avatarFile || this.profileForm.avatar
+        });
+        
+        if (result.success) {
+          // Update auth store
+          const authStore = useAuthStore()
+          if (authStore.currentUser) {
+            authStore.updateUser({
+              ...authStore.currentUser,
+              firstName: this.profileForm.firstName,
+              lastName: this.profileForm.lastName,
+              email: this.profileForm.email,
+              phone: this.profileForm.phone,
+              company: this.profileForm.company,
+              jobTitle: this.profileForm.jobTitle,
+              bio: this.profileForm.bio,
+              avatar: this.profileForm.avatar
+            })
+          }
+          
+          // Reset avatar file after successful update
+          this.avatarFile = null;
+          
+          // Show success message
+          this.showSuccessOverlay = true
+          this.successTitle = 'Profile Updated!'
+          this.successMessage = result.message || 'Your profile information has been successfully updated.'
+        } else {
+          // Show error message
+          this.showSuccessOverlay = true
+          this.successTitle = 'Update Failed'
+          this.successMessage = result.message || 'Failed to update profile. Please try again.'
         }
-        
-        this.showSuccessOverlay = true
-        this.successTitle = 'Profile Updated!'
-        this.successMessage = 'Your profile information has been successfully updated.'
       } catch (error) {
         console.error('Error updating profile:', error)
+        
+        // Show error message
+        this.showSuccessOverlay = true
+        this.successTitle = 'Error'
+        this.successMessage = error instanceof Error ? error.message : 'An unknown error occurred. Please try again.'
       } finally {
         this.isUpdating = false
       }

@@ -94,6 +94,10 @@ html {
     @apply bg-white dark:bg-black text-primary border-2 border-primary px-6 py-3 rounded-full font-medium hover:bg-primary/5 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 transform hover:-translate-y-0.5 shadow-md;
   }
   
+  .btn-danger {
+    @apply bg-red-600 text-white px-6 py-3 rounded-full font-medium hover:bg-red-700 transition-all focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 transform hover:-translate-y-0.5 shadow-md;
+  }
+  
   .input-field {
     @apply w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors bg-white dark:bg-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400;
   }

@@ -9,6 +9,19 @@
         <div v-if="contextMessage" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
           <p class="text-sm text-blue-800 dark:text-blue-200">{{ contextMessage }}</p>
         </div>
+        <!-- Error Message -->
+        <div v-if="showError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-800 dark:text-red-200">{{ errorMessage }}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <form @submit.prevent="handleSignIn" class="space-y-4">
@@ -20,6 +33,7 @@
             required
             class="input-field"
             placeholder="Enter your email"
+            autocomplete="email"
           >
         </div>
         
@@ -31,6 +45,7 @@
             required
             class="input-field"
             placeholder="Enter your password"
+            autocomplete="current-password"
           >
         </div>
 
@@ -67,6 +82,19 @@
         <!-- Context Message -->
         <div v-if="contextMessage" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
           <p class="text-sm text-blue-800 dark:text-blue-200">{{ contextMessage }}</p>
+        </div>
+        <!-- Error Message -->
+        <div v-if="showError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-800 dark:text-red-200">{{ errorMessage }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -210,7 +238,10 @@ export default defineComponent({
       showSuccessOverlay: false,
       successTitle: '',
       successMessage: '',
-      successAction: null as any
+      successAction: null as any,
+      errorMessage: '',
+      showError: false,
+      _errorTimeout: null as ReturnType<typeof setTimeout> | null
     };
   },
   
@@ -270,12 +301,13 @@ export default defineComponent({
             }
           };
         } else {
-          // Show error message
-          alert(response.message || 'Failed to sign in. Please try again.');
+          // Show error message in a more user-friendly way
+          // You could replace this with a more styled error message component
+          this.showErrorMessage(response.message || 'Failed to sign in. Please check your credentials and try again.');
         }
       } catch (error) {
         console.error('Sign in error:', error);
-        alert('An error occurred during sign in. Please try again.');
+        this.showErrorMessage('An error occurred during sign in. Please try again.');
       } finally {
         this.isSigningIn = false;
       }
@@ -286,13 +318,13 @@ export default defineComponent({
       
       // Validate form before proceeding
       if (!this.signUpForm.isValid()) {
-        alert('Please fill in all required fields and agree to the terms.');
+        this.showErrorMessage('Please fill in all required fields and agree to the terms.');
         return;
       }
       
       // Check if passwords match using the helper method
       if (!this.signUpForm.passwordsMatch()) {
-        alert('Passwords do not match.');
+        this.showErrorMessage('Passwords do not match.');
         return;
       }
       
@@ -302,18 +334,8 @@ export default defineComponent({
         // Use the API function for sign up
         const response = await AuthAPI.signUp(this.signUpForm.toDto());
         
-        if (response.success && response.user && response.token) {
-          // Store user in Pinia store
-          const authStore = useAuthStore();
-          authStore.setUser(response.user, response.token);
-          
-          console.log('User registered successfully:', response.user);
-          
-          // Emit authentication event
-          this.$emit('user-authenticated', response.user);
-          
-          // Close modal
-          this.closeModals();
+        if (response.success) {
+          console.log('User registered successfully');
           
           // Reset form using the helper method
           this.signUpForm.reset();
@@ -321,21 +343,22 @@ export default defineComponent({
           // Show success overlay
           this.showSuccessOverlay = true;
           this.successTitle = 'Account Created!';
-          this.successMessage = response.message || 'Your account has been created successfully. Welcome to our workspace community!';
+          this.successMessage = response.message || 'Your account has been created successfully. Please sign in with your new credentials.';
           this.successAction = {
-            text: 'Get Started',
+            text: 'Sign In',
             action: () => {
-              // Navigate to onboarding or dashboard
-              this.$router?.push(this.redirectPath).catch(() => {});
+              // Switch to sign in form
+              this.closeSuccessOverlay();
+              this.switchToSignIn();
             }
           };
         } else {
-          // Show error message
-          alert(response.message || 'Failed to create account. Please try again.');
+          // Show error message in a more user-friendly way
+          this.showErrorMessage(response.message || 'Failed to create account. Please try again.');
         }
       } catch (error) {
         console.error('Sign up error:', error);
-        alert('An error occurred during sign up. Please try again.');
+        this.showErrorMessage('An error occurred during sign up. Please try again.');
       } finally {
         this.isSigningUp = false;
       }
@@ -346,6 +369,42 @@ export default defineComponent({
       this.successTitle = '';
       this.successMessage = '';
       this.successAction = null;
+    },
+    
+    // Method to display error messages
+    showErrorMessage(message: string): void {
+      // Clean up any previous error timers
+      if (this._errorTimeout) {
+        clearTimeout(this._errorTimeout);
+      }
+      
+      // Format common error messages to be more user-friendly
+      let formattedMessage = message;
+      
+      if (message.includes('401') || message.toLowerCase().includes('unauthorized')) {
+        formattedMessage = 'Incorrect email or password. Please try again.';
+      } else if (message.includes('404') || message.toLowerCase().includes('not found')) {
+        formattedMessage = 'Account not found. Please check your email address.';
+      } else if (message.includes('429') || message.toLowerCase().includes('too many')) {
+        formattedMessage = 'Too many attempts. Please try again later.';
+      } else if (message.includes('network error') || message.toLowerCase().includes('connection')) {
+        formattedMessage = 'Network error. Please check your internet connection.';
+      } else if (message.toLowerCase().includes('email already exists') || message.includes('409')) {
+        formattedMessage = 'An account with this email already exists. Please use a different email or sign in.';
+      } else if (message.toLowerCase().includes('password') && message.toLowerCase().includes('requirements')) {
+        formattedMessage = 'Password does not meet requirements. Please use at least 8 characters with uppercase, lowercase, and numbers.';
+      } else if (message.toLowerCase().includes('invalid email')) {
+        formattedMessage = 'Please enter a valid email address.';
+      }
+      
+      this.errorMessage = formattedMessage;
+      this.showError = true;
+      
+      // Auto-hide the error after 6 seconds
+      this._errorTimeout = setTimeout(() => {
+        this.showError = false;
+        this.errorMessage = '';
+      }, 6000);
     }
   }
 })
