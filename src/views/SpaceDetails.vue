@@ -1036,10 +1036,7 @@
       <div class="grid lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
           <!-- Other sections will go here -->
-        </div>
-
-        <!-- Placeholder div for layout -->
-        
+        </div>   
       </div>
     </div>
 
@@ -1110,10 +1107,6 @@
             </svg>
           </button>
         </div>
-
-        <!-- Mobile Booking Header -->
-       
-        
         <!-- Header with pricing badge -->
         <div class="flex items-start justify-between">
           <div class="flex-1 pr-3">
@@ -1585,12 +1578,10 @@ export default defineComponent({
       
       // Facilities data from API
       availableFacilities: [] as Array<{ facility_id: number; facility_name: string; hourly_price?: number; icon?: string }>,
-      facilitiesLoading: false,
+      facilitiesLoading: false,     
       
-      // timeSlots removed
     }
-  },
-  
+  },  
   watch: {
     '$route': 'loadSpaceDetails'
   },
@@ -1687,10 +1678,8 @@ export default defineComponent({
     this.selectedPackage = 'monthly'
 
     // Load space details (which will also load facilities)
-    await this.loadSpaceDetails()
-    
-    // The space details are loaded in loadSpaceDetails method
-    
+    await this.loadSpaceDetails()   
+       
     // Add click outside listener for dropdowns
     document.addEventListener('click', this.handleClickOutside)
   },

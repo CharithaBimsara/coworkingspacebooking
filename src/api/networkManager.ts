@@ -24,7 +24,7 @@ interface BookingData {
 }
 
 export class NetworkManager {
-  private static readonly BASE_URL = 'http://192.168.8.132:9011/api';
+  private static readonly BASE_URL = 'http://localhost:9011/api';
   private static lastRawResponseData: any = null;
 
   /**

@@ -6,8 +6,8 @@
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
         <p class="text-gray-600 dark:text-gray-300">Sign in to your account</p>
         <!-- Context Message -->
-        <div v-if="contextMessage" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
-          <p class="text-sm text-blue-800 dark:text-blue-200">{{ contextMessage }}</p>
+        <div v-if="contextMessage" class="mt-3 p-3 bg-primary-50 dark:bg-primary-900/30 border border-black-200 dark:border-black-700 rounded-lg">
+          <p class="text-sm text-primary-800 dark:text-primary-200">{{ contextMessage }}</p>
         </div>
         <!-- Error Message -->
         <div v-if="showError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
@@ -80,8 +80,8 @@
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h2>
         <p class="text-gray-600 dark:text-gray-300">Join our workspace community</p>
         <!-- Context Message -->
-        <div v-if="contextMessage" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
-          <p class="text-sm text-blue-800 dark:text-blue-200">{{ contextMessage }}</p>
+        <div v-if="contextMessage" class="mt-3 p-3 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700 rounded-lg">
+          <p class="text-sm text-primary-800 dark:text-primary-200">{{ contextMessage }}</p>
         </div>
         <!-- Error Message -->
         <div v-if="showError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">

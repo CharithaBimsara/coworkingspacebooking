@@ -211,7 +211,7 @@
                   v-if="booking.space.image" 
                   :src="booking.space.image" 
                   :alt="booking.space.name"
-                  class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                  class="w-20 h-30 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity"
                   @click="viewSpaceDetails(booking.space.id)"
                 >
                 <div class="flex-1 min-w-0">
