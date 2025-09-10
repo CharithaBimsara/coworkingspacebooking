@@ -16,7 +16,7 @@
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <div class="space-y-8 animate-fade-in">
             <h1 class="text-4xl lg:text-5xl xl:text-6xl font-heading font-bold text-black dark:text-white leading-tight">
-              Find  Perfect
+              Find Your Perfect
               <span class="relative">
                 <span class="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
                   WorkSpace
