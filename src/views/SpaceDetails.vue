@@ -1901,8 +1901,11 @@ export default defineComponent({
       }
       
       // Otherwise, prepend the base URL
-      // Using NetworkManager.BASE_URL might not be accessible directly, so we hardcode the base URL
-      return `http://localhost:9011${avatarPath}`;
+      // Get the API base URL from environment variables
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
+      // Extract the domain part without the '/api' suffix
+      const domain = baseUrl.replace(/\/api$/, '');
+      return `${domain}${avatarPath}`;
     },
     
     handleAvatarError(event: Event): void {

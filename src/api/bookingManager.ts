@@ -28,7 +28,7 @@ export interface BookingResponse {
 }
 
 export class BookingManager {
-  private static readonly BASE_URL = 'http://localhost:9011/api';
+  private static readonly BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
 
   /**
    * Helper method to process bookings with product details
