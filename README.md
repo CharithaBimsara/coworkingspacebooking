@@ -1,6 +1,6 @@
-# fusion-vue-tailwind-starter
+# SpaceBooking
 
-This template should help get you started developing with Vue 3 in Vite.
+A coworking space booking application developed with Vue 3 and Vite.
 
 ## Recommended IDE Setup
 
@@ -26,11 +26,31 @@ npm install
 npm run dev
 ```
 
+### Environment Configuration
+
+The application uses environment variables for configuration. The following files are used:
+
+- `.env` - Default environment variables for all environments
+- `.env.development` - Environment variables for development
+- `.env.production` - Environment variables for production
+- `.env.local` - Local overrides (not checked into version control)
+
+Key environment variables:
+
+- `VITE_API_BASE_URL` - Base URL for the API (e.g., 'https://api.ceylinco-works.com/api')
+- `VITE_APP_TITLE` - Application title
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
 npm run build
 ```
+
+The build process:
+1. Automatically sets NODE_ENV to 'production'
+2. Uses the `.env.production` configuration file
+3. Optimizes and chunks the JavaScript for better performance
+4. Outputs the build files to the `dist` directory
 
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 

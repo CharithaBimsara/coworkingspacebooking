@@ -1,28 +1,37 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
-    <div class="max-w-8xl mx-auto container-padding py-8">
+  <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300 pb-20 lg:pb-0">
+    <div class="max-w-8xl mx-auto px-4 sm:px-6 md:container-padding py-6 md:py-8">
       <!-- Progress indicator -->
-      <div class="flex flex-col items-center justify-center mb-8">
-        <div class="flex items-center">
+      <div class="flex flex-col items-center justify-center mb-6 md:mb-8">
+        <!-- Mobile progress indicator (visible only on small screens) -->
+        <div class="flex items-center justify-center md:hidden w-full max-w-xs mb-2">
+          <div class="h-1 bg-gray-200 dark:bg-gray-700 rounded-full w-full relative">
+            <div class="absolute top-0 left-0 h-full bg-primary rounded-full" style="width: 33.3%;"></div>
+          </div>
+        </div>
+        <div class="text-xs font-medium text-primary md:hidden mb-3">Step 1 of 3: Summary</div>
+        
+        <!-- Desktop progress indicator (hidden on mobile) -->
+        <div class="hidden md:flex items-center">
           <div class="flex flex-col items-center">
             <div
-              class="flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-sm font-semibold shadow-sm transition-transform hover:scale-105">
+              class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-primary text-white rounded-full text-xs sm:text-sm font-semibold shadow-sm transition-transform hover:scale-105">
               1
             </div>
             <span class="text-xs font-medium text-primary mt-1">Summary</span>
           </div>
-          <div class="w-16 h-1 bg-primary mx-2 transition-all duration-500"></div>
+          <div class="w-10 sm:w-16 h-1 bg-primary mx-1 sm:mx-2 transition-all duration-500"></div>
           <div class="flex flex-col items-center">
             <div
-              class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full text-sm font-semibold cursor-pointer hover:bg-gray-200 transition-all">
+              class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 text-gray-600 rounded-full text-xs sm:text-sm font-semibold cursor-pointer hover:bg-gray-200 transition-all">
               2
             </div>
             <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Payment</span>
           </div>
-          <div class="w-16 h-1 bg-gray-300 dark:bg-gray-600 mx-2"></div>
+          <div class="w-10 sm:w-16 h-1 bg-gray-300 dark:bg-gray-600 mx-1 sm:mx-2"></div>
           <div class="flex flex-col items-center">
             <div
-              class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full text-sm font-semibold cursor-pointer hover:bg-gray-200 transition-all">
+              class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 text-gray-600 rounded-full text-xs sm:text-sm font-semibold cursor-pointer hover:bg-gray-200 transition-all">
               3
             </div>
             <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Confirmation</span>
@@ -31,15 +40,15 @@
       </div>
 
       <div class="text-center mb-6">
-        <h1 class="text-2xl md:text-3xl font-heading font-bold text-gray-900 dark:text-white mb-2">Booking Summary</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">Review your booking details before proceeding to payment</p>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-gray-900 dark:text-white mb-2">Booking Summary</h1>
+        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">Review your booking details before proceeding to payment</p>
       </div>
 
-      <div class="grid lg:grid-cols-3 gap-8">
+      <div class="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         <!-- Booking Details -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-2 space-y-4 sm:space-y-5 md:space-y-6">
           <!-- Guest Information -->
-          <div class="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-card border border-gray-50 dark:border-gray-800 transition-shadow hover:shadow-lg">
+          <div class="bg-white dark:bg-gray-900 rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-card border border-gray-50 dark:border-gray-800 transition-shadow hover:shadow-lg">
             <div v-if="!isAuthenticated">
               <div class="flex items-center mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,17 +78,17 @@
                   Guest Details
                 </h3>
                 <form @submit.prevent="proceedToPayment" class="space-y-3">
-                  <div class="grid sm:grid-cols-2 gap-4">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div class="relative">
                       <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">First Name *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
                         </div>
                         <input v-model="guestInfo.firstName" type="text" required 
-                          class="input-field text-sm py-2.5 pl-10 transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
+                          class="input-field text-xs sm:text-sm py-2 sm:py-2.5 pl-8 sm:pl-10 w-full transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
                           placeholder="Enter your first name">
                       </div>
                     </div>
@@ -87,27 +96,27 @@
                       <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Last Name *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
                         </div>
                         <input v-model="guestInfo.lastName" type="text" required 
-                          class="input-field text-sm py-2.5 pl-10 transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
+                          class="input-field text-xs sm:text-sm py-2 sm:py-2.5 pl-8 sm:pl-10 w-full transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
                           placeholder="Enter your last name">
                       </div>
                     </div>
                   </div>
-                  <div class="grid sm:grid-cols-2 gap-4">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div class="relative">
                       <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </div>
                         <input v-model="guestInfo.email" type="email" required 
-                          class="input-field text-sm py-2.5 pl-10 transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
+                          class="input-field text-xs sm:text-sm py-2 sm:py-2.5 pl-8 sm:pl-10 w-full transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
                           placeholder="Enter your email address">
                       </div>
                     </div>
@@ -115,12 +124,12 @@
                       <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
                       <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                           </svg>
                         </div>
                         <input v-model="guestInfo.phone" type="tel" required 
-                          class="input-field text-sm py-2.5 pl-10 transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
+                          class="input-field text-xs sm:text-sm py-2 sm:py-2.5 pl-8 sm:pl-10 w-full transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
                           placeholder="Enter your phone number">
                       </div>
                     </div>
@@ -158,9 +167,10 @@
           </div>
 
           <!-- Add another service -->
-          <div class="text-center mt-6">
-            <button @click="addAnotherService" class="btn-secondary text-sm py-3 px-5 rounded-full hover:shadow-md transition-all flex items-center mx-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="text-center mt-4 sm:mt-6">
+            <button @click="addAnotherService" 
+              class="btn-secondary text-xs sm:text-sm py-2.5 sm:py-3 px-4 sm:px-5 rounded-full hover:shadow-md transition-all flex items-center mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 mr-1 sm:mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
               Add Another Service
@@ -169,117 +179,123 @@
 
           <!-- Loop through each booking -->
           <div v-for="(booking, index) in bookingData" :key="index"
-  class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 mb-4 overflow-hidden hover:shadow-lg group">
+  :class="[
+    'bg-white dark:bg-gray-900 rounded-lg sm:rounded-xl border hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 mb-3 sm:mb-4 overflow-hidden hover:shadow-lg group',
+    deleteAnimationKey === booking.uniqueKey ? 'border-red-300 dark:border-red-700 shake-animation bg-red-50 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'
+  ]">
   
   <!-- Top Section with Image and Main Info -->
   <div class="flex flex-col sm:flex-row">
     <!-- Image with overlay effect -->
-    <div class="relative cursor-pointer overflow-hidden" @click="goToSpaceDetails(booking.space?.id)">
+    <div class="relative cursor-pointer overflow-hidden w-full sm:w-36" @click="goToSpaceDetails(booking.space?.id)">
       <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity z-10"></div>
       <img v-if="booking.space && booking.space.images && booking.space.images.length > 0"
         :src="booking.space.images[0]" :alt="booking.space.name || 'Space Image'"
-        class="w-full sm:w-36 h-32 sm:h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        class="w-full h-28 xs:h-32 sm:h-full object-cover transition-transform duration-500 group-hover:scale-105">
       <img v-else
         src="https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
         alt="Default Space Image"
-        class="w-full sm:w-36 h-32 sm:h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        class="w-full h-28 xs:h-32 sm:h-full object-cover transition-transform duration-500 group-hover:scale-105">
       
       <!-- Type Badge -->
-      <div class="absolute top-2 left-2 bg-primary/90 text-white text-xs px-2 py-1 rounded-full font-medium">
+      <div class="absolute top-2 left-2 bg-primary/90 text-white text-xxs xs:text-xs px-1.5 xs:px-2 py-0.5 xs:py-1 rounded-full font-medium">
         {{ formatProductType(booking.productType) }}
       </div>
     </div>
     
     <!-- Main Content -->
-    <div class="flex-1 p-4">
+    <div class="flex-1 p-3 sm:p-4">
       <!-- Header Row -->
-      <div class="flex justify-between items-start mb-3">
+      <div class="flex justify-between items-start mb-2 sm:mb-3">
         <div class="flex-1">
-          <h3 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-primary transition-colors"
+          <h3 class="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-primary transition-colors line-clamp-1"
             @click="goToSpaceDetails(booking.space?.id)">
             {{ booking.space?.name || 'Unknown Space' }}
           </h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <p class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 xs:h-3.5 xs:w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {{ booking.space?.location || 'Unknown Location' }}
+            <span class="line-clamp-1">{{ booking.space?.location || 'Unknown Location' }}</span>
           </p>
         </div>
         
         <!-- Delete button -->
-        <button @click.stop="booking.uniqueKey && removeBookingItem(booking.uniqueKey)"
-          class="ml-3 text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button @click.stop="booking.uniqueKey && confirmDelete(booking.uniqueKey)"
+          class="ml-2 sm:ml-3 text-gray-400 hover:text-red-500 transition-colors p-0.5 sm:p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+          :class="{'animate-pulse text-red-500': deleteAnimationKey === booking.uniqueKey}">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
       </div>
       
       <!-- Info Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mt-2">
         <!-- Type -->
-        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <span class="text-xs text-gray-500 dark:text-gray-400 block">Type</span>
-          <div class="font-medium text-gray-900 dark:text-white text-sm flex items-center mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">Type</span>
+          <div class="font-medium text-gray-900 dark:text-white text-xs sm:text-sm flex items-center mt-0.5 sm:mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
             <div>
-              <div>{{ formatProductType(booking.productType) }}</div>
-              <div v-if="booking.productType === 'meeting-room'" class="text-xs text-gray-500">{{ booking.space?.capacity || 'N/A' }} people</div>
-              <div v-else-if="booking.productType === 'coworking-space'" class="text-xs text-gray-500">Team: {{ booking.subscription?.teamSize || 'N/A' }}</div>
+              <div class="line-clamp-1">{{ formatProductType(booking.productType) }}</div>
+              <div v-if="booking.productType === 'meeting-room'" class="text-xxs xs:text-xs text-gray-500">{{ booking.space?.capacity || 'N/A' }} people</div>
+              <div v-else-if="booking.productType === 'coworking-space'" class="text-xxs xs:text-xs text-gray-500">Team: {{ booking.subscription?.teamSize || 'N/A' }}</div>
             </div>
           </div>
         </div>
         
         <!-- Date -->
-        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <span class="text-xs text-gray-500 dark:text-gray-400 block">Date</span>
-          <div class="font-medium text-gray-900 dark:text-white text-sm flex items-center mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">Date</span>
+          <div class="font-medium text-gray-900 dark:text-white text-xs sm:text-sm flex items-center mt-0.5 sm:mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {{ formatDateRange(booking) }}
+            <span class="line-clamp-1">{{ formatDateRange(booking) }}</span>
           </div>
         </div>
         
         <!-- Time/Package -->
-        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <span class="text-xs text-gray-500 dark:text-gray-400 block">{{ booking.productType === 'meeting-room' ? 'Time' : 'Package' }}</span>
-          <div class="font-medium text-gray-900 dark:text-white text-sm flex items-center mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">{{ booking.productType === 'meeting-room' ? 'Time' : 'Package' }}</span>
+          <div class="font-medium text-gray-900 dark:text-white text-xs sm:text-sm flex items-center mt-0.5 sm:mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="booking.productType === 'meeting-room'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
-            <span v-if="booking.productType === 'meeting-room'">{{ booking.booking?.startTime }} - {{ getEndTime(booking) }}</span>
-            <span v-else>{{ getPackageDisplayName(booking) }}</span>
+            <span v-if="booking.productType === 'meeting-room'" class="line-clamp-1">{{ booking.booking?.startTime }} - {{ getEndTime(booking) }}</span>
+            <span v-else class="line-clamp-1">{{ getPackageDisplayName(booking) }}</span>
           </div>
         </div>
         
         <!-- Price -->
-        <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <span class="text-xs text-gray-500 dark:text-gray-400 block">Total Price</span>
-          <div class="font-bold text-gray-900 dark:text-white text-base flex items-center mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">Total Price</span>
+          <div class="font-bold text-gray-900 dark:text-white text-sm sm:text-base flex items-center mt-0.5 sm:mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            ${{ booking.totalPrice || 0 }}
+            LKR {{ booking.totalPrice || 0 }}
           </div>
         </div>
       </div>
       
       <!-- Features (if any) -->
-      <div v-if="booking.facilities && booking.facilities.length > 0" class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
-        <div class="flex items-center gap-1.5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <span class="text-xs font-medium text-gray-600 dark:text-gray-300">Amenities:</span>
-          <div class="flex flex-wrap gap-1.5 ml-1">
+      <div v-if="booking.facilities && booking.facilities.length > 0" class="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-100 dark:border-gray-700">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span class="text-xxs xs:text-xs font-medium text-gray-600 dark:text-gray-300 ml-1">Amenities:</span>
+          </div>
+          <div class="flex flex-wrap gap-1 sm:gap-1.5 ml-1">
             <span v-for="feature in booking.facilities" :key="feature" 
-              class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+              class="text-xxs xs:text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-1.5 sm:px-2 py-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               {{ feature }}
             </span>
           </div>
@@ -296,70 +312,63 @@
 
         <!-- Price Summary Sidebar -->
         <div class="lg:col-span-1">
-          <div class="bg-white dark:bg-gray-900 rounded-xl p-5 shadow-card sticky top-24 border border-gray-50 dark:border-gray-800 hover:shadow-lg transition-shadow">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="bg-white dark:bg-gray-900 rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-card sticky top-20 sm:top-24 border border-gray-50 dark:border-gray-800 hover:shadow-lg transition-shadow">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 mr-1.5 sm:mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
               Price Summary
             </h2>
 
             <!-- Price breakdown -->
-            <div class="space-y-3 mb-6">
+            <div class="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
               <div v-for="(booking, index) in bookingData" :key="index" 
-                class="mb-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 last:mb-0 hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-gray-800 dark:text-gray-200 font-medium text-sm line-clamp-1" :title="booking.space?.name || 'Unknown Product'">
+                class="mb-2 sm:mb-3 pb-2 sm:pb-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 last:mb-0 hover:bg-gray-50 dark:hover:bg-gray-800 p-1.5 sm:p-2 rounded-lg transition-colors">
+                <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+                  <span class="text-gray-800 dark:text-gray-200 font-medium text-xs sm:text-sm line-clamp-1" :title="booking.space?.name || 'Unknown Product'">
                     {{ booking.space?.name || 'Unknown Product' }}
                   </span>
-                  <span class="font-semibold text-sm">${{ booking.pricing?.total || booking.totalPrice || 0 }}</span>
+                  <span class="font-semibold text-xs sm:text-sm">LKR {{ booking.pricing?.total || booking.totalPrice || 0 }}</span>
                 </div>
 
-                <div v-if="booking.pricing" class="text-xs text-gray-600 dark:text-gray-400 space-y-1 pl-2 bg-white dark:bg-gray-800 rounded-md p-2 border border-gray-100 dark:border-gray-700">
+                <div v-if="booking.pricing" class="text-xxs xs:text-xs text-gray-600 dark:text-gray-400 space-y-0.5 sm:space-y-1 pl-1.5 sm:pl-2 bg-white dark:bg-gray-800 rounded-md p-1.5 sm:p-2 border border-gray-100 dark:border-gray-700">
                   <div class="flex justify-between items-center">
                     <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                       </svg>
                       Base Price:
                     </span>
-                    <span>${{ booking.pricing.basePrice || 0 }}</span>
+                    <span>LKR {{ booking.pricing.basePrice || 0 }}</span>
                   </div>
                   <div v-if="booking.pricing.facilitiesPrice > 0" class="flex justify-between items-center">
                     <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
                       Features:
                     </span>
-                    <span>${{ booking.pricing.facilitiesPrice || 0 }}</span>
+                    <span>LKR {{ booking.pricing.facilitiesPrice || 0 }}</span>
                   </div>
                   <div v-if="booking.pricing.serviceFee !== undefined && booking.pricing.serviceFee > 0" class="flex justify-between items-center">
                     <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                       Service Fee:
                     </span>
-                    <span>${{ booking.pricing.serviceFee || 0 }}</span>
+                    <span>LKR {{ booking.pricing.serviceFee || 0 }}</span>
                   </div>
                   <div v-if="booking.pricing.taxes !== undefined && booking.pricing.taxes > 0" class="flex justify-between items-center">
                     <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
                       </svg>
                       Taxes:
                     </span>
-                    <span>${{ booking.pricing.taxes || 0 }}</span>
+                    <span>LKR {{ booking.pricing.taxes || 0 }}</span>
                   </div>
                 </div>
-
-                <!-- <div v-if="booking.facilities && booking.facilities.length > 0" class="mt-2 text-xs text-gray-500 pl-2">
-                  <p class="font-medium mb-1">Included Features:</p>
-                  <ul class="list-disc list-inside space-y-0.5">
-                    <li v-for="feature in booking.facilities" :key="feature">{{ feature }}</li>
-                  </ul>
-                </div> -->
               </div>
 
               <div class="relative">
@@ -367,44 +376,44 @@
                   <div class="w-full border-t border-gray-200 dark:border-gray-600"></div>
                 </div>
                 <div class="relative flex justify-center">
-                  <span class="bg-white dark:bg-gray-900 px-2 text-xs text-gray-500 dark:text-gray-400">SUMMARY</span>
+                  <span class="bg-white dark:bg-gray-900 px-2 text-xxs xs:text-xs text-gray-500 dark:text-gray-400">SUMMARY</span>
                 </div>
               </div>
 
-              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg mt-3">
-                <span class="text-base font-bold text-gray-900 dark:text-white flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="flex items-center justify-between p-2.5 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg mt-2 sm:mt-3">
+                <span class="text-sm sm:text-base font-bold text-gray-900 dark:text-white flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
                   </svg>
                   Total
                 </span>
-                <span class="text-xl font-bold text-primary">${{ totalAmount }}</span>
+                <span class="text-lg sm:text-xl font-bold text-primary">LKR {{ totalAmount }}</span>
               </div>
             </div>
             
             <!-- Promo code (uncommented and enhanced) -->
-            <div class="mb-6 mt-4">
-              <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Have a promo code?</label>
-              <div class="flex gap-2">
+            <div class="mb-4 sm:mb-6 mt-3 sm:mt-4">
+              <label class="text-xxs xs:text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Have a promo code?</label>
+              <div class="flex gap-1.5 sm:gap-2">
                 <div class="relative flex-1">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div class="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
                   </div>
                   <input v-model="promoCode" type="text" placeholder="Enter code" 
-                    class="input-field text-sm py-2 pl-10 w-full transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary">
+                    class="input-field text-xs sm:text-sm py-1.5 sm:py-2 pl-7 sm:pl-10 w-full transition-all border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary">
                 </div>
-                <button @click="applyPromoCode" class="btn-primary text-sm px-4 py-2 whitespace-nowrap hover:shadow-md transition-all">
+                <button @click="applyPromoCode" class="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 whitespace-nowrap hover:shadow-md transition-all">
                   Apply
                 </button>
               </div>
               <div v-if="promoCodeMessage"
-                :class="['mt-2 text-sm flex items-center', promoCodeApplied ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400']">
-                <svg v-if="promoCodeApplied" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                :class="['mt-1.5 sm:mt-2 text-xs sm:text-sm flex items-center', promoCodeApplied ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400']">
+                <svg v-if="promoCodeApplied" xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 {{ promoCodeMessage }}
@@ -494,36 +503,36 @@
 
             <!-- Proceed to Payment Button -->
             <button @click="proceedToPayment" :disabled="!isFormValid"
-              class="w-full btn-primary text-base py-3.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg flex items-center justify-center">
+              class="w-full btn-primary text-sm sm:text-base py-3 sm:py-3.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg flex items-center justify-center">
               <span>Proceed to Payment</span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </button>
 
             <!-- Cancellation policy -->
-            <div class="mt-5 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-l-4 border-gray-200 dark:border-gray-600">
-              <h4 class="font-semibold text-gray-900 dark:text-white mb-2 text-sm flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mt-4 sm:mt-5 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-l-4 border-gray-200 dark:border-gray-600">
+              <h4 class="font-semibold text-gray-900 dark:text-white mb-1.5 sm:mb-2 text-xs sm:text-sm flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 sm:h-4 w-3.5 sm:w-4 mr-1 sm:mr-1.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Cancellation Policy
               </h4>
-              <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-2 mt-1">
+              <ul class="text-xxs xs:text-xs text-gray-600 dark:text-gray-400 space-y-1.5 sm:space-y-2 mt-1">
                 <li class="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 text-green-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-green-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                   Free cancellation up to 24 hours before check-in
                 </li>
                 <li class="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 text-yellow-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-yellow-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                   50% refund for cancellations within 24 hours
                 </li>
                 <li class="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                   No refund for no-shows
@@ -536,8 +545,102 @@
     </div>
     <AuthModals :show-sign-in="showSignInModal" :show-sign-up="showSignUpModal" @close="closeAuthModals"
       @user-authenticated="handleUserAuthenticated" @switch-to-signup="switchToSignUp" @switch-to-signin="switchToSignIn" />
+      
+    <!-- Delete Confirmation Dialog -->
+    <div v-if="showDeleteConfirmation" 
+        class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center"
+        @click.self="cancelDelete">
+      <div class="fixed inset-0 bg-black bg-opacity-30 transition-opacity"></div>
+      <div class="relative bg-white dark:bg-gray-900 rounded-lg max-w-md w-11/12 mx-auto shadow-xl border border-gray-200 dark:border-gray-700 transform transition-all overflow-hidden">
+        <div class="px-4 pt-5 pb-4 sm:p-6 text-center sm:mt-0">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 mb-4">
+            <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Remove Booking Item?</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Are you sure you want to remove this item from your booking? This action cannot be undone.
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-3">
+            <button 
+              type="button"
+              @click="cancelDelete"
+              class="btn-secondary text-xs sm:text-sm py-2.5 px-4 rounded-md transition-all hover:bg-gray-100">
+              Cancel
+            </button>
+            <button 
+              type="button"
+              @click="itemToDelete && removeBookingItem(itemToDelete)"
+              class="btn-danger text-xs sm:text-sm py-2.5 px-4 rounded-md bg-red-600 hover:bg-red-700 text-white transition-all flex items-center justify-center">
+              <svg class="w-4 h-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Remove Item
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Floating Action Button (visible on small screens) -->
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40">
+    <div class="bg-gradient-to-t from-gray-900/80 to-transparent h-16 absolute inset-x-0 bottom-0 pointer-events-none"></div>
+    <div 
+      class="bg-white dark:bg-gray-900 rounded-t-xl shadow-xl border border-gray-200 dark:border-gray-700 p-3.5 sm:p-4">
+      <div class="flex justify-between items-center">
+        <div class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
+          Total: <span class="text-base sm:text-lg text-primary font-bold">LKR {{ totalAmount }}</span>
+        </div>
+        <button 
+          @click="proceedToPayment" 
+          :disabled="!isFormValid"
+          class="btn-primary text-xs py-2 px-3 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+          <span class="hidden xs:inline">Proceed to Payment</span>
+          <span class="xs:hidden">Payment</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
+
+<style>
+/* Add custom responsive text sizes */
+.text-xxs {
+  font-size: 0.65rem;
+  line-height: 1rem;
+}
+
+/* Delete animation styles */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.shake-animation {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Button styles */
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+  box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1), 0 2px 4px -1px rgba(220, 38, 38, 0.06);
+}
+</style>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
@@ -545,6 +648,9 @@ import { useAuthStore } from '../stores/auth'
 import { useBookingStore } from '../stores/booking'
 import type { UserDto } from '../dto/response'
 import AuthModals from '../components/AuthModals.vue'
+
+// Add responsive styles
+import '../assets/base.css'
 
 interface GuestInfo {
   firstName: string
@@ -580,6 +686,9 @@ export default defineComponent({
       guestCheckout: true,
       showSignInModal: false,
       showSignUpModal: false,
+      showDeleteConfirmation: false,
+      itemToDelete: null as string | null,
+      deleteAnimationKey: null as string | null,
     }
   },
 
@@ -723,8 +832,26 @@ export default defineComponent({
       this.bookingStore.setAddingMoreServices(true);
     },
 
+    confirmDelete(uniqueKey: string) {
+      this.itemToDelete = uniqueKey;
+      this.deleteAnimationKey = uniqueKey;
+      this.showDeleteConfirmation = true;
+    },
+    
     removeBookingItem(uniqueKey: string) {
-      this.bookingStore.removeBookingItem(uniqueKey);
+      // First animate the item
+      setTimeout(() => {
+        // Then actually remove it from store
+        this.bookingStore.removeBookingItem(uniqueKey);
+        this.showDeleteConfirmation = false;
+        this.itemToDelete = null;
+      }, 300);
+    },
+    
+    cancelDelete() {
+      this.showDeleteConfirmation = false;
+      this.itemToDelete = null;
+      this.deleteAnimationKey = null;
     },
 
     openAuthModal(type: 'login' | 'register') {

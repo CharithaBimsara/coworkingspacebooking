@@ -197,7 +197,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import SuccessOverlay from './SuccessOverlay.vue';
-import { AuthAPI } from '../api';
+import { NetworkManager, type AuthResponse } from '../api/networkManager';
 import { SignInForm, SignUpForm } from '../helpers/forms';
 import { useAuthStore } from '../stores/auth';
 import type { PropType } from 'vue';
@@ -270,8 +270,9 @@ export default defineComponent({
       this.isSigningIn = true;
       
       try {
-        // Use the API function for sign in
-        const response = await AuthAPI.signIn(this.signInForm.toDto());
+        // Use NetworkManager directly for sign in
+        const dto = this.signInForm.toDto();
+        const response = await NetworkManager.loginUser(dto.email, dto.password);
         
         if (response.success && response.user && response.token) {
           // Store user in Pinia store
@@ -331,8 +332,19 @@ export default defineComponent({
       this.isSigningUp = true;
       
       try {
-        // Use the API function for sign up
-        const response = await AuthAPI.signUp(this.signUpForm.toDto());
+        // Use NetworkManager directly for sign up
+        const dto = this.signUpForm.toDto();
+        const response = await NetworkManager.registerUser({
+          FirstName: dto.firstName,
+          LastName: dto.lastName,
+          Email: dto.email,
+          Password: dto.password,
+          // Empty strings for optional fields
+          Phone: "",
+          Company: "",
+          JobTitle: "",
+          Bio: ""
+        });
         
         if (response.success) {
           console.log('User registered successfully');

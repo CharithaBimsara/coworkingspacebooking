@@ -1,9 +1,24 @@
 // src/api/networkManager.ts
 // NetworkManager for essential APIs only
-// Handles: product listing/searching/filtering, space details, locations, and booked time slots
+// Handles: authentication, product listing/searching/filtering, space details, locations, and booked time slots
 
-import type { SpaceDto } from '../dto/response';
-import { AdvertisementDto } from '../dto/response';
+import type { SpaceDto, UserDto } from '../dto/response';
+import { AdvertisementDto, BaseResponseDto } from '../dto/response';
+
+// Define AuthResponse interface
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+  };
+  token?: string;
+}
 
 // Interface for booking data returned by the API
 interface BookingData {
@@ -24,8 +39,8 @@ interface BookingData {
 }
 
 export class NetworkManager {
-  private static readonly BASE_URL = 'http://localhost:9011/api';
-  private static lastRawResponseData: any = null;
+  private static readonly BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
+  public static lastRawResponseData: any = null;
 
   /**
    * Get all locations for the location dropdown.
@@ -75,7 +90,7 @@ export class NetworkManager {
           };
         });
       } else {
-        throw new Error(data.message || data.statusCode || 'Failed to fetch locations');
+        throw new Error(data.message || data.statusCode || this.getErrorMessageForStatus(response.status, 'Failed to fetch locations'));
       }
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -148,6 +163,9 @@ export class NetworkManager {
         const data = await response.json();
 
         if (data.status_code === 200 && data.data) {
+          // Store the last raw response data
+          this.lastRawResponseData = data.data;
+          
           // Transform the API response to match our SpaceDto interface
           const transformedSpaces = this.transformApiSpacesToSpaceDto([data.data]);
           const transformedSpace = transformedSpaces[0];
@@ -293,16 +311,27 @@ export class NetworkManager {
         } else {
           return {
             success: false,
-            message: data.message || 'Failed to retrieve spaces',
+            message: data.message || this.getErrorMessageForStatus(response.status, 'Failed to retrieve spaces'),
             spaces: [],
             totalCount: 0
           };
         }
       }
     } catch (error) {
+      console.error('Error fetching spaces:', error);
+      
+      // Provide standardized error message
+      let errorMessage = this.getErrorMessageForStatus(0, 'Failed to fetch spaces data');
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to fetch spaces data',
+        message: errorMessage,
         spaces: [],
         totalCount: 0
       };
@@ -523,7 +552,7 @@ export class NetworkManager {
   
   /**
    * Get all facilities for filtering
-   * Endpoint: /facility/get-facility-list
+   * Endpoint: /facility-type/get-facility-type-list
    * Method: POST
    * Response:
    * {
@@ -541,7 +570,7 @@ export class NetworkManager {
    */
   static async getFacilities(): Promise<Array<{ facility_id: number; facility_name: string; description?: string }>> {
     try {
-      const response = await fetch(`${this.BASE_URL}/facility/get-facility-list`, {
+      const response = await fetch(`${this.BASE_URL}/facility-type/get-facility-type-list`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -646,8 +675,8 @@ export class NetworkManager {
       });
 
       if (!response.ok) {
-        console.warn(`Advertisement API returned status ${response.status}. Using fallback data.`);
-        return this.getFallbackAdvertisements();
+        console.warn(`Advertisement API returned status ${response.status}`);
+        throw new Error(`Failed to fetch advertisements: Server returned ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -661,20 +690,22 @@ export class NetworkManager {
           
           return new AdvertisementDto({
             id: index + 1, // Generate an ID since it's not in the response
-            title: ad.company_name, // Map company_name to title
-            description: ad.description,
-            buttonText: 'Learn More', // Default button text
+            title: ad.company_name || 'Advertisement', // Map company_name to title with fallback
+            description: ad.description || '',
+            buttonText: ad.button_text || 'Learn More', // Use API button text if available
             image: processedImageUrl, // Use the processed absolute URL
-            link: '#' // Default link
+            link: ad.link || '#' // Use API link if available
           });
         });
       } else {
-        console.warn('Invalid advertisement data format. Using fallback data.');
-        return this.getFallbackAdvertisements();
+        console.warn('Invalid advertisement data format from API');
+        throw new Error('Failed to fetch advertisements: Invalid data format from server');
       }
     } catch (error) {
       console.error('Error fetching advertisements:', error);
-      return this.getFallbackAdvertisements();
+      // Return empty array instead of fallback data
+      // This allows the UI layer to handle the error appropriately
+      return [];
     }
   }
   
@@ -777,7 +808,7 @@ export class NetworkManager {
             errorMessage = 'Server error. Please try again later.';
             break;
           default:
-            errorMessage = 'Registration failed. Please try again.';
+            errorMessage = this.getErrorMessageForStatus(response.status, 'Registration failed. Please try again.');
         }
         
         return {
@@ -945,7 +976,7 @@ export class NetworkManager {
             errorMessage = 'Server error. Please try again later.';
             break;
           default:
-            errorMessage = 'Profile update failed. Please try again.';
+            errorMessage = this.getErrorMessageForStatus(response.status, 'Profile update failed. Please try again.');
         }
         
         return {
@@ -1052,26 +1083,12 @@ export class NetworkManager {
         body: formData
       });
       
-      // Handle specific HTTP error status codes with user-friendly messages
+      // Handle HTTP errors with our standardized error handling method
       if (!response.ok) {
-        let errorMessage: string;
-        
-        switch (response.status) {
-          case 400:
-            errorMessage = 'Invalid user ID.';
-            break;
-          case 404:
-            errorMessage = 'User not found.';
-            break;
-          case 500:
-          case 502:
-          case 503:
-          case 504:
-            errorMessage = 'Server error. Please try again later.';
-            break;
-          default:
-            errorMessage = 'Failed to fetch user details.';
-        }
+        const errorMessage = this.getErrorMessageForStatus(
+          response.status, 
+          'Failed to fetch user details.'
+        );
         
         return {
           success: false,
@@ -1156,6 +1173,8 @@ export class NetworkManager {
       email: string;
       first_name: string;
       last_name?: string;
+      firstName?: string;
+      lastName?: string;
     };
     token?: string;
   }> {
@@ -1198,7 +1217,7 @@ export class NetworkManager {
             errorMessage = 'Server error. Please try again later.';
             break;
           default:
-            errorMessage = 'Login failed. Please try again.';
+            errorMessage = this.getErrorMessageForStatus(response.status, 'Login failed. Please try again.');
         }
         
         return {
@@ -1391,7 +1410,7 @@ export class NetworkManager {
             errorMessage = 'Server error. Please try again later.';
             break;
           default:
-            errorMessage = 'Failed to fetch upcoming bookings.';
+            errorMessage = this.getErrorMessageForStatus(response.status, 'Failed to fetch upcoming bookings.');
         }
         
         return {
@@ -1493,27 +1512,10 @@ export class NetworkManager {
 
       // Handle specific HTTP error status codes with user-friendly messages
       if (!response.ok) {
-        let errorMessage: string;
-        
-        switch (response.status) {
-          case 400:
-            errorMessage = 'Invalid request. Please check your user ID.';
-            break;
-          case 401:
-            errorMessage = 'Unauthorized. Please sign in again.';
-            break;
-          case 404:
-            errorMessage = 'No past bookings found.';
-            break;
-          case 500:
-          case 502:
-          case 503:
-          case 504:
-            errorMessage = 'Server error. Please try again later.';
-            break;
-          default:
-            errorMessage = 'Failed to fetch past bookings.';
-        }
+        const errorMessage = this.getErrorMessageForStatus(
+          response.status, 
+          'Failed to fetch past bookings'
+        );
         
         return {
           success: false,
@@ -1561,7 +1563,7 @@ export class NetworkManager {
       } else {
         return {
           success: false,
-          message: data.message || 'Failed to retrieve past bookings',
+          message: data.message || this.getErrorMessageForStatus(response.status, 'Failed to retrieve past bookings'),
           bookings: []
         };
       }
@@ -1569,7 +1571,7 @@ export class NetworkManager {
       console.error('Get past bookings error:', error);
       
       // Provide more user-friendly error messages
-      let errorMessage = 'Failed to retrieve past bookings';
+      let errorMessage = this.getErrorMessageForStatus(0, 'Failed to retrieve past bookings');
       
       if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
         errorMessage = 'Network error. Please check your internet connection and try again.';
@@ -1614,27 +1616,10 @@ export class NetworkManager {
 
       // Handle specific HTTP error status codes with user-friendly messages
       if (!response.ok) {
-        let errorMessage: string;
-        
-        switch (response.status) {
-          case 400:
-            errorMessage = 'Invalid request. Please check your user ID.';
-            break;
-          case 401:
-            errorMessage = 'Unauthorized. Please sign in again.';
-            break;
-          case 404:
-            errorMessage = 'No canceled bookings found.';
-            break;
-          case 500:
-          case 502:
-          case 503:
-          case 504:
-            errorMessage = 'Server error. Please try again later.';
-            break;
-          default:
-            errorMessage = 'Failed to fetch canceled bookings.';
-        }
+        const errorMessage = this.getErrorMessageForStatus(
+          response.status, 
+          'Failed to fetch canceled bookings'
+        );
         
         return {
           success: false,
@@ -1682,7 +1667,7 @@ export class NetworkManager {
       } else {
         return {
           success: false,
-          message: data.message || 'Failed to retrieve canceled bookings',
+          message: data.message || this.getErrorMessageForStatus(response.status, 'Failed to retrieve canceled bookings'),
           bookings: []
         };
       }
@@ -1690,7 +1675,7 @@ export class NetworkManager {
       console.error('Get canceled bookings error:', error);
       
       // Provide more user-friendly error messages
-      let errorMessage = 'Failed to retrieve canceled bookings';
+      let errorMessage = this.getErrorMessageForStatus(0, 'Failed to retrieve canceled bookings');
       
       if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
         errorMessage = 'Network error. Please check your internet connection and try again.';
@@ -1769,32 +1754,14 @@ export class NetworkManager {
       
       // Handle specific HTTP error status codes with user-friendly messages
       if (!response.ok) {
-        let errorMessage: string;
+        let errorMessage = this.getErrorMessageForStatus(
+          response.status,
+          'Failed to submit review'
+        );
         
-        switch (response.status) {
-          case 400:
-            errorMessage = 'Invalid review data. Please check all fields.';
-            break;
-          case 401:
-            errorMessage = 'You must be logged in to leave a review.';
-            break;
-          case 403:
-            errorMessage = 'You do not have permission to review this space.';
-            break;
-          case 404:
-            errorMessage = 'Space not found.';
-            break;
-          case 409:
-            errorMessage = 'You have already reviewed this space.';
-            break;
-          case 500:
-          case 502:
-          case 503:
-          case 504:
-            errorMessage = 'Server error. Please try again later.';
-            break;
-          default:
-            errorMessage = 'Failed to submit review. Please try again.';
+        // Override with more specific messages for certain cases
+        if (response.status === 409) {
+          errorMessage = 'You have already reviewed this space.';
         }
         
         return {
@@ -1843,26 +1810,130 @@ export class NetworkManager {
   }
   
   /**
-   * Provides fallback advertisement data when the API fails
+   * Standardized method for handling HTTP response errors
+   * @param status HTTP status code
+   * @param defaultMessage Default message to show if no specific message for the status code
+   * @returns Error message appropriate for the status code
    */
-  private static getFallbackAdvertisements(): AdvertisementDto[] {
-    return [
-      new AdvertisementDto({
-        id: 1,
-        title: 'Special Offer',
-        description: 'Get 20% off on your first booking',
-        buttonText: 'Book Now',
-        image: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8b2ZmaWNlJTIwc3BhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
-        link: '/promotions/summer'
-      }),
-      new AdvertisementDto({
-        id: 2,
-        title: 'New Locations',
-        description: 'We\'ve expanded to 5 new locations',
-        buttonText: 'Explore',
-        image: 'https://images.unsplash.com/photo-1572025442646-866d16c84a54?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8b2ZmaWNlJTIwc3BhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
-        link: '/locations'
-      })
-    ];
+  private static getErrorMessageForStatus(status: number, defaultMessage: string = 'An error occurred. Please try again.'): string {
+    switch (status) {
+      case 400:
+        return 'Invalid request. Please check your input and try again.';
+      case 401:
+        return 'Authentication required. Please log in and try again.';
+      case 403:
+        return 'You do not have permission to perform this action.';
+      case 404:
+        return 'The requested resource was not found.';
+      case 409:
+        return 'Conflict with existing data. Please try again with different information.';
+      case 429:
+        return 'Too many requests. Please try again later.';
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return 'Server error. Please try again later.';
+      default:
+        return defaultMessage;
+    }
+  }
+  
+  /**
+   * Get all ratings/reviews
+   * Endpoint: /rating/get-all-ratings (or similar endpoint based on your API)
+   * Method: POST
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Request processed successfully",
+   *   "data": [
+   *     {
+   *       "value": 5,
+   *       "review_description": "This is Good",
+   *       "first_name": "Charitha",
+   *       "user_id": 1,
+   *       "user_avatar": ""
+   *     },
+   *     ...
+   *   ]
+   * }
+   */
+  static async getAllRatings(): Promise<{
+    success: boolean;
+    message: string;
+    ratings: Array<{
+      value: number;
+      review_description: string;
+      first_name: string;
+      user_id: number;
+      user_avatar?: string;
+      product_id?: number;
+    }>;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/rating/view-all-ratings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        const errorMessage = this.getErrorMessageForStatus(
+          response.status, 
+          'Failed to fetch ratings'
+        );
+        
+        return {
+          success: false,
+          message: errorMessage,
+          ratings: []
+        };
+      }
+      
+      const data = await response.json();
+      
+      if ((data.status_code === 200 || data.statusCode === 200) && Array.isArray(data.data)) {
+        // Process avatar paths if they exist
+        const processedRatings = data.data.map((rating: any) => {
+          if (rating.user_avatar && !rating.user_avatar.startsWith('http')) {
+            const baseServerUrl = NetworkManager.BASE_URL.replace('/api', '');
+            rating.user_avatar = `${baseServerUrl}${rating.user_avatar}`;
+          }
+          return rating;
+        });
+        
+        return {
+          success: true,
+          message: data.message || 'Ratings retrieved successfully',
+          ratings: processedRatings
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || this.getErrorMessageForStatus(response.status, 'Failed to retrieve ratings'),
+          ratings: []
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching ratings:', error);
+      
+      // Provide standardized error message
+      let errorMessage = this.getErrorMessageForStatus(0, 'Failed to fetch ratings data');
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage,
+        ratings: []
+      };
+    }
   }
 }

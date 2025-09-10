@@ -1,5 +1,5 @@
 /**
- * Animation Utilities for Curry Realm
+ * Animation Utilities for SpaceBooking
  * Helper functions to work with the animation library
  */
 

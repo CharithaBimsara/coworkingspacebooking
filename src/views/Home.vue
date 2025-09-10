@@ -58,7 +58,7 @@
 
                 <!-- Space Type -->
                 <div class="space-y-2 mt-1">
-                  <SpaceTypeDropdown v-model="searchForm.spaceType" :options="spaceTypeOptions" label="Space Type" />
+                  <SpaceTypeDropdown v-model="searchForm.spaceType" :options="spaceTypeOptions" label="Space Type" :isHomePage="true" />
                 </div>
               </div>
 
@@ -121,7 +121,7 @@
     </section>
 
     <!-- Special Offers & Partners Section -->
-    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="advertisements.length > 0">
+    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="advertisements.length > 0 || advertisementsApiError">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-12">
           <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
@@ -130,6 +130,9 @@
               <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </h2>
+          <p v-if="advertisementsApiError" class="mt-3 text-red-500 text-sm">
+            {{ advertisementErrorMessage }}
+          </p>
         </div>
         <div class="relative">
           <div class="overflow-hidden rounded-3xl border-2 border-primary shadow-xl">
@@ -310,7 +313,7 @@
                     {{ space.name }}
                   </h3>
                   <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-full text-xs font-bold text-gray-900 dark:text-white flex-shrink-0">
-                    ${{ getStartingPrice(space) }}
+                    LKR {{ getStartingPrice(space) }}
                     <span class="text-xs font-medium text-gray-700 dark:text-gray-300">/day</span>
                   </div>
                 </div>
@@ -345,9 +348,12 @@
         </div>
 
         <div v-else class="text-center py-12">
-          <p class="text-gray-600 dark:text-gray-400 text-sm">No featured spaces available at the moment.</p>
-          <button class="mt-4 bg-primary/20 dark:bg-primary/30 text-black dark:text-white px-5 py-1.5 rounded-full font-medium text-sm hover:bg-primary/30 transition-colors">
-            Try Again Later
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
+            {{ spacesApiError ? spacesErrorMessage : 'No featured spaces available at the moment.' }}
+          </p>
+          <button @click="loadFeaturedSpaces" 
+                  class="mt-4 bg-primary/20 dark:bg-primary/30 text-black dark:text-white px-5 py-1.5 rounded-full font-medium text-sm hover:bg-primary/30 transition-colors">
+            {{ spacesApiError ? 'Try Again' : 'Check Back Later' }}
           </button>
         </div>
 
@@ -426,7 +432,7 @@
     </section>
 
     <!-- Testimonials -->
-    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="testimonials.length > 0">
+    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="testimonials.length > 0 || testimonialsApiError">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
           <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
@@ -438,17 +444,23 @@
           <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Join thousands of professionals who love working with us
           </p>
+          <p v-if="testimonialsApiError" class="mt-3 text-red-500 text-sm">
+            {{ testimonialsErrorMessage }}
+          </p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div v-for="testimonial in testimonials" :key="testimonial.id" 
                class="bg-white dark:bg-black p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transform hover:-translate-y-2">
             <div class="mb-4 flex justify-between items-center">
-              <div class="flex text-primary">
-                <svg v-for="star in testimonial.rating" :key="star" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+              <div class="flex text-primary items-center">
+                <svg v-for="star in 5" :key="star" class="w-5 h-5 fill-current" 
+                     :class="{ 'text-gray-300 dark:text-gray-600': star > Math.round(testimonial.rating) }"
+                     viewBox="0 0 20 20">
                   <path
                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
+                <span class="ml-2 font-medium text-black dark:text-white text-sm">{{ testimonial.rating.toFixed(1) }}</span>
               </div>
               <div class="bg-primary/10 dark:bg-primary/20 p-2 rounded-full">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -463,7 +475,8 @@
             <div class="flex items-center">
               <div class="relative">
                 <img :src="testimonial.avatar" :alt="testimonial.name" 
-                     class="w-14 h-14 rounded-full object-cover border-2 border-primary">
+                     class="w-14 h-14 rounded-full object-cover border-2 border-primary"
+                     onerror="this.src='/logo.png';this.onerror='';">
                 <div class="absolute -right-1 -bottom-1 bg-primary rounded-full w-5 h-5 flex items-center justify-center">
                   <svg class="w-3 h-3 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -493,6 +506,9 @@
           </h2>
           <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Your premium coworking solution for modern professionals
+          </p>
+          <p v-if="companyProfileApiError" class="mt-3 text-red-500 text-sm">
+            {{ companyProfileErrorMessage }}
           </p>
         </div>
         
@@ -837,7 +853,8 @@ import { defineComponent } from 'vue';
 import LocationDropdown from '../components/LocationDropdown.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
-import type { SpaceDto, AdvertisementDto, TestimonialDto, CompanyProfileDto } from '../dto/response';
+import type { SpaceDto, AdvertisementDto, CompanyProfileDto } from '../dto/response';
+import { TestimonialDto } from '../dto/response';
 import { NetworkManager } from '../api/networkManager';
 
 interface SearchForm {
@@ -869,6 +886,8 @@ export default defineComponent({
       isLoading: true, // New loading state for initial data fetching
       isSearching: false,
       isLoadingSpaces: false,
+      isLoadingCompanyProfile: false,
+      isLoadingTestimonials: false,
       isSubscribing: false,
       newsletterName: '',
       newsletterEmail: '',
@@ -878,20 +897,22 @@ export default defineComponent({
       slideInterval: null as number | null,
       advertisements: [] as AdvertisementDto[],
       featuredSpaces: [] as SpaceDto[],
-      // Location API state management
+      // API state management
       locationApiError: false,
+      advertisementsApiError: false,
+      spacesApiError: false,
+      companyProfileApiError: false,
+      testimonialsApiError: false,
       showLocationWarning: false,
       locationErrorMessage: '',
+      advertisementErrorMessage: '',
+      spacesErrorMessage: '',
+      companyProfileErrorMessage: '',
+      testimonialsErrorMessage: '',
       testimonials: [] as TestimonialDto[],
-      locations: [] as { id: number; name: string; address: string; url: string }[], // Real locations from API
+      locations: [] as { id: number; name: string; address: string; url: string }[],
       _selectedLocationObject: null as { id: number; name: string; address: string; url: string } | null, // To store full location object
-      companyProfile: {
-        name: 'WorkSpace',
-        email: 'support@workspace.com',
-        phone: '+1 (234) 567-890',
-        address: '123 Workspace Ave, New York, NY 10001',
-        image: ''
-      } as CompanyProfileDto,
+      companyProfile: {} as CompanyProfileDto,
       spaceTypeOptions: [
         {
           value: '',
@@ -924,26 +945,13 @@ export default defineComponent({
   },
 
   beforeMount() {
-    // Load locations from API
-    this.loadLocationsFromApi();
-    // Use hardcoded values for everything else
-    this.setHardcodedValues();
-    // Turn off loading state after setting values
-    this.isLoading = false;
+    // Start loading all required data
+    this.loadAllData();
   },
   
   async mounted() {
     // Start slideshow after mounting
     this.startSlideshow();
-    
-    // Load locations, advertisements, and featured spaces
-    await Promise.all([
-      this.loadLocationsFromApi(),
-      this.loadAdvertisementsFromApi(),
-      this.loadFeaturedSpaces()
-    ]);
-    
-    // Don't initialize theme here - it's handled by the theme store
   },
 
   beforeUnmount() {
@@ -952,11 +960,37 @@ export default defineComponent({
 
   methods: {
     /**
+     * Load all data needed for the home page
+     */
+    async loadAllData() {
+      try {
+        // Start loading all required data in parallel
+        const promises = [
+          this.loadLocationsFromApi(),
+          this.loadAdvertisementsFromApi(),
+          this.loadFeaturedSpaces(),
+          this.loadCompanyProfile(),
+          this.loadTestimonials()
+        ];
+        
+        // Wait for all promises to settle (complete or fail)
+        await Promise.allSettled(promises);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        // Turn off loading state after all data fetching attempts
+        this.isLoading = false;
+      }
+    },
+    /**
      * Load advertisements from API
-     * Implements error handling with fallback to default content
+     * Implements error handling with cache fallback
      */
     async loadAdvertisementsFromApi() {
       try {
+        this.advertisementsApiError = false;
+        this.advertisementErrorMessage = '';
+        
         // Check for cached advertisements
         const cachedData = localStorage.getItem('cached_advertisements');
         
@@ -965,8 +999,8 @@ export default defineComponent({
             const parsed = JSON.parse(cachedData);
             const cacheAge = Date.now() - parsed.timestamp;
             
-            // Use cache if it's less than 1 hour old
-            if (cacheAge < 60 * 60 * 1000) {
+            // Use cache if it's less than 6 hours old
+            if (cacheAge < 6 * 60 * 60 * 1000) {
               this.advertisements = parsed.data;
               console.log('Using cached advertisements data');
               
@@ -999,18 +1033,36 @@ export default defineComponent({
               data: advertisements
             }));
           } else {
-            // Use fallback hardcoded advertisements if API returns empty array
-            this.setFallbackAdvertisements();
+            // No advertisements available
+            this.advertisements = [];
           }
         } catch (error) {
-          // If API call fails, use fallback advertisements
+          // If API call fails, check for cache regardless of age
           console.error('Error fetching advertisements:', error);
-          this.setFallbackAdvertisements();
+          
+          if (cachedData) {
+            try {
+              const parsed = JSON.parse(cachedData);
+              this.advertisements = parsed.data;
+              this.advertisementsApiError = true;
+              this.advertisementErrorMessage = 'Using previously cached special offers. Some information may not be up to date.';
+            } catch (e) {
+              console.error('Error parsing cached advertisements during error recovery:', e);
+              this.advertisements = [];
+              this.advertisementsApiError = true;
+              this.advertisementErrorMessage = 'Unable to load special offers at this time.';
+            }
+          } else {
+            this.advertisements = [];
+            this.advertisementsApiError = true;
+            this.advertisementErrorMessage = 'Unable to load special offers at this time.';
+          }
         }
       } catch (error) {
         console.error('Error in loadAdvertisementsFromApi:', error);
-        // Ensure we always have some advertisements to display
-        this.setFallbackAdvertisements();
+        this.advertisements = [];
+        this.advertisementsApiError = true;
+        this.advertisementErrorMessage = 'An unexpected error occurred while loading special offers.';
       }
     },
     
@@ -1035,30 +1087,6 @@ export default defineComponent({
         console.error('Error refreshing advertisement cache:', error);
         // Don't update UI on background refresh failure
       }
-    },
-    
-    /**
-     * Set fallback hardcoded advertisements when API fails
-     */
-    setFallbackAdvertisements() {
-      this.advertisements = [
-        {
-          id: 1,
-          title: 'Summer Discount',
-          description: 'Get 20% off on all workspace bookings this summer',
-          image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-          buttonText: 'Learn More',
-          link: '/promotions/summer'
-        },
-        {
-          id: 2,
-          title: 'Corporate Packages',
-          description: 'Special rates for businesses with 10+ employees',
-          image: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-          buttonText: 'View Packages',
-          link: '/corporate'
-        }
-      ];
     },
     
     /**
@@ -1183,49 +1211,172 @@ export default defineComponent({
       this.locationApiError = true;
     },
     
-    // Instead of API calls, set hardcoded values for everything except locations
-    setHardcodedValues(): void {
-      // Set hardcoded company profile
-      this.companyProfile = {
-        name: 'Squarehub',
-        email: 'contact@squarehub.com',
-        phone: '+1 (123) 456-7890',
-        address: '123 Workspace Avenue, Business District, Colombo',
-        image: '/src/assets/img/hero.jpg'
-      };
-      
-      // Load featured spaces from API instead of using hardcoded values
-      this.loadFeaturedSpaces();
-      
-      // Set hardcoded testimonials
-      this.testimonials = [
-        {
-          id: 1,
-          name: 'Sarah Chen',
-          role: 'Marketing Director',
-          rating: 5,
-          content: 'The workspace is amazing! Perfect for our team meetings and collaborative sessions.',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-        },
-        {
-          id: 2,
-          name: 'Michael Ross',
-          role: 'Software Engineer',
-          rating: 5,
-          content: 'Great location and excellent technology setup. The high-speed internet is reliable.',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-        },
-        {
-          id: 3,
-          name: 'Emma Wilson',
-          role: 'Graphic Designer',
-          rating: 4,
-          content: 'Love the natural light and creative atmosphere. Perfect for my design work.',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    /**
+     * Load company profile data from API
+     */
+    async loadCompanyProfile(): Promise<void> {
+      try {
+        this.isLoadingCompanyProfile = true;
+        this.companyProfileApiError = false;
+        this.companyProfileErrorMessage = '';
+        
+        // Check for cached company profile
+        const cachedData = localStorage.getItem('cached_company_profile');
+        
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            const cacheAge = Date.now() - parsed.timestamp;
+            
+            // Use cache if it's less than 24 hours old
+            if (cacheAge < 24 * 60 * 60 * 1000) {
+              this.companyProfile = parsed.data;
+              console.log('Using cached company profile data');
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing cached company profile:', e);
+            // Continue with API call if cache parsing fails
+          }
         }
-      ];
-      
-      // Both locations and advertisements are loaded from API in their respective methods
+        
+        console.log('Loading company profile from API...');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        // Since the API doesn't exist, we set a default empty profile
+        // When API is available, replace this with the actual API call
+        // const profileData = await NetworkManager.getCompanyProfile();
+        clearTimeout(timeoutId);
+        
+        // Set default company profile
+        const defaultProfile = {
+          name: 'WorkSpace',
+          email: 'info@workspace.com',
+          phone: '+1 (234) 567-8900',
+          address: '123 Business District, Colombo',
+          image: ''
+        };
+        
+        this.companyProfile = defaultProfile;
+        
+        // Store in cache with timestamp
+        localStorage.setItem('cached_company_profile', JSON.stringify({
+          data: defaultProfile,
+          timestamp: Date.now()
+        }));
+        
+        // Indicate error if this was not a real API call
+        this.companyProfileApiError = true;
+        this.companyProfileErrorMessage = 'Using default company information. API not available.';
+      } catch (error) {
+        console.error('Error loading company profile:', error);
+        this.companyProfileApiError = true;
+        this.companyProfileErrorMessage = error instanceof Error ? 
+          `Unable to load company information: ${error.message}` : 
+          'Unable to load company information. Please try again later.';
+        
+        // Use a default company name at minimum
+        this.companyProfile = {
+          name: 'WorkSpace',
+          email: 'info@workspace.com',
+          phone: '',
+          address: '',
+          image: ''
+        };
+      } finally {
+        this.isLoadingCompanyProfile = false;
+      }
+    },
+    
+    /**
+     * Load testimonials from API
+     */
+    async loadTestimonials(): Promise<void> {
+      try {
+        this.isLoadingTestimonials = true;
+        this.testimonialsApiError = false;
+        this.testimonialsErrorMessage = '';
+        
+        // Check for cached testimonials
+        const cachedData = localStorage.getItem('cached_testimonials');
+        
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            const cacheAge = Date.now() - parsed.timestamp;
+            
+            // Use cache if it's less than 1 hour old - reduced from 3 hours to ensure more up-to-date reviews
+            if (cacheAge < 1 * 60 * 60 * 1000) {
+              this.testimonials = parsed.data;
+              console.log('Using cached testimonials data');
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing cached testimonials:', e);
+            // Continue with API call if cache parsing fails
+          }
+        }
+        
+        console.log('Loading testimonials from API...');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        // Get all ratings directly from the API
+        const response = await NetworkManager.getAllRatings();
+        clearTimeout(timeoutId);
+        
+        if (response.success && response.ratings && response.ratings.length > 0) {
+          // Sort ratings by value (highest first)
+          const sortedRatings = [...response.ratings].sort((a, b) => b.value - a.value);
+          
+          // Take all 4+ rated testimonials, or lower if not enough available
+          let filteredRatings = sortedRatings.filter(rating => rating.value >= 4);
+          
+          // If we don't have at least 3 ratings with 4+ stars, include 3-star ratings
+          if (filteredRatings.length < 3) {
+            filteredRatings = sortedRatings.filter(rating => rating.value >= 3);
+          }
+          
+          // Convert ratings to testimonials (take up to 3)
+          const testimonials = filteredRatings.slice(0, 3).map((rating, index) => {
+            return new TestimonialDto({
+              id: rating.product_id || rating.user_id || index + 1,
+              name: rating.first_name || 'Happy Customer',
+              role: 'Customer',
+              content: rating.review_description || 'Great space with amazing amenities.',
+              avatar: rating.user_avatar || '/logo.png',
+              rating: rating.value
+            });
+          });
+          
+          this.testimonials = testimonials;
+          
+          // Cache the testimonials
+          localStorage.setItem('cached_testimonials', JSON.stringify({
+            timestamp: Date.now(),
+            data: testimonials
+          }));
+          
+          console.log(`Loaded ${testimonials.length} testimonials from API with ratings: ${testimonials.map(t => t.rating).join(', ')}`);
+        } else {
+          // No ratings found or API error
+          this.testimonialsApiError = true;
+          this.testimonialsErrorMessage = response.message || 'Unable to load testimonials. No ratings found.';
+          this.testimonials = [];
+        }
+      } catch (error) {
+        console.error('Error loading testimonials:', error);
+        this.testimonialsApiError = true;
+        this.testimonialsErrorMessage = error instanceof Error ? 
+          `Unable to load testimonials: ${error.message}` : 
+          'Unable to load testimonials. Please try again later.';
+        
+        // Set empty testimonials array
+        this.testimonials = [];
+      } finally {
+        this.isLoadingTestimonials = false;
+      }
     },
 
     searchSpaces(): void {
@@ -1329,6 +1480,28 @@ export default defineComponent({
     async loadFeaturedSpaces(): Promise<void> {
       try {
         this.isLoadingSpaces = true;
+        this.spacesApiError = false;
+        this.spacesErrorMessage = '';
+        
+        // Check for cached spaces first
+        const cachedData = localStorage.getItem('cached_featured_spaces');
+        
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            const cacheAge = Date.now() - parsed.timestamp;
+            
+            // Use cache if it's less than 12 hours old
+            if (cacheAge < 12 * 60 * 60 * 1000) {
+              this.featuredSpaces = parsed.data;
+              console.log('Using cached featured spaces data');
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing cached spaces:', e);
+            // Continue with API call if cache parsing fails
+          }
+        }
         
         // Call the API to get all spaces
         const response = await NetworkManager.getSpaces({});
@@ -1341,118 +1514,46 @@ export default defineComponent({
           this.featuredSpaces = sortedSpaces.slice(0, 3);
           
           console.log('Loaded top-rated featured spaces:', this.featuredSpaces);
+          
+          // Cache the results
+          localStorage.setItem('cached_featured_spaces', JSON.stringify({
+            timestamp: Date.now(),
+            data: this.featuredSpaces
+          }));
         } else {
-          console.warn('No spaces returned from API, using fallback data');
-          this.setFallbackFeaturedSpaces();
+          // Handle empty response
+          console.warn('No spaces returned from API');
+          this.featuredSpaces = [];
+          this.spacesApiError = true;
+          this.spacesErrorMessage = 'No featured spaces available at the moment.';
         }
       } catch (error) {
         console.error('Error loading featured spaces:', error);
-        this.setFallbackFeaturedSpaces();
+        
+        // Try to use cached data regardless of age
+        const cachedData = localStorage.getItem('cached_featured_spaces');
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            this.featuredSpaces = parsed.data;
+            this.spacesApiError = true;
+            this.spacesErrorMessage = 'Using previously cached spaces. Some information may not be up to date.';
+          } catch (e) {
+            console.error('Error parsing cached spaces during error recovery:', e);
+            this.featuredSpaces = [];
+            this.spacesApiError = true;
+            this.spacesErrorMessage = 'Unable to load featured spaces at this time.';
+          }
+        } else {
+          this.featuredSpaces = [];
+          this.spacesApiError = true;
+          this.spacesErrorMessage = 'Unable to load featured spaces at this time.';
+        }
       } finally {
         this.isLoadingSpaces = false;
       }
-    },
-    
-    /**
-     * Sets fallback featured spaces when API fails
-     */
-    setFallbackFeaturedSpaces(): void {
-      this.featuredSpaces = [
-        {
-          id: 1,
-          name: 'Executive Meeting Room',
-          description: 'Professional meeting space with modern amenities for your business needs',
-          location: 'Kandy Lakeside',
-          address: '123 Kandy Street, Kandy',
-          productType: 'meeting-room',
-          images: [
-            'https://images.unsplash.com/photo-1517502884422-41eaead166d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          rating: 4.8,
-          reviews: 124,
-          pricing: {
-            hourly: 25,
-            daily: 180
-          },
-          capacity: 12,
-          maxCapacity: 15,
-          features: ['wifi', 'High-Speed WiFi', 'projector', '4K Display', 'whiteboard', 'coffee', 'printing'],
-          isAvailable: true,
-          availability: [
-            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
-          ]
-        },
-        {
-          id: 2,
-          name: 'Hot Desk Premium',
-          description: 'Flexible workspace for professionals on the go',
-          location: 'Colombo Central',
-          address: '45 Main Street, Colombo',
-          productType: 'hot-desk',
-          images: [
-            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          rating: 4.5,
-          reviews: 89,
-          pricing: {
-            daily: 35
-          },
-          capacity: 1,
-          maxCapacity: 1,
-          features: ['wifi', 'coffee', 'printing', 'locker'],
-          isAvailable: true,
-          availability: [
-            { date: '2025-08-27', slots: [{ startTime: '09:00', endTime: '17:00' }] }
-          ]
-        },
-        {
-          id: 3,
-          name: 'Dedicated Office Space',
-          description: 'Private office space with 24/7 access',
-          location: 'Galle Fort',
-          address: '78 Fort Road, Galle',
-          productType: 'dedicated-desk',
-          images: [
-            'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-          ],
-          rating: 4.9,
-          reviews: 45,
-          pricing: {
-            monthly: 350
-          },
-          capacity: 1,
-          maxCapacity: 1,
-          features: ['wifi', 'coffee', 'printing', 'parking', '24-7-access', 'meeting-room-credits'],
-          isAvailable: true,
-          availability: [
-            { date: '2025-08-27', slots: [{ startTime: '00:00', endTime: '23:59' }] }
-          ]
-        }
-      ];
-    }
-    
-    // Method prepared for future implementation
-    // async loadSpacesForLocation(locationName: string): Promise<void> {
-    //   try {
-    //     // First find the location ID for the selected location name
-    //     const locationResponse = await NetworkManager.getLocations();
-    //     const locationInfo = locationResponse.find(loc => loc.name === locationName);
-    //     
-    //     if (locationInfo?.id) {
-    //       // Then load spaces for this location ID
-    //       const spacesResponse = await NetworkManager.getSpaces({
-    //         location_id: locationInfo.id
-    //       });
-    //       
-    //       if (spacesResponse.success && spacesResponse.spaces) {
-    //         // Update featured spaces with the results
-    //         this.featuredSpaces = spacesResponse.spaces;
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.error('Error loading spaces for location:', error);
-    //   }
-    // }
+    },    
+   
   }
 });
 </script>

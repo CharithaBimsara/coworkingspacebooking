@@ -64,7 +64,7 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ stats.totalSpent }}</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">LKR {{ stats.totalSpent }}</p>
               <p class="text-sm text-gray-600 dark:text-gray-400">Total Spent</p>
             </div>
           </div>
@@ -251,7 +251,7 @@
               <!-- Price and Actions -->
               <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-4 lg:gap-2">
                 <div class="text-right">
-                  <div class="text-xl font-bold text-gray-900 dark:text-white">${{ booking.totalAmount }}</div>
+                  <div class="text-xl font-bold text-gray-900 dark:text-white">LKR {{ booking.totalAmount }}</div>
                   <div class="text-sm text-gray-600 dark:text-gray-400">Total paid</div>
                 </div>
                 
@@ -392,7 +392,7 @@
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-400">Base Price</span>
-                <span class="text-gray-900 dark:text-white">${{ selectedBooking.basePrice }}</span>
+                <span class="text-gray-900 dark:text-white">LKR {{ selectedBooking.basePrice }}</span>
               </div>
               <div v-if="selectedBooking.extraFees > 0" class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-400">Extra Fees</span>
@@ -404,12 +404,12 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-400">Taxes</span>
-                <span class="text-gray-900 dark:text-white">${{ selectedBooking.taxes }}</span>
+                <span class="text-gray-900 dark:text-white">LKR {{ selectedBooking.taxes }}</span>
               </div>
               <hr class="my-2 border-gray-200 dark:border-gray-700">
               <div class="flex justify-between font-semibold">
                 <span class="text-gray-900 dark:text-white">Total</span>
-                <span class="text-gray-900 dark:text-white">${{ selectedBooking.totalAmount }}</span>
+                <span class="text-gray-900 dark:text-white">LKR {{ selectedBooking.totalAmount }}</span>
               </div>
             </div>
           </div>

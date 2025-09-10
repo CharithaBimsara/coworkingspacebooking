@@ -234,6 +234,141 @@
             </div>
           </div>
           
+          <!-- Ultra Modern Operating Hours Schedule Section - Only for meeting rooms and hot desks -->
+          <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg dark:shadow-dark-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl dark:hover:shadow-dark-xl transition-all duration-300 overflow-hidden">
+            <!-- Decorative background element -->
+            
+            <div class="relative z-10">
+              <!-- Header with dynamic status -->
+              <div class="flex flex-wrap items-center mb-6 gap-4">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-br from-primary via-primary/80 to-primary/60 rounded-2xl flex items-center justify-center mr-3 shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300">Operating Hours</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">When you can book this space</p>
+                  </div>
+                </div>
+                
+                <!-- Animated status pill -->
+                <div class="ml-auto">
+                  <div v-if="isTodayOpen() && isWithinOperatingHours()" 
+                      class="status-badge group flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-emerald-400/90 to-primary/90 shadow-md shadow-emerald-500/20 dark:shadow-emerald-400/10">
+                    <span class="relative flex h-3 w-3 mr-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                    </span>
+                    <span class="text-xs font-medium text-white group-hover:font-semibold transition-all">
+                      Available
+                    </span>
+                  </div>
+                  <div v-else-if="isTodayOpen()" 
+                      class="status-badge flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-amber-400/90 to-amber-500/90 shadow-md shadow-amber-500/20 dark:shadow-amber-400/10">
+                    <span class="relative flex h-3 w-3 mr-2">
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                    </span>
+                    <span class="text-xs font-medium text-white">
+                      Opens at {{ formatTime(getTodayHours()?.start_time) }}
+                    </span>
+                  </div>
+                  <div v-else class="status-badge flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-gray-400/90 to-gray-500/90 shadow-md shadow-gray-500/20 dark:shadow-gray-400/10">
+                    <span class="relative flex h-3 w-3 mr-2">
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                    </span>
+                    <span class="text-xs font-medium text-white">
+                      Closed Today
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interactive Circular Week Display -->
+              <div class="mb-8 relative">
+                <div class="flex flex-wrap items-center justify-between mb-4">
+                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                    </svg>
+                    Weekly Schedule
+                  </h4>
+                  <div v-if="isTodayOpen()" class="px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-full text-xs font-medium text-primary border border-gray-200 dark:border-gray-700 shadow-sm">
+                    {{ getCurrentDay() }}: {{ formatTime(getTodayHours()?.start_time) }} - {{ formatTime(getTodayHours()?.end_time) }}
+                  </div>
+                </div>
+                
+                <!-- Cute Day Bubbles -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                  <div v-for="day in getOperationSchedule()" :key="day.day" 
+                      class="day-card group cursor-pointer relative"
+                      :class="[
+                        'transition-all duration-300 rounded-2xl overflow-hidden',
+                        day.is_enabled 
+                          ? 'shadow-sm hover:shadow-lg' 
+                          : 'opacity-85'
+                      ]">
+                    <div class="bg-white border border-gray-200 dark:border-gray-800 dark:bg-gray-800 p-3 h-full flex flex-col items-center justify-center relative">
+                      <!-- Decorative elements -->
+                      <div v-if="day.is_enabled" class="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-emerald-100/30 to-transparent dark:from-emerald-900/20 rounded-full -translate-y-6 translate-x-6 opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                      
+                      <!-- Day indicator with dynamic styling -->
+                      <div :class="[
+                        'w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-transform group-hover:scale-110 duration-300',
+                        getCurrentDay() === day.day
+                          ? 'bg-primary shadow-md shadow-primary/20' 
+                          : day.is_enabled 
+                            ? 'bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30' 
+                            : 'bg-gray-100 dark:bg-gray-700'
+                      ]">
+                        <span :class="[
+                          'text-sm font-bold',
+                          getCurrentDay() === day.day
+                            ? 'text-white' 
+                            : day.is_enabled 
+                              ? 'text-primary dark:text-primary' 
+                              : 'text-gray-400 dark:text-gray-500'
+                        ]">{{ day.day ? day.day.substring(0, 2) : '' }}</span>
+                      </div>
+                      
+                      <!-- Day name with hover effect -->
+                      <span :class="[
+                        'text-xs font-medium mb-1 transition-all group-hover:font-semibold',
+                        day.is_enabled 
+                          ? 'text-gray-700 dark:text-gray-300' 
+                          : 'text-gray-400 dark:text-gray-500'
+                      ]">{{ day.day }}</span>
+                      
+                      <!-- Hours or closed indicator -->
+                      <div v-if="day.is_enabled" 
+                          class="w-full mt-1 text-center px-2 py-1 bg-gradient-to-r from-emerald-50 to-primary/5 dark:from-emerald-900/20 dark:to-primary/10 rounded-md group-hover:shadow-sm transition-all">
+                        <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400 group-hover:text-emerald-800 dark:group-hover:text-emerald-300 transition-colors">
+                          {{ formatTime(day.start_time) }} - {{ formatTime(day.end_time) }}
+                        </span>
+                      </div>
+                      <div v-else class="w-full mt-1 text-center px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">
+                        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Closed</span>
+                      </div>
+                      
+                      <!-- Today indicator -->
+                      <div v-if="getCurrentDay() === day.day" class="absolute -top-1 -right-1">
+                        <div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md shadow-primary/20">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Today's Interactive Timeline -->
+              
+            </div>
+          </div>
+          
           <!-- Enhanced Location & Access Section with Modern Design -->
           <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg dark:shadow-dark-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl dark:hover:shadow-dark-xl transition-all duration-300">
             <div class="flex items-center mb-5">
@@ -252,6 +387,14 @@
             <div class="grid md:grid-cols-2 gap-6">
               <!-- Interactive Map Component with Enhanced Design -->
               <div class="group">
+                <!-- Location notification -->
+                <div v-if="showLocationNotification" 
+                     class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-xl z-50 text-sm font-medium flex items-center space-x-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                  <span>No location map available</span>
+                </div>
                 <div class="relative h-48 bg-gradient-to-br from-primary/5 via-primary/10 to-primary/15 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-500 border-2 border-transparent hover:border-primary/20"
                      @click="openLocationMap">
                   <!-- Beautiful animated background -->
@@ -330,29 +473,12 @@
                 <div class="bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 rounded-xl p-4 border border-gray-100 dark:border-gray-600">
                   <h4 class="font-bold text-gray-900 dark:text-white mb-3 text-base flex items-center">
                     <div class="w-3 h-3 bg-gradient-to-r from-primary to-emerald-400 rounded-full mr-3 animate-pulse shadow-lg"></div>
-                    {{ space?.location || space?.address || 'Location not specified' }}
+                    {{ space?.address || 'Location not specified' }}
                   </h4>
                   
                   
-                  <!-- Enhanced Quick Access Info -->
-                  <div class="space-y-3">
-                    <div class="flex items-center text-sm text-gray-600 dark:text-gray-300 bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-800">
-                      <div class="w-8 h-8 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <span class="font-medium">Easy access location</span>
-                    </div>
-                    <div class="flex items-center text-sm text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
-                      <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0a2 2 0 01-2-2v-2a2 2 0 00-2-2H8z" />
-                        </svg>
-                      </div>
-                      <span class="font-medium">Public transport nearby</span>
-                    </div>
-                  </div>
+                 
+                  
                 </div>
               </div>
             </div>
@@ -415,7 +541,8 @@
                 <div class="flex items-center space-x-3">
                   <div class="flex-shrink-0">
                     <img :src="review.avatar" :alt="review.name" 
-                         class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-700 shadow-md group-hover:ring-primary/40 transition-all duration-200">
+                         class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-700 shadow-md group-hover:ring-primary/40 transition-all duration-200"
+                         @error="handleAvatarError">
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
@@ -470,9 +597,9 @@
               <div class="flex-1 pr-3">
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white leading-tight mb-2 flex items-center">
                   {{ space?.name || 'Loading...' }}
-                  <span class="inline-flex ml-2 items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                  <!-- <span class="inline-flex ml-2 items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                     Available
-                  </span>
+                  </span> -->
                 </h2>
                 
                 <div class="flex items-center text-sm text-gray-800 mb-2.5">
@@ -534,11 +661,12 @@
 
             <!-- Description with collapsible option -->
             <div class="bg-gray-50 p-3 rounded-lg">
-              <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm line-clamp-3">
+              <p :class="['text-gray-700 dark:text-gray-300 leading-relaxed text-sm', { 'line-clamp-3': !isDescriptionExpanded }]">
                 {{ space?.description || 'Loading description...' }}
               </p>
-              <button class="mt-1 text-xs font-medium text-primary hover:underline">
-                Read more
+              <button @click="isDescriptionExpanded = !isDescriptionExpanded" 
+                      class="mt-1 text-xs font-medium text-primary hover:underline transition-colors">
+                {{ isDescriptionExpanded ? 'Read less' : 'Read more' }}
               </button>
             </div>
 
@@ -692,6 +820,9 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                     </svg>
                     Additional Amenities
+                    <span v-if="!areFacilitiesEnabled" class="ml-2 text-xs text-amber-600 dark:text-amber-400 font-normal">
+                      (Select date & time first)
+                    </span>
                   </label>
                   
                   <!-- Loading skeleton -->
@@ -709,17 +840,22 @@
                       <label 
                         v-for="facility in availableFacilities" 
                         :key="facility.facility_id"
-                        class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
-                        :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
+                        class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 group" 
+                        :class="[
+                          selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700',
+                          areFacilitiesEnabled ? 'cursor-pointer hover:border-gray-300 dark:hover:border-gray-600' : 'cursor-not-allowed opacity-60'
+                        ]"
                       >
                         <input 
                           v-model="selectedFacilities" 
                           :value="facility.facility_name.toLowerCase()" 
                           type="checkbox" 
                           class="sr-only"
+                          :disabled="!areFacilitiesEnabled"
                         >
                         <div class="p-2 text-center">
-                          <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
+                          <div class="mb-1 text-center rounded-full w-8 h-8 mx-auto flex items-center justify-center"
+                               :class="areFacilitiesEnabled ? 'bg-gray-50 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-600'">
                             <svg 
                               class="w-4 h-4" 
                               :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" 
@@ -735,15 +871,26 @@
                           >
                             {{ facility.facility_name }}
                           </span>
-                          <span class="text-xs font-medium text-green-600 dark:text-green-500 block">
-                            +${{ facilityPrice(facility) }}/hr
+                          <span class="text-xs font-medium block"
+                                :class="areFacilitiesEnabled ? 'text-green-600 dark:text-green-500' : 'text-gray-400 dark:text-gray-500'">
+                            +LKR {{ facilityPrice(facility) }}/hr
                           </span>
                         </div>
-                        <div v-if="selectedFacilities.includes(facility.facility_name.toLowerCase())" class="absolute top-1 right-1">
+                        <div v-if="selectedFacilities.includes(facility.facility_name.toLowerCase()) && areFacilitiesEnabled" class="absolute top-1 right-1">
                           <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
                             <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
+                          </div>
+                        </div>
+                        
+                        <!-- Disabled overlay -->
+                        <div v-if="!areFacilitiesEnabled" class="absolute inset-0 bg-gray-100 dark:bg-gray-800 bg-opacity-50 dark:bg-opacity-50 rounded-lg flex items-center justify-center">
+                          <div class="text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            
                           </div>
                         </div>
                       </label>
@@ -828,7 +975,7 @@
                         <div class="text-base font-semibold text-gray-900 dark:text-white mb-1">Monthly Plan</div>
                         <div class="text-xs text-gray-500 dark:text-gray-400">Flexible subscription</div>
                       </div>
-                      <div class="text-xl font-bold text-primary mb-1">${{ space?.pricing?.monthly || 2500 }}</div>
+                      <div class="text-xl font-bold text-primary mb-1">LKR {{ space?.pricing?.monthly || 2500 }}</div>
                       <div class="text-xs text-gray-600 dark:text-gray-400">per month</div>
                       
                       <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
@@ -876,14 +1023,14 @@
                         <div class="text-base font-semibold text-gray-900 dark:text-white mb-1">Annual Plan</div>
                         <div class="text-xs text-gray-500 dark:text-gray-400">Best savings</div>
                       </div>
-                      <div class="text-xl font-bold text-primary mb-1">${{ space?.pricing?.annual || 27000 }}</div>
+                      <div class="text-xl font-bold text-primary mb-1">LKR {{ space?.pricing?.annual || 27000 }}</div>
                       <div class="text-xs text-gray-600 dark:text-gray-400">per year</div>
                       
                       <div class="mt-2 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full inline-flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-600 dark:text-green-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
                         </svg>
-                        <span class="text-xs font-medium text-green-800 dark:text-green-300">Save ${{ getSavings() }}</span>
+                        <span class="text-xs font-medium text-green-800 dark:text-green-300">Save LKR {{ getSavings() }}</span>
                       </div>
                       
                       <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
@@ -934,10 +1081,10 @@
                       <span v-else class="text-amber-600 font-normal">(Select time)</span>
                     </span>
                     <div v-if="calculateDurationInHours() > 0" class="text-xs text-gray-500 mt-0.5">
-                      ${{ space?.pricing?.hourly || 85 }}/hour × {{ calculateDurationInHours() }} hours
+                      LKR {{ space?.pricing?.hourly || 85 }}/hour × {{ calculateDurationInHours() }} hours
                     </div>
                   </div>
-                  <span class="font-semibold text-sm">${{ roomBasePrice }}</span>
+                  <span class="font-semibold text-sm">LKR {{ roomBasePrice }}</span>
                 </div>
                 
                 <!-- Selected Facilities with enhanced styling -->
@@ -949,9 +1096,9 @@
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-primary mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
-                      <span>{{ facilityDisplayName(facility) }}</span>
+                      <span>{{ getFeatureName(facility) }}</span>
                     </div>
-                    <span class="font-medium text-primary">+${{ facilityPrice(facility) }} × {{ calculateDurationInHours() }}h = ${{ facilityPrice(facility) * calculateDurationInHours() }}</span>
+                    <span class="font-medium text-primary">+LKR {{ facilityPrice(facility) }} × {{ calculateDurationInHours() }}h = LKR {{ facilityPrice(facility) * calculateDurationInHours() }}</span>
                   </div>
                 </div>
                 
@@ -969,7 +1116,7 @@
                 <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
                   <span class="text-base font-bold text-gray-900">Total Amount</span>
                   <div class="text-right">
-                    <span class="text-xl font-bold text-primary">${{ totalPrice }}</span>
+                    <span class="text-xl font-bold text-primary">LKR {{ totalPrice }}</span>
                     <div class="text-xs text-gray-500">includes taxes & fees</div>
                   </div>
                 </div>
@@ -1108,23 +1255,21 @@
           </button>
         </div>
         <!-- Header with pricing badge -->
-        <div class="flex items-start justify-between">
-          <div class="flex-1 pr-3">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ space?.name }}</h2>
-            <div class="flex items-center mt-1">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">{{ space?.location }}</span>
+          <div class="flex items-start justify-between">
+            <div class="flex-1 pr-3">
+              <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ space?.name }}</h2>
+              <div class="flex items-center mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">{{ space?.location }}</span>
+              </div>
             </div>
-          </div>
-          <div class="bg-primary/10 dark:bg-primary/20 text-primary rounded-full px-3 py-1 text-xs font-bold">
-            {{ getDisplayPrice() }}
-          </div>
-        </div>
-
-        <!-- Meeting Room and Hot Desk Booking Form -->
+            <div class="bg-primary/10 dark:bg-primary/20 text-primary rounded-full px-3 py-1 text-xs font-bold">
+              {{ getDisplayPrice() }}
+            </div>
+          </div>        <!-- Meeting Room and Hot Desk Booking Form -->
         <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-3">
           <div class="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1277,7 +1422,7 @@
               <span class="text-xs font-medium text-blue-700 dark:text-blue-300">Duration: {{ calculateDurationInHours() }} hour(s)</span>
             </div>
 
-            <!-- Enhanced Facilities Selection -->
+              <!-- Enhanced Facilities Selection - Using dynamic data -->
             <div class="space-y-2 mb-4">
               <div class="flex justify-between items-center mb-1">
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
@@ -1288,20 +1433,22 @@
                 </label>
               </div>
               
+              <!-- Dynamic facility cards based on availableFacilities -->
               <div class="grid grid-cols-3 gap-2">
-                <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
-                      :class="selectedFacilities.includes('tv') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
-                  <input v-model="selectedFacilities" value="tv" type="checkbox" class="sr-only">
+                <label v-for="facility in availableFacilities" :key="facility.facility_id"
+                      class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
+                      :class="selectedFacilities.includes(String(facility.facility_id)) ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
+                  <input v-model="selectedFacilities" :value="String(facility.facility_id)" type="checkbox" class="sr-only">
                   <div class="p-2 text-center">
                     <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                      <svg class="w-4 h-4" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
+                      <svg class="w-4 h-4" :class="selectedFacilities.includes(String(facility.facility_id)) ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 4.5A2.5 2.5 0 014.5 2h11A2.5 2.5 0 0118 4.5v10a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 012 14.5v-10z" />
                       </svg>
                     </div>
-                    <span class="text-xs font-medium block" :class="selectedFacilities.includes('tv') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">TV/Display</span>
-                    <span class="text-xs font-medium text-green-600 block">+${{ facilityPrice('tv') }}</span>
+                    <span class="text-xs font-medium block" :class="selectedFacilities.includes(String(facility.facility_id)) ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">{{ getFeatureName(facility) }}</span>
+                    <span class="text-xs font-medium text-green-600 block">+LKR {{ facilityPrice(facility) }}</span>
                   </div>
-                  <div v-if="selectedFacilities.includes('tv')" class="absolute top-1 right-1">
+                  <div v-if="selectedFacilities.includes(String(facility.facility_id))" class="absolute top-1 right-1">
                     <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
                       <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -1310,64 +1457,41 @@
                   </div>
                 </label>
                 
-                <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
-                      :class="selectedFacilities.includes('printer') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
-                  <input v-model="selectedFacilities" value="printer" type="checkbox" class="sr-only">
-                  <div class="p-2 text-center">
-                    <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                      <svg class="w-4 h-4" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <span class="text-xs font-medium block" :class="selectedFacilities.includes('printer') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">Printer</span>
-                    <span class="text-xs font-medium text-green-600 block">+${{ facilityPrice('printer') }}</span>
-                  </div>
-                  <div v-if="selectedFacilities.includes('printer')" class="absolute top-1 right-1">
-                    <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                      <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </label>
-                
-                <label class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg cursor-pointer transition-all duration-300 group" 
-                      :class="selectedFacilities.includes('catering') ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'">
-                  <input v-model="selectedFacilities" value="catering" type="checkbox" class="sr-only">
-                  <div class="p-2 text-center">
-                    <div class="mb-1 text-center bg-gray-50 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto flex items-center justify-center">
-                      <svg class="w-4 h-4" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                      </svg>
-                    </div>
-                    <span class="text-xs font-medium block" :class="selectedFacilities.includes('catering') ? 'text-primary' : 'text-gray-800 dark:text-gray-300'">Catering</span>
-                    <span class="text-xs font-medium text-green-600 block">+${{ facilityPrice('catering') }}</span>
-                  </div>
-                  <div v-if="selectedFacilities.includes('catering')" class="absolute top-1 right-1">
-                    <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                      <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </label>
+                <!-- Fallback if no facilities available -->
+                <div v-if="availableFacilities.length === 0" class="col-span-3 text-center py-4 text-sm text-gray-500 dark:text-gray-400">
+                  No additional facilities available for this space
+                </div>
               </div>
-            </div>
-
-            <!-- Price Summary -->
+            </div>            <!-- Price Summary -->
             <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 mb-3">
               <div class="flex justify-between mb-1">
                 <span class="text-xs text-gray-600 dark:text-gray-400">Base price</span>
-                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">${{ roomBasePrice }}</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">LKR {{ roomBasePrice }}</span>
               </div>
-              <div class="flex justify-between mb-1" v-if="facilitiesPrice > 0">
-                <span class="text-xs text-gray-600 dark:text-gray-400">Facilities ({{ calculateDurationInHours() }}h)</span>
-                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">+${{ facilitiesPrice }}</span>
+              
+              <!-- Selected Facilities with detailed breakdown -->
+              <div v-if="selectedFacilities.length > 0">
+                <div class="text-xs text-gray-600 dark:text-gray-400 mt-2 mb-1">Selected Amenities:</div>
+                <div v-for="facility in selectedFacilities" :key="typeof facility === 'object' ? (facility as Facility).facility_id || String(facility) : String(facility)" 
+                     class="flex items-center justify-between mb-1 pl-2 text-xs">
+                  <span class="text-gray-700 dark:text-gray-300">{{ getFeatureName(facility) }}</span>
+                  <span class="font-medium text-gray-800 dark:text-gray-200">
+                    +LKR {{ facilityPrice(facility) }} × {{ calculateDurationInHours() }}h
+                  </span>
+                </div>
               </div>
+              
+              <div class="flex justify-between mb-1 mt-2" v-if="facilitiesPrice > 0">
+                <span class="text-xs text-gray-600 dark:text-gray-400">Facilities Total</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">+LKR {{ facilitiesPrice }}</span>
+              </div>
+              
               <div class="pt-2 mt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total</span>
-                <span class="text-lg font-bold text-primary">${{ totalPrice }}</span>
+                <span class="text-lg font-bold text-primary">LKR {{ totalPrice }}</span>
               </div>
+              
+              <div class="text-xs text-gray-500 mt-1 text-center">includes taxes & fees</div>
             </div>
             
             <!-- Book Now Button -->
@@ -1453,21 +1577,53 @@
             
             <!-- Total Price Display -->
             <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 mb-3">
-              <div class="flex justify-between mb-1">
-                <span class="text-xs text-gray-600 dark:text-gray-400">Base price</span>
-                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">${{ getPackagePrice() }}</span>
+              <!-- Base price -->
+              <div class="flex justify-between mb-2">
+                <div class="flex items-center">
+                  <span class="text-xs text-gray-600 dark:text-gray-400">
+                    {{ getSpaceTypeName() }}
+                    <span v-if="calculateDurationInHours() > 0" class="text-gray-500">({{ calculateDurationInHours() }}h)</span>
+                  </span>
+                </div>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">LKR {{ roomBasePrice }}</span>
               </div>
-              <div class="flex justify-between mb-1">
+              
+              <!-- Detail for base price calculation if applicable -->
+              <div v-if="calculateDurationInHours() > 0" class="text-[10px] text-gray-500 mb-2 -mt-1 pl-2">
+                LKR {{ space?.pricing?.hourly || 85 }}/hour × {{ calculateDurationInHours() }} hours
+              </div>
+              
+              <!-- Selected Facilities with price breakdown -->
+              <div v-if="selectedFacilities.length > 0" class="border-t border-gray-200 dark:border-gray-600 pt-2 mb-2">
+                <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Selected Facilities</div>
+                <div v-for="facility in selectedFacilities" :key="facility" 
+                    class="flex justify-between items-center mb-1.5 pl-2">
+                  <span class="text-xs text-gray-700 dark:text-gray-300">{{ getFeatureName(facility) }}</span>
+                  <span class="text-xs font-medium text-gray-800 dark:text-gray-200">
+                    +LKR {{ facilityPrice(facility) }} × {{ calculateDurationInHours() }}h = LKR {{ facilityPrice(facility) * calculateDurationInHours() }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Team size -->
+              <div class="flex justify-between mb-1 border-t border-gray-200 dark:border-gray-600 pt-2">
                 <span class="text-xs text-gray-600 dark:text-gray-400">Team size</span>
                 <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ bookingForm.teamSize || '1' }} people</span>
               </div>
+              
+              <!-- Subscription duration -->
               <div class="flex justify-between mb-1">
                 <span class="text-xs text-gray-600 dark:text-gray-400">Duration</span>
                 <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ selectedPackage || '1 Month' }}</span>
               </div>
+              
+              <!-- Total price with highlighted display -->
               <div class="pt-2 mt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total</span>
-                <span class="text-lg font-bold text-primary">${{ totalPrice }}</span>
+                <div class="text-right">
+                  <span class="text-lg font-bold text-primary">LKR {{ totalPrice }}</span>
+                  <div class="text-[10px] text-gray-500">includes taxes & fees</div>
+                </div>
               </div>
             </div>
             
@@ -1543,10 +1699,14 @@ export default defineComponent({
       showSignUpModal: false,
       showMobileBookingModal: false,
       showReviewDialog: false,
+      showLocationNotification: false,
+      operationSchedule: [],
       currentUser: null as UserDto | null,
       productType: 'meeting-room',
       isLoadingAvailability: false,
       isLoadingBookedSlots: false,
+      isDescriptionExpanded: false, // Track if description is expanded
+      featureNameCache: new Map(), // Cache for feature names to ensure consistency
       bookedTimeSlots: [] as Array<{ startTime: string; endTime: string }>,
       disabledTimes: {
         start: [] as string[],
@@ -1569,7 +1729,7 @@ export default defineComponent({
         timeRange: { start: '09:00', end: '10:00' },
         teamSize: '1-5'
       } as BookingForm,
-      selectedFacilities: [] as string[],
+      selectedFacilities: [] as (string | number)[],
       selectedPackage: 'monthly',
       
       // Space data from API
@@ -1583,7 +1743,26 @@ export default defineComponent({
     }
   },  
   watch: {
-    '$route': 'loadSpaceDetails'
+    '$route': 'loadSpaceDetails',
+    
+    // Clear selected facilities when date/time becomes incomplete
+    'bookingForm.date': function() {
+      if (!this.isBookingFormValid && this.selectedFacilities.length > 0) {
+        this.selectedFacilities = []
+      }
+    },
+    
+    'bookingForm.timeRange.start': function() {
+      if (!this.isBookingFormValid && this.selectedFacilities.length > 0) {
+        this.selectedFacilities = []
+      }
+    },
+    
+    'bookingForm.timeRange.end': function() {
+      if (!this.isBookingFormValid && this.selectedFacilities.length > 0) {
+        this.selectedFacilities = []
+      }
+    }
   },
 
   computed: {
@@ -1618,10 +1797,17 @@ export default defineComponent({
         return 0;
       }
       
-      return this.selectedFacilities.reduce((total, selectedFacility) => {
+      return this.selectedFacilities.reduce((total: number, selectedFacility) => {
         // Find the matching facility in availableFacilities
         const facilityData = this.availableFacilities.find(
-          f => f.facility_name.toLowerCase() === selectedFacility.toLowerCase()
+          f => {
+            if (typeof selectedFacility === 'string') {
+              return f.facility_name.toLowerCase() === selectedFacility.toLowerCase() || 
+                     String(f.facility_id) === selectedFacility;
+            } else {
+              return f.facility_id === selectedFacility;
+            }
+          }
         );
         
         // Get the hourly price for this facility
@@ -1648,6 +1834,16 @@ export default defineComponent({
       return !!(this.bookingForm.date &&
                this.bookingForm.timeRange.start &&
                this.bookingForm.timeRange.end)
+    },
+    
+    areFacilitiesEnabled(): boolean {
+      // For dedicated desk, facilities are always enabled (no date/time required)
+      if (this.productType === 'dedicated-desk') {
+        return true
+      }
+      
+      // For meeting-room and hot-desk, require complete date and time selection
+      return this.isBookingFormValid
     },
     
     isSubscriptionFormValid(): boolean {
@@ -1696,39 +1892,106 @@ export default defineComponent({
       }
     },
     
+    getFullAvatarUrl(avatarPath: string | null | undefined): string {
+      if (!avatarPath) return '';
+      
+      // If it's already a full URL, return it as is
+      if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
+        return avatarPath;
+      }
+      
+      // Otherwise, prepend the base URL
+      // Using NetworkManager.BASE_URL might not be accessible directly, so we hardcode the base URL
+      return `http://localhost:9011${avatarPath}`;
+    },
+    
+    handleAvatarError(event: Event): void {
+      // Replace broken image with a generated avatar
+      const target = event.target as HTMLImageElement;
+      const name = target.getAttribute('alt') || 'User';
+      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff`;
+    },
+    
     getFeatureName(feature: any): string {
+      // Cache feature names for consistency across screen sizes
+      if (!this.featureNameCache) {
+        this.featureNameCache = new Map();
+      }
+      
+      // Generate a cache key based on the feature data
+      const cacheKey = typeof feature === 'object' ? 
+        (feature?.facility_id || feature?.name || JSON.stringify(feature)) : 
+        String(feature);
+      
+      // Return cached value if it exists
+      if (this.featureNameCache.has(cacheKey)) {
+        return this.featureNameCache.get(cacheKey);
+      }
+      
+      let result = '';
+      
+      // Standard lookup table for common facilities
+      const standardNames: Record<string, string> = {
+        tv: 'TV/Display',
+        printer: 'Printer Access',
+        catering: 'Catering Service',
+        wifi: 'High-Speed WiFi',
+        projector: 'Projector',
+        whiteboard: 'Whiteboard'
+      };
+      
+      // First check if it's a string that matches our standard names
+      if (typeof feature === 'string' && standardNames[feature]) {
+        result = standardNames[feature];
+      }
       // Make sure we're handling facility objects correctly
-      if (typeof feature === 'object' && feature !== null) {
+      else if (typeof feature === 'object' && feature !== null) {
         // Check if it has a facility_name property (API format)
         if ('facility_name' in feature && feature.facility_name) {
-          return String(feature.facility_name);
+          result = String(feature.facility_name);
         }
-        
         // Check for name property (alternate format)
-        if ('name' in feature && feature.name) {
-          return String(feature.name);
+        else if ('name' in feature && feature.name) {
+          result = String(feature.name);
         }
-        
         // If we have an ID but no name, create a readable name
-        if ('facility_id' in feature && feature.facility_id) {
-          const name = String(feature.facility_id).replace(/_/g, ' ').toLowerCase()
-            .split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-          return name;
+        else if ('facility_id' in feature && feature.facility_id) {
+          const facilityId = String(feature.facility_id);
+          // Check if it's in our standard names first
+          if (standardNames[facilityId]) {
+            result = standardNames[facilityId];
+          } else {
+            result = facilityId
+              .replace(/_/g, ' ')
+              .toLowerCase()
+              .split(' ')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ');
+          }
         }
-        
         // Handle any other object type (for backward compatibility)
-        return JSON.stringify(feature);
+        else {
+          result = JSON.stringify(feature);
+        }
       }
-      
       // Handle string values with nice formatting
-      if (typeof feature === 'string') {
-        const formattedName = feature.replace(/_/g, ' ').toLowerCase()
-          .split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        return formattedName;
+      else if (typeof feature === 'string') {
+        // Already checked standardNames at the beginning, so now format it nicely
+        result = feature
+          .replace(/_/g, ' ')
+          .toLowerCase()
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      }
+      // Handle any other primitive values
+      else {
+        result = String(feature);
       }
       
-      // Handle any other primitive values
-      return String(feature);
+      // Store in cache for consistent retrieval
+      this.featureNameCache.set(cacheKey, result);
+      return result;
     },
     async fetchBookedTimeSlots() {
       if (!this.bookingForm.date) return;
@@ -1891,20 +2154,20 @@ export default defineComponent({
       
       switch (this.productType) {
         case 'meeting-room':
-          return `$${this.space.pricing.hourly || 0}/hr`
+          return `LKR ${this.space.pricing.hourly || 0}/hr`
         case 'hot-desk':
-          return `$${this.space.pricing.daily || 0}/day`
+          return `LKR ${this.space.pricing.daily || 0}/day`
         case 'dedicated-desk':
           // Show monthly price for dedicated desk
-          return `$${this.space.pricing.monthly || 0}/month`
+          return `LKR ${this.space.pricing.monthly || 0}/month`
         default:
           return 'Price not available'
       }
     },
 
     formatPrice(price?: number): string {
-      if (price === undefined) return '$0'
-      return `$${price}`
+      if (price === undefined) return 'LKR 0'
+      return `LKR ${price}`
     },
     
     // This is a simplification - in your real app, you should return the actual booking component
@@ -1926,16 +2189,25 @@ export default defineComponent({
         
         // Use NetworkManager directly to get space details
         const response = await NetworkManager.getSpaces({ id: spaceId })
+        console.log('Raw API response for space:', response);
         
         if (response.success && response.space) {
+          // API response data is stored in NetworkManager.lastRawResponseData
+          console.log('Raw API data stored in NetworkManager:', NetworkManager.lastRawResponseData);
+          
+          // Load operation schedule from raw API data
+          this.operationSchedule = NetworkManager.lastRawResponseData?.operation_schedule || [];
+          console.log('Operation schedule loaded:', this.operationSchedule);
+          
           this.space = response.space
+          console.log('Space object after assignment:', this.space);
           
           // Map recent_ratings from API response to reviews format
           if (this.space.recent_ratings && this.space.recent_ratings.length > 0) {
             this.reviews = this.space.recent_ratings.map((rating: any, index: number) => ({
               id: index + 1,
-              name: `User ${rating.user_id}`, // Could be enhanced with actual user names
-              avatar: rating.user_avatar || `https://ui-avatars.com/api/?name=User+${rating.user_id}&background=6366f1&color=fff`,
+              name: rating.first_name || `User ${rating.user_id}`, // Use first_name from API
+              avatar: this.getFullAvatarUrl(rating.user_avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(rating.first_name || 'User')}&background=6366f1&color=fff`,
               rating: rating.value || 5,
               comment: rating.review_description || 'Great space!',
               date: new Date().toISOString() // Could be enhanced with actual review dates
@@ -2241,40 +2513,63 @@ export default defineComponent({
     },
     
     facilityDisplayName(facility: any): string {
-      // If facility is an object with facility_name property, return that
-      if (typeof facility === 'object' && facility !== null && 'facility_name' in facility) {
-        return (facility as Facility).facility_name;
-      }
-      
-      // Otherwise use the lookup table for string-based facilities
-      const names: Record<string, string> = {
-        tv: 'TV/Display',
-        printer: 'Printer Access',
-        catering: 'Catering Service'
-      }
-      return names[String(facility)] || String(facility)
+      // Use the consistent getFeatureName method that implements caching
+      return this.getFeatureName(facility);
     },
     facilityPrice(facility: any): number {
       // Get the facility key for pricing lookup
       let facilityKey: string;
+      let facilityId: string | number;
       let facilityObject: Facility | undefined;
       
-      if (typeof facility === 'object' && facility !== null && 'facility_id' in facility) {
-        // If facility is already a facility object
-        facilityKey = (facility as Facility).facility_name?.toLowerCase() || '';
-        facilityObject = facility as Facility;
+      if (typeof facility === 'object' && facility !== null) {
+        if ('facility_id' in facility) {
+          // If facility is a facility object with ID
+          facilityId = facility.facility_id;
+          facilityKey = (facility as Facility).facility_name?.toLowerCase() || '';
+          facilityObject = facility as Facility;
+        } else if ('name' in facility) {
+          // Legacy format with name
+          facilityKey = (facility as any).name.toLowerCase();
+          facilityId = facilityKey;
+          facilityObject = this.availableFacilities.find(
+            f => f.facility_name.toLowerCase() === facilityKey || f.facility_id === facilityId
+          );
+        } else {
+          // Unknown object format
+          return 0;
+        }
       } else {
-        // If facility is a string, find the matching facility in availableFacilities
+        // If facility is a string or any other value, convert to string
         facilityKey = String(facility).toLowerCase();
+        facilityId = facilityKey;
+        
+        // Look for matching facility by ID or name
         facilityObject = this.availableFacilities.find(
-          f => f.facility_name.toLowerCase() === facilityKey
+          f => 
+            String(f.facility_id).toLowerCase() === facilityKey ||
+            f.facility_name.toLowerCase() === facilityKey ||
+            facilityKey === f.facility_name.toLowerCase().replace(/\s+/g, '_')
         );
       }
       
+      // Default prices for common facilities if not found in availableFacilities
+      const defaultPrices: Record<string, number> = {
+        'tv': 15,
+        'printer': 10,
+        'catering': 25,
+        'wifi': 5,
+        'projector': 20,
+        'whiteboard': 5
+      };
+      
       // Get the price from the facility object if available
       let price = 0;
-      if (facilityObject && (facilityObject as any).hourly_price) {
-        price = Math.round((facilityObject as any).hourly_price);
+      if (facilityObject && 'hourly_price' in facilityObject && facilityObject.hourly_price !== undefined) {
+        price = Math.round(facilityObject.hourly_price);
+      } else if (typeof facilityId === 'string' && defaultPrices[facilityId]) {
+        // Use default price if available
+        price = defaultPrices[facilityId];
       }
       
       // If no price found, return 0
@@ -2318,7 +2613,7 @@ export default defineComponent({
             // Add legacy date field for backward compatibility
             date: this.bookingForm.date
           },
-          facilities: this.selectedFacilities,
+          facilities: this.selectedFacilities.map(facility => String(facility)),
           totalPrice: this.totalPrice,
           pricing: {
             basePrice: this.roomBasePrice,
@@ -2402,26 +2697,185 @@ export default defineComponent({
     },
 
     openLocationMap(): void {
-      if (this.space?.locationUrl) {
+      // Get the raw data directly from NetworkManager
+      const rawApiData = NetworkManager.lastRawResponseData;
+      console.log('Raw API data:', rawApiData);
+      
+      // Get location_url directly from raw API response
+      const locationUrl = rawApiData?.location_url;
+      console.log('Location URL from API:', locationUrl);
+      
+      if (locationUrl) {
         // Open location URL in a new tab
-        window.open(this.space.locationUrl, '_blank');
-      } else if (this.space?.address) {
-        // If no location URL, create a Google Maps search URL
-        const encodedAddress = encodeURIComponent(this.space.address);
-        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-        window.open(mapsUrl, '_blank');
+        console.log('Opening location URL:', locationUrl);
+        window.open(locationUrl, '_blank');
+      } else {
+        // Show notification that no map is available
+        console.log('No location URL available, showing notification');
+        this.showLocationNotification = true;
+        
+        // Hide notification after 3 seconds
+        setTimeout(() => {
+          this.showLocationNotification = false;
+        }, 3000);
       }
     },
     
+    // ===== Operating Schedule Methods =====
+    
+    getOperationSchedule(): any[] {
+      // Get schedule from the raw API data if it exists
+      return this.operationSchedule || [];
+    },
+    
+    formatTime(time: string | undefined): string {
+      if (!time) return '';
+      
+      try {
+        // Convert 24h time to 12h format
+        const [hours, minutes] = time.split(':');
+        const hour = parseInt(hours, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const formattedHour = hour % 12 || 12;
+        
+        return `${formattedHour}:${minutes} ${ampm}`;
+      } catch (error) {
+        console.error('Error formatting time:', error);
+        return '';
+      }
+    },
+    
+    getCurrentDay(): string {
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return daysOfWeek[new Date().getDay()];
+    },
+    
+    getCurrentDayShort(): string {
+      return this.getCurrentDay().substring(0, 2);
+    },
+    
+    getTodayHours(): { day?: string, is_enabled: boolean, start_time?: string, end_time?: string } {
+      const today = this.getCurrentDay();
+      const schedule = this.getOperationSchedule();
+      
+      if (!schedule || !Array.isArray(schedule)) {
+        return { is_enabled: false };
+      }
+      
+      try {
+        // Find today in the schedule
+        const todaySchedule = schedule.find((day: any) => day && day.day === today);
+        return todaySchedule || { is_enabled: false };
+      } catch (error) {
+        console.error('Error getting today hours:', error);
+        return { is_enabled: false };
+      }
+    },
+    
+    isTodayOpen(): boolean {
+      const todayHours = this.getTodayHours();
+      return todayHours && todayHours.is_enabled === true;
+    },
+    
+    getTimelineStyle(): { left: string, width: string } {
+      const todayHours = this.getTodayHours();
+      if (!todayHours || !todayHours.is_enabled) return { left: '0%', width: '0%' };
+      
+      // Calculate position based on 24-hour day (6am to 6pm visible in timeline)
+      const start = this.timeToDecimalHours(todayHours.start_time);
+      const end = this.timeToDecimalHours(todayHours.end_time);
+      
+      // Timeline shows hours 6 to 18 (6am to 6pm)
+      // Calculate percentage positions (start and width)
+      const timelineStart = 6; // 6am
+      const timelineEnd = 18; // 6pm
+      const timelineRange = timelineEnd - timelineStart;
+      
+      const left = Math.max(0, ((start - timelineStart) / timelineRange) * 100);
+      const width = Math.min(100 - left, ((end - Math.max(timelineStart, start)) / timelineRange) * 100);
+      
+      return {
+        left: `${left}%`,
+        width: `${width}%`
+      };
+    },
+    
+    getCurrentTimePosition(): { left: string } {
+      const now = new Date();
+      const currentHour = now.getHours() + (now.getMinutes() / 60);
+      
+      // Timeline shows hours 6 to 18 (6am to 6pm)
+      const timelineStart = 6; // 6am
+      const timelineEnd = 18; // 6pm
+      const timelineRange = timelineEnd - timelineStart;
+      
+      const position = Math.max(0, Math.min(100, ((currentHour - timelineStart) / timelineRange) * 100));
+      
+      return {
+        left: `${position}%`
+      };
+    },
+    
+    isWithinOperatingHours(): boolean {
+      if (!this.isTodayOpen()) return false;
+      
+      const now = new Date();
+      const currentHour = now.getHours() + (now.getMinutes() / 60);
+      
+      const todayHours = this.getTodayHours();
+      const startHour = this.timeToDecimalHours(todayHours.start_time);
+      const endHour = this.timeToDecimalHours(todayHours.end_time);
+      
+      return currentHour >= startHour && currentHour <= endHour;
+    },
+    
+    timeToDecimalHours(timeString: string | undefined): number {
+      if (!timeString) return 0;
+      
+      try {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours + (minutes / 60);
+      } catch (error) {
+        console.error('Error converting time to decimal hours:', error);
+        return 0;
+      }
+    },
+    
+    getDayProgressPercentage(): number {
+      if (!this.isTodayOpen()) return 0;
+      
+      const todayHours = this.getTodayHours();
+      const startHour = this.timeToDecimalHours(todayHours.start_time);
+      const endHour = this.timeToDecimalHours(todayHours.end_time);
+      const totalHours = endHour - startHour;
+      
+      if (totalHours <= 0) return 0;
+      
+      const now = new Date();
+      const currentHour = now.getHours() + (now.getMinutes() / 60);
+      
+      if (currentHour < startHour) return 0;
+      if (currentHour > endHour) return 100;
+      
+      const hoursElapsed = currentHour - startHour;
+      const percentage = Math.round((hoursElapsed / totalHours) * 100);
+      
+      return Math.min(100, Math.max(0, percentage));
+    },
+    
     handleReviewSubmitted(review: any): void {
-      // Create a new review object from the response
+      // Instead of manually adding the review, refresh the page to get updated data
+      // This ensures reviews are correctly displayed with all proper formatting
+      window.location.reload();
+      
+      // The code below is kept for reference but won't execute due to page reload
       const newReview = {
         id: Date.now(), // Generate a temporary ID
         name: review.first_name,
         rating: review.value,
         comment: review.review_description,
         date: new Date().toISOString().split('T')[0],
-        avatar: review.user_avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(review.first_name)
+        avatar: this.getFullAvatarUrl(review.user_avatar) || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(review.first_name || 'User')
       };
       
       // Add the new review to the reviews array
@@ -2515,7 +2969,7 @@ export default defineComponent({
 
 .compact-select-field:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: black;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
@@ -2562,11 +3016,11 @@ export default defineComponent({
 
 .modern-time-select:hover {
   box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
-  border-color: #818cf8;
+  border-color: black;
 }
 
 .modern-time-select:focus {
-  border-color: #4f46e5;
+  border-color: black;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234f46e5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 12 4-4 4 4'/%3e%3c/svg%3e");
 }
@@ -2603,13 +3057,13 @@ export default defineComponent({
 }
 
 .custom-scrollbar-time::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, black 0%, black 100%);
   border-radius: 1px;
   transition: all 0.2s ease;
 }
 
 .custom-scrollbar-time::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #3730a3 0%, #6b21a8 100%);
+  background: linear-gradient(135deg, black 0%, black 100%);
 }
 
 .time-dropdown-option {
@@ -2666,7 +3120,7 @@ export default defineComponent({
 }
 
 .dropdown-open {
-  border-color: #4f46e5 !important;
+  border-color: black !important;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
 }
 
@@ -2705,7 +3159,7 @@ export default defineComponent({
 .ultra-compact .compact-select-field:focus,
 .compact-select-field.ultra-compact:focus {
   outline: none;
-  border-color: #6366F1;
+  border-color: black;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 

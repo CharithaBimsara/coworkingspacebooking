@@ -154,7 +154,7 @@
                 <p class="text-sm opacity-75">{{ booking.space.location }}</p>
               </div>
               <div class="text-right">
-                <div class="text-sm font-medium">${{ booking.totalAmount }}</div>
+                <div class="text-sm font-medium">LKR {{ booking.totalAmount }}</div>
                 <div class="text-xs opacity-75">{{ formatDuration(booking.duration) }}</div>
               </div>
             </div>
@@ -236,7 +236,7 @@
             </div>
             <div>
               <span class="text-gray-600 dark:text-gray-400">Total:</span>
-              <p class="font-medium">${{ selectedBooking.totalAmount }}</p>
+              <p class="font-medium">LKR {{ selectedBooking.totalAmount }}</p>
             </div>
           </div>
 

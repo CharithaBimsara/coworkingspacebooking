@@ -34,7 +34,7 @@
     <!-- Dropdown -->
     <div 
       v-if="showDropdown && (filteredLocations.length > 0 || isLoading || locations.length === 0)"
-  class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto custom-scrollbar min-w-[260px]"
+  class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-32 overflow-y-auto custom-scrollbar min-w-[260px]"
     >
       <!-- Loading state -->
       <div v-if="isLoading" class="p-3 text-center text-sm text-gray-800 dark:text-white">
@@ -48,15 +48,15 @@
           v-for="location in filteredLocations"
           :key="location.id"
           @mousedown="selectLocation(location)"
-          class="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+          class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0"
         >
           <div class="flex items-center">
             <svg class="w-4 h-4 text-gray-800 dark:text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             </svg>
             <div>
-              <div class="font-medium text-sm text-gray-800 dark:text-white">{{ location.name }}</div>
-              <div class="text-sm text-gray-600 dark:text-gray-300">{{ location.description || location.address }}</div>
+              <div class="font-medium text-xs text-gray-800 dark:text-white">{{ location.name }}</div>
+              <div class="text-xs text-gray-600 dark:text-gray-300">{{ location.description || location.address }}</div>
             </div>
           </div>
         </button>

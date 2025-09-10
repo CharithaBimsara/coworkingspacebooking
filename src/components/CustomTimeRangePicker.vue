@@ -1,15 +1,15 @@
 <template>
   <div class="custom-time-range-picker">
     <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ label }}</label>
-    <div class="flex items-center gap-2">
-      <div class="relative">
+    <div class="md:flex md:items-center md:gap-2 sm:flex sm:flex-row sm:items-center sm:gap-2 flex flex-col gap-2">
+      <div class="relative w-full sm:w-auto">
         <input
           type="text"
           v-model="startTimeDisplay"
           @focus="openDropdown('start')"
           @blur="onBlur('start')"
           readonly
-          class="custom-time-input dark:bg-gray-900 dark:text-white dark:border-gray-700"
+          class="custom-time-input dark:bg-gray-900 dark:text-white dark:border-gray-700 w-full"
           placeholder="Start time"
         />
         <div v-if="showStartDropdown" class="dropdown custom-scrollbar absolute w-full left-0 mt-1 dark:bg-gray-800 dark:border-gray-700">
@@ -24,8 +24,11 @@
           </div>
         </div>
       </div>
-      <span class="mx-1 dark:text-white">-</span>
-      <div class="relative">
+      <span class="mx-1 dark:text-white sm:block hidden">-</span>
+      <div class="relative sm:hidden flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 -mt-1 -mb-1">
+        to
+      </div>
+      <div class="relative w-full sm:w-auto">
         <input
           type="text"
           v-model="endTimeDisplay"
@@ -34,7 +37,7 @@
           readonly
           :disabled="!startTime"
           :class="[
-            'custom-time-input dark:bg-gray-900 dark:text-white dark:border-gray-700', 
+            'custom-time-input dark:bg-gray-900 dark:text-white dark:border-gray-700 w-full', 
             { 
               'disabled': !startTime,
               'highlight-needed': shouldHighlightEndTime
@@ -211,7 +214,7 @@ export default defineComponent({
 }
 
 .custom-time-input {
-  width: 160px;
+  width: 100%;
   margin-top: 2px;
   padding: 0.5rem 0.75rem;
   border: 1px solid #D1D5DB;
@@ -222,6 +225,22 @@ export default defineComponent({
   /* background: #fff; */
   cursor: pointer;
   /* transition: border-color 0.2s, box-shadow 0.2s; */
+}
+
+/* Tablet view (sm breakpoint in Tailwind) */
+@media (min-width: 640px) and (max-width: 767px) {
+  .custom-time-input {
+    width: 140px;
+    max-width: 140px;
+    min-width: 140px;
+  }
+}
+
+/* Desktop view */
+@media (min-width: 768px) {
+  .custom-time-input {
+    width: 160px;
+  }
 }
 
 .custom-time-input.disabled {

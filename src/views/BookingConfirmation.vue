@@ -155,7 +155,7 @@ const generateQRCode = async (bookingId: string) => {
   try {
     const qrData = JSON.stringify({
       bookingId: bookingId,
-      verificationUrl: `https://curryrealmworkspace.com/verify/${bookingId}`
+      verificationUrl: `https://spacebooking.com/verify/${bookingId}`
     })
     
     if (qrCanvas.value) {
@@ -250,7 +250,7 @@ const getDirections = () => {
 }
 
 const contactSupport = () => {
-  window.location.href = 'mailto:support@curryrealmworkspace.com'
+  window.location.href = 'mailto:support@spacebooking.com'
 }
 
 onMounted(() => {

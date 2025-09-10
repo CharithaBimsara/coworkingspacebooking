@@ -167,21 +167,21 @@
           </div>
         </form>
         
-        <!-- Guest review option -->
+        <!-- Login or create account option -->
         <div v-if="!isLoggedIn && !showLoginForm && !showGuestForm" class="flex flex-col space-y-3 items-center py-4">
           <p class="text-gray-600 dark:text-gray-400 text-center">
-            You can also continue as a guest or create an account
+            You need to be logged in to write a review
           </p>
           <div class="flex flex-col sm:flex-row gap-3">
-            <button 
-              @click="showGuestForm = true"
-              class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-              Continue as Guest
-            </button>
             <button 
               @click="$emit('show-signup')"
               class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
               Create Account
+            </button>
+            <button 
+              @click="showLoginForm = true"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+              Login Now
             </button>
           </div>
         </div>

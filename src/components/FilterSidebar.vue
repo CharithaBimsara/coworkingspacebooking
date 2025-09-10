@@ -13,8 +13,8 @@
       <h4 class="font-medium text-gray-900 dark:text-white mb-3">Price Range (per day)</h4>
       <div class="space-y-3">
         <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-          <span>${{ priceRange.min }}</span>
-          <span>${{ priceRange.max }}</span>
+          <span>LKR {{ priceRange.min }}</span>
+          <span>LKR {{ priceRange.max }}</span>
         </div>
         <div class="space-y-2">
           <input 

@@ -578,7 +578,7 @@
                       <span>{{ formatBookingDate(booking) }}</span>
                     </div>
                     <div class="text-sm font-medium text-primary mt-1">
-                      ${{ booking.totalPrice || 0 }}
+                      LKR {{ booking.totalPrice || 0 }}
                     </div>
                   </div>
                 </div>
@@ -599,7 +599,7 @@
               <div class="space-y-3">
                 <div v-for="(booking, index) in bookingDetails" :key="index" class="flex items-center justify-between text-sm">
                   <span class="text-gray-700 dark:text-gray-300">{{ booking.space.name }}</span>
-                  <span class="font-medium">${{ booking.totalPrice || 0 }}</span>
+                  <span class="font-medium">LKR {{ booking.totalPrice || 0 }}</span>
                 </div>
                 
                 <!-- Could add any additional fees here in the future -->

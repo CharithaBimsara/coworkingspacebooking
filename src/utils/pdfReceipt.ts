@@ -79,7 +79,7 @@ export class PDFReceiptGenerator {
     // Company Logo/Name
     this.doc.setFontSize(24)
     this.doc.setFont('helvetica', 'bold')
-    this.doc.text('CurryRealm Workspace', this.margin, 30)
+    this.doc.text('SpaceBooking', this.margin, 30)
     
     // Receipt Title
     this.doc.setFontSize(18)
@@ -151,7 +151,7 @@ export class PDFReceiptGenerator {
       const details = this.formatBookingDate(booking)
       this.doc.text(details, this.margin + 80, yPos, { maxWidth: 60 })
 
-      this.doc.text(`${booking.totalPrice.toFixed(2)}`, this.pageWidth - this.margin, yPos, { align: 'right' })
+      this.doc.text(`LKR ${booking.totalPrice.toFixed(2)}`, this.pageWidth - this.margin, yPos, { align: 'right' })
       yPos += 15
     })
   }
@@ -167,14 +167,14 @@ export class PDFReceiptGenerator {
     this.doc.setFontSize(12)
     this.doc.setFont('helvetica', 'bold')
     this.doc.text('Total Amount:', this.margin, yPos)
-    this.doc.text(`${receiptData.totalAmount.toFixed(2)}`, this.pageWidth - this.margin, yPos, { align: 'right' })
+    this.doc.text(`LKR ${receiptData.totalAmount.toFixed(2)}`, this.pageWidth - this.margin, yPos, { align: 'right' })
   }
 
   private async addQRCode(receiptData: ReceiptData): Promise<void> {
     try {
       const qrData = JSON.stringify({
         bookingId: receiptData.bookingId,
-        verificationUrl: `https://curryrealmworkspace.com/verify/${receiptData.bookingId}`
+        verificationUrl: `https://spacebooking.com/verify/${receiptData.bookingId}`
       })
       
       const qrCodeDataURL = await QRCode.toDataURL(qrData, { width: 80, margin: 1 })
@@ -201,8 +201,8 @@ export class PDFReceiptGenerator {
     this.doc.setFontSize(8)
     this.doc.setFont('helvetica', 'normal')
     
-    this.doc.text('CurryRealm Workspace Solutions', this.margin, footerY)
-    this.doc.text('Email: support@curryrealmworkspace.com | Phone: +1 (555) 123-4567', this.margin, footerY + 8)
+    this.doc.text('SpaceBooking Solutions', this.margin, footerY)
+    this.doc.text('Email: support@spacebooking.com | Phone: +1 (555) 123-4567', this.margin, footerY + 8)
     this.doc.text('Terms and conditions apply. This receipt is proof of payment.', this.margin, footerY + 16)
   }
 

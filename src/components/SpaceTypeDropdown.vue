@@ -16,16 +16,24 @@
     </button>
     <div
       v-if="showDropdown"
-      :class="['absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg z-50 max-h-24 overflow-y-auto custom-scrollbar', compact ? 'min-w-[140px]' : 'min-w-[220px]', compact ? '' : '']"
+      :class="['absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg z-50 overflow-y-auto custom-scrollbar', 
+              compact ? 'min-w-[140px]' : 'min-w-[220px]',
+              isHomePage ? 'max-h-32' : 'max-h-24']"
     >
       <button
         v-for="option in options"
         :key="option.value"
         @mousedown="selectOption(option)"
-        class="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0 flex items-center"
+        :class="[
+          'w-full text-left px-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0 flex items-center',
+          isHomePage ? 'py-2' : 'py-3'
+        ]"
       >
         <span v-if="option.icon" class="mr-2 text-gray-700 dark:text-gray-300" v-html="option.icon"></span>
-        <span class="text-gray-800 dark:text-white">{{ option.label }}</span>
+        <span :class="[
+          'text-gray-800 dark:text-white',
+          isHomePage ? 'text-xs' : 'text-sm'
+        ]">{{ option.label }}</span>
       </button>
     </div>
   </div>
@@ -57,6 +65,10 @@ export default defineComponent({
     heightClass: {
       type: String,
       default: 'h-11'
+    },
+    isHomePage: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update:modelValue', 'change'],
