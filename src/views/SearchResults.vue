@@ -59,7 +59,7 @@
             <span>Workspace</span>
           </h3>
           <button @click="isFilterOpen = !isFilterOpen" 
-            class="text-black dark:text-white p-2 rounded-full bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors duration-200 relative">
+            class="text-black dark:text-white p-2 rounded-full bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors duration-200 relative z-10">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
@@ -92,10 +92,10 @@
       </div>
     </div>
 
-    <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-24">
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-0 lg:gap-1 relative">
+    <div class="w-full max-w-screen-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-24">
+      <div class="flex flex-col lg:flex-row gap-6 relative">
         <!-- Filters Sidebar -->
-        <div class="lg:col-span-1 w-full mb-4 lg:mb-0 ml-0">
+        <div class="lg:w-1/3 xl:w-1/4 w-full mb-4 lg:mb-0 self-start">
           <!-- Combined Mobile Filter & Search Overlay -->
           <div v-if="isFilterOpen" 
             class="fixed inset-0 bg-black bg-opacity-50 z-50 flex lg:hidden justify-end transition-opacity duration-300 backdrop-blur-sm combined-filter-search-overlay"
@@ -544,7 +544,7 @@
         </div>
 
         <!-- Results Area -->
-        <div class="lg:col-span-4 relative ml-0 w-full lg:ml-5">
+        <div class="lg:w-2/3 xl:w-3/4 relative w-full lg:pl-0">
           <!-- Title and Sort -->
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 w-full">
             <div>
@@ -687,8 +687,8 @@
             :class="[
               'grid w-full', 
               isCompactView 
-                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3' 
-                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
+                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3' 
+                : 'grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5'
             ]">
             <!-- Space Cards with Responsive Design -->
             <div v-for="space in displaySpaces" :key="space.id"
@@ -2063,6 +2063,14 @@ export default defineComponent({
   animation: slideInRight 0.3s ease-in-out;
 }
 
+/* Ensure mobile filter overlay appears correctly */
+.combined-filter-search-overlay > div {
+  transform: none !important;
+  animation: slideInRight 0.3s ease-in-out;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
 .animate-pulse {
   animation: pulse 2s infinite;
 }
@@ -2205,9 +2213,26 @@ select.input-field:focus {
 
 /* Filter sidebar positioning (desktop) */
 @media (min-width: 1024px) {
-  .lg\\:col-span-1 {
+  /* Ensure proper flex layout for sidebar container */
+  .lg\:w-1\/3 {
     position: relative;
-    max-width: 100%;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+  
+  .lg\:w-2\/3 {
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+  }
+  
+  .xl\:w-1\/4 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  
+  .xl\:w-3\/4 {
+    flex: 0 0 75%;
+    max-width: 75%;
   }
 
   /* Media query for tablet/mobile view */
@@ -2217,14 +2242,26 @@ select.input-field:focus {
       padding-top: 16px !important;
     }
   }
+  
+  /* Adjust the sidebar max-width at different breakpoints */
+  @media (min-width: 1024px) {
+    .filters-sidebar {
+      max-width: calc(33.333333% - 1.5rem);
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .filters-sidebar {
+      max-width: calc(25% - 1.5rem);
+    }
+  }
 
   .filters-sidebar {
     position: fixed;
-    top: 12rem; /* Moved down a bit from search bar */
-    left: max(1rem, calc((100% - 1536px)/2 + 1rem)); /* Align with container left edge */
-    width: calc(22% - 1rem); /* Made sidebar narrower */
-    min-width: 260px; /* Ensure minimum width for tablet */
-    height: calc(100vh - 12rem - 20px); /* Full viewport minus top gap with extra space at bottom */
+    top: 12rem; /* Positioned below the search bar */
+    width: inherit; /* Take the width from parent */
+    max-width: calc(25% - 1.5rem); /* Match the parent width */
+    height: calc(100vh - 8rem); /* Full viewport minus top position */
     min-height: 500px; /* Ensure minimum height for content */
     display: flex;
     flex-direction: column;

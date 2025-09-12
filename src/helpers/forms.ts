@@ -28,6 +28,7 @@ export class SignUpForm {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
   agreeToTerms: boolean;
@@ -36,6 +37,7 @@ export class SignUpForm {
     firstName: string = '',
     lastName: string = '',
     email: string = '',
+    phone: string = '',
     password: string = '',
     confirmPassword: string = '',
     agreeToTerms: boolean = false
@@ -43,18 +45,20 @@ export class SignUpForm {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
+    this.phone = phone;
     this.password = password;
     this.confirmPassword = confirmPassword;
     this.agreeToTerms = agreeToTerms;
   }
 
   reset(): void {
-    this.firstName = '';
-    this.lastName = '';
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
-    this.agreeToTerms = false;
+  this.firstName = '';
+  this.lastName = '';
+  this.email = '';
+  this.phone = '';
+  this.password = '';
+  this.confirmPassword = '';
+  this.agreeToTerms = false;
   }
 
   isValid(): boolean {
@@ -62,6 +66,7 @@ export class SignUpForm {
       this.firstName.trim() !== '' &&
       this.lastName.trim() !== '' &&
       this.email.trim() !== '' &&
+      this.phone.trim() !== '' &&
       this.password.trim() !== '' &&
       this.confirmPassword.trim() !== '' &&
       this.agreeToTerms
@@ -77,6 +82,7 @@ export class SignUpForm {
       this.firstName,
       this.lastName,
       this.email,
+      this.phone,
       this.password,
       this.confirmPassword
     );

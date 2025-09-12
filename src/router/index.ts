@@ -12,6 +12,7 @@ import ProfileSettings from '../views/ProfileSettings.vue'
 import PaymentMethods from '../views/PaymentMethods.vue'
 import { useThemeStore } from '../stores/theme'
 import { useAuthStore } from '../stores/auth'
+import PaymentGateway from '../views/PaymentGateway.vue'
 
 // Lazy load components that might not exist yet
 const BookingConfirmation = () => import('../views/BookingConfirmation.vue').catch(() => import('../views/Home.vue'))
@@ -68,6 +69,11 @@ const routes: RouteRecordRaw[] = [
       path: '/payment-methods',
       name: 'PaymentMethods',
       component: PaymentMethods
+    },
+    {
+      path: '/payment-gateway',
+      name: 'PaymentGateway',
+      component: PaymentGateway
     }
 ]
 

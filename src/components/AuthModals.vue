@@ -121,7 +121,16 @@
             >
           </div>
         </div>
-        
+        <div>
+          <label class="block text-sm font-medium text-black dark:text-white mb-1">Phone Number</label>
+          <input
+            v-model="signUpForm.phone"
+            type="tel"
+            required
+            class="input-field"
+            placeholder="Enter your phone number"
+          >
+        </div>
         <div>
           <label class="block text-sm font-medium text-black dark:text-white mb-1">Email</label>
           <input
@@ -339,8 +348,7 @@ export default defineComponent({
           LastName: dto.lastName,
           Email: dto.email,
           Password: dto.password,
-          // Empty strings for optional fields
-          Phone: "",
+          Phone: dto.phone,
           Company: "",
           JobTitle: "",
           Bio: ""

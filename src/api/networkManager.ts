@@ -1936,4 +1936,185 @@ export class NetworkManager {
       };
     }
   }
+
+  /**
+   * Get user's saved payment methods
+   * Endpoint: /payment/get-payment-methods
+   * Method: POST
+   * Request:
+   * {
+   *   "user_id": 123
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Payment methods retrieved successfully",
+   *   "data": [
+   *     {
+   *       "id": 1,
+   *       "card_number": "413541******3146",
+   *       "card_type": "VISA",
+   *       "expiry_month": "12",
+   *       "expiry_year": "25",
+   *       "is_default": true
+   *     }
+   *   ]
+   * }
+   */
+  static async getPaymentMethods(userId: number): Promise<{
+    success: boolean;
+    message: string;
+    paymentMethods: Array<{
+      id: number;
+      card_number: string;
+      card_type: string;
+      expiry_month: string;
+      expiry_year: string;
+      is_default: boolean;
+    }>;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/payment/get-payment-methods`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: userId })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to retrieve payment methods'),
+          paymentMethods: []
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200 && Array.isArray(data.data)) {
+        return {
+          success: true,
+          message: data.message || 'Payment methods retrieved successfully',
+          paymentMethods: data.data
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve payment methods',
+          paymentMethods: []
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
+      return {
+        success: false,
+        message: 'Network error while fetching payment methods',
+        paymentMethods: []
+      };
+    }
+  }
+
+  /**
+   * Add new card - creates a payment gateway session
+   * Endpoint: /payment/add-card
+   * Method: POST
+   * Request: FormData with fields:
+   * {
+   *   "first_name": "string",
+   *   "last_name": "string", 
+   *   "email": "string",
+   *   "phone": "string",
+   *   "is_card_add": true
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Card add session created successfully",
+   *   "data": {
+   *     "link": "https://test-gateway.directpay.lk/5567aea63897d14a",
+   *     "token": "5567aea63897d14a",
+   *     "sms_status": null,
+   *     "email_status": null
+   *   }
+   * }
+   */
+  static async addNewCard(cardData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    is_card_add: boolean;
+  }): Promise<{
+    success: boolean;
+    message: string;
+    gatewayData?: {
+      link: string;
+      token: string;
+      sms_status?: string;
+      email_status?: string;
+    };
+  }> {
+    try {
+      // Build JSON payload as per new API spec
+      const payload = {
+        amount: 0,
+        first_name: cardData.first_name,
+        last_name: cardData.last_name,
+        email: cardData.email,
+        phone: cardData.phone
+      };
+
+      const response = await fetch(`${this.BASE_URL}/payment/create-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to create card session')
+        };
+      }
+
+      const data = await response.json();
+      // Debug log: show full response for troubleshooting
+      console.log('addNewCard API response:', data);
+
+      // Parse gateway link from response.data.data.link
+      let gatewayData = undefined;
+      if (data && data.data && data.data.data) {
+        gatewayData = data.data.data;
+      }
+      if (data.status_code === 200 && gatewayData && gatewayData.link) {
+        return {
+          success: true,
+          message: data.message || 'Card add session created successfully',
+          gatewayData: gatewayData
+        };
+      } else {
+        // Log specific error if link is missing
+        console.error('addNewCard: Missing gateway link in response:', data);
+        return {
+          success: false,
+          message: data.message || 'Failed to create card session'
+        };
+      }
+    } catch (error) {
+      console.error('Error creating card session:', error);
+      return {
+        success: false,
+        message: 'Network error while creating card session'
+      };
+    }
+  }
 }

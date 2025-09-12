@@ -15,13 +15,15 @@ export class SignUpRequestDto {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
 
-  constructor(firstName: string, lastName: string, email: string, password: string, confirmPassword: string) {
+  constructor(firstName: string, lastName: string, email: string, phone: string, password: string, confirmPassword: string) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
+    this.phone = phone;
     this.password = password;
     this.confirmPassword = confirmPassword;
   }
