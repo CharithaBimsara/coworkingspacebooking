@@ -70,12 +70,46 @@ export default defineComponent({
   setup(props, { emit }) {
     const showDropdown = ref(false)
     
-    const teamSizeOptions = computed(() => [
-      { value: '1-5', label: '1-5 people' },
-      { value: '6-15', label: '6-15 people' },
-      { value: '16-30', label: '16-30 people' },
-      { value: `30-${props.maxCapacity}`, label: `30-${props.maxCapacity} people` }
-    ])
+    const teamSizeOptions = computed(() => {
+      // Dynamically create team size options based on max capacity
+      const options = [];
+      const maxCapacity = props.maxCapacity || 50;
+      
+      if (maxCapacity <= 5) {
+        return [{ value: `1-${maxCapacity}`, label: `1-${maxCapacity} people` }];
+      }
+      
+      if (maxCapacity <= 10) {
+        return [
+          { value: '1-5', label: '1-5 people' },
+          { value: `6-${maxCapacity}`, label: `6-${maxCapacity} people` }
+        ];
+      }
+      
+      if (maxCapacity <= 15) {
+        return [
+          { value: '1-5', label: '1-5 people' },
+          { value: '6-10', label: '6-10 people' },
+          { value: `11-${maxCapacity}`, label: `11-${maxCapacity} people` }
+        ];
+      }
+      
+      if (maxCapacity <= 30) {
+        return [
+          { value: '1-5', label: '1-5 people' },
+          { value: '6-15', label: '6-15 people' },
+          { value: `16-${maxCapacity}`, label: `16-${maxCapacity} people` }
+        ];
+      }
+      
+      // Default ranges for larger capacities
+      return [
+        { value: '1-5', label: '1-5 people' },
+        { value: '6-15', label: '6-15 people' },
+        { value: '16-30', label: '16-30 people' },
+        { value: `31-${maxCapacity}`, label: `31-${maxCapacity} people` }
+      ];
+    })
     
     const selectedOption = computed(() => {
       return teamSizeOptions.value.find(opt => opt.value === props.modelValue) || teamSizeOptions.value[0]
