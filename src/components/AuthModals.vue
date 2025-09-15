@@ -206,8 +206,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import SuccessOverlay from './SuccessOverlay.vue';
-import { NetworkManager, type AuthResponse } from '../api/networkManager';
+import { NetworkManager } from '../api/networkManager';
 import { SignInForm, SignUpForm } from '../helpers/forms';
+
+// Define the interface for the success action
+interface PrimaryAction {
+  text: string;
+  action: () => void;
+}
 import { useAuthStore } from '../stores/auth';
 import type { PropType } from 'vue';
 
@@ -247,10 +253,10 @@ export default defineComponent({
       showSuccessOverlay: false,
       successTitle: '',
       successMessage: '',
-      successAction: null as any,
+      successAction: null as PrimaryAction | null,
       errorMessage: '',
       showError: false,
-      _errorTimeout: null as ReturnType<typeof setTimeout> | null
+      errorTimeoutId: null as ReturnType<typeof setTimeout> | null
     };
   },
   
@@ -394,8 +400,8 @@ export default defineComponent({
     // Method to display error messages
     showErrorMessage(message: string): void {
       // Clean up any previous error timers
-      if (this._errorTimeout) {
-        clearTimeout(this._errorTimeout);
+      if (this.errorTimeoutId) {
+        clearTimeout(this.errorTimeoutId);
       }
       
       // Format common error messages to be more user-friendly
@@ -421,7 +427,7 @@ export default defineComponent({
       this.showError = true;
       
       // Auto-hide the error after 6 seconds
-      this._errorTimeout = setTimeout(() => {
+      this.errorTimeoutId = setTimeout(() => {
         this.showError = false;
         this.errorMessage = '';
       }, 6000);

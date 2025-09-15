@@ -175,7 +175,7 @@
           <div class="flex flex-col sm:flex-row gap-3">
             <button 
               @click="$emit('show-signup')"
-              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+              class="px-4 py-2 bg-white border border-black text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
               Create Account
             </button>
             <button 

@@ -55,7 +55,7 @@ export default defineComponent({
       default: 'Space Type'
     },
     options: {
-      type: Array as PropType<Array<{ value: string, label: string, icon?: any }>>,
+      type: Array as PropType<Array<{ value: string, label: string, icon?: string }>>,
       required: true
     },
     compact: {
@@ -83,7 +83,7 @@ export default defineComponent({
       showDropdown.value = !showDropdown.value
     }
 
-    function selectOption(option: { value: string, label: string, icon?: any }) {
+    function selectOption(option: { value: string, label: string, icon?: string }) {
       emit('update:modelValue', option.value)
       emit('change', option)
       showDropdown.value = false

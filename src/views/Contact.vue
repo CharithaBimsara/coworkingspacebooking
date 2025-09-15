@@ -7,7 +7,10 @@
           <h1 class="text-4xl lg:text-5xl font-heading font-bold text-gray-900 dark:text-white mb-6">
             Get in Touch
           </h1>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p class="  } catch (_error) {
+    // Error handled by alert - no need to use the error variable
+    alert('There was an error sending your message. Please try again.')
+  } finally {-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Have a question, suggestion, or just want to say hello? We'd love to hear from you.
           </p>
         </div>
@@ -320,6 +323,12 @@
 </template>
 
 <script setup lang="ts">
+import { defineComponent } from 'vue';
+
+// Define component name to fix the multi-word component name lint error
+defineComponent({
+  name: 'ContactPage'
+});
 import { ref } from 'vue'
 
 // Form state
@@ -450,7 +459,8 @@ const submitForm = async () => {
       showSuccess.value = false
     }, 5000)
     
-  } catch (error) {
+  } catch {
+    // Error handled by alert - no need to use the error variable
     alert('There was an error sending your message. Please try again.')
   } finally {
     submitting.value = false

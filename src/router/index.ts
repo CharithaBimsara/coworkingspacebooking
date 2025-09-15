@@ -11,7 +11,6 @@ import Payment from '../views/Payment.vue'
 import ProfileSettings from '../views/ProfileSettings.vue'
 import PaymentMethods from '../views/PaymentMethods.vue'
 import { useThemeStore } from '../stores/theme'
-import { useAuthStore } from '../stores/auth'
 import PaymentGateway from '../views/PaymentGateway.vue'
 
 // Lazy load components that might not exist yet
@@ -80,7 +79,7 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to) {
     // If there's a hash in the URL, scroll to it
     if (to.hash) {
       // Return a promise to allow for a delay (ensures element exists)
@@ -112,7 +111,7 @@ router.beforeEach((to, from, next) => {
       // Initialize if not already initialized
       themeStore.initTheme();
     }
-  } catch (e) {
+  } catch {
     // If Pinia is not ready, just continue
     console.log('Theme store not available during navigation');
   }

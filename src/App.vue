@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, computed, ref, watch } from 'vue'
+import { defineComponent, onMounted, computed } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import FloatingBookingSummary from './components/FloatingBookingSummary.vue'
 import { useBookingStore } from './stores/booking'
@@ -48,13 +48,8 @@ export default defineComponent({
     });
 
     return {
-      bookingStore,
       showFloatingBookingSummary
     };
-
-    return {
-      bookingStore
-    }
   }
 })
 </script>

@@ -646,7 +646,6 @@
 import { defineComponent } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useBookingStore } from '../stores/booking'
-import type { UserDto } from '../dto/response'
 import AuthModals from '../components/AuthModals.vue'
 
 // Add responsive styles
@@ -660,6 +659,25 @@ interface GuestInfo {
   specialRequests: string
   emergencyContactName: string
   emergencyContactPhone: string
+}
+
+interface BookingItem {
+  productType: string
+  startDate?: string
+  endDate?: string
+  date?: string
+  booking?: {
+    startDate?: string | null
+    endDate?: string | null
+    startTime?: string
+    duration?: string
+    date?: string
+  }
+  subscription?: {
+    startDate?: string | null
+    endDate?: string | null
+    packageType?: string
+  }
 }
 
 export default defineComponent({
@@ -762,7 +780,7 @@ export default defineComponent({
       })
     },
 
-    formatDateRange(booking: any): string {
+    formatDateRange(booking: BookingItem): string {
       const startDate = booking.booking?.startDate || booking.subscription?.startDate || booking.startDate
       const endDate = booking.booking?.endDate || booking.subscription?.endDate || booking.endDate
 
@@ -795,7 +813,7 @@ export default defineComponent({
       return types[type] || type
     },
 
-    getServiceDisplayName(booking: any) {
+    getServiceDisplayName(booking: BookingItem) {
       if (booking.productType === 'meeting-room') {
         const duration = booking.booking?.duration || '2'
         return `Meeting Room (${duration}h)`
@@ -806,7 +824,7 @@ export default defineComponent({
       }
     },
 
-    getPackageDisplayName(booking: any): string {
+    getPackageDisplayName(booking: BookingItem): string {
       const packageType = booking.subscription?.packageType || 'monthly'
       const names: Record<string, string> = {
         daily: 'Daily Pass',
@@ -816,7 +834,7 @@ export default defineComponent({
       return names[packageType] || 'Subscription'
     },
 
-    getEndTime(booking: any) {
+    getEndTime(booking: BookingItem) {
       if (booking.productType !== 'meeting-room') return ''
       const startTime = booking.booking?.startTime || '09:00'
       const duration = parseInt(booking.booking?.duration || '2')

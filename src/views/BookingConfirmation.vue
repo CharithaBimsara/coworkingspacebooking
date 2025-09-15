@@ -138,13 +138,61 @@ import QRCode from 'qrcode'
 
 const route = useRoute()
 
-const confirmationData = ref<any>({
-  bookingId: route.params.bookingId,
+// Interface for confirmation data
+interface ConfirmationData {
+  bookingId: string;
+  bookings: BookingItem[];
+  totalAmount: number;
+  guestInfo: { firstName: string; lastName: string };
+  paymentMethod: string;
+  confirmedAt: string;
+  spaceType: string;
+  location: string;
+  date: string;
+  time: string;
+  duration: string;
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
+  company: string;
+}
+
+interface BookingItem {
+  space: {
+    id: string;
+    name: string;
+    location: string;
+    images?: string[];
+    image?: string;
+  };
+  spaceType: string;
+  date: string;
+  duration: string;
+  totalAmount: number;
+  booking?: {
+    startDate: string;
+    endDate: string;
+    startTime: string;
+    duration: string;
+  };
+}
+
+const confirmationData = ref<ConfirmationData>({
+  bookingId: Array.isArray(route.params.bookingId) ? route.params.bookingId[0] : route.params.bookingId,
   bookings: [],
   totalAmount: 0,
   guestInfo: { firstName: 'Guest', lastName: 'User' },
   paymentMethod: 'Credit Card',
-  confirmedAt: new Date().toISOString()
+  confirmedAt: new Date().toISOString(),
+  spaceType: '',
+  location: '',
+  date: '',
+  time: '',
+  duration: '',
+  guestName: '',
+  guestEmail: '',
+  guestPhone: '',
+  company: ''
 })
 
 const qrCanvas = ref<HTMLCanvasElement | null>(null)
@@ -177,20 +225,18 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('en-US', options)
 }
 
-const formatProductType = (productType: string) => {
-  const types: { [key: string]: string } = {
-    'meeting-room': 'Meeting Room',
-    'hot-desk': 'Hot Desk',
-    'coworking-space': 'Co-working Space'
-  }
-  return types[productType] || productType
-}
-
 const downloadReceipt = async () => {
   try {
-    const mappedBookings = confirmationData.value.bookings.map((booking: any) => {
-      const mappedBooking: any = {
-        spaceId: booking.space.id,
+    const mappedBookings = confirmationData.value.bookings.map((booking: BookingItem) => {
+      const mappedBooking: {
+        spaceId: number;
+        productType: string;
+        space: { name: string; location: string };
+        totalPrice: number;
+        booking?: { startDate: string | null; endDate: string | null; startTime: string; duration: string };
+        subscription?: { startDate: string | null; endDate: string | null; packageType: string };
+      } = {
+        spaceId: parseInt(booking.space.id) || 0,
         productType: booking.spaceType,
         space: {
           name: booking.space.name,
@@ -201,15 +247,15 @@ const downloadReceipt = async () => {
 
       if (booking.spaceType === 'meeting-room') {
         mappedBooking.booking = {
-          startDate: booking.date,
-          endDate: booking.date,
+          startDate: booking.date || null,
+          endDate: booking.date || null,
           startTime: '09:00', // Placeholder, not available in BookingItem
           duration: booking.duration,
         };
       } else {
         mappedBooking.subscription = {
-          startDate: booking.date,
-          endDate: booking.date,
+          startDate: booking.date || null,
+          endDate: booking.date || null,
           packageType: booking.duration,
         };
       }
@@ -233,9 +279,10 @@ const downloadReceipt = async () => {
 }
 
 const addToCalendar = () => {
+  const startDate = primaryBooking.value.booking?.startDate || primaryBooking.value.date || new Date().toISOString().split('T')[0];
   const event = {
     title: `Workspace Booking: ${primaryBooking.value.space.name}`,
-    start: primaryBooking.value.booking?.startDate,
+    start: startDate,
     location: primaryBooking.value.space.location,
     description: `Booking #${confirmationData.value.bookingId}`
   }
@@ -258,18 +305,19 @@ onMounted(() => {
   if (storedConfirmation) {
     const parsedData = JSON.parse(storedConfirmation);
     if (parsedData.bookings && Array.isArray(parsedData.bookings)) {
-      parsedData.bookings = parsedData.bookings.map((booking: any) => {
-        if (booking.space && Array.isArray(booking.space.images) && booking.space.images.length > 0) {
-          const { images, ...restOfSpace } = booking.space;
+      parsedData.bookings = parsedData.bookings.map((booking: unknown) => {
+        const b = booking as { space?: { images?: unknown[] } };
+        if (b.space && Array.isArray(b.space.images) && b.space.images.length > 0) {
+          const { images, ...restOfSpace } = b.space;
           return {
-            ...booking,
+            ...b,
             space: {
               ...restOfSpace,
               image: images[0]
             }
           };
         }
-        return booking;
+        return b;
       });
     }
     confirmationData.value = parsedData;

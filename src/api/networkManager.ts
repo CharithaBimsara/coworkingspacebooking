@@ -2,8 +2,8 @@
 // NetworkManager for essential APIs only
 // Handles: authentication, product listing/searching/filtering, space details, locations, and booked time slots
 
-import type { SpaceDto, UserDto } from '../dto/response';
-import { AdvertisementDto, BaseResponseDto } from '../dto/response';
+import type { SpaceDto } from '../dto/response';
+import { AdvertisementDto } from '../dto/response';
 
 // Define AuthResponse interface
 export interface AuthResponse {
@@ -18,6 +18,80 @@ export interface AuthResponse {
     last_name?: string;
   };
   token?: string;
+}
+
+// Interface for location data from API
+interface LocationData {
+  id: number;
+  name: string;
+  street?: string;
+  street_two?: string;
+  town?: string;
+  district?: string;
+  address?: string;
+  url?: string;
+}
+
+// Interface for search request body
+interface SearchRequestBody {
+  type?: string;
+  location_id?: number;
+  date?: string;
+  start_time?: string;
+  end_time?: string;
+  capacity?: number;
+  min_daily_rate?: number;
+  max_daily_rate?: number;
+  min_rating?: number;
+  facilities?: (string | { facility_name: string })[];
+}
+
+// Interface for API space data
+interface ApiSpaceData {
+  id?: number;
+  name?: string;
+  product_description?: string;
+  discription?: string; // typo in API
+  location_name?: string;
+  locationName?: string;
+  location?: string;
+  address?: string;
+  productType?: string;
+  type?: string;
+  pricing?: Array<{
+    hourly?: number;
+    daily?: number;
+    monthly?: number;
+    yearly?: number;
+  }>;
+  availability?: Array<{
+    date?: string;
+    slots?: unknown[];
+  }>;
+  features?: string[];
+  additional_facilities?: unknown[];
+  start_operation_time?: string | null;
+  end_operation_time?: string | null;
+  images?: string[];
+  default_facilities?: unknown[];
+  recent_ratings?: unknown[];
+  [key: string]: unknown;
+}
+
+// Interface for advertisement data from API
+interface AdvertisementData {
+  company_name?: string;
+  description?: string;
+  button_text?: string;
+  image_path?: string;
+  link?: string;
+  [key: string]: unknown;
+}
+
+// Interface for rating data from API
+interface RatingData {
+  user_avatar?: string;
+  [key: string]: unknown;
 }
 
 // Interface for booking data returned by the API
@@ -40,7 +114,7 @@ interface BookingData {
 
 export class NetworkManager {
   private static readonly BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
-  public static lastRawResponseData: any = null;
+  public static lastRawResponseData: unknown = null;
 
   /**
    * Get all locations for the location dropdown.
@@ -72,7 +146,7 @@ export class NetworkManager {
 
       if ((data.status_code === 200 || data.statusCode === 200) && Array.isArray(data.data)) {
         // Return full location objects with id, name, address, and url
-        return data.data.map((location: any) => {
+        return data.data.map((location: LocationData) => {
           // Create address from street, town, district components
           const addressParts = [
             location.street || location.street_two,
@@ -140,9 +214,9 @@ export class NetworkManager {
     spaces?: SpaceDto[];
     space?: SpaceDto;
     totalCount?: number;
-    recentReviews?: any[];
-    amenities?: any[];
-    nearbySpaces?: any[];
+    recentReviews?: unknown[];
+    amenities?: unknown[];
+    nearbySpaces?: unknown[];
   }> {
     try {
       // If id is provided, we're fetching details for a specific space
@@ -200,7 +274,7 @@ export class NetworkManager {
       // Otherwise, we're searching for spaces based on criteria
       else {
         // Prepare the request body
-        const requestBody: any = {};
+        const requestBody: SearchRequestBody = {};
 
         // Map space type to backend format if provided
         if (params.type) {
@@ -251,7 +325,7 @@ export class NetworkManager {
         if (params.facilities && params.facilities.length > 0) {
           // When facilities come in as strings (facility names), use them directly
           // When they come as objects with facility_name, extract just the names
-          requestBody.facilities = params.facilities.map((facility: any) => {
+          requestBody.facilities = params.facilities.map((facility: string | { facility_name: string }) => {
             if (typeof facility === 'object' && facility !== null && facility.facility_name) {
               return facility.facility_name;
             }
@@ -341,10 +415,10 @@ export class NetworkManager {
   /**
    * Transform API response format to our internal SpaceDto format
    */
-  private static transformApiSpacesToSpaceDto(apiSpaces: any[]): SpaceDto[] {
-    return apiSpaces.map((apiSpace, index) => {
+  private static transformApiSpacesToSpaceDto(apiSpaces: ApiSpaceData[]): SpaceDto[] {
+    return apiSpaces.map((apiSpace) => {
       // Transform pricing from array format to object format
-      let pricing: any = {};
+      let pricing: Record<string, number | undefined> = {};
       if (apiSpace.pricing && Array.isArray(apiSpace.pricing) && apiSpace.pricing.length > 0) {
         const pricingData = apiSpace.pricing[0];
         pricing = {
@@ -361,9 +435,9 @@ export class NetworkManager {
       }
 
       // Transform availability format
-      let availability: any[] = [];
+      let availability: Array<{ date: string; slots: unknown[] }> = [];
       if (apiSpace.availability && Array.isArray(apiSpace.availability)) {
-        availability = apiSpace.availability.map((avail: any) => ({
+        availability = apiSpace.availability.map((avail: { date?: string; slots?: unknown[] }) => ({
           date: avail.date ? avail.date.split('T')[0] : '', // Extract date part
           slots: avail.slots || []
         }));
@@ -414,9 +488,19 @@ export class NetworkManager {
       }
       
       // Handle additional facilities - keep them separate from features
-      let additional_facilities = [];
+      let additional_facilities: Array<{
+        facility_id: number;
+        facility_name: string;
+        hourly_price?: number;
+        icon?: string;
+      }> = [];
       if (Array.isArray(apiSpace.additional_facilities)) {
-        additional_facilities = [...apiSpace.additional_facilities];
+        additional_facilities = apiSpace.additional_facilities as Array<{
+          facility_id: number;
+          facility_name: string;
+          hourly_price?: number;
+          icon?: string;
+        }>;
       }
       
       // Remove duplicates from features (additional_facilities are now objects, not strings)
@@ -430,29 +514,35 @@ export class NetworkManager {
       const processedImages = NetworkManager.processImageUrls(apiSpace.images || []);
 
       // Handle default_facilities from the API response
-      let facilities = [];
+      let facilities: Array<{
+        facility_id: number;
+        facility_name: string;
+        hourly_price?: number;
+        icon?: string;
+      }> = [];
       if (apiSpace.default_facilities && Array.isArray(apiSpace.default_facilities)) {
         // Map default facilities to the proper format if they're not already in the correct format
-        facilities = apiSpace.default_facilities.map((f: any) => {
-          if (typeof f === 'string') {
+        facilities = apiSpace.default_facilities.map((f: unknown) => {
+          const facility = f as { facility_id?: number; facility_name?: string; hourly_price?: number; icon?: string };
+          if (typeof facility === 'string') {
             return {
               facility_id: 0, // Default ID
-              facility_name: f,
+              facility_name: facility,
               hourly_price: 0,
-              icon: null
+              icon: undefined
             };
           } else {
             return {
-              facility_id: f.facility_id || 0,
-              facility_name: f.facility_name || f,
-              hourly_price: f.hourly_price || 0,
-              icon: f.icon || null
+              facility_id: facility.facility_id || 0,
+              facility_name: facility.facility_name || 'Unknown',
+              hourly_price: facility.hourly_price || 0,
+              icon: facility.icon || undefined
             };
           }
         });
         
         // Extract facility names from default_facilities and add to features for backwards compatibility
-        const facilityNames = facilities.map((f: any) => f.facility_name);
+        const facilityNames = facilities.map((f) => f.facility_name);
         if (facilityNames.length > 0) {
           features = [...new Set([...features, ...facilityNames])];
         }
@@ -461,28 +551,29 @@ export class NetworkManager {
       // Add additional_facilities if available
       if (apiSpace.additional_facilities && Array.isArray(apiSpace.additional_facilities)) {
         // Map additional facilities to the proper format if they're not already in the correct format
-        additional_facilities = apiSpace.additional_facilities.map((f: any) => {
-          if (typeof f === 'string') {
+        additional_facilities = apiSpace.additional_facilities.map((f: unknown) => {
+          const facility = f as { facility_id?: number; facility_name?: string; hourly_price?: number; icon?: string };
+          if (typeof facility === 'string') {
             return {
               facility_id: 0, // Default ID
-              facility_name: f,
+              facility_name: facility,
               hourly_price: 0,
-              icon: null
+              icon: undefined
             };
           } else {
             return {
-              facility_id: f.facility_id || 0,
-              facility_name: f.facility_name || f,
-              hourly_price: f.hourly_price || 0,
-              icon: f.icon || null
+              facility_id: facility.facility_id || 0,
+              facility_name: facility.facility_name || 'Unknown',
+              hourly_price: facility.hourly_price || 0,
+              icon: facility.icon || undefined
             };
           }
         });
         
         // Also extract names from additional_facilities for features array (backward compatibility)
         const additionalFacilityNames = additional_facilities
-          .filter((f: any) => f && f.facility_name)
-          .map((f: any) => f.facility_name);
+          .filter((f) => f && f.facility_name)
+          .map((f) => f.facility_name);
         
         if (additionalFacilityNames.length > 0) {
           features = [...new Set([...features, ...additionalFacilityNames])];
@@ -490,7 +581,7 @@ export class NetworkManager {
       }
 
       const transformedSpace: SpaceDto = {
-        id: apiSpace.id,
+        id: apiSpace.id || 0,
         name: apiSpace.name || apiSpace.product_description || `Space ${apiSpace.id}`,
         description: apiSpace.product_description || apiSpace.discription || '',  // Changed priority to match API
         location: apiSpace.location_name || apiSpace.locationName || apiSpace.location || apiSpace.address || '', // Added location_name from API
@@ -509,9 +600,9 @@ export class NetworkManager {
         facilities: facilities, // Keep facilities for backward compatibility
         isAvailable: true, // Assume available if returned by search
         availability: availability,
-        start_operation_time: start_operation_time,
-        end_operation_time: end_operation_time,
-        recent_ratings: apiSpace.recent_ratings || [] // Include recent ratings from API response
+        start_operation_time: start_operation_time || undefined,
+        end_operation_time: end_operation_time || undefined,
+        recent_ratings: (apiSpace.recent_ratings as Array<{ rating: number; comment?: string; user?: string }>) || [] // Include recent ratings from API response
       };
       return transformedSpace;
     });
@@ -683,7 +774,7 @@ export class NetworkManager {
 
       if ((data.status_code === 200 || data.statusCode === 200) && Array.isArray(data.data)) {
         // Convert API response to AdvertisementDto objects
-        return data.data.map((ad: any, index: number) => {
+        return data.data.map((ad: AdvertisementData, index: number) => {
           // Process the image path to make it an absolute URL
           const imagePath = ad.image_path || '';
           const processedImageUrl = this.processAdImageUrl(imagePath);
@@ -1897,7 +1988,7 @@ export class NetworkManager {
       
       if ((data.status_code === 200 || data.statusCode === 200) && Array.isArray(data.data)) {
         // Process avatar paths if they exist
-        const processedRatings = data.data.map((rating: any) => {
+        const processedRatings = data.data.map((rating: RatingData) => {
           if (rating.user_avatar && !rating.user_avatar.startsWith('http')) {
             const baseServerUrl = NetworkManager.BASE_URL.replace('/api', '');
             rating.user_avatar = `${baseServerUrl}${rating.user_avatar}`;

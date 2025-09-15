@@ -165,12 +165,6 @@ export default defineComponent({
     const bookingData = computed(() => bookingStore.currentBooking)
     const totalAmount = computed(() => bookingData.value.reduce((total, booking) => total + (booking.totalPrice || 0), 0))
     
-    // No longer needed with our updated logic, but keeping for potential future use
-    // Now we only exclude the BookingSummary page itself
-    const isPostBookingSummaryPage = computed(() => {
-      return route.name === 'BookingSummary';
-    });
-
     // Show the floating summary when:
     // 1. There are items in the booking
     // 2. We're either adding more services or the user isn't on the BookingSummary page
@@ -179,9 +173,6 @@ export default defineComponent({
       const hasItems = bookingData.value.length > 0;
       const isAddingMore = bookingStore.isAddingMoreServices;
       const isOnBookingSummaryPage = route.name === 'BookingSummary';
-      
-      // Update hasBookingItems for tracking changes
-      hasBookingItems.value = hasItems;
       
       // ALWAYS check if there are booking items - never show if there are no items
       if (!hasItems) {
@@ -324,7 +315,10 @@ export default defineComponent({
     });
     
     // Watch bookingData for changes and hide summary if there are no items
-    watch(bookingData, (newBookingData: any[]) => {
+    watch(bookingData, (newBookingData) => {
+      // Update hasBookingItems for tracking changes
+      hasBookingItems.value = newBookingData.length > 0;
+      
       if (newBookingData.length === 0) {
         // Clear the add another service flag when all items are removed
         localStorage.removeItem('addAnotherServiceClicked');

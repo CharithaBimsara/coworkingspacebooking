@@ -306,5 +306,10 @@
 </template>
 
 <script setup lang="ts">
+import { defineComponent } from 'vue';
+
 // About page with comprehensive company information
+defineComponent({
+  name: 'AboutPage'
+});
 </script>

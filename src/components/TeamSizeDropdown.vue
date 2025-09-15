@@ -72,7 +72,6 @@ export default defineComponent({
     
     const teamSizeOptions = computed(() => {
       // Dynamically create team size options based on max capacity
-      const options = [];
       const maxCapacity = props.maxCapacity || 50;
       
       if (maxCapacity <= 5) {

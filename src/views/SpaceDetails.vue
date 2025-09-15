@@ -301,7 +301,7 @@
                 
                 <!-- Cute Day Bubbles -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
-                  <div v-for="day in getOperationSchedule()" :key="day.day" 
+                  <div v-for="day in operationSchedule" :key="day.day" 
                       class="day-card group cursor-pointer relative"
                       :class="[
                         'transition-all duration-300 rounded-2xl overflow-hidden',
@@ -731,6 +731,32 @@
                           class="absolute top-full left-0 w-[90px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-xs dark:shadow-dark-xs z-1000 mt-0.5 overflow-hidden"
                         >
                           <div class="max-h-32 overflow-y-auto custom-scrollbar-time overflow-x-hidden">
+                            <!-- Full Day Option -->
+                            <div
+                              v-if="productType === 'meeting-room' || productType === 'hot-desk'"
+                              @click="isFullDayAvailable() && selectFullDay()"
+                              class="py-0.5 px-1.5 cursor-pointer hover:bg-gray-50 transition-colors flex justify-between items-center border-b border-gray-100 dark:border-gray-600"
+                              :class="{
+                                'opacity-50 cursor-not-allowed': !isFullDayAvailable(),
+                                'hover:bg-gray-50': isFullDayAvailable()
+                              }"
+                            >
+                              <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-primary">
+                                  Full Day
+                                </span>
+                                <span class="text-[9px] text-gray-500 dark:text-gray-400">
+                                  {{ getTodayHours().start_time && getTodayHours().end_time ? `${formatTimeDisplay(getTodayHours().start_time!)} - ${formatTimeDisplay(getTodayHours().end_time!)}` : 'Closed' }}
+                                </span>
+                                <span v-if="!isFullDayAvailable()" class="text-[7px] text-red-500">
+                                  booked
+                                </span>
+                              </div>
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                              </svg>
+                            </div>
+                            <!-- Regular Time Slots -->
                             <div
                               v-for="time in generateTimeSlots()" 
                               :key="time"
@@ -761,7 +787,7 @@
                           :class="{ 
                             'ring-1 ring-primary/20': showEndTimeDropdown,
                             'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.end,
-                            'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start 
+                            'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start || isFullDayBooking
                           }"
                         >
                           <span v-if="bookingForm.timeRange.end" class="text-gray-900 dark:text-white whitespace-nowrap">
@@ -826,7 +852,7 @@
                   </label>
                   
                   <!-- Loading skeleton -->
-                  <div v-if="facilitiesLoading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                  <div v-if="facilitiesLoading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 auto-rows-fr">
                     <div v-for="i in 5" :key="i" class="animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg p-2 h-20">
                       <div class="mb-2 bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 mx-auto"></div>
                       <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-1"></div>
@@ -835,12 +861,12 @@
                   </div>
                   
                   <!-- Dynamic facilities from API -->
-                  <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                  <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 auto-rows-fr">
                     <template v-if="availableFacilities.length > 0">
                       <label 
                         v-for="facility in availableFacilities" 
                         :key="facility.facility_id"
-                        class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 group" 
+                        class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 group min-h-[80px]" 
                         :class="[
                           selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700',
                           areFacilitiesEnabled ? 'cursor-pointer hover:border-gray-300 dark:hover:border-gray-600' : 'cursor-not-allowed opacity-60'
@@ -866,12 +892,12 @@
                             </svg>
                           </div>
                           <span 
-                            class="text-xs font-medium block" 
+                            class="text-xs font-medium block break-words leading-tight" 
                             :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'text-primary' : 'text-gray-800 dark:text-gray-300'"
                           >
                             {{ facility.facility_name }}
                           </span>
-                          <span class="text-xs font-medium block"
+                          <span class="text-xs font-medium block break-words leading-tight"
                                 :class="areFacilitiesEnabled ? 'text-green-600 dark:text-green-500' : 'text-gray-400 dark:text-gray-500'">
                             +LKR {{ facilityPrice(facility) }}/hr
                           </span>
@@ -1653,7 +1679,6 @@
 import { defineComponent } from 'vue'
 import AuthModals from '../components/AuthModals.vue'
 import SingleDatePicker from '../components/SingleDatePicker.vue'
-import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue'
 import TeamSizeDropdown from '../components/TeamSizeDropdown.vue'
 import { NetworkManager } from '../api/networkManager'
 
@@ -1665,10 +1690,34 @@ interface Facility {
   icon?: string;
 }
 
-import type { SpaceDto, ReviewDto, UserDto } from '../dto/response'
+interface ApiRating {
+  first_name?: string;
+  user_id?: number;
+  user_avatar?: string;
+  value?: number;
+  review_description?: string;
+  rating?: number;
+  comment?: string;
+  user?: string;
+}
+
+interface SubmittedReview {
+  first_name: string;
+  value: number;
+  review_description: string;
+  user_avatar?: string;
+}
+
+interface OperationDay {
+  day: string;
+  is_enabled: boolean;
+  start_time?: string;
+  end_time?: string;
+}
+
+import type { SpaceDto, ReviewDto, UserDto, RawSpaceApiResponse } from '../dto/response'
 import { useAuthStore } from '../stores/auth'
 import { useBookingStore } from '../stores/booking'
-import { useSpacesStore } from '../stores/spaces'
 import ReviewDialog from '../components/ReviewDialog.vue'
 
 interface BookingForm {
@@ -1683,7 +1732,6 @@ export default defineComponent({
   components: {
     AuthModals,
     SingleDatePicker,
-    CustomTimeRangePicker,
     TeamSizeDropdown,
     ReviewDialog
   },
@@ -1700,7 +1748,7 @@ export default defineComponent({
       showMobileBookingModal: false,
       showReviewDialog: false,
       showLocationNotification: false,
-      operationSchedule: [],
+      operationSchedule: [] as OperationDay[],
       currentUser: null as UserDto | null,
       productType: 'meeting-room',
       isLoadingAvailability: false,
@@ -1731,6 +1779,7 @@ export default defineComponent({
       } as BookingForm,
       selectedFacilities: [] as (string | number)[],
       selectedPackage: 'monthly',
+      isFullDayBooking: false, // Track if current booking is full day
       
       // Space data from API
       space: null as SpaceDto | null,
@@ -1799,7 +1848,7 @@ export default defineComponent({
       
       return this.selectedFacilities.reduce((total: number, selectedFacility) => {
         // Find the matching facility in availableFacilities
-        const facilityData = this.availableFacilities.find(
+        this.availableFacilities.find(
           f => {
             if (typeof selectedFacility === 'string') {
               return f.facility_name.toLowerCase() === selectedFacility.toLowerCase() || 
@@ -1856,7 +1905,6 @@ export default defineComponent({
   async mounted() {
     // Initialize stores
     const authStore = useAuthStore()
-    const spacesStore = useSpacesStore()
     
     // Initialize auth from localStorage
     authStore.initializeAuth()
@@ -1915,7 +1963,7 @@ export default defineComponent({
       target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff`;
     },
     
-    getFeatureName(feature: any): string {
+    getFeatureName(feature: string | number | { facility_id?: number; name?: string }): string {
       // Cache feature names for consistency across screen sizes
       if (!this.featureNameCache) {
         this.featureNameCache = new Map();
@@ -2068,6 +2116,32 @@ export default defineComponent({
       return false;
     },
 
+    isFullDayAvailable(): boolean {
+      const todayHours = this.getTodayHours();
+      
+      // If no operational hours, full day is not available
+      if (!todayHours.is_enabled || !todayHours.start_time || !todayHours.end_time) {
+        return false;
+      }
+      
+      // Convert operational times to minutes for comparison
+      const operationalStart = this.timeToMinutes(this.convertTo24HourFormat(todayHours.start_time));
+      const operationalEnd = this.timeToMinutes(this.convertTo24HourFormat(todayHours.end_time));
+      
+      // Check if any existing booking conflicts with the full day range
+      for (const booking of this.bookedTimeSlots) {
+        const bookingStart = this.timeToMinutes(booking.startTime);
+        const bookingEnd = this.timeToMinutes(booking.endTime);
+        
+        // Check for overlap: booking overlaps with operational hours
+        if (bookingStart < operationalEnd && bookingEnd > operationalStart) {
+          return false; // Conflict found
+        }
+      }
+      
+      return true; // No conflicts, full day is available
+    },
+
     shouldDisableEndTime(endTimeSlot: string): boolean {
       const startTime = this.bookingForm.timeRange.start;
       if (!startTime) return false;
@@ -2199,7 +2273,13 @@ export default defineComponent({
           console.log('Raw API data stored in NetworkManager:', NetworkManager.lastRawResponseData);
           
           // Load operation schedule from raw API data
-          this.operationSchedule = NetworkManager.lastRawResponseData?.operation_schedule || [];
+          const rawSchedule = (NetworkManager.lastRawResponseData as RawSpaceApiResponse)?.operation_schedule || [];
+          this.operationSchedule = rawSchedule.map(day => ({
+            day: day.day,
+            is_enabled: day.is_enabled,
+            start_time: day.start_time,
+            end_time: day.end_time
+          }));
           console.log('Operation schedule loaded:', this.operationSchedule);
           
           this.space = response.space
@@ -2207,28 +2287,26 @@ export default defineComponent({
           
           // Map recent_ratings from API response to reviews format
           if (this.space.recent_ratings && this.space.recent_ratings.length > 0) {
-            this.reviews = this.space.recent_ratings.map((rating: any, index: number) => ({
+            this.reviews = this.space.recent_ratings.map((rating: ApiRating, index: number) => ({
               id: index + 1,
-              name: rating.first_name || `User ${rating.user_id}`, // Use first_name from API
-              avatar: this.getFullAvatarUrl(rating.user_avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(rating.first_name || 'User')}&background=6366f1&color=fff`,
-              rating: rating.value || 5,
-              comment: rating.review_description || 'Great space!',
+              name: rating.first_name || rating.user || `User ${rating.user_id || index + 1}`,
+              avatar: rating.user_avatar ? this.getFullAvatarUrl(rating.user_avatar) : `https://ui-avatars.com/api/?name=${encodeURIComponent(rating.first_name || rating.user || 'User')}&background=6366f1&color=fff`,
+              rating: rating.value || rating.rating || 5,
+              comment: rating.review_description || rating.comment || 'Great space!',
               date: new Date().toISOString() // Could be enhanced with actual review dates
             }))
           } else {
             // Fallback to recentReviews if recent_ratings is not available
-            this.reviews = response.recentReviews || []
+            this.reviews = (response.recentReviews as ReviewDto[]) || []
           }
           
           // Load facilities from the space response if available
           console.log("Checking for facilities in space:", this.space);
           
-          // Cast the space object to access its properties safely
-          const spaceData = this.space as any;
-          if (spaceData.default_facilities && Array.isArray(spaceData.default_facilities) && spaceData.default_facilities.length > 0) {
+          if (this.space?.default_facilities && Array.isArray(this.space.default_facilities) && this.space.default_facilities.length > 0) {
             // Keep default_facilities directly accessible on the space object
             // Make sure all facilities have icons
-            spaceData.default_facilities = spaceData.default_facilities.map((facility: any) => ({
+            this.space.default_facilities = this.space.default_facilities.map((facility: Facility) => ({
               facility_id: facility.facility_id,
               facility_name: facility.facility_name,
               hourly_price: facility.hourly_price || 0,
@@ -2241,33 +2319,28 @@ export default defineComponent({
             }
             
             // Create a deep copy for features to avoid reference issues
-            this.space.features = JSON.parse(JSON.stringify(spaceData.default_facilities));
-          } else if (spaceData.facilities && Array.isArray(spaceData.facilities) && spaceData.facilities.length > 0) {
+            this.space.features = JSON.parse(JSON.stringify(this.space.default_facilities.map(f => f.facility_name)));
+          } else if (this.space?.facilities && Array.isArray(this.space.facilities) && this.space.facilities.length > 0) {
             // Fallback to old facilities property if default_facilities is not available
             if (!this.space.features) {
               this.space.features = [];
             }
             
-            this.space.features = spaceData.facilities.map((facility: any) => ({
-              facility_id: facility.facility_id,
-              facility_name: facility.facility_name,
-              hourly_price: facility.hourly_price || 0,
-              icon: facility.icon || this.getFacilityIcon(facility.facility_name.toLowerCase())
-            }));
+            this.space.features = this.space.facilities.map((facility: Facility) => facility.facility_name);
           }
           
           // Process additional_facilities for Additional Amenities section
-          if (spaceData.additional_facilities && Array.isArray(spaceData.additional_facilities) && spaceData.additional_facilities.length > 0) {
-            this.availableFacilities = spaceData.additional_facilities.map((facility: any) => ({
+          if (this.space?.additional_facilities && Array.isArray(this.space.additional_facilities) && this.space.additional_facilities.length > 0) {
+            this.availableFacilities = this.space.additional_facilities.map((facility: Facility) => ({
               facility_id: facility.facility_id,
               facility_name: facility.facility_name,
               hourly_price: facility.hourly_price || 0,
               icon: facility.icon || this.getFacilityIcon(facility.facility_name.toLowerCase())
             }));
-          } else if (spaceData.facilities && Array.isArray(spaceData.facilities) && spaceData.facilities.length > 0) {
+          } else if (this.space?.facilities && Array.isArray(this.space.facilities) && this.space.facilities.length > 0) {
             // Fallback to old facilities property if additional_facilities is not available
             // This is for backward compatibility
-            this.availableFacilities = spaceData.facilities.map((facility: any) => ({
+            this.availableFacilities = this.space.facilities.map((facility: Facility) => ({
               facility_id: facility.facility_id,
               facility_name: facility.facility_name,
               hourly_price: facility.hourly_price || 0,
@@ -2350,9 +2423,6 @@ export default defineComponent({
     },
     
     setDateRange(period: string) {
-      const today = new Date();
-      const formattedToday = today.toISOString().split('T')[0];
-      
       // For hot desk, we'd need to enhance the form structure to support date ranges
       // This is a placeholder showing how it would work if the form structure supported it
       
@@ -2366,7 +2436,7 @@ export default defineComponent({
       alert(`${periodNames[period as keyof typeof periodNames]} selected. In a real implementation, this would set date range accordingly.`);
       
       // The actual implementation would be something like:
-      // this.$emit('update:startDate', formattedToday);
+      // this.$emit('update:startDate', today.toISOString().split('T')[0]);
       // 
       // let endDate = new Date(today);
       // if (period === 'week') endDate.setDate(today.getDate() + 4);
@@ -2476,6 +2546,7 @@ export default defineComponent({
       this.bookingForm.date = date;
       // Reset time selection when date changes
       this.bookingForm.timeRange = { start: '', end: '' };
+      this.isFullDayBooking = false; // Reset full day flag when date changes
       // Fetch booked time slots for the new date
       this.fetchBookedTimeSlots();
     },
@@ -2488,7 +2559,7 @@ export default defineComponent({
     },
     
     toggleEndDropdown(): void {
-      if (!this.bookingForm.timeRange.start || this.isLoadingBookedSlots) return;
+      if (!this.bookingForm.timeRange.start || this.isLoadingBookedSlots || this.isFullDayBooking) return;
       this.showEndTimeDropdown = !this.showEndTimeDropdown;
       this.showStartTimeDropdown = false; // Close start dropdown
     },
@@ -2497,6 +2568,37 @@ export default defineComponent({
       if (this.disabledTimes.start.includes(time)) return;
       this.bookingForm.timeRange.start = time;
       this.bookingForm.timeRange.end = ''; // Reset end time
+      this.isFullDayBooking = false; // Reset full day flag when manually selecting time
+      this.showStartTimeDropdown = false;
+      this.onTimeRangeStartChange();
+    },
+    
+    selectFullDay(): void {
+      // Only allow full day selection for meeting-room and hot-desk
+      if (this.productType !== 'meeting-room' && this.productType !== 'hot-desk') {
+        return;
+      }
+      
+      // Check if full day is available (no conflicts with existing bookings)
+      if (!this.isFullDayAvailable()) {
+        return;
+      }
+      
+      const todayHours = this.getTodayHours();
+      
+      // Check if the space is open today and has valid times
+      if (!todayHours.is_enabled || !todayHours.start_time || !todayHours.end_time) {
+        return;
+      }
+      
+      // Convert times to 24-hour HH:MM format
+      const startTime = this.convertTo24HourFormat(todayHours.start_time);
+      const endTime = this.convertTo24HourFormat(todayHours.end_time);
+      
+      // Set start and end times to operational hours and mark as full day booking
+      this.bookingForm.timeRange.start = startTime;
+      this.bookingForm.timeRange.end = endTime;
+      this.isFullDayBooking = true;
       this.showStartTimeDropdown = false;
       this.onTimeRangeStartChange();
     },
@@ -2515,11 +2617,11 @@ export default defineComponent({
       }
     },
     
-    facilityDisplayName(facility: any): string {
+    facilityDisplayName(facility: string | number | { facility_id?: number; name?: string }): string {
       // Use the consistent getFeatureName method that implements caching
       return this.getFeatureName(facility);
     },
-    facilityPrice(facility: any): number {
+    facilityPrice(facility: string | number | Facility): number {
       // Get the facility key for pricing lookup
       let facilityKey: string;
       let facilityId: string | number;
@@ -2531,9 +2633,9 @@ export default defineComponent({
           facilityId = facility.facility_id;
           facilityKey = (facility as Facility).facility_name?.toLowerCase() || '';
           facilityObject = facility as Facility;
-        } else if ('name' in facility) {
+        } else if ('name' in facility && typeof (facility as { name?: unknown }).name === 'string') {
           // Legacy format with name
-          facilityKey = (facility as any).name.toLowerCase();
+          facilityKey = (facility as { name: string }).name.toLowerCase();
           facilityId = facilityKey;
           facilityObject = this.availableFacilities.find(
             f => f.facility_name.toLowerCase() === facilityKey || f.facility_id === facilityId
@@ -2705,7 +2807,7 @@ export default defineComponent({
       console.log('Raw API data:', rawApiData);
       
       // Get location_url directly from raw API response
-      const locationUrl = rawApiData?.location_url;
+      const locationUrl = (rawApiData as RawSpaceApiResponse)?.location_url;
       console.log('Location URL from API:', locationUrl);
       
       if (locationUrl) {
@@ -2726,7 +2828,7 @@ export default defineComponent({
     
     // ===== Operating Schedule Methods =====
     
-    getOperationSchedule(): any[] {
+    getOperationSchedule(): OperationDay[] {
       // Get schedule from the raw API data if it exists
       return this.operationSchedule || [];
     },
@@ -2748,6 +2850,48 @@ export default defineComponent({
       }
     },
     
+    convertTo24HourFormat(timeStr: string): string {
+      if (!timeStr) return '';
+      
+      // If already in HH:MM format, return as is
+      if (/^\d{1,2}:\d{2}$/.test(timeStr)) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      }
+      
+      // If in HH:MM:SS format, remove seconds
+      if (/^\d{1,2}:\d{2}:\d{2}$/.test(timeStr)) {
+        const [hours, minutes] = timeStr.split(':').slice(0, 2).map(Number);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      }
+      
+      // If in 12-hour format with AM/PM
+      const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      if (match) {
+        let [, hours, minutes, period] = match;
+        let hour24 = parseInt(hours, 10);
+        
+        if (period.toUpperCase() === 'PM' && hour24 !== 12) {
+          hour24 += 12;
+        } else if (period.toUpperCase() === 'AM' && hour24 === 12) {
+          hour24 = 0;
+        }
+        
+        return `${hour24.toString().padStart(2, '0')}:${minutes}`;
+      }
+      
+      // Fallback: try to extract HH:MM
+      const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
+      if (timeMatch) {
+        const [, hours, minutes] = timeMatch;
+        return `${hours.toString().padStart(2, '0')}:${minutes}`;
+      }
+      
+      // If nothing matches, return the original string (might cause issues but better than crashing)
+      console.warn('Unable to parse time format:', timeStr);
+      return timeStr;
+    },
+    
     getCurrentDay(): string {
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       return daysOfWeek[new Date().getDay()];
@@ -2767,7 +2911,7 @@ export default defineComponent({
       
       try {
         // Find today in the schedule
-        const todaySchedule = schedule.find((day: any) => day && day.day === today);
+        const todaySchedule = schedule.find((day: OperationDay) => day && day.day === today);
         return todaySchedule || { is_enabled: false };
       } catch (error) {
         console.error('Error getting today hours:', error);
@@ -2866,7 +3010,7 @@ export default defineComponent({
       return Math.min(100, Math.max(0, percentage));
     },
     
-    handleReviewSubmitted(review: any): void {
+    handleReviewSubmitted(review: SubmittedReview): void {
       // Instead of manually adding the review, refresh the page to get updated data
       // This ensures reviews are correctly displayed with all proper formatting
       window.location.reload();

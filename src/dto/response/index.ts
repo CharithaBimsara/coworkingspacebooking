@@ -89,6 +89,19 @@ export class AuthResponseDto extends BaseResponseDto {
 }
 
 // Space Response DTOs
+
+// Raw API response interface for accessing additional properties not in SpaceDto
+export interface RawSpaceApiResponse extends Partial<SpaceDto> {
+  operation_schedule?: Array<{
+    day: string;
+    start_time: string;
+    end_time: string;
+    is_enabled: boolean;
+  }>;
+  location_url?: string;
+  [key: string]: unknown; // Allow additional unknown properties
+}
+
 export class SpaceDto {
   id: number;
   name: string;
@@ -108,7 +121,7 @@ export class SpaceDto {
   capacity?: number;
   maxCapacity?: number;
   isAvailable: boolean;
-  availability: any[];
+  availability: Array<{ date: string; slots: unknown[] }>;
   productType: string;
   // Additional properties used in NetworkManager
   displayProductType?: string;
@@ -130,11 +143,11 @@ export class SpaceDto {
     hourly_price?: number;
     icon?: string;
   }>;
-  recent_ratings?: any[];
+  recent_ratings?: Array<{ rating: number; comment?: string; user?: string }>;
   start_operation_time?: string;
   end_operation_time?: string;
   locationUrl?: string;
-  recentReviews?: any[];
+  recentReviews?: Array<{ rating: number; comment?: string; user?: string }>;
 
   constructor(params: {
     id: number;
@@ -156,7 +169,7 @@ export class SpaceDto {
     maxCapacity?: number;
     isAvailable: boolean;
     productType: string;
-    availability: any[];
+    availability: Array<{ date: string; slots: unknown[] }>;
     // Optional properties
     displayProductType?: string;
     additional_facilities?: Array<{
@@ -171,11 +184,11 @@ export class SpaceDto {
       hourly_price?: number;
       icon?: string;
     }>;
-    recent_ratings?: any[];
+    recent_ratings?: Array<{ rating: number; comment?: string; user?: string }>;
     start_operation_time?: string;
     end_operation_time?: string;
     locationUrl?: string;
-    recentReviews?: any[];
+    recentReviews?: Array<{ rating: number; comment?: string; user?: string }>;
   }) {
     this.id = params.id;
     this.name = params.name;
@@ -213,7 +226,7 @@ export class SearchSpacesResponseDto extends BaseResponseDto {
     priceRange?: { min: number; max: number };
   };
 
-  constructor(success: boolean, spaces: SpaceDto[], totalCount: number, filters: any = {}, message?: string) {
+  constructor(success: boolean, spaces: SpaceDto[], totalCount: number, filters: { location?: string; spaceType?: string; priceRange?: { min: number; max: number } } = {}, message?: string) {
     super(success, message);
     this.spaces = spaces;
     this.totalCount = totalCount;

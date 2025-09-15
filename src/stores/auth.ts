@@ -3,6 +3,17 @@ import { ref, computed } from 'vue'
 import { useBookingStore } from './booking'
 import { UserDto } from '../dto/response'
 
+// Define interface for user data from API
+interface UserDataDto {
+  id: number;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  role?: string;
+  company_id?: number;
+  [key: string]: unknown;
+}
+
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<UserDto | null>(null)
@@ -16,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
   const currentUser = computed(() => user.value)
 
   // Actions
-  const setUser = (userData: any, authToken: string) => {
+  const setUser = (userData: UserDataDto, authToken: string) => {
     // Try to get saved full user details
     const savedUserDetails = localStorage.getItem('user_details')
     let fullUserData: UserDto

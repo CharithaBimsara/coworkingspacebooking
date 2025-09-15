@@ -1091,7 +1091,6 @@ import { NetworkManager } from '../api/networkManager'; // Import NetworkManager
 import DualRangeSlider from '../components/DualRangeSlider.vue';
 import SingleDatePicker from '../components/SingleDatePicker.vue';
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue';
-import FloatingBookingSummary from '../components/FloatingBookingSummary.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
 import type { RouteLocationNormalizedLoaded, NavigationFailure, LocationQueryValue } from 'vue-router';
 
@@ -1105,10 +1104,11 @@ const getQueryParam = (param: LocationQueryValue | LocationQueryValue[] | undefi
 
 // Class definitions
 // Interface for the new facility features structure
-interface Facility {
-  facility_id: number;
-  facility_name: string;
-  icon?: string;
+// Define interfaces for better type safety
+interface FeatureType {
+  facility_id?: number;
+  facility_name?: string;
+  [key: string]: unknown;
 }
 
 class SearchFilters {
@@ -1183,7 +1183,6 @@ export default defineComponent({
     DualRangeSlider,
     SingleDatePicker,
     CustomTimeRangePicker,
-    FloatingBookingSummary,
     SpaceTypeDropdown
   },
 
@@ -1357,8 +1356,7 @@ export default defineComponent({
       
       // If there are fewer than 5 spaces, add some sample spaces
       if (spaces.length < 5) {
-        // Filter sample spaces to avoid duplicating space types that already exist
-        const existingTypes = new Set(spaces.map(space => space.productType));
+        // Filter sample spaces to avoid duplicating existing spaces and respect space type filter
         const additionalSpaces = this.sampleSpaces.filter(space => 
           !spaces.some(s => s.id === space.id) && 
           (!this.filters.spaceType || this.filters.spaceType === space.productType)
@@ -1457,16 +1455,16 @@ export default defineComponent({
       this.isFilterOpen = true;
     },
     
-    getFeatureKey(feature: any): string | number {
+    getFeatureKey(feature: FeatureType | string): string | number {
       if (typeof feature === 'object' && feature !== null && 'facility_id' in feature) {
-        return feature.facility_id;
+        return feature.facility_id as number;
       }
       return typeof feature === 'string' ? feature : JSON.stringify(feature);
     },
     
-    getFeatureName(feature: any): string {
+    getFeatureName(feature: FeatureType | string): string {
       if (typeof feature === 'object' && feature !== null && 'facility_name' in feature) {
-        return feature.facility_name;
+        return feature.facility_name as string;
       }
       return String(feature);
     },
@@ -1480,7 +1478,7 @@ export default defineComponent({
       this.isLoading = true;
       try {
         // Create search parameters object directly for NetworkManager
-        const searchParams: any = {};
+        const searchParams: Record<string, unknown> = {};
         
         // Map location to location_id if needed (you might need to get the location ID from a list)
         if (this.filters.location) {
@@ -1522,7 +1520,7 @@ export default defineComponent({
         // Add facilities filter
         if (this.selectedFacilities.length > 0) {
           // Make sure we send just the facility names, not objects
-          searchParams.facilities = this.selectedFacilities.map((facility: any) => {
+          searchParams.facilities = this.selectedFacilities.map((facility: FeatureType | string) => {
             // If it's already a string, use it directly
             if (typeof facility === 'string') {
               return facility;

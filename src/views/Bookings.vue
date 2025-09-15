@@ -579,7 +579,7 @@
       </div>
     </div>
 
-    <success-overlay
+    <SuccessOverlay
       :show="showSuccessOverlay"
       :title="successOverlayTitle"
       :message="successOverlayMessage"
@@ -589,20 +589,87 @@
     <CancelBooking
       :show="showCancelModal"
       @close="showCancelModal = false"
-      @confirm="confirmCancellation"
+      @confirm="confirmCancelBooking"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { defineComponent } from 'vue';
+
+// Define component name to fix the multi-word component name lint error
+defineComponent({
+  name: 'BookingsPage'
+});
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BookingCalendar from '../components/BookingCalendar.vue'
 import { generatePDFReceipt } from '../utils/pdfReceipt'
 import SuccessOverlay from '../components/SuccessOverlay.vue'
 import CancelBooking from '../components/CancelBooking.vue'
-import { BookingManager } from '../api/bookingManager'
+import { BookingManager, type BookingData } from '../api/bookingManager'
 import { useAuthStore } from '../stores/auth'
+
+// Define interfaces for type safety
+interface Space {
+  id: number;
+  name: string;
+  location: string;
+  rating: number;
+  image: string;
+}
+
+interface Booking {
+  id: string;
+  status: 'Confirmed' | 'Completed' | 'Cancelled';
+  date: string;
+  duration: 'hourly' | 'daily' | 'weekly' | 'monthly';
+  spaceType: string;
+  guests: number;
+  totalAmount: number;
+  basePrice: number;
+  extraFees: number;
+  serviceFee: number;
+  taxes: number;
+  hasReview: boolean;
+  dateChanged: boolean;
+  paymentId?: string;
+  facilityIds?: number[];
+  space: Space;
+  start_time?: string;
+  end_time?: string;
+}
+
+interface ReceiptData {
+  bookings: Array<{
+    spaceId: number;
+    productType: string;
+    space: {
+      name: string;
+      location: string;
+    };
+    totalPrice: number;
+    booking?: {
+      startDate: string;
+      endDate: string;
+      startTime: string;
+      duration: string;
+    };
+    subscription?: {
+      startDate: string;
+      endDate: string;
+      packageType: string;
+    };
+  }>;
+  bookingId: string;
+  paymentMethod: string;
+  confirmedAt: string;
+  totalAmount: number;
+  guestInfo: { 
+    firstName: string;
+    lastName: string;
+  };
+}
 
 const router = useRouter()
 
@@ -611,18 +678,17 @@ const loading = ref(true)
 const activeTab = ref('upcoming')
 const viewMode = ref<'list' | 'calendar'>('list')
 const searchQuery = ref('')
-const selectedBooking = ref<any>(null)
-const showProfileMenu = ref(false)
+const selectedBooking = ref<Booking | null>(null)
 const showDateChangeModal = ref(false)
 const showProfileModal = ref(false)
 const showCardsModal = ref(false)
-const bookingToChange = ref<any>(null)
+const bookingToChange = ref<Booking | null>(null)
 const newDate = ref('')
 const showSuccessOverlay = ref(false)
 const successOverlayTitle = ref('')
 const successOverlayMessage = ref('')
 const showCancelModal = ref(false)
-const bookingToCancel = ref<any>(null)
+const bookingToCancel = ref<Booking | null>(null)
 
 // Stats
 const stats = ref({
@@ -640,11 +706,11 @@ const tabs = ref([
 ])
 
 // Bookings data
-const allBookings = ref<any[]>([])
+const allBookings = ref<Booking[]>([])
 const errorMessage = ref('')
 
 // Function to transform API booking data to UI format
-const transformBookingData = (booking: any, status: 'Confirmed' | 'Completed' | 'Cancelled') => {
+const transformBookingData = (booking: BookingData, status: 'Confirmed' | 'Completed' | 'Cancelled'): Booking => {
   // Determine space type based on product data if available
   let spaceType = 'hot-desk' // default
   if (booking.product_name) {
@@ -674,9 +740,11 @@ const transformBookingData = (booking: any, status: 'Confirmed' | 'Completed' | 
     serviceFee: booking.total_price * 0.1, // Estimate if not provided
     taxes: booking.total_price * 0.1, // Estimate if not provided
     hasReview: false,
-    dateChanged: booking.is_onetime_changed,
-    paymentId: booking.payment_id,
+    dateChanged: !!booking.is_onetime_changed,
+    paymentId: booking.payment_id ? String(booking.payment_id) : undefined,
     facilityIds: booking.facility_ids || [],
+    start_time: booking.start_time,
+    end_time: booking.end_time,
     space: {
       id: booking.product_id,
       name: booking.product_name || `Space ${booking.product_id}`,
@@ -780,7 +848,7 @@ const fetchAllBookings = async () => {
 const fetchUpcomingBookings = fetchAllBookings
 
 // Helper function to calculate duration based on start and end times
-const calculateDuration = (startTime: string, endTime: string): 'hourly' | 'daily' | 'weekly' | 'monthly' => {
+const calculateDuration = (startTime?: string, endTime?: string): 'hourly' | 'daily' | 'weekly' | 'monthly' => {
   if (!startTime || !endTime) return 'daily' // Default
   
   // Parse hours
@@ -1005,7 +1073,7 @@ const getEmptyStateDescription = () => {
   }
 }
 
-const viewBookingDetails = (booking: any) => {
+const viewBookingDetails = (booking: Booking) => {
   selectedBooking.value = booking
 }
 
@@ -1013,7 +1081,7 @@ const viewSpaceDetails = (spaceId: number) => {
   router.push(`/space/${spaceId}`)
 }
 
-const cancelBooking = (booking: any) => {
+const cancelBooking = (booking: Booking) => {
   bookingToCancel.value = booking
   showCancelModal.value = true
 }
@@ -1049,79 +1117,38 @@ const confirmCancelBooking = async () => {
   }
 }
 
-const confirmCancellation = () => {
-  if (bookingToCancel.value) {
-    bookingToCancel.value.status = 'Cancelled'
-    showCancelModal.value = false
-    successOverlayTitle.value = 'Booking Cancelled'
-    successOverlayMessage.value = 'Your booking has been successfully cancelled.'
-    showSuccessOverlay.value = true
-  }
-}
-
-const rebookSpace = (booking: any) => {
+const rebookSpace = (booking: Booking) => {
   router.push({
     name: 'SpaceDetails',
     params: { id: booking.space.id }
   })
 }
 
-const rateAndReview = (booking: any) => {
+const rateAndReview = (booking: Booking) => {
   alert('Rating and review functionality will be implemented in the next phase.')
   booking.hasReview = true
 }
 
-const getDirections = (booking: any) => {
+const getDirections = (booking: Booking) => {
   const address = encodeURIComponent(booking.space.location)
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${address}`
   window.open(mapsUrl, '_blank')
 }
 
-const exportBookings = () => {
-  // Generate CSV data
-  const csvData = filteredBookings.value.map(booking => ({
-    'Booking ID': booking.id,
-    'Space Name': booking.space.name,
-    'Location': booking.space.location,
-    'Date': booking.date,
-    'Duration': formatDuration(booking.duration),
-    'Space Type': formatSpaceType(booking.spaceType),
-    'Status': booking.status,
-    'Total Amount': `${booking.totalAmount}`,
-    'Guests': booking.guests
-  }))
-
-  // Convert to CSV string
-  const headers = Object.keys(csvData[0] || {})
-  const csvContent = [
-    headers.join(','),
-    ...csvData.map(row => headers.map(header => `"${row[header as keyof typeof row]}"`).join(','))
-  ].join('\n')
-
-  // Download CSV
-  const blob = new Blob([csvContent], { type: 'text/csv' })
-  const url = window.URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `bookings-${new Date().toISOString().split('T')[0]}.csv`
-  a.click()
-  window.URL.revokeObjectURL(url)
-}
-
-const downloadReceipt = async (booking: any) => {
+const downloadReceipt = async (booking: Booking) => {
   try {
     // Get user data from auth store for receipt
     const authStore = useAuthStore()
     const user = authStore.currentUser
-    let userDetails: any = null
+    let userDetails: { firstName?: string; lastName?: string; email?: string } | null = null
     try {
       userDetails = JSON.parse(localStorage.getItem('user_details') || '{}')
-    } catch (e) {
+    } catch {
       userDetails = {}
     }
     
     // Map booking data to the format expected by the PDF generator
-    const mappedBooking: any = {
+    const mappedBooking: ReceiptData['bookings'][0] = {
       spaceId: booking.space.id,
       productType: booking.spaceType,
       space: {
@@ -1167,7 +1194,7 @@ const downloadReceipt = async (booking: any) => {
   }
 }
 
-const canChangeDate = (booking: any) => {
+const canChangeDate = (booking: Booking) => {
   const bookingDate = new Date(booking.date)
   const now = new Date()
   const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60)
@@ -1175,7 +1202,7 @@ const canChangeDate = (booking: any) => {
   return hoursDiff > 48 && !booking.dateChanged
 }
 
-const changeDateModal = (booking: any) => {
+const changeDateModal = (booking: Booking) => {
   bookingToChange.value = booking
   newDate.value = booking.date
   showDateChangeModal.value = true
@@ -1190,34 +1217,6 @@ const confirmDateChange = () => {
     bookingToChange.value = null
     newDate.value = ''
   }
-}
-
-const openProfileModal = () => {
-  showProfileMenu.value = false
-  showProfileModal.value = true
-}
-
-const openCardsModal = () => {
-  showProfileMenu.value = false
-  showCardsModal.value = true
-}
-
-// Use auth store
-const authStore = useAuthStore()
-
-const handleLogout = () => {
-  if (confirm('Are you sure you want to logout?')) {
-    // Use auth store to properly clear user data
-    authStore.clearUser()
-    
-    // Clear any session booking data
-    sessionStorage.removeItem('bookingDetails')
-    sessionStorage.removeItem('bookingConfirmation')
-    
-    // Navigate to home
-    router.push({ name: 'Home' })
-  }
-  showProfileMenu.value = false
 }
 
 // Add any new bookings from session storage only if we don't have API data
@@ -1245,7 +1244,7 @@ const addSessionBookings = () => {
         id: confirmationData.bookingId ? `BK${confirmationData.bookingId}` : 'WS' + Date.now().toString().slice(-8),
         status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Cancelled',
         date: confirmationData.booking?.date || confirmationData.startDate || new Date().toISOString().split('T')[0],
-        duration: confirmationData.productType === 'meeting-room' ? 'hourly' : 'monthly',
+        duration: (confirmationData.productType === 'meeting-room' ? 'hourly' : 'monthly') as 'hourly' | 'daily' | 'weekly' | 'monthly',
         spaceType: confirmationData.productType === 'meeting-room' ? 'meeting-room' :
                    confirmationData.productType === 'hot-desk' ? 'hot-desk' : 'coworking-space',
         guests: 1,

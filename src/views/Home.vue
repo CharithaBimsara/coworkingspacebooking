@@ -852,7 +852,6 @@
 import { defineComponent } from 'vue';
 import LocationDropdown from '../components/LocationDropdown.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
-import ThemeToggle from '../components/ThemeToggle.vue';
 import type { SpaceDto, AdvertisementDto, CompanyProfileDto } from '../dto/response';
 import { TestimonialDto } from '../dto/response';
 import { NetworkManager } from '../api/networkManager';
@@ -873,8 +872,7 @@ export default defineComponent({
 
   components: {
     LocationDropdown,
-    SpaceTypeDropdown,
-    ThemeToggle
+    SpaceTypeDropdown
   },
 
   data() {
@@ -911,7 +909,7 @@ export default defineComponent({
       testimonialsErrorMessage: '',
       testimonials: [] as TestimonialDto[],
       locations: [] as { id: number; name: string; address: string; url: string }[],
-      _selectedLocationObject: null as { id: number; name: string; address: string; url: string } | null, // To store full location object
+      selectedLocationObject: null as { id: number; name: string; address: string; url: string } | null, // To store full location object
       companyProfile: {} as CompanyProfileDto,
       spaceTypeOptions: [
         {
@@ -1464,7 +1462,7 @@ export default defineComponent({
         this.searchForm.location = location.name;
         
         // Store the full location object for future use if needed
-        this._selectedLocationObject = location;
+        this.selectedLocationObject = location;
         
         // We could filter spaces by location here if needed in the future:
         // this.filterSpacesByLocation(location.id);

@@ -152,7 +152,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useAuthStore } from '../stores/auth';
-import { useRouter } from 'vue-router';
+import { type RouteLocationNormalized } from 'vue-router';
 import AuthModals from './AuthModals.vue';
 import SuccessOverlay from './SuccessOverlay.vue';
 import ThemeToggle from './ThemeToggle.vue';
@@ -174,14 +174,15 @@ export default defineComponent({
       showSignUpModal: false,
       authModalContextMessage: '', // New data property
       redirectAfterAuth: '', // New data property
-      authStore: null as any, // Initialize authStore as null
+      authStore: useAuthStore(), // Initialize authStore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       router: null as any, // Initialize router as null
       companyName: '', // Will be populated from hardcoded values
       companyProfile: null as CompanyProfileDto | null,
       logoUrl: '/logo.png', // Hardcoded logo URL (default)
       isHeaderLoading: true, // Loading state for header
       activeSection: '', // Track which section is currently in view
-      scrollTimeout: null as any // For debouncing scroll events
+      scrollTimeout: null as ReturnType<typeof setTimeout> | null // For debouncing scroll events
     }
   },
 
@@ -192,9 +193,9 @@ export default defineComponent({
     myBookingsLink(): string {
       return this.currentUser ? '/my-bookings' : '/'; // Navigate to home if not logged in
     },
-    currentRoute(): any {
+    currentRoute(): { path: string; hash?: string } {
       // Get the route and log it for debugging
-      const route = this.router?.currentRoute?.value || { path: '/' };
+      const route = this.router?.currentRoute || { path: '/' };
       console.log('currentRoute computed property returning:', route.path);
       return route;
     },
@@ -217,7 +218,7 @@ export default defineComponent({
   },
 
   watch: {
-    '$route'(to: any, from: any) {
+    '$route'(to: RouteLocationNormalized, from: RouteLocationNormalized) {
       // Reset active section when route changes
       if (to.path !== '/' || (!to.hash || to.hash === '')) {
         this.activeSection = ''
@@ -232,8 +233,7 @@ export default defineComponent({
   },
 
   created() {
-    this.authStore = useAuthStore();
-    this.router = useRouter();
+    this.router = this.$router;
   },
 
   beforeMount() {
@@ -295,17 +295,17 @@ export default defineComponent({
     },
 
     checkCurrentPath() {
-      console.log('Current route path:', this.router?.currentRoute?.value?.path);
+      console.log('Current route path:', this.router?.currentRoute?.path);
       console.log('isMyBookingsActive computed value:', this.isMyBookingsActive);
-      console.log('Route path matches /my-bookings:', this.router?.currentRoute?.value?.path === '/my-bookings');
-      return this.router?.currentRoute?.value?.path;
+      console.log('Route path matches /my-bookings:', this.router?.currentRoute?.path === '/my-bookings');
+      return this.router?.currentRoute?.path;
     },
 
     handleMyBookingsClick() {
       if (this.currentUser) {
         console.log('Navigating to my-bookings, current user:', this.currentUser)
         this.router?.push('/my-bookings');
-        console.log('Current route after push:', this.router?.currentRoute?.value?.path)
+        console.log('Current route after push:', this.router?.currentRoute?.path)
         // Check if the route updated correctly
         this.$nextTick(() => {
           this.checkCurrentPath();
@@ -320,7 +320,7 @@ export default defineComponent({
     handleHomeClick() {
       // Clear active section when navigating to home
       this.activeSection = ''
-      console.log('Current route in handleHomeClick:', this.router?.currentRoute?.value?.path)
+      console.log('Current route in handleHomeClick:', this.router?.currentRoute?.path)
       this.closeMobileMenu();
     },
 
@@ -442,7 +442,7 @@ export default defineComponent({
     
     scrollToAbout() {
       // Check if we're on the home page
-      if (this.router?.currentRoute?.value.path !== '/') {
+      if (this.router?.currentRoute.path !== '/') {
         // Navigate to home page first, then scroll
         this.router?.push({ path: '/', hash: 'about' }).then(() => {
           // Let the router handle the scrolling via the hash
@@ -486,7 +486,7 @@ export default defineComponent({
     
     scrollToContact() {
       // Check if we're on the home page
-      if (this.router?.currentRoute?.value.path !== '/') {
+      if (this.router?.currentRoute.path !== '/') {
         // Navigate to home page first, then scroll
         this.router?.push({ path: '/', hash: 'contact' }).then(() => {
           // Let the router handle the scrolling via the hash
