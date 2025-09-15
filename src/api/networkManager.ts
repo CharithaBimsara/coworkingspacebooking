@@ -423,8 +423,8 @@ export class NetworkManager {
       features = [...new Set(features)];
       
       // Extract operation times if available
-      let start_operation_time = apiSpace.start_operation_time || null;
-      let end_operation_time = apiSpace.end_operation_time || null;
+      const start_operation_time = apiSpace.start_operation_time || null;
+      const end_operation_time = apiSpace.end_operation_time || null;
       
       // Process images - add base URL to relative paths
       const processedImages = NetworkManager.processImageUrls(apiSpace.images || []);

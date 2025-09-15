@@ -1,8 +1,8 @@
 <template>
   <div class="custom-time-range-picker">
     <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ label }}</label>
-    <div class="md:flex md:items-center md:gap-2 sm:flex sm:flex-row sm:items-center sm:gap-2 flex flex-col gap-2">
-      <div class="relative w-full sm:w-auto">
+  <div class="md:flex md:items-center md:gap-2 sm:flex sm:flex-row sm:items-center sm:gap-2 flex flex-col gap-2 w-full">
+  <div class="relative w-full flex-grow">
         <input
           type="text"
           v-model="startTimeDisplay"
@@ -28,7 +28,7 @@
       <div class="relative sm:hidden flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 -mt-1 -mb-1">
         to
       </div>
-      <div class="relative w-full sm:w-auto">
+  <div class="relative w-full flex-grow">
         <input
           type="text"
           v-model="endTimeDisplay"
@@ -228,18 +228,27 @@ export default defineComponent({
 }
 
 /* Tablet view (sm breakpoint in Tailwind) */
-@media (min-width: 640px) and (max-width: 767px) {
-  .custom-time-input {
-    width: 140px;
-    max-width: 140px;
-    min-width: 140px;
+@media (min-width: 640px) and (max-width: 1023px) {
+  .custom-time-range-picker .custom-time-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-grow: 1 !important;
+  }
+  .custom-time-range-picker .relative {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-grow: 1 !important;
   }
 }
 
 /* Desktop view */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .custom-time-input {
     width: 160px;
+    max-width: 160px;
+    min-width: 160px;
   }
 }
 

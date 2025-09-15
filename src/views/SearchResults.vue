@@ -58,101 +58,148 @@
             <span class="text-primary">Search</span> 
             <span>Workspace</span>
           </h3>
-          <button @click="isFilterOpen = !isFilterOpen" 
-            class="text-black dark:text-white p-2 rounded-full bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors duration-200 relative z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            <span v-if="activeFilters.length > 0" 
-              class="absolute -top-1 -right-1 bg-primary text-xs text-black w-4 h-4 rounded-full flex items-center justify-center font-bold">
-              {{ activeFilters.length }}
-            </span>
-          </button>
+          <div class="flex items-center gap-2">
+            <!-- Filter Button -->
+            <button @click="isFilterOpen = !isFilterOpen" 
+              class="text-black dark:text-white p-3 rounded-full bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors duration-200 relative z-10">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <span v-if="activeFilters.length > 0" 
+                class="absolute -top-1 -right-1 bg-primary text-xs text-black w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                {{ activeFilters.length }}
+              </span>
+            </button>
+            <!-- Sort Button -->
+            <button @click="showSortOptions = !showSortOptions"
+              class="text-black dark:text-white p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 relative"
+              :class="{'ring-2 ring-primary': showSortOptions}">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              </svg>
+            </button>
+            <!-- View Toggle Button -->
+            <button @click="toggleCompactView"
+              class="text-black dark:text-white p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200">
+              <svg v-if="isCompactView" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 3h-7m0 0v7m0-7L20 10M4 21h7m0 0v-7m0 7L4 14" />
+              </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+              </svg>
+            </button>
+          </div>
         </div>
         
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-hide snap-x">
+        <!-- Mobile sort dropdown absolute positioned from its parent -->
+        <!-- Mobile Sort Dropdown -->
+        <div v-if="showSortOptions" 
+          class="absolute z-50 right-3 mt-2 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 py-2 min-w-[220px] animate-fadeIn"
+          style="top: 48px;">
+          <div class="py-1">
+            <button
+              v-for="option in sortOptions"
+              :key="option.value"
+              @click="selectSortOption(option.value)"
+              class="flex items-center px-4 py-2.5 text-sm w-full text-left hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-150"
+              :class="{'bg-primary/10 dark:bg-primary/20 text-primary font-medium': sortBy === option.value}"
+            >
+              <span class="mr-2">
+                <svg v-if="sortBy === option.value" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </span>
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-2.5 overflow-x-auto pb-3 scrollbar-hide snap-x relative">
           <!-- Quick Space Type Selection -->
           <button 
             v-for="option in spaceTypeOptions" 
             :key="option.value" 
             @click="editSearchForm.spaceType = option.value; updateSearch()"
             :class="[
-              'px-2.5 py-1.5 rounded-full text-[0.7rem] leading-tight whitespace-nowrap border transition-all duration-300 snap-start flex-shrink-0',
+              'px-3.5 py-2.5 rounded-full text-sm leading-tight whitespace-nowrap border transition-all duration-300 snap-start flex-shrink-0',
               editSearchForm.spaceType === option.value 
                 ? 'bg-primary text-white dark:text-black border-primary shadow-sm font-medium' 
                 : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             ]"
           >
-            <div class="flex items-center gap-1">
-              <span v-html="option.icon" v-if="option.icon" class="text-[1em]"></span>
-              <span class="truncate max-w-[80px]">{{ option.label }}</span>
+            <div class="flex items-center gap-2">
+              <span v-html="option.icon" v-if="option.icon" class="text-[1.1em]"></span>
+              <span class="truncate max-w-[100px]">{{ option.label }}</span>
             </div>
           </button>
         </div>
       </div>
     </div>
 
-    <div class="w-full max-w-screen-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-24">
-      <div class="flex flex-col lg:flex-row gap-6 relative">
+    <div class="w-full max-w-screen-8xl mx-auto px-4 sm:px-6 lg:px-6 py-8 mt-24">
+      <div class="flex flex-col lg:flex-row gap-1 relative">
         <!-- Filters Sidebar -->
         <div class="lg:w-1/3 xl:w-1/4 w-full mb-4 lg:mb-0 self-start">
           <!-- Combined Mobile Filter & Search Overlay -->
           <div v-if="isFilterOpen" 
-            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex lg:hidden justify-end transition-opacity duration-300 backdrop-blur-sm combined-filter-search-overlay"
+            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex lg:hidden items-end transition-opacity duration-300 backdrop-blur-sm combined-filter-search-overlay"
             @click.self="isFilterOpen = false">
             <div 
-              class="bg-white dark:bg-gray-900 w-[85%] sm:w-[350px] md:w-[380px] h-[calc(100vh-16px)] max-h-screen pt-20 sm:pt-24 md:pt-28 pb-8 overflow-y-auto p-3 sm:p-4 shadow-xl transform transition-transform duration-300 animate-slide-in-right">
-              <div class="flex items-center justify-between mb-4 mt-1 sm:mt-2">
-                <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="bg-white dark:bg-gray-900 w-full h-[80vh] max-h-[85vh] rounded-t-3xl pt-6 pb-8 overflow-y-auto p-4 sm:p-5 shadow-xl transform transition-transform duration-300 animate-slide-in-bottom">
+              <!-- Handle at the top for better UX -->
+              <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+              
+              <div class="flex items-center justify-between mb-6 mt-6 sm:mt-6 px-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                   </svg>
                   Filters & Search
-                  <span class="ml-1 bg-primary/20 text-primary text-xs px-1.5 py-0.5 rounded-full">
+                  <span class="ml-1 bg-primary/20 text-primary text-sm px-2 py-0.5 rounded-full">
                     {{ activeFilters.length }}
                   </span>
                 </h3>
                 <button @click="isFilterOpen = false" 
-                  class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  class="p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
               
               <!-- Search Section for Mobile -->
-              <div class="space-y-4 mb-6">
-                <h4 class="font-medium text-gray-900 dark:text-white text-xs mb-2 flex items-center">
-                  <svg class="w-3.5 h-3.5 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="space-y-5 mb-8 px-4">
+                <h4 class="font-medium text-gray-900 dark:text-white text-base mb-3 flex items-center">
+                  <svg class="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                   Search
                 </h4>
 
                 <!-- Date Picker -->
-                <div class="mb-3">
-                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 ml-0.5">Date</label>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 ml-0.5">Date</label>
                   <SingleDatePicker :modelValue="editSearchForm.date === null ? undefined : editSearchForm.date"
-                    @update:modelValue="editSearchForm.date = $event" placeholder="Select date" class="text-xs py-0 px-0 w-full h-8" />
+                    @update:modelValue="editSearchForm.date = $event" placeholder="Select date" class="text-sm py-0 px-0 w-full h-10" />
                 </div>
 
                 <!-- Time Range -->
-                <div class="mb-3">
-                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 ml-0.5">Time Range</label>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 ml-0.5">Time Range</label>
                   <div class="flex items-center justify-start">
                     <CustomTimeRangePicker v-model="editSearchForm.timeRange" label="" class="w-full sm:w-auto" />
                   </div>
                 </div>
 
                 <!-- Capacity -->
-                <div class="mb-3">
-                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 ml-0.5">Capacity</label>
+                <div class="mb-5">
+                  <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2.5 ml-0.5">Capacity</label>
                   <input v-model="editSearchForm.capacity"
                     type="text"
                     inputmode="numeric"
                     pattern="[0-9]*"
                     placeholder="Enter capacity"
-                    class="input-field text-xs py-1.5 px-2 w-full h-8 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700"
+                    class="input-field text-base py-3 px-4 w-full h-12 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700"
                     @input="editSearchForm.capacity = ((($event.target as HTMLInputElement)?.value || '').replace(/[^0-9]/g, '') || '') === '' ? null : parseInt((($event.target as HTMLInputElement)?.value || '').replace(/[^0-9]/g, ''), 10)"
                   >
                 </div>
@@ -161,20 +208,20 @@
               </div>
               
               <!-- Filter Content for Mobile -->
-              <div class="space-y-4">
+              <div class="space-y-5 px-2">
                 <!-- Location Filter -->
-                <div class="mb-3">
-                  <h4 class="font-medium text-gray-900 dark:text-white text-xs mb-2 flex items-center">
-                    <svg class="w-3.5 h-3.5 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mb-4">
+                  <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
                     Location
                   </h4>
                   <div class="relative">
                     <input v-model="editSearchForm.location" type="text" placeholder="Enter location"
-                      class="input-field w-full text-xs py-1.5 px-2 pr-8 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="input-field w-full text-sm py-2.5 px-3 pr-8 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                     </div>
@@ -182,20 +229,20 @@
                 </div>
                 
                 <!-- Space Type Filter (Mobile) -->
-                <div class="mb-3">
-                  <h4 class="font-medium text-gray-900 dark:text-white text-xs mb-2 flex items-center">
-                    <svg class="w-3.5 h-3.5 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mb-4">
+                  <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-3 flex items-center">
+                    <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                     Space Type
                   </h4>
-                  <div class="grid grid-cols-2 gap-1.5">
+                  <div class="grid grid-cols-2 gap-2">
                     <button 
                       v-for="option in spaceTypeOptions" 
                       :key="option.value" 
                       @click="editSearchForm.spaceType = option.value"
                       :class="[
-                        'px-2 py-1.5 rounded-lg text-[0.7rem] leading-tight flex items-center gap-1 border transition-all duration-300 truncate',
+                        'px-3 py-2.5 rounded-lg text-sm leading-tight flex items-center gap-2 border transition-all duration-300',
                         editSearchForm.spaceType === option.value 
                           ? 'bg-primary/10 border-primary text-gray-900 dark:text-white font-medium' 
                           : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700'
@@ -208,15 +255,15 @@
                 </div>
                 
                 <!-- Price Range for Mobile -->
-                <div class="mb-3">
-                  <h4 class="font-medium text-gray-900 dark:text-white text-xs mb-2 flex items-center">
-                    <svg class="w-3.5 h-3.5 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mb-4">
+                  <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-3 flex items-center">
+                    <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Price Range (per day)
                   </h4>
-                  <div class="space-y-1.5">
-                    <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 font-medium">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 font-medium">
                       <span>LKR {{ priceRange.min }}</span>
                       <span>LKR {{ priceRange.max }}</span>
                     </div>
@@ -226,27 +273,27 @@
                 </div>
                 
                 <!-- Facilities for Mobile -->
-                <div class="mb-3">
-                  <h4 class="font-medium text-gray-900 dark:text-white text-xs mb-2 flex items-center">
-                    <svg class="w-3.5 h-3.5 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mb-4">
+                  <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-3 flex items-center">
+                    <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                     </svg>
                     Facilities
                   </h4>
                   <!-- Loading state for facilities -->
-                  <div v-if="loadingFacilities" class="flex justify-center py-1.5">
-                    <div class="w-4 h-4 border-t-2 border-primary rounded-full animate-spin"></div>
+                  <div v-if="loadingFacilities" class="flex justify-center py-2.5">
+                    <div class="w-5 h-5 border-t-2 border-primary rounded-full animate-spin"></div>
                   </div>
                   
                   <!-- Facilities list -->
-                  <div v-else class="flex flex-wrap gap-1.5">
+                  <div v-else class="flex flex-wrap gap-2">
                     <!-- Show API facilities if available -->
                     <template v-if="facilities.length > 0">
                       <label 
                         v-for="facility in facilities" 
                         :key="facility.facility_id"
                         :class="[
-                          'px-2 py-1 rounded-lg text-[0.7rem] leading-tight cursor-pointer flex items-center gap-1 border transition-all duration-200',
+                          'px-3 py-2 rounded-lg text-sm leading-tight cursor-pointer flex items-center gap-2 border transition-all duration-200',
                           selectedFacilities.includes(facility.facility_name) 
                             ? 'bg-primary/10 border-primary text-primary font-medium' 
                             : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
@@ -259,10 +306,10 @@
                           class="hidden" 
                           @change="updateQueryAndReload"
                         >
-                        <svg v-if="selectedFacilities.includes(facility.facility_name)" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg v-if="selectedFacilities.includes(facility.facility_name)" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
-                        <span class="truncate max-w-[90px]">{{ facility.facility_name }}</span>
+                        <span>{{ facility.facility_name }}</span>
                       </label>
                     </template>
                     
@@ -272,7 +319,7 @@
                         v-for="facility in ['High-Speed WiFi', '4K Display', 'Video Conferencing', 'Natural Light']" 
                         :key="facility"
                         :class="[
-                          'px-2 py-1 rounded-lg text-[0.7rem] leading-tight cursor-pointer flex items-center gap-1 border transition-all duration-200',
+                          'px-3 py-2 rounded-lg text-sm leading-tight cursor-pointer flex items-center gap-2 border transition-all duration-200',
                           selectedFacilities.includes(facility) 
                             ? 'bg-primary/10 border-primary text-primary font-medium' 
                             : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
@@ -285,10 +332,10 @@
                           class="hidden" 
                           @change="updateQueryAndReload"
                         >
-                        <svg v-if="selectedFacilities.includes(facility)" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg v-if="selectedFacilities.includes(facility)" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
-                        <span class="truncate max-w-[90px]">{{ facility }}</span>
+                        <span>{{ facility }}</span>
                       </label>
                     </template>
                   </div>
@@ -343,16 +390,16 @@
                 </div>
 
                 <!-- Apply & Reset Buttons for Mobile -->
-                <div class="sticky bottom-0 left-0 right-0 pt-3 pb-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-2">
-                  <div class="flex gap-2">
+                <div class="sticky bottom-0 left-0 right-0 pt-5 pb-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-6 px-4">
+                  <div class="flex gap-4">
                     <button @click="clearAllFilters(); isFilterOpen = false" 
-                      class="flex-1 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      class="flex-1 py-3.5 px-5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 text-base font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                       Reset All
                     </button>
                     <button @click="updateSearch(); isFilterOpen = false" 
-                      class="flex-1 py-2 px-3 bg-primary text-white dark:text-black rounded-lg text-xs font-medium hover:bg-primary-dark transition-colors flex items-center justify-center gap-1"
+                      class="flex-1 py-3.5 px-5 bg-primary text-black rounded-lg text-base font-medium hover:bg-primary-dark transition-colors flex items-center justify-center gap-2.5"
                       :disabled="isSearching || !isSearchFormValid">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                       {{ isSearching ? 'Searching...' : 'Apply & Search' }}
@@ -365,20 +412,20 @@
 
           <!-- Desktop Filters Sidebar -->
           <div
-            class="filters-sidebar bg-white dark:bg-gray-900 rounded-xl shadow-md dark:shadow-dark-card hidden lg:block border border-gray-200 dark:border-gray-800 overflow-y-auto scrollbar-hide">
-            <div class="flex items-center justify-between mb-5">
-              <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            class="filters-sidebar bg-white dark:bg-gray-900 rounded-xl shadow-md dark:shadow-dark-card hidden lg:block border border-gray-200 dark:border-gray-800 overflow-y-auto scrollbar-hide p-4 text-[15px]">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-[17px] font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
                 Filters
-                <span v-if="activeFilters.length > 0" class="ml-1 bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full">
+                <span v-if="activeFilters.length > 0" class="ml-1 bg-primary/20 text-primary text-sm px-2.5 py-0.5 rounded-full">
                   {{ activeFilters.length }}
                 </span>
               </h3>
               <button @click="clearAllFilters" 
-                class="text-xs flex items-center gap-1 text-primary hover:bg-primary/10 py-1.5 px-2.5 rounded-full transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="text-sm flex items-center gap-1.5 text-primary hover:bg-primary/10 py-2 px-3 rounded-full transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Clear All
@@ -386,19 +433,19 @@
             </div>
 
             <!-- Location Filter -->
-            <div class="mb-5">
-              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-2 flex items-center">
-                <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="mb-5">
+                <h4 class="font-medium text-gray-900 dark:text-white text-[15px] mb-2.5 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 </svg>
                 Location
               </h4>
               <div class="relative">
-                <input v-model="filters.location" type="text" placeholder="Enter location"
-                  class="input-field w-full text-sm py-2 px-3 pr-9 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700" 
-                  @input="updateQueryAndReload">
-                <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <input v-model="filters.location" type="text" placeholder="Enter location"
+                    class="input-field w-full text-sm py-2.5 px-3 pr-9 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700" 
+                    @input="updateQueryAndReload">
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -406,15 +453,15 @@
             </div>
 
             <!-- Price Range -->
-            <div class="mb-5">
-              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-2 flex items-center">
-                <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="mb-5">
+                <h4 class="font-medium text-gray-900 dark:text-white text-[15px] mb-2.5 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Price Range (per day)
               </h4>
-              <div class="space-y-2">
-                <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 font-medium">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 font-medium">
                   <span>LKR {{ priceRange.min }}</span>
                   <span>LKR {{ priceRange.max }}</span>
                 </div>
@@ -424,84 +471,84 @@
             </div>
 
             <!-- Facilities -->
-            <div class="mb-5">
-              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-3 flex items-center">
-                <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="mb-5">
+                <h4 class="font-medium text-gray-900 dark:text-white text-[15px] mb-2.5 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
                 Facilities
               </h4>
               
               <!-- Loading state for facilities -->
-              <div v-if="loadingFacilities" class="flex justify-center py-2">
+                <div v-if="loadingFacilities" class="flex justify-center py-2">
                 <div class="w-5 h-5 border-t-2 border-primary rounded-full animate-spin"></div>
               </div>
               
               <!-- Facilities list -->
-              <div v-else class="flex flex-wrap gap-2">
+                <div v-else class="flex flex-wrap gap-2">
                 <!-- Show API facilities if available -->
                 <template v-if="facilities.length > 0">
-                  <label 
-                    v-for="facility in facilities" 
-                    :key="facility.facility_id"
-                    :class="[
-                      'px-2.5 py-1.5 rounded-lg text-xs cursor-pointer flex items-center gap-1.5 border transition-all duration-200',
-                      selectedFacilities.includes(facility.facility_name) 
-                        ? 'bg-primary/10 border-primary text-primary font-medium' 
-                        : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
-                    ]"
-                  >
-                    <input 
-                      v-model="selectedFacilities" 
-                      :value="facility.facility_name" 
-                      type="checkbox"
-                      class="hidden" 
-                      @change="updateQueryAndReload"
+                    <label 
+                      v-for="facility in facilities" 
+                      :key="facility.facility_id"
+                      :class="[
+                        'px-2.5 py-1.5 rounded-lg text-sm cursor-pointer flex items-center gap-1.5 border transition-all duration-200',
+                        selectedFacilities.includes(facility.facility_name) 
+                          ? 'bg-primary/10 border-primary text-primary font-medium' 
+                          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
+                      ]"
                     >
-                    <svg v-if="selectedFacilities.includes(facility.facility_name)" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>{{ facility.facility_name }}</span>
-                  </label>
+                      <input 
+                        v-model="selectedFacilities" 
+                        :value="facility.facility_name" 
+                        type="checkbox"
+                        class="hidden" 
+                        @change="updateQueryAndReload"
+                      >
+                      <svg v-if="selectedFacilities.includes(facility.facility_name)" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{{ facility.facility_name }}</span>
+                    </label>
                 </template>
                 
                 <!-- Fallback to hardcoded facilities if API fails -->
                 <template v-else>
-                  <label 
-                    v-for="facility in ['High-Speed WiFi', '4K Display', 'Video Conferencing', 'Natural Light']" 
-                    :key="facility"
-                    :class="[
-                      'px-2.5 py-1.5 rounded-lg text-xs cursor-pointer flex items-center gap-1.5 border transition-all duration-200',
-                      selectedFacilities.includes(facility) 
-                        ? 'bg-primary/10 border-primary text-primary font-medium' 
-                        : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
-                    ]"
-                  >
-                    <input 
-                      v-model="selectedFacilities" 
-                      :value="facility" 
-                      type="checkbox"
-                      class="hidden" 
-                      @change="updateQueryAndReload"
+                    <label 
+                      v-for="facility in ['High-Speed WiFi', '4K Display', 'Video Conferencing', 'Natural Light']" 
+                      :key="facility"
+                      :class="[
+                        'px-2.5 py-1.5 rounded-lg text-sm cursor-pointer flex items-center gap-1.5 border transition-all duration-200',
+                        selectedFacilities.includes(facility) 
+                          ? 'bg-primary/10 border-primary text-primary font-medium' 
+                          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
+                      ]"
                     >
-                    <svg v-if="selectedFacilities.includes(facility)" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>{{ facility }}</span>
-                  </label>
+                      <input 
+                        v-model="selectedFacilities" 
+                        :value="facility" 
+                        type="checkbox"
+                        class="hidden" 
+                        @change="updateQueryAndReload"
+                      >
+                      <svg v-if="selectedFacilities.includes(facility)" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{{ facility }}</span>
+                    </label>
                 </template>
               </div>
             </div>
 
             <!-- Rating -->
-            <div class="mb-2">
-              <h4 class="font-medium text-gray-900 dark:text-white text-sm mb-3 flex items-center">
-                <svg class="w-4 h-4 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="mb-5">
+                <h4 class="font-medium text-gray-900 dark:text-white text-[15px] mb-2.5 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                 </svg>
                 Rating
               </h4>
-              <div class="space-y-3">
+              <div class="space-y-3.5">
                 <label :class="[
                     'flex items-center justify-between w-full px-3 py-2 rounded-lg cursor-pointer transition-all duration-200',
                     minRating === '4' 
@@ -511,7 +558,7 @@
                   <div class="flex items-center">
                     <input v-model="minRating" value="4" type="radio" name="rating"
                       class="hidden" @change="updateQueryAndReload">
-                    <span class="text-gray-700 dark:text-gray-300 text-xs font-medium">
+                    <span class="text-gray-700 dark:text-gray-300 text-sm font-medium">
                       4+ stars
                     </span>
                   </div>
@@ -530,7 +577,7 @@
                   <div class="flex items-center">
                     <input v-model="minRating" value="0" type="radio" name="rating"
                       class="hidden" @change="updateQueryAndReload">
-                    <span class="text-gray-700 dark:text-gray-300 text-xs font-medium">Any rating</span>
+                    <span class="text-gray-700 dark:text-gray-300 text-sm font-medium">Any rating</span>
                   </div>
                   <div class="flex text-gray-300 dark:text-gray-600">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -556,11 +603,11 @@
                   </div>
                 </h2>
                 <!-- Mobile Sort & View Toggle Buttons -->
-                <div class="sm:hidden flex gap-2">
+                <div class="sm:hidden flex gap-3">
                   <!-- Mobile Sort Button -->
                   <button @click="showSortOptions = !showSortOptions"
-                    class="flex items-center gap-1.5 bg-white dark:bg-gray-900 py-1.5 px-3 rounded-full text-xs shadow-sm border border-gray-100 dark:border-gray-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="flex items-center gap-2 bg-white dark:bg-gray-900 py-2.5 px-4 rounded-full text-sm shadow-sm border border-gray-100 dark:border-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
                     </svg>
                     Sort
@@ -568,9 +615,9 @@
                   
                   <!-- Mobile View Toggle Button (Icon Only) -->
                   <button @click="toggleCompactView"
-                    class="flex items-center justify-center bg-white dark:bg-gray-900 p-2 rounded-full shadow-sm border border-gray-100 dark:border-gray-800"
+                    class="flex items-center justify-center bg-white dark:bg-gray-900 p-2.5 rounded-full shadow-sm border border-gray-100 dark:border-gray-800"
                     :class="isCompactView ? 'text-primary border-primary' : 'text-gray-600 dark:text-gray-400'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <!-- Minimize icon when in compact view -->
                       <path v-if="isCompactView" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 3h-7m0 0v7m0-7L20 10M4 21h7m0 0v-7m0 7L4 14" />
                       <!-- Maximize icon when in default view -->
@@ -580,7 +627,7 @@
                   
                   <!-- Mobile Sort Dropdown -->
                   <div v-if="showSortOptions" 
-                    class="absolute top-full right-0 mt-1 z-50 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-1.5 min-w-[180px] animate-fadeIn">
+                    class="absolute top-full right-0 mt-2 z-50 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-2 min-w-[220px] animate-fadeIn">
                     <div 
                       v-for="option in [
                         { value: 'price-low', label: 'Price: Low to High' },
@@ -590,7 +637,7 @@
                       ]" 
                       :key="option.value" 
                       @click="sortBy = option.value; applySorting(); showSortOptions = false"
-                      class="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                      class="px-5 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
                       :class="{ 'text-primary font-medium': sortBy === option.value }"
                     >
                       {{ option.label }}
@@ -613,8 +660,8 @@
 
             <!-- Desktop Sort Controls and View Toggle - Both Moved to Right Edge -->
             <div class="hidden sm:flex items-center gap-2 ml-auto">
-              <!-- Custom Desktop Sort Controls -->
-              <div class="flex items-center gap-2 bg-white dark:bg-gray-900 p-1.5 rounded-full shadow-sm border border-gray-100 dark:border-gray-800">
+              <!-- Custom Desktop Sort Controls - Only visible on lg screens (never on tablet/mobile) -->
+              <div class="hidden lg:flex items-center gap-2 bg-white dark:bg-gray-900 p-1.5 rounded-full shadow-sm border border-gray-100 dark:border-gray-800">
                 <label class="text-xs text-gray-600 dark:text-gray-300 ml-1 font-medium whitespace-nowrap">Sort:</label>
                 
                 <!-- Custom Dropdown -->
@@ -1306,7 +1353,7 @@ export default defineComponent({
   computed: {
     // Display spaces combines API results with sample spaces if needed
     displaySpaces(): SpaceDto[] {
-      let spaces = [...this.sortedSpaces];
+      const spaces = [...this.sortedSpaces];
       
       // If there are fewer than 5 spaces, add some sample spaces
       if (spaces.length < 5) {
@@ -1924,8 +1971,16 @@ export default defineComponent({
     },
     
     handleClickOutside(event: MouseEvent): void {
+      // Close dropdowns when clicking outside
       const sortDropdown = this.$refs.sortDropdown as HTMLElement;
-      if (sortDropdown && !sortDropdown.contains(event.target as Node)) {
+      const sortButton = event.target as HTMLElement;
+      
+      // Check if the click is outside both the dropdown and any sort buttons
+      const isSortButtonClick = 
+        sortButton.closest('button') && 
+        sortButton.closest('button')?.getAttribute('class')?.includes('showSortOptions');
+      
+      if (!isSortButtonClick && (!sortDropdown || !sortDropdown.contains(event.target as Node))) {
         this.showSortOptions = false;
       }
     }
@@ -2257,6 +2312,7 @@ select.input-field:focus {
   }
 
   .filters-sidebar {
+   
     position: fixed;
     top: 12rem; /* Positioned below the search bar */
     width: inherit; /* Take the width from parent */
