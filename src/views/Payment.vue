@@ -28,6 +28,13 @@
       </div>
     </div>
 
+    <!-- reCAPTCHA Verification Modal -->
+    <ReCaptchaModal 
+      :show="showReCaptcha" 
+      @verified="handleCaptchaVerified" 
+      @cancel="handleCaptchaCancel"
+    />
+    
     <!-- IPG Return Processing Loading Overlay -->
     <div v-if="ipgProcessing" class="fixed inset-0 z-50 bg-white dark:bg-gray-950 flex items-center justify-center">
       <div class="text-center">
@@ -388,6 +395,7 @@ import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { NetworkManager } from '../api/networkManager';
 import type { BookingDetails } from '../stores/booking';
+import ReCaptchaModal from '../components/ReCaptchaModal.vue';
 
 interface SavedCard {
   id: number;
@@ -407,6 +415,9 @@ interface BillingAddress {
 
 export default defineComponent({
   name: 'PaymentPage',
+  components: {
+    ReCaptchaModal
+  },
   
   setup() {
     const processing = ref(false);
@@ -419,6 +430,11 @@ export default defineComponent({
     const showPaymentGateway = ref(false);
     const gatewayLoading = ref(false);
     const ipgProcessing = ref(false);
+    
+    // reCAPTCHA related state
+    const showReCaptcha = ref(false);
+    const recaptchaToken = ref('');
+    const paymentPayloadCache = ref<any>(null); // Store payload while captcha is being verified
     
     const router = useRouter();
     const route = useRoute();
@@ -647,6 +663,9 @@ export default defineComponent({
     async function createNewCardSession(): Promise<void> {
       try {
         processing.value = true;
+        
+        // Add recaptcha token to all API requests for verification on backend
+        NetworkManager.setAuthHeader('X-Recaptcha-Token', recaptchaToken.value);
 
         // Get the booking (single booking)
         const bookingDetail = bookingDetails.value[0];
@@ -773,6 +792,16 @@ export default defineComponent({
     async function processPayment(): Promise<void> {
       if (!isPaymentFormValid.value) return;
       
+      // Show reCAPTCHA before proceeding with payment
+      showReCaptcha.value = true;
+    }
+    
+    // Handle successful reCAPTCHA verification
+    async function handleCaptchaVerified(token: string): Promise<void> {
+      recaptchaToken.value = token;
+      showReCaptcha.value = false;
+      
+      // Process payment after successful verification
       if (selectedPaymentMethod.value === 'new-card') {
         await createNewCardSession();
       } else {
@@ -781,11 +810,20 @@ export default defineComponent({
       }
     }
     
+    // Handle reCAPTCHA cancellation
+    function handleCaptchaCancel(): void {
+      showReCaptcha.value = false;
+      recaptchaToken.value = '';
+      paymentPayloadCache.value = null;
+    }
+    
     // Process payment with existing card
     async function processExistingCardPayment(): Promise<void> {
       processing.value = true;
 
       try {
+        // Add recaptcha token to all API requests for verification on backend
+        NetworkManager.setAuthHeader('X-Recaptcha-Token', recaptchaToken.value);
         // Get the booking (single booking)
         const bookingDetail = bookingDetails.value[0];
         if (!bookingDetail) {
@@ -1040,7 +1078,12 @@ export default defineComponent({
   gatewayLoading,
   ipgProcessing,
   cancelPayment,
-  handlePaymentMessage
+  handlePaymentMessage,
+  // reCAPTCHA related
+  showReCaptcha,
+  recaptchaToken,
+  handleCaptchaVerified,
+  handleCaptchaCancel
     };
   }
 });

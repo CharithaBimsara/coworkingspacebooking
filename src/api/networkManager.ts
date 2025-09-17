@@ -115,6 +115,43 @@ interface BookingData {
 export class NetworkManager {
   private static readonly BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
   public static lastRawResponseData: unknown = null;
+  private static customHeaders: Record<string, string> = {};
+  
+  /**
+   * Set a custom header for API requests. Useful for adding tokens like reCAPTCHA.
+   * @param key The header key
+   * @param value The header value
+   */
+  public static setAuthHeader(key: string, value: string): void {
+    this.customHeaders[key] = value;
+  }
+  
+  /**
+   * Remove a custom header
+   * @param key The header key to remove
+   */
+  public static removeAuthHeader(key: string): void {
+    delete this.customHeaders[key];
+  }
+  
+  /**
+   * Get all custom headers as an object
+   * @returns Object with all custom headers
+   */
+  private static getCustomHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...this.customHeaders
+    };
+    
+    // Add authorization token if available
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+  }
 
   /**
    * Get all locations for the location dropdown.
@@ -2258,9 +2295,7 @@ export class NetworkManager {
     try {
       const response = await fetch(`${this.BASE_URL}/cards/card-add`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getCustomHeaders(),
         body: JSON.stringify(paymentData)
       });
 
