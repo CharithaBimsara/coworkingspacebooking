@@ -255,19 +255,26 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span class="line-clamp-1">{{ formatDateRange(booking) }}</span>
+            <span class="line-clamp-1">
+              {{ booking.productType === 'hot-desk' || booking.productType === 'dedicated-desk' || booking.productType === 'meeting-room'
+                  ? formatDate(booking.booking?.startDate || '') 
+                  : formatDateRange(booking) }}
+            </span>
           </div>
         </div>
         
         <!-- Time/Package -->
         <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">{{ booking.productType === 'meeting-room' ? 'Time' : 'Package' }}</span>
+          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">
+            {{ booking.productType === 'meeting-room' ? 'Time' : booking.productType === 'hot-desk' ? 'Duration' : 'Package' }}
+          </span>
           <div class="font-medium text-gray-900 dark:text-white text-xs sm:text-sm flex items-center mt-0.5 sm:mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="booking.productType === 'meeting-room'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
             <span v-if="booking.productType === 'meeting-room'" class="line-clamp-1">{{ booking.booking?.startTime }} - {{ getEndTime(booking) }}</span>
+            <span v-else-if="booking.productType === 'hot-desk'" class="line-clamp-1">Full Day</span>
             <span v-else class="line-clamp-1">{{ getPackageDisplayName(booking) }}</span>
           </div>
         </div>
@@ -296,7 +303,7 @@
           <div class="flex flex-wrap gap-1 sm:gap-1.5 ml-1">
             <span v-for="feature in booking.facilities" :key="feature" 
               class="text-xxs xs:text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-1.5 sm:px-2 py-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-              {{ feature }}
+              {{ feature.toUpperCase() }}
             </span>
           </div>
         </div>
@@ -337,18 +344,20 @@
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                       </svg>
-                      Base Price:
+                      {{ getBasePriceLabel(booking) }}:
                     </span>
-                    <span>LKR {{ booking.pricing.basePrice || 0 }}</span>
+                    <span class="text-xs font-medium">LKR {{ getBasePricePerUnit(booking) }} × {{ getMultiplierLabel(booking) }} = LKR {{ booking.pricing.basePrice || 0 }}</span>
                   </div>
-                  <div v-if="booking.pricing.facilitiesPrice > 0" class="flex justify-between items-center">
-                    <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Features:
-                    </span>
-                    <span>LKR {{ booking.pricing.facilitiesPrice || 0 }}</span>
+                  <div v-if="booking.pricing.facilitiesPrice > 0 && booking.facilities && booking.facilities.length > 0" class="space-y-0.5">
+                    <div v-for="(facility, index) in booking.facilities" :key="facility" class="flex justify-between items-center">
+                      <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {{ facility }}:
+                      </span>
+                      <span class="text-xs font-medium">LKR {{ getFacilityPricePerUnit(booking, index) }} × {{ getMultiplierLabel(booking) }} = LKR {{ Math.round(booking.pricing.facilitiesPrice / booking.facilities.length) }}</span>
+                    </div>
                   </div>
                   <div v-if="booking.pricing.serviceFee !== undefined && booking.pricing.serviceFee > 0" class="flex justify-between items-center">
                     <span class="flex items-center">
@@ -392,7 +401,7 @@
             </div>
             
             <!-- Promo code (uncommented and enhanced) -->
-            <div class="mb-4 sm:mb-6 mt-3 sm:mt-4">
+            <!-- <div class="mb-4 sm:mb-6 mt-3 sm:mt-4">
               <label class="text-xxs xs:text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Have a promo code?</label>
               <div class="flex gap-1.5 sm:gap-2">
                 <div class="relative flex-1">
@@ -418,7 +427,7 @@
                 </svg>
                 {{ promoCodeMessage }}
               </div>
-            </div>
+            </div> -->
 
             <!-- Promo code -->
             <!-- <div class="mb-6">
@@ -502,13 +511,13 @@
             </div> -->
 
             <!-- Proceed to Payment Button -->
-            <button @click="proceedToPayment" :disabled="!isFormValid"
-              class="w-full btn-primary text-sm sm:text-base py-3 sm:py-3.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg flex items-center justify-center">
-              <span>Proceed to Payment</span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
+            <button @click="proceedToPayment" :disabled="!isFormValid || bookingData.length === 0 || totalAmount === 0"
+                          class="w-full btn-primary text-sm sm:text-base py-3 sm:py-3.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg flex items-center justify-center">
+                          <span>Proceed to Payment</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </button>
 
             <!-- Cancellation policy -->
             <div class="mt-4 sm:mt-5 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-l-4 border-gray-200 dark:border-gray-600">
@@ -761,6 +770,12 @@ export default defineComponent({
     this.bookingStore.initializeBooking()
     this.authStore.initializeAuth()
 
+    // If no booking data, redirect to home
+    if (this.bookingData.length === 0) {
+      this.$router.replace({ name: 'Home' });
+      return;
+    }
+
     if (this.isAuthenticated && this.currentUser) {
       this.guestInfo.firstName = this.currentUser.firstName || ''
       this.guestInfo.lastName = this.currentUser.lastName || ''
@@ -773,8 +788,6 @@ export default defineComponent({
     formatDate(dateString: string): string {
       if (!dateString) return 'Not specified'
       return new Date(dateString).toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
         month: 'long',
         day: 'numeric'
       })
@@ -940,6 +953,61 @@ export default defineComponent({
       if (spaceId) {
         this.$router.push({ name: 'SpaceDetails', params: { id: spaceId.toString() } });
       }
+    },
+
+    getBasePriceLabel(booking: any): string {
+      const productType = booking.productType;
+      const types: Record<string, string> = {
+        'meeting-room': 'Meeting Room only price',
+        'hot-desk': 'Hot Desk only price',
+        'dedicated-desk': 'Dedicated Desk only price',
+        'coworking-space': 'Co-working Space only price'
+      };
+      return types[productType] || 'Base Price';
+    },
+
+    getBasePricePerUnit(booking: any): number {
+      if (!booking.pricing?.basePrice) return 0;
+      
+      const multiplier = this.getMultiplier(booking);
+      return multiplier > 0 ? Math.round(booking.pricing.basePrice / multiplier) : booking.pricing.basePrice;
+    },
+
+    getMultiplier(booking: any): number {
+      if (booking.productType === 'meeting-room' || booking.productType === 'hot-desk') {
+        // For meeting rooms and hot desks, multiplier is duration in hours
+        return parseInt(booking.booking?.duration || '1');
+      } else if (booking.productType === 'dedicated-desk' || booking.productType === 'coworking-space') {
+        // For subscriptions, calculate based on package type
+        const packageType = booking.subscription?.packageType || 'monthly';
+        if (packageType === 'daily') return 1;
+        if (packageType === 'monthly') return 30; // Approximate days in month
+        if (packageType === 'annual') return 365; // Days in year
+      }
+      return 1; // Default fallback
+    },
+
+    getMultiplierLabel(booking: any): string {
+      if (booking.productType === 'meeting-room') {
+        const duration = parseInt(booking.booking?.duration || '1');
+        return `${duration} hour${duration > 1 ? 's' : ''}`;
+      } else if (booking.productType === 'hot-desk') {
+        return '1 day';
+      } else if (booking.productType === 'dedicated-desk' || booking.productType === 'coworking-space') {
+        const packageType = booking.subscription?.packageType || booking.booking?.package || 'monthly';
+        if (packageType === 'daily') return '1 day';
+        if (packageType === 'monthly') return '1 month';
+        if (packageType === 'annual') return '1 year';
+      }
+      return '1 unit';
+    },
+
+    getFacilityPricePerUnit(booking: any, facilityIndex: number): number {
+      if (!booking.pricing?.facilitiesPrice || !booking.facilities || booking.facilities.length === 0) return 0;
+      
+      const totalFacilityPrice = Math.round(booking.pricing.facilitiesPrice / booking.facilities.length);
+      const multiplier = this.getMultiplier(booking);
+      return multiplier > 0 ? Math.round(totalFacilityPrice / multiplier) : totalFacilityPrice;
     }
   }
 })

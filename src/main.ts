@@ -1,3 +1,7 @@
+// Hide AppHeader if inside iframe (for payment gateway)
+if (window.self !== window.top) {
+  document.body.setAttribute('iframe-mode', 'true');
+}
 import './assets/base.css'
 import './assets/custom-select.css'
 import { createApp } from 'vue'

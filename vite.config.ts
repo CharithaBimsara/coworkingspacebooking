@@ -10,6 +10,12 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+ server: {
+  allowedHosts: true
+},
+  
+
+  
   // server: {
   //   host: '192.168.8.125',  // listen on all network interfaces
   //   port: 5173        // keep or change if you like

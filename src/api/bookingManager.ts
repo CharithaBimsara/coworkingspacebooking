@@ -172,7 +172,8 @@ export class BookingManager {
    * Method: POST
    * Request:
    * {
-   *   "booking_id": 1
+   *   "booking_id": 1,
+   *   "cancelation_reason": ""
    * }
    * 
    * Response:
@@ -192,7 +193,8 @@ export class BookingManager {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          booking_id: bookingId
+          booking_id: bookingId,
+          cancelation_reason: ""
         })
       });
 

@@ -2208,4 +2208,156 @@ export class NetworkManager {
       };
     }
   }
+
+  /**
+   * Process card payment and create booking
+   * Endpoint: /api/cards/card-add
+   *
+   * @param paymentData - Payment and booking data
+   * @returns Promise with success status and gateway link
+   *
+   * Expected response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Card add session & booking created successfully. Awaiting callback.",
+   *   "data": {
+   *     "link": "https://test-gateway.directpay.lk/35907b5584cf4a92",
+   *     "token": "35907b5584cf4a92",
+   *     "sms_status": null,
+   *     "email_status": null
+   *   }
+   * }
+   */
+  static async processCardPayment(paymentData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    user_id?: number;
+    is_card_add: boolean;
+    amount: number;
+    booking: {
+      user_id?: number;
+      product_id: number;
+      booking_date: string;
+      start_time: string;
+      end_time: string;
+      facility_ids: number[];
+      total_price: number;
+    };
+  }): Promise<{
+    success: boolean;
+    message: string;
+    gatewayData?: {
+      link: string;
+      token: string;
+      sms_status?: string;
+      email_status?: string;
+    };
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/cards/card-add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(paymentData)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to process payment')
+        };
+      }
+
+      const data = await response.json();
+      console.log('processCardPayment API response:', data);
+
+      if (data.status_code === 200 && data.data && data.data.link) {
+        return {
+          success: true,
+          message: data.message || 'Payment session created successfully',
+          gatewayData: {
+            link: data.data.link,
+            token: data.data.token,
+            sms_status: data.data.sms_status,
+            email_status: data.data.email_status
+          }
+        };
+      } else {
+        console.error('processCardPayment: Invalid response structure:', data);
+        return {
+          success: false,
+          message: data.message || 'Failed to process payment'
+        };
+      }
+    } catch (error) {
+      console.error('Error processing card payment:', error);
+      return {
+        success: false,
+        message: 'Network error while processing payment'
+      };
+    }
+  }
+
+  static async getBooking(orderId: string): Promise<{
+    success: boolean;
+    message: string;
+    data?: {
+      booking_id: number;
+      user_id: number;
+      product_id: number;
+      location: string | null;
+      total_price: number;
+      facility_name: string[];
+      booking_date: string;
+      start_time: string;
+      end_time: string;
+      is_canceled: boolean;
+      is_onetime_changed: boolean;
+    };
+  }> {
+    try {
+      const token = localStorage.getItem('auth_token');
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add auth token if available
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${this.BASE_URL}/booking/get-booking?orderId=${encodeURIComponent(orderId)}`, {
+        method: 'GET',
+        headers
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Booking retrieved successfully',
+          data: data.data
+        };
+      } else {
+        console.error('getBooking: API error:', data);
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve booking'
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching booking:', error);
+      return {
+        success: false,
+        message: 'Network error while fetching booking'
+      };
+    }
+  }
 }

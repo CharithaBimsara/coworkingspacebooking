@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
     <div class="max-w-4xl mx-auto container-padding py-8">
       <!-- Success Message -->
-      <div class="text-center mb-8">
+      <div v-if="isSuccess" class="text-center mb-8">
         <div class="w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg class="w-10 h-10 text-green-600 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -18,8 +18,28 @@
         </div>
       </div>
 
-            <!-- Booking Details Card -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8">
+      <!-- Failure Message -->
+      <div v-else class="text-center mb-8">
+        <div class="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+        <h1 class="text-4xl font-heading font-bold text-gray-900 dark:text-white mb-2">Payment Failed</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">Your payment could not be processed. Please try again.</p>
+        <button
+          @click="retryPayment"
+          class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Retry Payment
+        </button>
+      </div>
+
+      <!-- Booking Details Card -->
+      <div v-if="isSuccess" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8">
         <h2 class="text-2xl font-heading font-bold text-gray-900 dark:text-white mb-6">Booking Details</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -132,11 +152,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { generatePDFReceipt } from '../utils/pdfReceipt'
 import QRCode from 'qrcode'
+import { NetworkManager } from '../api/networkManager'
 
 const route = useRoute()
+const router = useRouter()
+
+// Payment result state
+const isSuccess = ref(true)
+const paymentResult = ref<any>(null)
 
 // Interface for confirmation data
 interface ConfirmationData {
@@ -300,30 +326,56 @@ const contactSupport = () => {
   window.location.href = 'mailto:support@spacebooking.com'
 }
 
-onMounted(() => {
-  const storedConfirmation = sessionStorage.getItem('bookingConfirmation');
-  if (storedConfirmation) {
-    const parsedData = JSON.parse(storedConfirmation);
-    if (parsedData.bookings && Array.isArray(parsedData.bookings)) {
-      parsedData.bookings = parsedData.bookings.map((booking: unknown) => {
-        const b = booking as { space?: { images?: unknown[] } };
-        if (b.space && Array.isArray(b.space.images) && b.space.images.length > 0) {
-          const { images, ...restOfSpace } = b.space;
-          return {
-            ...b,
-            space: {
-              ...restOfSpace,
-              image: images[0]
-            }
-          };
-        }
-        return b;
-      });
+const retryPayment = () => {
+  // Restore booking data from sessionStorage
+  const retryData = sessionStorage.getItem('retry_booking_data');
+  if (retryData) {
+    // Store it back for payment page to load
+    sessionStorage.setItem('restore_booking_data', retryData);
+  }
+  router.push('/booking/payment');
+}
+
+// (Removed duplicate useRouter import and router variable)
+onMounted(async () => {
+  const storedResult = sessionStorage.getItem('payment_result');
+  if (!storedResult) {
+    // No payment result, redirect to home
+    router.replace({ name: 'Home' });
+    return;
+  }
+  paymentResult.value = JSON.parse(storedResult);
+  isSuccess.value = paymentResult.value.success;
+
+  if (isSuccess.value) {
+    // Call API to get booking data
+    const bookingResponse = await NetworkManager.getBooking(paymentResult.value.orderId);
+    if (bookingResponse.success && bookingResponse.data) {
+      // Populate confirmationData from API response
+      const booking = bookingResponse.data;
+      confirmationData.value = {
+        bookingId: booking.booking_id.toString(),
+        bookings: [], // Will need to map from API if needed
+        totalAmount: booking.total_price,
+        guestInfo: { firstName: 'Guest', lastName: 'User' }, // From stored data?
+        paymentMethod: 'Credit Card', // From stored?
+        confirmedAt: new Date().toISOString(),
+        spaceType: '', // Need to map
+        location: booking.location || '',
+        date: booking.booking_date,
+        time: `${booking.start_time} - ${booking.end_time}`,
+        duration: '', // Calculate
+        guestName: '',
+        guestEmail: '',
+        guestPhone: '',
+        company: ''
+      };
+    } else {
+      console.error('Failed to fetch booking data:', bookingResponse.message);
+      // Handle error
     }
-    confirmationData.value = parsedData;
   } else {
-    // Fallback for direct access
-    console.warn('No confirmation data found in session storage.');
+    // Failure case - data might be in retry_booking_data
   }
 
   if (confirmationData.value.bookingId) {

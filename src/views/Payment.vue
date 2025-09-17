@@ -1,189 +1,99 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300 relative">
+    <!-- Full-screen Payment Gateway -->
+    <div v-if="showPaymentGateway" class="fixed inset-0 top-14 sm:top-16 z-40 bg-white dark:bg-gray-950">
+      <div class="relative w-full h-full">
+        <iframe
+          :src="gatewayUrl"
+          class="w-full h-full border-0"
+          @load="onGatewayLoad"
+          ref="paymentIframe"
+        ></iframe>
 
-    
-    <div class="max-w-8xl mx-auto container-padding py-8 relative z-10">
-      <!-- Progress indicator with labels -->
-      <div class="flex flex-col items-center justify-center mb-8">
-        <div class="flex items-center mb-2">
-          <div class="flex flex-col items-center">
-            <div class="flex items-center justify-center w-10 h-10 bg-black text-white rounded-full text-sm font-semibold shadow-lg transform transition-transform hover:scale-105">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        <!-- Loading overlay -->
+        <div v-if="gatewayLoading" class="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 flex items-center justify-center">
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p class="text-gray-600 dark:text-gray-400">Loading payment gateway...</p>
+          </div>
+        </div>
+
+        <!-- Cancel button -->
+        <button
+          @click="cancelPayment"
+          class="absolute top-4 right-4 z-10 p-2 text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- IPG Return Processing Loading Overlay -->
+    <div v-if="ipgProcessing" class="fixed inset-0 z-50 bg-white dark:bg-gray-950 flex items-center justify-center">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-6"></div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Processing Payment</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Please wait while we confirm your payment...</p>
+        <div class="flex items-center justify-center space-x-2">
+          <div class="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+          <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Payment Page Content (hidden when gateway is active or IPG processing) -->
+    <div v-else-if="!showPaymentGateway && !ipgProcessing">
+      <div class="max-w-8xl mx-auto container-padding py-8 relative z-10">
+        <!-- Progress indicator with labels -->
+        <div class="flex flex-col items-center justify-center mb-8">
+          <div class="flex items-center mb-2">
+            <div class="flex flex-col items-center">
+              <div class="flex items-center justify-center w-10 h-10 bg-black text-white rounded-full text-sm font-semibold shadow-lg transform transition-transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Details</span>
+            </div>
+            <div class="w-20 h-1 bg-green-500 mx-2"></div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center justify-center w-10 h-10 bg-primary to-primary text-white rounded-full text-sm font-semibold shadow-lg">
+                <span>2</span>
+              </div>
+              <span class="text-xs font-medium text-primary mt-2">Payment</span>
+            </div>
+            <div class="w-20 h-1 bg-gray-300 dark:bg-gray-600 mx-2"></div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full text-sm font-semibold transition-all hover:bg-gray-200">
+                <span>3</span>
+              </div>
+              <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Confirmation</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mb-8">
+          <h1 class="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-2">Secure Payment</h1>
+          <p class="text-gray-600 dark:text-gray-400">Complete your booking with secure payment</p>
+          <div class="flex items-center justify-center mt-3">
+            <span class="flex items-center text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 py-1 px-3 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
               </svg>
-            </div>
-            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Details</span>
-          </div>
-          <div class="w-20 h-1 bg-green-500 mx-2"></div>
-          <div class="flex flex-col items-center">
-            <div class="flex items-center justify-center w-10 h-10 bg-primary to-primary text-white rounded-full text-sm font-semibold shadow-lg">
-              <span>2</span>
-            </div>
-            <span class="text-xs font-medium text-primary mt-2">Payment</span>
-          </div>
-          <div class="w-20 h-1 bg-gray-300 dark:bg-gray-600 mx-2"></div>
-          <div class="flex flex-col items-center">
-            <div class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full text-sm font-semibold transition-all hover:bg-gray-200">
-              <span>3</span>
-            </div>
-            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Confirmation</span>
+              Secure Transaction
+            </span>
           </div>
         </div>
-      </div>
-      
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-2">Secure Payment</h1>
-        <p class="text-gray-600 dark:text-gray-400">Complete your booking with secure payment</p>
-        <div class="flex items-center justify-center mt-3">
-          <span class="flex items-center text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 py-1 px-3 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-            </svg>
-            Secure Transaction
-          </span>
-        </div>
-      </div>
 
-      <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Payment Form -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="grid lg:grid-cols-3 gap-8">
+          <!-- Payment Form -->
+          <div class="lg:col-span-2 space-y-6">
           
           <!-- ...existing code... -->
 
           <!-- Payment Method Selection -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-              <svg class="w-6 h-6 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
-              Payment Method
-            </h2>
-            <div class="space-y-4">
-              <template v-if="authStore.user">
-                <!-- Saved Cards -->
-                <div v-for="card in savedCards" :key="card.id" class="relative">
-                  <input 
-                    :id="`card-${card.id}`"
-                    v-model="selectedPaymentMethod" 
-                    :value="card.id"
-                    type="radio" 
-                    name="payment-method"
-                    class="sr-only peer"
-                  >
-                  <label 
-                    :for="`card-${card.id}`"
-                    class="flex items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border-2 border-transparent cursor-pointer transition-all duration-300 hover:from-blue-50 hover:to-indigo-50 dark:hover:from-gray-700 dark:hover:to-gray-650 peer-checked:border-primary peer-checked:from-blue-50 peer-checked:to-indigo-50 dark:peer-checked:from-blue-900/20 dark:peer-checked:to-indigo-900/20"
-                  >
-                    <div class="flex items-center space-x-4 w-full">
-                      <!-- Card Icon -->
-                      <div class="flex-shrink-0">
-                        <div :class="[
-                          'w-12 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold',
-                          card.card_type === 'VISA' ? 'bg-gradient-to-r from-blue-600 to-blue-700' :
-                          card.card_type === 'MASTERCARD' ? 'bg-gradient-to-r from-red-600 to-red-700' :
-                          card.card_type === 'AMEX' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
-                          'bg-gradient-to-r from-gray-600 to-gray-700'
-                        ]">
-                          {{ card.card_type }}
-                        </div>
-                      </div>
-                      <!-- Card Details -->
-                      <div class="flex-1">
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="font-medium text-gray-900 dark:text-white">{{ card.card_number }}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Expires {{ card.expiry_month }}/{{ card.expiry_year }}</p>
-                          </div>
-                          <div v-if="card.is_default" class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-1 rounded-full text-xs font-medium">
-                            Default
-                          </div>
-                        </div>
-                      </div>
-                      <!-- Radio Circle -->
-                      <div class="flex-shrink-0">
-                        <div class="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded-full peer-checked:border-primary peer-checked:bg-primary relative">
-                          <div class="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-                <!-- Add New Card Option -->
-                <div class="relative">
-                  <input 
-                    id="add-new-card"
-                    v-model="selectedPaymentMethod" 
-                    value="new-card"
-                    type="radio" 
-                    name="payment-method"
-                    class="sr-only peer"
-                  >
-                  <label 
-                    for="add-new-card"
-                    class="flex items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-300 hover:border-primary hover:from-primary/10 hover:to-primary/20 dark:hover:from-primary/20 dark:hover:to-primary/30 peer-checked:border-primary peer-checked:from-primary/10 peer-checked:to-primary/20 dark:peer-checked:from-primary/20 dark:peer-checked:to-primary/30"
-                  >
-                    <div class="flex items-center space-x-4 w-full">
-                      <!-- Plus Icon -->
-                      <div class="flex-shrink-0">
-                        <div class="w-12 h-8 rounded-lg bg-primary to-blue-600 flex items-center justify-center">
-                          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                          </svg>
-                        </div>
-                      </div>
-                      <!-- Add Card Text -->
-                      <div class="flex-1">
-                        <p class="font-medium text-gray-900 dark:text-white">Add new card</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Securely add a new payment method</p>
-                      </div>
-                      <!-- Radio Circle -->
-                      <div class="flex-shrink-0">
-                        <div class="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded-full peer-checked:border-primary peer-checked:bg-primary relative">
-                          <div class="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-                <!-- Save Card for Future Checkbox (only for new card) -->
-                <div v-if="selectedPaymentMethod === 'new-card'" class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-black dark:border-white">
-                  <label class="flex items-center cursor-pointer">
-                    <input 
-                      v-model="saveCardForFuture" 
-                      type="checkbox" 
-                      class="w-5 h-5 text-primary border-2 border-gray-300 rounded focus:ring-primary focus:ring-2"
-                    >
-                    <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Save this card for future payments
-                    </span>
-                  </label>
-                  <p class="ml-8 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Your card details will be securely stored for faster checkout
-                  </p>
-                </div>
-              </template>
-              <template v-else>
-                <!-- Guest: Only show pay with card, no save, no cards -->
-                <div class="relative">
-                  <label class="flex items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-300">
-                    <div class="flex items-center space-x-4 w-full">
-                      <div class="flex-shrink-0">
-                        <div class="w-12 h-8 rounded-lg bg-gradient-to-r from-primary to-blue-600 flex items-center justify-center">
-                          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                          </svg>
-                        </div>
-                      </div>
-                      <div class="flex-1">
-                        <p class="font-medium text-gray-900 dark:text-white">Pay with Card</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Enter your card details to pay securely</p>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </template>
-            </div>
-          </div>
+        
 
           <!-- Compact Billing Address -->
           <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
@@ -299,7 +209,7 @@
         <div class="lg:col-span-1">
           <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg sticky top-24 border border-gray-100 dark:border-gray-800 relative overflow-hidden">
             <!-- Decorative elements -->
-            <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50/50 to-transparent dark:from-blue-900/20 rounded-bl-full"></div>
+            <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-green-50/50 to-transparent dark:from-green-900/20 rounded-bl-full"></div>
             <div class="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-purple-50/30 to-transparent dark:from-purple-900/10 rounded-tr-full"></div>
             
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -331,13 +241,13 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        {{ booking.subscription?.teamSize || 'N/A' }} people
+                        {{ (booking.productType === 'meeting-room' || booking.productType === 'hot-desk') ? (booking.space?.capacity || 'N/A') : (booking.subscription?.teamSize || 'N/A') }} people
                       </span>
                       <span class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {{ booking.booking?.startTime && booking.booking?.duration ? `${booking.booking.startTime} (${booking.booking.duration})` : 'Full day' }}
+                        {{ getBookingTimeDisplay(booking) }}
                       </span>
                     </div>
                   </div>
@@ -359,28 +269,65 @@
             <div class="rounded-lg bg-gray-50 dark:bg-gray-800 p-4 mb-6">
               <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Price Breakdown</h4>
               <div class="space-y-3">
-                <div v-for="booking in bookingDetails" :key="booking.uniqueKey || booking.spaceId" class="border-b border-gray-200 dark:border-gray-700 pb-3 mb-3 last:mb-0 last:pb-0 last:border-0">
-                  <div class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-700 dark:text-gray-300">{{ booking.space?.name }} (Base)</span>
-                    <span class="text-gray-900 dark:text-white">LKR {{ booking.pricing?.basePrice?.toFixed(2) || (0).toFixed(2) }}</span>
+                <div v-for="(booking, index) in bookingDetails" :key="booking.uniqueKey || booking.spaceId" class="relative">
+                  <!-- Product header -->
+                  <div class="mb-4 pb-2 border-b border-gray-200 dark:border-gray-600">
+                    <h5 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      {{ booking.space?.name || 'Product' }} {{ index + 1 }}
+                    </h5>
                   </div>
-                  <div v-if="booking.pricing?.facilitiesPrice && booking.pricing?.facilitiesPrice > 0" class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-700 dark:text-gray-300">Add-on Services</span>
-                    <span class="text-gray-900 dark:text-white">LKR {{ booking.pricing?.facilitiesPrice?.toFixed(2) || (0).toFixed(2) }}</span>
+
+                  <!-- Base Price with calculation -->
+                  <div class="mb-3">
+                    <div class="flex justify-between items-center text-sm mb-1">
+                      <span class="text-gray-700 dark:text-gray-300 font-medium">{{ getBasePriceLabel(booking) }}</span>
+                      <span class="text-gray-900 dark:text-white font-medium">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">LKR {{ getBasePricePerUnit(booking) }} × {{ getMultiplierLabel(booking) }} = </span>
+                        LKR {{ booking.pricing?.basePrice?.toFixed(2) || (0).toFixed(2) }}
+                      </span>
+                    </div>
                   </div>
+
+                  <!-- Individual Facilities with calculations -->
+                  <div v-if="booking.pricing?.facilitiesPrice && booking.pricing?.facilitiesPrice > 0 && booking.facilities && booking.facilities.length > 0" class="space-y-2 mb-3">
+                    <div v-for="(facility, index) in booking.facilities" :key="facility" class="flex justify-between items-center text-sm">
+                      <span class="text-gray-700 dark:text-gray-300">{{ facility }}</span>
+                      <span class="text-gray-900 dark:text-white">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">LKR {{ getFacilityPricePerUnit(booking, index) }} × {{ getMultiplierLabel(booking) }} = </span>
+                        LKR {{ Math.round(booking.pricing.facilitiesPrice / booking.facilities.length).toFixed(2) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Service Fee -->
                   <div v-if="booking.pricing?.serviceFee && booking.pricing?.serviceFee > 0" class="flex justify-between text-sm mb-2">
                     <span class="text-gray-700 dark:text-gray-300">Service Fee</span>
                     <span class="text-gray-900 dark:text-white">LKR {{ booking.pricing?.serviceFee?.toFixed(2) || (0).toFixed(2) }}</span>
                   </div>
+
+                  <!-- Taxes -->
                   <div v-if="booking.pricing?.taxes && booking.pricing?.taxes > 0" class="flex justify-between text-sm mb-2">
                     <span class="text-gray-700 dark:text-gray-300">Taxes</span>
                     <span class="text-gray-900 dark:text-white">LKR {{ booking.pricing?.taxes?.toFixed(2) || (0).toFixed(2) }}</span>
                   </div>
+
+                  <!-- Subtotal for this booking -->
+                  <div class="pt-2 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 -mx-4 px-4 py-3 rounded-lg">
+                    <div class="flex justify-between text-sm font-medium">
+                      <span class="text-gray-900 dark:text-white">{{ booking.space?.name }} Total</span>
+                      <span class="text-gray-900 dark:text-white font-semibold">LKR {{ (booking.totalPrice || 0).toFixed(2) }}</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <div class="flex justify-between font-medium">
-                    <span class="text-gray-900 dark:text-white">Total</span>
-                    <span class="text-gray-900 dark:text-white">LKR {{ totalAmount.toFixed(2) }}</span>
+
+                <!-- Overall Total -->
+                <div class="pt-4 border-t-2 border-gray-300 dark:border-gray-500 mt-6">
+                  <div class="flex justify-between font-medium text-lg">
+                    <span class="text-gray-900 dark:text-white font-semibold">Total Amount</span>
+                    <span class="text-primary font-bold">LKR {{ totalAmount.toFixed(2) }}</span>
                   </div>
                 </div>
               </div>
@@ -407,39 +354,28 @@
               </span>
             </button>
             
-            <!-- Payment security badges -->
-            <div class="mt-6 flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-6">
-              <div class="flex items-center px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">SSL Secured</span>
-              </div>
-              <div class="flex items-center px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">PCI Compliant</span>
+            <!-- Cancellation Policy -->
+            <div class="mt-6 bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <svg class="w-6 h-6 text-amber-600 dark:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <h4 class="text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">Cancellation Policy</h4>
+                  <div class="text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                    <p>• <strong>No refunds</strong> for cancellations once booking is confirmed</p>
+                    <p>• Booking modifications allowed <strong>only once</strong> before the scheduled date</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Security features -->
-            <div class="mt-6 space-y-3">
-              <div class="flex items-center">
-                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-xs text-gray-600 dark:text-gray-400">Instant confirmation</span>
-              </div>
-              <div class="flex items-center">
-                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-xs text-gray-600 dark:text-gray-400">Secure payment processing</span>
-              </div>
-            </div>
+           
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -449,7 +385,7 @@
 import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { useBookingStore } from '../stores/booking';
 import { useAuthStore } from '../stores/auth';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { NetworkManager } from '../api/networkManager';
 import type { BookingDetails } from '../stores/booking';
 
@@ -480,8 +416,12 @@ export default defineComponent({
     const gatewayUrl = ref('');
     const savedCards = ref<SavedCard[]>([]);
     const loading = ref(true);
+    const showPaymentGateway = ref(false);
+    const gatewayLoading = ref(false);
+    const ipgProcessing = ref(false);
     
     const router = useRouter();
+    const route = useRoute();
     const bookingStore = useBookingStore();
     const authStore = useAuthStore();
     
@@ -563,6 +503,14 @@ export default defineComponent({
       const startDate = booking.booking?.startDate || booking.subscription?.startDate;
       const endDate = booking.booking?.endDate || booking.subscription?.endDate;
       
+      // For meeting rooms and hot desks (single-day bookings), show only start date
+      if ((booking.productType === 'meeting-room' || booking.productType === 'hot-desk') && startDate) {
+        const start = new Date(startDate);
+        const formatOptions: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+        return start.toLocaleDateString('en-US', formatOptions);
+      }
+      
+      // For subscriptions (dedicated desks, coworking spaces), show date range
       if (startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
@@ -576,6 +524,91 @@ export default defineComponent({
       }
       
       return 'Date not specified';
+    }
+
+    // Helper methods for price calculations (same as BookingSummary.vue)
+    function getBasePriceLabel(booking: BookingDetails): string {
+      const productType = booking.productType;
+      const types: Record<string, string> = {
+        'meeting-room': 'Meeting Room only price',
+        'hot-desk': 'Hot Desk only price',
+        'dedicated-desk': 'Dedicated Desk only price',
+        'coworking-space': 'Co-working Space only price'
+      };
+      return types[productType] || 'Base Price';
+    }
+
+    function getBasePricePerUnit(booking: BookingDetails): number {
+      if (!booking.pricing?.basePrice) return 0;
+      
+      const multiplier = getMultiplier(booking);
+      return multiplier > 0 ? Math.round(booking.pricing.basePrice / multiplier) : booking.pricing.basePrice;
+    }
+
+    function getMultiplier(booking: BookingDetails): number {
+      if (booking.productType === 'meeting-room' || booking.productType === 'hot-desk') {
+        // For meeting rooms and hot desks, multiplier is duration in hours
+        return parseInt(booking.booking?.duration || '1');
+      } else if (booking.productType === 'dedicated-desk' || booking.productType === 'coworking-space') {
+        // For subscriptions, calculate based on package type
+        const packageType = booking.subscription?.packageType || 'monthly';
+        if (packageType === 'daily') return 1;
+        if (packageType === 'monthly') return 30; // Approximate days in month
+        if (packageType === 'annual') return 365; // Days in year
+      }
+      return 1; // Default fallback
+    }
+
+    function getMultiplierLabel(booking: BookingDetails): string {
+      if (booking.productType === 'hot-desk') {
+        return 'Full day';
+      } else if (booking.productType === 'meeting-room') {
+        const duration = parseInt(booking.booking?.duration || '1');
+        return `${duration} hour${duration > 1 ? 's' : ''}`;
+      } else if (booking.productType === 'dedicated-desk' || booking.productType === 'coworking-space') {
+        const packageType = booking.subscription?.packageType || 'monthly';
+        if (packageType === 'daily') return '1 day';
+        if (packageType === 'monthly') return '30 days';
+        if (packageType === 'annual') return '365 days';
+      }
+      return '1 unit';
+    }
+
+    function getFacilityPricePerUnit(booking: BookingDetails, facilityIndex: number): number {
+      if (!booking.pricing?.facilitiesPrice || !booking.facilities || booking.facilities.length === 0) return 0;
+      
+      const totalFacilityPrice = Math.round(booking.pricing.facilitiesPrice / booking.facilities.length);
+      const multiplier = getMultiplier(booking);
+      return multiplier > 0 ? Math.round(totalFacilityPrice / multiplier) : totalFacilityPrice;
+    }
+
+    // Get booking time display with start time, end time, and duration
+    function getBookingTimeDisplay(booking: BookingDetails): string {
+      // For hot desks, just show "Full day"
+      if (booking.productType === 'hot-desk') {
+        return 'Full day';
+      }
+
+      // For meeting rooms, calculate end time from duration
+      if (!booking.booking?.startTime || !booking.booking?.duration) {
+        return 'Time not specified';
+      }
+
+      const startTime = booking.booking.startTime;
+      const duration = parseInt(booking.booking.duration);
+
+      if (isNaN(duration)) {
+        return startTime;
+      }
+
+      // Calculate end time
+      const [hours, minutes] = startTime.split(':').map(Number);
+      const startDateTime = new Date();
+      startDateTime.setHours(hours, minutes, 0, 0);
+      startDateTime.setHours(startDateTime.getHours() + duration);
+      const endTime = `${startDateTime.getHours().toString().padStart(2, '0')}:${startDateTime.getMinutes().toString().padStart(2, '0')}`;
+
+      return `${startTime} - ${endTime} (${duration}h)`;
     }
     
     // Load saved payment methods
@@ -610,23 +643,121 @@ export default defineComponent({
       }
     }
     
-    // Create new card session
+    // Create new card session and process booking
     async function createNewCardSession(): Promise<void> {
       try {
         processing.value = true;
-        const response = await NetworkManager.addNewCard({
-          first_name: billingAddress.value.firstName,
-          last_name: billingAddress.value.lastName,
-          email: billingAddress.value.email,
-          phone: billingAddress.value.phone,
-          is_card_add: saveCardForFuture.value
-        });
+
+        // Get the booking (single booking)
+        const bookingDetail = bookingDetails.value[0];
+        if (!bookingDetail) {
+          alert('No booking details found');
+          return;
+        }
+
+        // Extract booking information
+        let bookingDate = '';
+        let startTime = '';
+        let endTime = '';
+        let facilityIds: number[] = [];
+
+        if (bookingDetail.productType === 'meeting-room' || bookingDetail.productType === 'hot-desk') {
+          // For meeting rooms and hot desks
+          bookingDate = bookingDetail.booking?.startDate || '';
+          startTime = bookingDetail.booking?.startTime || '';
+
+          // Calculate end time based on start time and duration
+          if (startTime && bookingDetail.booking?.duration) {
+            const durationHours = parseInt(bookingDetail.booking.duration);
+            if (!isNaN(durationHours)) {
+              const [hours, minutes] = startTime.split(':').map(Number);
+              const startDateTime = new Date();
+              startDateTime.setHours(hours, minutes, 0, 0);
+              startDateTime.setHours(startDateTime.getHours() + durationHours);
+              endTime = `${startDateTime.getHours().toString().padStart(2, '0')}:${startDateTime.getMinutes().toString().padStart(2, '0')}`;
+            } else {
+              endTime = startTime; // Fallback if duration parsing fails
+            }
+          } else {
+            endTime = startTime; // Fallback if no duration
+          }
+
+          // Map facility names to IDs using space facility data
+          if (bookingDetail.facilities && bookingDetail.facilities.length > 0) {
+            console.log('Facilities in booking:', bookingDetail.facilities);
+            console.log('Space facility data:', {
+              additional_facilities: bookingDetail.space.additional_facilities,
+              default_facilities: bookingDetail.space.default_facilities,
+              facilities: bookingDetail.space.facilities
+            });
+
+            const allFacilities = [
+              ...(bookingDetail.space.additional_facilities || []),
+              ...(bookingDetail.space.default_facilities || []),
+              ...(bookingDetail.space.facilities || [])
+            ];
+
+            console.log('All facilities combined:', allFacilities);
+
+            facilityIds = bookingDetail.facilities
+              .map(facilityName => {
+                console.log('Looking for facility:', facilityName);
+                const facility = allFacilities.find(f =>
+                  f.facility_name.toLowerCase() === facilityName.toLowerCase()
+                );
+                console.log('Found facility:', facility);
+                return facility ? facility.facility_id : null;
+              })
+              .filter(id => id !== null) as number[];
+
+            console.log('Mapped facility IDs:', facilityIds);
+          }
+        } else if (bookingDetail.productType === 'dedicated-desk') {
+          // For dedicated desks, use subscription dates
+          bookingDate = bookingDetail.subscription?.startDate || '';
+          startTime = '09:00'; // Default start time for dedicated desks
+          endTime = '18:00';   // Default end time for dedicated desks
+          facilityIds = [];    // Dedicated desks might not have additional facilities
+        }
+
+        // Format booking date (assuming it's in YYYY-MM-DD format, convert to YYYY.MM.DD)
+        const formattedBookingDate = bookingDate.replace(/-/g, '.');
+
+        // Construct payload with single booking
+        const paymentPayload = {
+          first_name: billingAddress.value.firstName || '',
+          last_name: billingAddress.value.lastName || '',
+          email: billingAddress.value.email || '',
+          phone: billingAddress.value.phone || '',
+          user_id: authStore.user?.id,
+          is_card_add: false, // As per user requirement
+          amount: totalAmount.value,
+          booking: {
+            user_id: authStore.user?.id,
+            product_id: bookingDetail.spaceId,
+            booking_date: formattedBookingDate,
+            start_time: startTime,
+            end_time: endTime,
+            facility_ids: facilityIds, // Correct facility IDs for this single product
+            total_price: totalAmount.value
+          }
+        };
+
+        console.log('Payment payload being sent:', paymentPayload);
+
+        const response = await NetworkManager.processCardPayment(paymentPayload);
+
         if (response.success && response.gatewayData?.link) {
-          // Redirect to full-page payment gateway
-          router.push({
-            name: 'PaymentGateway',
-            query: { link: response.gatewayData.link }
-          });
+          // Store booking data for retry scenarios
+          sessionStorage.setItem('retry_booking_data', JSON.stringify({
+            bookingDetails: bookingDetails.value,
+            billingAddress: billingAddress.value,
+            selectedPaymentMethod: selectedPaymentMethod.value,
+            saveCardForFuture: saveCardForFuture.value
+          }));
+
+          // Redirect to payment gateway in the same page (not iframe)
+          window.location.href = response.gatewayData.link;
         } else {
           alert(response.message || 'Failed to create payment session');
         }
@@ -653,32 +784,121 @@ export default defineComponent({
     // Process payment with existing card
     async function processExistingCardPayment(): Promise<void> {
       processing.value = true;
-      
+
       try {
-        // Simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Create booking confirmation
-        const bookingId = 'WS' + Date.now().toString().slice(-8);
-        const confirmationData = {
-          bookings: bookingDetails.value,
-          bookingId,
-          paymentMethod: 'card',
-          cardInfo: {
-            number: savedCards.value.find(card => card.id === selectedPaymentMethod.value)?.card_number || '',
-            type: savedCards.value.find(card => card.id === selectedPaymentMethod.value)?.card_type || ''
-          },
-          confirmedAt: new Date().toISOString(),
-          totalAmount: totalAmount.value
+        // Get the booking (single booking)
+        const bookingDetail = bookingDetails.value[0];
+        if (!bookingDetail) {
+          alert('No booking details found');
+          return;
+        }
+
+        // Extract booking information (same logic as new card)
+        let bookingDate = '';
+        let startTime = '';
+        let endTime = '';
+        let facilityIds: number[] = [];
+
+        if (bookingDetail.productType === 'meeting-room' || bookingDetail.productType === 'hot-desk') {
+          bookingDate = bookingDetail.booking?.startDate || '';
+          startTime = bookingDetail.booking?.startTime || '';
+
+          // Calculate end time based on start time and duration
+          if (startTime && bookingDetail.booking?.duration) {
+            const durationHours = parseInt(bookingDetail.booking.duration);
+            if (!isNaN(durationHours)) {
+              const [hours, minutes] = startTime.split(':').map(Number);
+              const startDateTime = new Date();
+              startDateTime.setHours(hours, minutes, 0, 0);
+              startDateTime.setHours(startDateTime.getHours() + durationHours);
+              endTime = `${startDateTime.getHours().toString().padStart(2, '0')}:${startDateTime.getMinutes().toString().padStart(2, '0')}`;
+            } else {
+              endTime = startTime;
+            }
+          } else {
+            endTime = startTime;
+          }
+
+          // Map facility names to IDs using space facility data
+          if (bookingDetail.facilities && bookingDetail.facilities.length > 0) {
+            console.log('Facilities in booking:', bookingDetail.facilities);
+            console.log('Space facility data:', {
+              additional_facilities: bookingDetail.space.additional_facilities,
+              default_facilities: bookingDetail.space.default_facilities,
+              facilities: bookingDetail.space.facilities
+            });
+
+            const allFacilities = [
+              ...(bookingDetail.space.additional_facilities || []),
+              ...(bookingDetail.space.default_facilities || []),
+              ...(bookingDetail.space.facilities || [])
+            ];
+
+            console.log('All facilities combined:', allFacilities);
+
+            facilityIds = bookingDetail.facilities
+              .map(facilityName => {
+                console.log('Looking for facility:', facilityName);
+                const facility = allFacilities.find(f =>
+                  f.facility_name.toLowerCase() === facilityName.toLowerCase()
+                );
+                console.log('Found facility:', facility);
+                return facility ? facility.facility_id : null;
+              })
+              .filter(id => id !== null) as number[];
+
+            console.log('Mapped facility IDs:', facilityIds);
+          }
+        } else if (bookingDetail.productType === 'dedicated-desk') {
+          bookingDate = bookingDetail.subscription?.startDate || '';
+          startTime = '09:00';
+          endTime = '18:00';
+          facilityIds = [];
+        }
+
+        // Format booking date
+        const formattedBookingDate = bookingDate.replace(/-/g, '.');
+
+        // Construct payload for existing card payment
+        const paymentPayload = {
+          first_name: billingAddress.value.firstName || '',
+          last_name: billingAddress.value.lastName || '',
+          email: billingAddress.value.email || '',
+          phone: billingAddress.value.phone || '',
+          user_id: authStore.user?.id,
+          is_card_add: false,
+          amount: totalAmount.value,
+          booking: {
+            user_id: authStore.user?.id,
+            product_id: bookingDetail.spaceId,
+            booking_date: formattedBookingDate,
+            start_time: startTime,
+            end_time: endTime,
+            facility_ids: facilityIds, // Correct facility IDs for this single product
+            total_price: totalAmount.value
+          }
         };
-        
-        sessionStorage.setItem('bookingConfirmation', JSON.stringify(confirmationData));
-        bookingStore.clearBookingDetails();
-        
-        router.push({
-          name: 'BookingConfirmation',
-          params: { bookingId }
-        });
+
+        console.log('Payment payload being sent:', paymentPayload);
+
+        const response = await NetworkManager.processCardPayment(paymentPayload);
+
+        if (response.success && response.gatewayData?.link) {
+          // Store booking data for retry scenarios
+          sessionStorage.setItem('retry_booking_data', JSON.stringify({
+            bookingDetails: bookingDetails.value,
+            billingAddress: billingAddress.value,
+            selectedPaymentMethod: selectedPaymentMethod.value,
+            saveCardForFuture: saveCardForFuture.value
+          }));
+
+          // Show embedded payment gateway instead of redirecting
+          gatewayUrl.value = response.gatewayData.link;
+          showPaymentGateway.value = true;
+          gatewayLoading.value = true;
+        } else {
+          alert(response.message || 'Failed to process payment');
+        }
       } catch (error) {
         console.error('Payment processing error:', error);
         alert('Payment processing failed. Please try again.');
@@ -696,14 +916,98 @@ export default defineComponent({
     // Handle gateway load
     function onGatewayLoad(): void {
       console.log('Payment gateway loaded');
-      // Here you could listen for messages from the iframe
-      // to handle payment completion
+      gatewayLoading.value = false;
+      
+      // Listen for messages from the payment gateway iframe
+      window.addEventListener('message', handlePaymentMessage);
+    }
+    
+    // Handle messages from payment gateway
+    function handlePaymentMessage(event: MessageEvent): void {
+      // Verify origin for security (you should replace with your actual gateway domain)
+      // if (event.origin !== 'https://your-gateway-domain.com') return;
+      
+      if (event.data && event.data.type === 'payment_complete') {
+        // Payment completed successfully
+        showPaymentGateway.value = false;
+        gatewayUrl.value = '';
+        processing.value = false;
+        // Clear booking data so floating summary and summary page are reset
+        if (bookingStore.clearBookingDetails) bookingStore.clearBookingDetails();
+        // Navigate to confirmation page
+        router.push('/booking-confirmation');
+      } else if (event.data && event.data.type === 'payment_failed') {
+        // Payment failed
+        showPaymentGateway.value = false;
+        gatewayUrl.value = '';
+        processing.value = false;
+        
+        alert('Payment failed. Please try again.');
+      }
+    }
+    
+    // Cancel payment and go back
+    function cancelPayment(): void {
+      showPaymentGateway.value = false;
+      gatewayUrl.value = '';
+      gatewayLoading.value = false;
+      processing.value = false;
+      
+      // Remove message listener
+      window.removeEventListener('message', handlePaymentMessage);
     }
     
     // Initialize on component mount
     onMounted(async () => {
+      // If no booking data, redirect to home
+      if (bookingDetails.value.length === 0) {
+        router.replace({ name: 'Home' });
+        return;
+      }
       bookingStore.initializeBooking();
       await loadSavedCards();
+
+      // Check for IPG return query parameters
+      const query = route.query;
+      if (query.desc && query.status && query.orderId) {
+        // Set IPG processing state to show loading overlay
+        ipgProcessing.value = true;
+        
+        const isSuccess = query.desc === 'Approved' && query.status === 'SUCCESS';
+        
+        // Store payment result and data in sessionStorage
+        sessionStorage.setItem('payment_result', JSON.stringify({
+          success: isSuccess,
+          orderId: query.orderId,
+          desc: query.desc,
+          status: query.status,
+          // Store booking data for retry or confirmation
+          bookingData: bookingDetails.value
+        }));
+
+        // Add a small delay to ensure loading overlay is visible
+        setTimeout(async () => {
+          if (isSuccess) {
+            // Clear booking data on success
+            if (bookingStore.clearBookingDetails) bookingStore.clearBookingDetails();
+          }
+          // Redirect directly to confirmation page (replace to avoid Payment in history)
+          router.replace({ name: 'BookingConfirmation' });
+        }, 1500); // 1.5 second delay to show loading effect
+      } else {
+        // Check for retry data
+        const retryData = sessionStorage.getItem('restore_booking_data');
+        if (retryData) {
+          const parsed = JSON.parse(retryData);
+          // Restore the data
+          // Note: bookingDetails is from store, so need to restore store
+          // For now, assume store is initialized
+          // billingAddress.value = parsed.billingAddress;
+          // selectedPaymentMethod.value = parsed.selectedPaymentMethod;
+          // saveCardForFuture.value = parsed.saveCardForFuture;
+          sessionStorage.removeItem('restore_booking_data');
+        }
+      }
     });
     
     return {
@@ -720,12 +1024,23 @@ export default defineComponent({
   totalAmount,
   isPaymentFormValid,
   formatBookingDate,
+  getBasePriceLabel,
+  getBasePricePerUnit,
+  getMultiplier,
+  getMultiplierLabel,
+  getFacilityPricePerUnit,
+  getBookingTimeDisplay,
   processPayment,
   closeGatewayModal,
   onGatewayLoad,
   router,
   autofillUserDetails,
-  authStore
+  authStore,
+  showPaymentGateway,
+  gatewayLoading,
+  ipgProcessing,
+  cancelPayment,
+  handlePaymentMessage
     };
   }
 });
@@ -759,5 +1074,29 @@ export default defineComponent({
 .btn-primary:disabled {
   background: #9ca3af;
   cursor: not-allowed;
+}
+
+/* Payment Gateway Iframe Styles */
+.payment-gateway-iframe {
+  min-height: 600px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .payment-gateway-iframe {
+    min-height: 500px;
+  }
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 </style>

@@ -10,6 +10,7 @@ export interface BookingDetails {
     startDate: string | null
     endDate: string | null
     startTime: string
+    endTime: string
     duration: string
     // Keep legacy date field for backward compatibility
     date?: string

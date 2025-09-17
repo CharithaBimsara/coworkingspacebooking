@@ -170,7 +170,7 @@
           </div>
           
           <!-- Enhanced Features/Amenities Section with Modern Card Design -->
-          <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg dark:shadow-dark-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl dark:hover:shadow-dark-xl transition-all duration-300">
+          <div v-if="productType !== 'hot-desk'" class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg dark:shadow-dark-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl dark:hover:shadow-dark-xl transition-all duration-300">
             <div class="flex items-center mb-5">
               <div class="w-10 h-10 bg-gradient-to-r from-primary to-primary/80 rounded-xl flex items-center justify-center mr-3 shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -681,7 +681,8 @@
               
               <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
                 <!-- Date and Time Selection with improved visual cues -->
-                <div class="grid grid-cols-2 gap-3 mb-3">
+                <!-- Date selection (both meeting rooms and hot desks) -->
+                <div class="grid mb-3" :class="{'grid-cols-2 gap-3': productType === 'meeting-room', 'grid-cols-1': productType === 'hot-desk'}">
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5 flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -696,24 +697,41 @@
                       @change="onDateChange"
                       class="compact-date-picker ultra-compact"
                     />
+                    <!-- Availability message for hot desks -->
+                    <div v-if="productType === 'hot-desk' && bookingForm.date && isHotDeskBooked" class="mt-2 text-xs text-red-600 dark:text-red-400">
+                      This date is already booked
+                    </div>
+                    <div v-else-if="productType === 'hot-desk' && bookingForm.date && !isHotDeskBooked" class="mt-5 ml-2 text-xs text-green-600 dark:text-green-400">
+                      Available for booking
+                    </div>
+                   
                   </div>
                   
-                  <div>
+                  <!-- Time selection (meeting rooms only) -->
+                  <div v-if="productType === 'meeting-room'">
                     <label class="block text-sm font-medium text-gray-700 mb-3.5 flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       Time
+                      <span v-if="!bookingForm.date" class="ml-2 text-xs text-amber-600 dark:text-amber-400 font-normal">
+                        (Select date first)
+                      </span>
+                      <span v-else-if="isSelectedDateClosed" class="ml-2 text-xs text-amber-600 dark:text-amber-400 font-normal">
+                        (Day is closed)
+                      </span>
                     </label>
                     <div class="grid grid-cols-2 gap-2 relative">
                       <!-- Start Time Custom Dropdown (Compact) -->
                       <div class="relative">
                         <div 
-                          @click="toggleStartDropdown"
-                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md cursor-pointer hover:border-primary transition-colors duration-200 h-7"
+                          @click="bookingForm.date && !isSelectedDateClosed && toggleStartDropdown()"
+                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md transition-colors duration-200 h-7"
                           :class="{ 
                             'ring-1 ring-primary/20': showStartTimeDropdown,
-                            'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.start
+                            'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.start,
+                            'cursor-pointer hover:border-primary': bookingForm.date && !isSelectedDateClosed,
+                            'cursor-not-allowed opacity-60 bg-gray-50 dark:bg-gray-900': !bookingForm.date || isSelectedDateClosed
                           }"
                         >
                           <span v-if="bookingForm.timeRange.start" class="text-gray-900 dark:text-white whitespace-nowrap">
@@ -728,7 +746,7 @@
                         <!-- Start Time Dropdown with compact styling -->
                         <div 
                           v-if="showStartTimeDropdown" 
-                          class="absolute top-full left-0 w-[90px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-xs dark:shadow-dark-xs z-1000 mt-0.5 overflow-hidden"
+                          class="absolute top-full left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-xs dark:shadow-dark-xs z-1000 mt-0.5 overflow-hidden"
                         >
                           <div class="max-h-32 overflow-y-auto custom-scrollbar-time overflow-x-hidden">
                             <!-- Full Day Option -->
@@ -746,10 +764,7 @@
                                   Full Day
                                 </span>
                                 <span class="text-[9px] text-gray-500 dark:text-gray-400">
-                                  {{ getTodayHours().start_time && getTodayHours().end_time ? `${formatTimeDisplay(getTodayHours().start_time!)} - ${formatTimeDisplay(getTodayHours().end_time!)}` : 'Closed' }}
-                                </span>
-                                <span v-if="!isFullDayAvailable()" class="text-[7px] text-red-500">
-                                  booked
+                                  {{ selectedDateHours.start_time && selectedDateHours.end_time ? `${formatTimeDisplay(selectedDateHours.start_time!)} - ${formatTimeDisplay(selectedDateHours.end_time!)}` : 'Closed' }}
                                 </span>
                               </div>
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -757,7 +772,14 @@
                               </svg>
                             </div>
                             <!-- Regular Time Slots -->
+                            <div v-if="!bookingForm.date" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                              Select a date first
+                            </div>
+                            <div v-else-if="isSelectedDateClosed" class="px-3 py-2 text-xs text-amber-600 dark:text-amber-400 text-center">
+                              This day is closed
+                            </div>
                             <div
+                              v-else
                               v-for="time in generateTimeSlots()" 
                               :key="time"
                               @click="selectStartTime(time)"
@@ -768,7 +790,7 @@
                                 }
                               ]"
                             >
-                              <span class="text-xs truncate max-w-[50px]" :class="{'text-gray-400': disabledTimes.start.includes(time), 'text-gray-700': !disabledTimes.start.includes(time)}">
+                              <span class="text-xs truncate max-w-[50px] sm:max-w-[70px] md:max-w-[90px]" :class="{'text-gray-400': disabledTimes.start.includes(time), 'text-gray-700': !disabledTimes.start.includes(time)}">
                                 {{ formatTimeDisplay(time) }}
                               </span>
                               <span v-if="disabledTimes.start.includes(time)" class="text-[7px] text-red-500 ml-0.5 whitespace-nowrap">
@@ -782,12 +804,14 @@
                       <!-- End Time Custom Dropdown (Compact) -->
                       <div class="relative">
                         <div 
-                          @click="toggleEndDropdown"
-                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md cursor-pointer hover:border-primary transition-colors duration-200 h-7"
+                          @click="bookingForm.date && !isSelectedDateClosed && toggleEndDropdown()"
+                          class="compact-select-field text-xs flex items-center justify-between px-2 py-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md transition-colors duration-200 h-7"
                           :class="{ 
                             'ring-1 ring-primary/20': showEndTimeDropdown,
                             'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.end,
-                            'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start || isFullDayBooking
+                            'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start || isFullDayBooking,
+                            'cursor-pointer hover:border-primary': bookingForm.date && bookingForm.timeRange.start && !isFullDayBooking && !isSelectedDateClosed,
+                            'cursor-not-allowed opacity-60 bg-gray-50 dark:bg-gray-900': !bookingForm.date || isSelectedDateClosed
                           }"
                         >
                           <span v-if="bookingForm.timeRange.end" class="text-gray-900 dark:text-white whitespace-nowrap">
@@ -802,10 +826,17 @@
                         <!-- End Time Dropdown with compact styling -->
                         <div 
                           v-if="showEndTimeDropdown && bookingForm.timeRange.start" 
-                          class="absolute top-full left-0 w-[90px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-xs dark:shadow-dark-xs z-1000 mt-0.5 overflow-hidden"
+                          class="absolute top-full left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm shadow-xs dark:shadow-dark-xs z-1000 mt-0.5 overflow-hidden"
                         >
                           <div class="max-h-32 overflow-y-auto custom-scrollbar-time overflow-x-hidden">
+                            <div v-if="!bookingForm.timeRange.start" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                              Select a start time first
+                            </div>
+                            <div v-else-if="isSelectedDateClosed" class="px-3 py-2 text-xs text-amber-600 dark:text-amber-400 text-center">
+                              This day is closed
+                            </div>
                             <div
+                              v-else
                               v-for="time in generateTimeSlots()" 
                               :key="time"
                               @click="selectEndTime(time)"
@@ -816,7 +847,7 @@
                                 }
                               ]"
                             >
-                              <span class="text-xs truncate max-w-[50px]" :class="{'text-gray-400 dark:text-gray-500': disabledTimes.end.includes(time), 'text-gray-700 dark:text-gray-300': !disabledTimes.end.includes(time)}">
+                              <span class="text-xs truncate max-w-[50px] sm:max-w-[70px] md:max-w-[90px]" :class="{'text-gray-400 dark:text-gray-500': disabledTimes.end.includes(time), 'text-gray-700 dark:text-gray-300': !disabledTimes.end.includes(time)}">
                                 {{ formatTimeDisplay(time) }}
                               </span>
                               <span v-if="disabledTimes.end.includes(time)" class="text-[7px] text-red-500 ml-0.5 whitespace-nowrap">
@@ -830,6 +861,14 @@
                   </div>
                 </div>
 
+                 <!-- Closed day message -->
+                    <div v-if="isSelectedDateClosed" class="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                     Sorry, we’re closed on this day
+                    </div>
+
                 <!-- Duration Display (Compact) -->
                 <div v-if="bookingForm.timeRange.start && bookingForm.timeRange.end && calculateDurationInHours() > 0" 
                   class="text-center py-1 px-1.5 bg-blue-50 rounded-md border border-blue-100 mb-2 flex items-center justify-center">
@@ -840,7 +879,7 @@
                 </div>
 
                 <!-- Additional Facilities as Cards with visual enhancements -->
-                <div>
+                <div v-if="productType === 'meeting-room'">
                   <label class="block text-sm font-medium text-gray-700 mb-2 mt-5 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -868,13 +907,13 @@
                         :key="facility.facility_id"
                         class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg transition-all duration-300 group min-h-[80px]" 
                         :class="[
-                          selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700',
+                          selectedFacilities.includes(String(facility.facility_id)) ? 'ring-2 ring-primary' : 'border border-gray-200 dark:border-gray-700',
                           areFacilitiesEnabled ? 'cursor-pointer hover:border-gray-300 dark:hover:border-gray-600' : 'cursor-not-allowed opacity-60'
                         ]"
                       >
                         <input 
                           v-model="selectedFacilities" 
-                          :value="facility.facility_name.toLowerCase()" 
+                          :value="String(facility.facility_id)" 
                           type="checkbox" 
                           class="sr-only"
                           :disabled="!areFacilitiesEnabled"
@@ -884,7 +923,7 @@
                                :class="areFacilitiesEnabled ? 'bg-gray-50 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-600'">
                             <svg 
                               class="w-4 h-4" 
-                              :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" 
+                              :class="selectedFacilities.includes(String(facility.facility_id)) ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" 
                               fill="currentColor" 
                               viewBox="0 0 20 20"
                             >
@@ -893,7 +932,7 @@
                           </div>
                           <span 
                             class="text-xs font-medium block break-words leading-tight" 
-                            :class="selectedFacilities.includes(facility.facility_name.toLowerCase()) ? 'text-primary' : 'text-gray-800 dark:text-gray-300'"
+                            :class="selectedFacilities.includes(String(facility.facility_id)) ? 'text-primary' : 'text-gray-800 dark:text-gray-300'"
                           >
                             {{ facility.facility_name }}
                           </span>
@@ -902,7 +941,7 @@
                             +LKR {{ facilityPrice(facility) }}/hr
                           </span>
                         </div>
-                        <div v-if="selectedFacilities.includes(facility.facility_name.toLowerCase()) && areFacilitiesEnabled" class="absolute top-1 right-1">
+                        <div v-if="selectedFacilities.includes(String(facility.facility_id)) && areFacilitiesEnabled" class="absolute top-1 right-1">
                           <div class="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
                             <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -1103,11 +1142,30 @@
                   <div>
                     <span class="text-gray-800 text-sm font-medium">
                       {{ getSpaceTypeName() }} 
-                      <span v-if="calculateDurationInHours() > 0" class="text-gray-600 font-normal">({{ calculateDurationInHours() }}h)</span>
-                      <span v-else class="text-amber-600 font-normal">(Select time)</span>
+                      <!-- For meeting rooms, show hourly duration -->
+                      <span v-if="productType === 'meeting-room' && calculateDurationInHours() > 0" class="text-gray-600 font-normal">
+                        ({{ calculateDurationInHours() }}h)
+                      </span>
+                      <!-- For hot desks, show 'full day' -->
+                      <span v-else-if="productType === 'hot-desk' && bookingForm.date" class="text-gray-600 font-normal">
+                        (full day)
+                      </span>
+                      <!-- Show warning if time not selected (meeting rooms only) -->
+                      <span v-else-if="productType === 'meeting-room'" class="text-amber-600 font-normal">
+                        (Select time)
+                      </span>
+                      <!-- Show warning if date not selected (hot desks) -->
+                      <span v-else-if="productType === 'hot-desk'" class="text-amber-600 font-normal">
+                        (Select date)
+                      </span>
                     </span>
-                    <div v-if="calculateDurationInHours() > 0" class="text-xs text-gray-500 mt-0.5">
+                    <!-- Price calculation for meeting rooms (hourly) -->
+                    <div v-if="productType === 'meeting-room' && calculateDurationInHours() > 0" class="text-xs text-gray-500 mt-0.5">
                       LKR {{ space?.pricing?.hourly || 85 }}/hour × {{ calculateDurationInHours() }} hours
+                    </div>
+                    <!-- Price display for hot desks (daily) -->
+                    <div v-else-if="productType === 'hot-desk' && bookingForm.date" class="text-xs text-gray-500 mt-0.5">
+                      LKR {{ space?.pricing?.daily || 500 }}/day
                     </div>
                   </div>
                   <span class="font-semibold text-sm">LKR {{ roomBasePrice }}</span>
@@ -1363,6 +1421,28 @@
                         <div v-else-if="generateTimeSlots().length === 0" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
                           No available times
                         </div>
+                        <!-- Full Day Option for Mobile -->
+                        <div
+                          v-else-if="productType === 'meeting-room' || productType === 'hot-desk'"
+                          @click="isFullDayAvailable() && selectFullDay()"
+                          class="py-2 px-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center border-b border-gray-100 dark:border-gray-600"
+                          :class="{
+                            'opacity-50 cursor-not-allowed': !isFullDayAvailable(),
+                            'hover:bg-gray-50 dark:hover:bg-gray-700': isFullDayAvailable()
+                          }"
+                        >
+                          <div class="flex flex-col">
+                            <span class="text-sm font-semibold text-primary">
+                              Full Day
+                            </span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                              {{ getTodayHours().start_time && getTodayHours().end_time ? `${formatTimeDisplay(getTodayHours().start_time!)} - ${formatTimeDisplay(getTodayHours().end_time!)}` : 'Closed' }}
+                            </span>
+                          </div>
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg>
+                        </div>
                         <div
                           v-for="time in generateTimeSlots()" 
                           :key="time"
@@ -1392,7 +1472,7 @@
                       :class="{
                         'ring-2 ring-primary/20': showEndTimeDropdown,
                         'text-gray-500 dark:text-gray-400': !bookingForm.timeRange.end,
-                        'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start 
+                        'opacity-50 cursor-not-allowed': !bookingForm.timeRange.start || isFullDayBooking
                       }"
                     >
                       <span v-if="bookingForm.timeRange.end" class="text-xs text-gray-900 dark:text-white">
@@ -1406,7 +1486,7 @@
                     
                     <!-- End Time Dropdown with unified styling -->
                     <div 
-                      v-if="showEndTimeDropdown && bookingForm.timeRange.start" 
+                      v-if="showEndTimeDropdown && bookingForm.timeRange.start && !isFullDayBooking" 
                       class="absolute top-full left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg dark:shadow-dark-lg z-1000 mt-0.5 overflow-hidden"
                     >
                       <div class="max-h-48 overflow-y-auto custom-scrollbar overflow-x-hidden">
@@ -1753,6 +1833,7 @@ export default defineComponent({
       productType: 'meeting-room',
       isLoadingAvailability: false,
       isLoadingBookedSlots: false,
+      isHotDeskBooked: false, // Flag to track if a hot desk is already booked for the selected date
       isDescriptionExpanded: false, // Track if description is expanded
       featureNameCache: new Map(), // Cache for feature names to ensure consistency
       bookedTimeSlots: [] as Array<{ startTime: string; endTime: string }>,
@@ -1818,15 +1899,30 @@ export default defineComponent({
     today(): string {
       return new Date().toISOString().split('T')[0]
     },
+
+    selectedDateHours(): { day?: string, is_enabled: boolean, start_time?: string, end_time?: string } {
+      return this.bookingForm.date ? this.getOperationalHoursForDate(this.bookingForm.date) : { is_enabled: false };
+    },
+
+    isSelectedDateClosed(): boolean {
+      return this.bookingForm.date ? !this.selectedDateHours.is_enabled : false;
+    },
     
     roomBasePrice(): number {
       if (!this.space?.pricing) return 0
       
-      // For meeting-room and hot-desk, use hourly pricing
-      if (this.productType === 'meeting-room' || this.productType === 'hot-desk') {
+      // For meeting-room, use hourly pricing
+      if (this.productType === 'meeting-room') {
         const hourlyRate = this.space.pricing.hourly || 85
         const duration = this.calculateDurationInHours()
         return hourlyRate * duration
+      }
+      
+      // For hot-desk, use daily pricing regardless of time selected
+      if (this.productType === 'hot-desk') {
+        // Use daily rate for hot desks, regardless of duration
+        const dailyRate = this.space.pricing.daily || 500
+        return dailyRate
       }
       
       // For dedicated-desk, use the selected package pricing
@@ -1880,6 +1976,13 @@ export default defineComponent({
     },
     
     isBookingFormValid(): boolean {
+      // For hot desks, only date selection is required
+      if (this.productType === 'hot-desk') {
+        // Additionally, check that the date is not already booked
+        return !!(this.bookingForm.date && !this.isHotDeskBooked)
+      }
+      
+      // For meeting rooms, require complete date and time selection
       return !!(this.bookingForm.date &&
                this.bookingForm.timeRange.start &&
                this.bookingForm.timeRange.end)
@@ -1891,7 +1994,12 @@ export default defineComponent({
         return true
       }
       
-      // For meeting-room and hot-desk, require complete date and time selection
+      // For hot desks, facilities are not available
+      if (this.productType === 'hot-desk') {
+        return false
+      }
+      
+      // For meeting rooms, require complete date and time selection
       return this.isBookingFormValid
     },
     
@@ -2027,17 +2135,36 @@ export default defineComponent({
       }
       // Handle string values with nice formatting
       else if (typeof feature === 'string') {
+        // Check if it's a facility ID that we can look up in availableFacilities
+        const facilityById = this.availableFacilities.find(f => String(f.facility_id) === feature);
+        if (facilityById && facilityById.facility_name) {
+          result = facilityById.facility_name;
+        }
+        // Check if it's a facility name that matches availableFacilities
+        else if (this.availableFacilities.some(f => f.facility_name.toLowerCase() === feature.toLowerCase())) {
+          const facilityByName = this.availableFacilities.find(f => f.facility_name.toLowerCase() === feature.toLowerCase());
+          result = facilityByName!.facility_name;
+        }
         // Already checked standardNames at the beginning, so now format it nicely
-        result = feature
-          .replace(/_/g, ' ')
-          .toLowerCase()
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
+        else if (!standardNames[feature]) {
+          result = feature
+            .replace(/_/g, ' ')
+            .toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+        }
       }
-      // Handle any other primitive values
+      // Handle any other primitive values (including numbers)
       else {
-        result = String(feature);
+        const stringValue = String(feature);
+        // Check if it's a facility ID that we can look up in availableFacilities
+        const facilityById = this.availableFacilities.find(f => String(f.facility_id) === stringValue);
+        if (facilityById && facilityById.facility_name) {
+          result = facilityById.facility_name;
+        } else {
+          result = stringValue;
+        }
       }
       
       // Store in cache for consistent retrieval
@@ -2051,12 +2178,38 @@ export default defineComponent({
       try {
         const spaceId = parseInt(this.$route.params.id as string);
         this.bookedTimeSlots = await NetworkManager.getBookedTimeSlots(spaceId, this.bookingForm.date);
+        
+        // For hot desks, check if the date is already booked
+        if (this.productType === 'hot-desk') {
+          this.checkHotDeskAvailability();
+        }
+        
         this.calculateDisabledTimes();
       } catch (error) {
         console.error('Error fetching booked time slots:', error);
         this.bookedTimeSlots = [];
       } finally {
         this.isLoadingBookedSlots = false;
+      }
+    },
+    
+    /**
+     * Check if a hot desk is already booked for the selected date
+     * For hot desks, any booking on the selected date means the entire day is unavailable
+     */
+    checkHotDeskAvailability() {
+      // For hot desks, any booking on the selected date makes the date unavailable
+      this.isHotDeskBooked = this.bookedTimeSlots.length > 0;
+      
+      // If the hot desk is available, set the full day operating hours
+      if (!this.isHotDeskBooked) {
+        const operatingHours = this.getTodayHours();
+        if (operatingHours.start_time && operatingHours.end_time) {
+          this.bookingForm.timeRange = {
+            start: operatingHours.start_time,
+            end: operatingHours.end_time
+          };
+        }
       }
     },
 
@@ -2088,13 +2241,36 @@ export default defineComponent({
     },
 
     generateTimeSlots(): string[] {
-      const slots: string[] = [];
-      for (let hour = 9; hour <= 17; hour++) {
-        for (let minute = 0; minute < 60; minute += 30) {
-          const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-          slots.push(timeString);
-        }
+      // Get operational hours for the selected date
+      const operationalHours = this.bookingForm.date ? this.getOperationalHoursForDate(this.bookingForm.date) : { is_enabled: false };
+      
+      // If no date selected or day is not enabled, return empty array
+      if (!this.bookingForm.date || !operationalHours.is_enabled || !operationalHours.start_time || !operationalHours.end_time) {
+        return [];
       }
+      
+      const slots: string[] = [];
+      
+      // Convert operational times to 24-hour format
+      const startTime = this.convertTo24HourFormat(operationalHours.start_time);
+      const endTime = this.convertTo24HourFormat(operationalHours.end_time);
+      
+      // Parse start and end hours
+      const [startHour, startMinute] = startTime.split(':').map(Number);
+      const [endHour, endMinute] = endTime.split(':').map(Number);
+      
+      // Convert to total minutes for easier iteration
+      const startTotalMinutes = startHour * 60 + startMinute;
+      const endTotalMinutes = endHour * 60 + endMinute;
+      
+      // Generate time slots in 30-minute intervals
+      for (let totalMinutes = startTotalMinutes; totalMinutes <= endTotalMinutes; totalMinutes += 30) {
+        const hour = Math.floor(totalMinutes / 60);
+        const minute = totalMinutes % 60;
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        slots.push(timeString);
+      }
+      
       return slots;
     },
 
@@ -2117,29 +2293,24 @@ export default defineComponent({
     },
 
     isFullDayAvailable(): boolean {
-      const todayHours = this.getTodayHours();
-      
+      const selectedDateHours = this.bookingForm.date ? this.getOperationalHoursForDate(this.bookingForm.date) : { is_enabled: false };
+
       // If no operational hours, full day is not available
-      if (!todayHours.is_enabled || !todayHours.start_time || !todayHours.end_time) {
+      if (!selectedDateHours.is_enabled || !selectedDateHours.start_time || !selectedDateHours.end_time) {
         return false;
       }
-      
+
       // Convert operational times to minutes for comparison
-      const operationalStart = this.timeToMinutes(this.convertTo24HourFormat(todayHours.start_time));
-      const operationalEnd = this.timeToMinutes(this.convertTo24HourFormat(todayHours.end_time));
-      
-      // Check if any existing booking conflicts with the full day range
-      for (const booking of this.bookedTimeSlots) {
-        const bookingStart = this.timeToMinutes(booking.startTime);
-        const bookingEnd = this.timeToMinutes(booking.endTime);
-        
-        // Check for overlap: booking overlaps with operational hours
-        if (bookingStart < operationalEnd && bookingEnd > operationalStart) {
-          return false; // Conflict found
-        }
+      const operationalStart = this.timeToMinutes(this.convertTo24HourFormat(selectedDateHours.start_time));
+      const operationalEnd = this.timeToMinutes(this.convertTo24HourFormat(selectedDateHours.end_time));
+
+      // If no bookings at all, full day is available
+      if (this.bookedTimeSlots.length === 0) {
+        return true;
       }
-      
-      return true; // No conflicts, full day is available
+
+      // If there are any bookings (partial or full), full day is not available
+      return false;
     },
 
     shouldDisableEndTime(endTimeSlot: string): boolean {
@@ -2233,6 +2404,7 @@ export default defineComponent({
         case 'meeting-room':
           return `LKR ${this.space.pricing.hourly || 0}/hr`
         case 'hot-desk':
+          // Ensure we show daily rate for hot desks
           return `LKR ${this.space.pricing.daily || 0}/day`
         case 'dedicated-desk':
           // Show monthly price for dedicated desk
@@ -2274,13 +2446,14 @@ export default defineComponent({
           
           // Load operation schedule from raw API data
           const rawSchedule = (NetworkManager.lastRawResponseData as RawSpaceApiResponse)?.operation_schedule || [];
+          console.log('Raw operation_schedule from API:', rawSchedule);
           this.operationSchedule = rawSchedule.map(day => ({
             day: day.day,
             is_enabled: day.is_enabled,
             start_time: day.start_time,
             end_time: day.end_time
           }));
-          console.log('Operation schedule loaded:', this.operationSchedule);
+          console.log('Processed operation schedule:', this.operationSchedule);
           
           this.space = response.space
           console.log('Space object after assignment:', this.space);
@@ -2544,22 +2717,38 @@ export default defineComponent({
     
     onDateChange(date: string): void {
       this.bookingForm.date = date;
-      // Reset time selection when date changes
-      this.bookingForm.timeRange = { start: '', end: '' };
-      this.isFullDayBooking = false; // Reset full day flag when date changes
+      
+      // For meeting rooms, reset time selection when date changes
+      if (this.productType === 'meeting-room') {
+        this.bookingForm.timeRange = { start: '', end: '' };
+        this.isFullDayBooking = false; // Reset full day flag when date changes
+      }
+      
+      // For hot desks, automatically set to full day operating hours
+      if (this.productType === 'hot-desk') {
+        const operatingHours = this.selectedDateHours;
+        if (operatingHours.start_time && operatingHours.end_time) {
+          this.bookingForm.timeRange = {
+            start: operatingHours.start_time,
+            end: operatingHours.end_time
+          };
+          this.isFullDayBooking = true;
+        }
+      }
+      
       // Fetch booked time slots for the new date
       this.fetchBookedTimeSlots();
     },
     
     // Custom dropdown methods
     toggleStartDropdown(): void {
-      if (this.isLoadingBookedSlots) return;
+      if (this.isLoadingBookedSlots || !this.bookingForm.date) return;
       this.showStartTimeDropdown = !this.showStartTimeDropdown;
       this.showEndTimeDropdown = false; // Close end dropdown
     },
     
     toggleEndDropdown(): void {
-      if (!this.bookingForm.timeRange.start || this.isLoadingBookedSlots || this.isFullDayBooking) return;
+      if (!this.bookingForm.timeRange.start || this.isLoadingBookedSlots || this.isFullDayBooking || !this.bookingForm.date) return;
       this.showEndTimeDropdown = !this.showEndTimeDropdown;
       this.showStartTimeDropdown = false; // Close start dropdown
     },
@@ -2584,16 +2773,16 @@ export default defineComponent({
         return;
       }
       
-      const todayHours = this.getTodayHours();
+      const selectedDateHours = this.selectedDateHours;
       
-      // Check if the space is open today and has valid times
-      if (!todayHours.is_enabled || !todayHours.start_time || !todayHours.end_time) {
+      // Check if the space is open on selected date and has valid times
+      if (!selectedDateHours.is_enabled || !selectedDateHours.start_time || !selectedDateHours.end_time) {
         return;
       }
       
       // Convert times to 24-hour HH:MM format
-      const startTime = this.convertTo24HourFormat(todayHours.start_time);
-      const endTime = this.convertTo24HourFormat(todayHours.end_time);
+      const startTime = this.convertTo24HourFormat(selectedDateHours.start_time);
+      const endTime = this.convertTo24HourFormat(selectedDateHours.end_time);
       
       // Set start and end times to operational hours and mark as full day booking
       this.bookingForm.timeRange.start = startTime;
@@ -2700,6 +2889,25 @@ export default defineComponent({
           return
         }
         
+        // For hot desks, automatically set the time range to the full operating hours
+        let startTime = this.bookingForm.timeRange.start
+        let endTime = this.bookingForm.timeRange.end
+        
+        if (this.productType === 'hot-desk') {
+          // Get the operating hours for the selected date
+          const selectedDay = new Date(this.bookingForm.date).toLocaleDateString('en-US', { weekday: 'long' });
+          const schedule = this.operationSchedule.find((day: any) => day.day === selectedDay);
+          
+          if (schedule && schedule.is_enabled && schedule.start_time && schedule.end_time) {
+            startTime = schedule.start_time;
+            endTime = schedule.end_time;
+          } else {
+            // Fallback to standard business hours if schedule isn't available
+            startTime = '09:00';
+            endTime = '17:00';
+          }
+        }
+        
         // Store booking data in Pinia store
         const bookingDetails = {
           spaceId: this.space.id,
@@ -2712,13 +2920,18 @@ export default defineComponent({
           booking: {
             startDate: this.bookingForm.date,
             endDate: this.bookingForm.date,
-            startTime: this.bookingForm.timeRange.start,
-            endTime: this.bookingForm.timeRange.end, // Pass endTime
-            duration: this.calculateDurationInHours().toString(), // Calculate duration
+            startTime: startTime,
+            endTime: endTime,
+            duration: this.productType === 'hot-desk' ? '1 day' : this.calculateDurationInHours().toString(),
             // Add legacy date field for backward compatibility
             date: this.bookingForm.date
           },
-          facilities: this.selectedFacilities.map(facility => String(facility)),
+          facilities: this.selectedFacilities.map(facility => {
+            // Convert facility IDs (as strings) to names for display purposes
+            const facilityId = typeof facility === 'string' ? parseInt(facility) : facility;
+            const foundFacility = this.availableFacilities.find(f => f.facility_id === facilityId);
+            return foundFacility ? foundFacility.facility_name : String(facility);
+          }),
           totalPrice: this.totalPrice,
           pricing: {
             basePrice: this.roomBasePrice,
@@ -2868,7 +3081,7 @@ export default defineComponent({
       // If in 12-hour format with AM/PM
       const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
       if (match) {
-        let [, hours, minutes, period] = match;
+        const [, hours, minutes, period] = match;
         let hour24 = parseInt(hours, 10);
         
         if (period.toUpperCase() === 'PM' && hour24 !== 12) {
@@ -2915,6 +3128,47 @@ export default defineComponent({
         return todaySchedule || { is_enabled: false };
       } catch (error) {
         console.error('Error getting today hours:', error);
+        return { is_enabled: false };
+      }
+    },
+
+    getOperationalHoursForDate(dateString: string): { day?: string, is_enabled: boolean, start_time?: string, end_time?: string } {
+      if (!dateString) {
+        return { is_enabled: false };
+      }
+
+      const schedule = this.getOperationSchedule();
+      
+      if (!schedule || !Array.isArray(schedule)) {
+        return { is_enabled: false };
+      }
+      
+      try {
+        // Convert date string to day of week
+        const selectedDate = new Date(dateString);
+        const selectedDay = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        console.log('Selected date:', dateString, 'maps to day:', selectedDay);
+        console.log('Available schedule days:', schedule.map(d => d.day));
+        
+        // Find the selected day in the schedule (case-insensitive match)
+        const daySchedule = schedule.find((day: OperationDay) => {
+          if (!day || !day.day) return false;
+          // Try exact match first
+          if (day.day === selectedDay) return true;
+          // Try case-insensitive match
+          if (day.day.toLowerCase() === selectedDay.toLowerCase()) return true;
+          // Try abbreviated match (Mon, Tue, etc.)
+          const abbreviatedDay = selectedDay.substring(0, 3);
+          if (day.day === abbreviatedDay) return true;
+          return false;
+        });
+        
+        console.log('Found schedule for day:', selectedDay, daySchedule);
+        
+        return daySchedule || { is_enabled: false };
+      } catch (error) {
+        console.error('Error getting operational hours for date:', error);
         return { is_enabled: false };
       }
     },

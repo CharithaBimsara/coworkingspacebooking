@@ -16,19 +16,26 @@
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <div class="space-y-8 animate-fade-in">
             <h1 class="text-4xl lg:text-5xl xl:text-6xl font-heading font-bold text-black dark:text-white leading-tight">
-              Find Your Perfect
-              <span class="relative">
-                <span class="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
-                  WorkSpace
+              Your
+              <span class="relative inline-block mx-4">
+                <span class="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
+                  Workspace
                 </span>
-                <svg class="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 3C50 -1 150 -1 200 3" stroke="#00FE01" stroke-width="4" stroke-linecap="round"/>
+                <svg class="absolute -bottom-2 left-0 w-full h-1" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 3C50 -1 150 -1 200 3" stroke="url(#gradient)" stroke-width="4" stroke-linecap="round"/>
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#00FE01"/>
+                      <stop offset="100%" stop-color="#00FE01"/>
+                    </linearGradient>
+                  </defs>
                 </svg>
               </span>
+              Your Way
             </h1>
             <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-              Book desks, meeting rooms, and private offices in premium dedicated desks.
-              Flexible booking, premium locations, and 24/7 access to boost your productivity.
+              From hot desks to private offices — multiple Colombo locations across the country, made affordable for everyone.
+
             </p>
 
             <!-- Cute Search Widget -->
@@ -92,12 +99,12 @@
               <div class="flex items-center space-x-3">
                 <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
                   <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
                 <div>
-                  <p class="font-semibold text-black dark:text-white text-sm">24/7 Access</p>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">Available anytime</p>
+                  <p class="font-semibold text-black dark:text-white text-sm">Meeting Rooms</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">Professional spaces</p>
                 </div>
               </div>
             </div>
@@ -105,13 +112,12 @@
               <div class="flex items-center space-x-3">
                 <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
                   <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
                   </svg>
                 </div>
                 <div>
-                  <p class="font-semibold text-black dark:text-white text-sm">High-Speed WiFi</p>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">1GB+ connection</p>
+                  <p class="font-semibold text-black dark:text-white text-sm">Hot Desks</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">Flexible workspaces</p>
                 </div>
               </div>
             </div>
@@ -207,7 +213,7 @@
               </svg>
             </div>
             <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Meeting Rooms</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Professional spaces for productive team gatherings</p>
+            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Professional, fully equipped spaces to host clients, workshops, or team sessions.</p>
             <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -227,7 +233,7 @@
               </svg>
             </div>
             <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Hot Desk</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Flexible workspace solutions for modern workers</p>
+            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">A flexible desk in our shared coworking area — just plug in and start working.</p>
             <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -247,7 +253,7 @@
               </svg>
             </div>
             <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Dedicated Desk</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Your personal workspace in a collaborative environment</p>
+            <p class="text-gray-600 dark:text-gray-400 text-center text-sm">Your own personal desk in a shared space, with storage and consistent setup every day</p>
             <div class="mt-4 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-full text-xs font-medium text-black dark:text-white inline-flex items-center">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -260,7 +266,7 @@
     </section>
 
     <!-- Featured Spaces -->
-    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <section v-if="featuredSpaces.length > 0" class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
           <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
@@ -270,7 +276,7 @@
             </svg>
           </h2>
           <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
-            Discover our highest-rated spaces with exceptional reviews from our community
+            Join a vibrant community of professionals who rated Ceylinco-Works 5-stars for flexibility, comfort, and networking opportunities.
           </p>
         </div>
 
@@ -279,9 +285,15 @@
           <p class="mt-6 text-gray-600 dark:text-gray-300 text-sm">Loading top-rated spaces...</p>
         </div>
 
-        <div v-else-if="featuredSpaces.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div v-else-if="featuredSpaces.length > 0"
+             :class="[
+               'grid gap-5',
+               featuredSpaces.length === 1 ? 'grid-cols-1 justify-center' : '',
+               featuredSpaces.length === 2 ? 'md:grid-cols-2 justify-center' : '',
+               featuredSpaces.length === 3 ? 'md:grid-cols-2 lg:grid-cols-3' : ''
+             ]">
           <div v-for="space in featuredSpaces" :key="space.id" 
-               class="card overflow-hidden group cursor-pointer hover:shadow-xl dark:hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex flex-col bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl"
+               class="card overflow-hidden group cursor-pointer hover:shadow-xl dark:hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex flex-col bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl max-w-sm w-full mx-auto"
                @click="viewSpace(space.id)">
             <div class="relative aspect-[16/9] overflow-hidden rounded-t-2xl">
               <img
@@ -394,9 +406,10 @@
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Flexible Booking</h3>
+            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Unmatched Flexibility
+</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              Book by the hour, day, or week. Change or cancel your reservation anytime with our flexible policies.
+              Work on your terms. Whether you need a desk for a day, a meeting room for an hour, or a private office long-term, Ceylinco-Works adapts to you. Our flexible booking policies let you scale up or down without hassle, so your workspace always fits your lifestyle and business needs.
             </p>
           </div>
 
@@ -408,9 +421,9 @@
                   d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Premium Locations</h3>
+            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Prime Locations, Affordable Prices</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              Work from the best locations in the city. All our spaces are in prime business districts with easy access.
+              We bring you coworking spaces in central, accessible areas  all around the country, all designed with modern interiors and essential amenities. Unlike traditional offices, you’ll enjoy premium locations without the premium price tag, making professional workspaces accessible for everyone.
             </p>
           </div>
 
@@ -422,9 +435,10 @@
                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-black dark:text-white mb-4">24/7 Access</h3>
+            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Backed by Trusted Brands</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              Access your workspace anytime with secure keycard entry. Perfect for early birds and night owls.
+              Ceylinco-Works is powered by Ceylinco Life and SquareHub, combining the trust and stability of  Sri Lanka’s most respected names with the innovation and community focus of a startup ecosystem builder. This means reliable infrastructure, thoughtfully designed spaces, and a supportive environment to help you thrive.
+
             </p>
           </div>
         </div>
@@ -432,7 +446,7 @@
     </section>
 
     <!-- Testimonials -->
-    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300" v-if="testimonials.length > 0 || testimonialsApiError">
+    <section class="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div class="max-w-7xl mx-auto container-padding">
         <div class="text-center mb-16">
           <h2 class="text-2xl lg:text-3xl font-heading font-bold text-black dark:text-white mb-4 relative inline-block">
@@ -444,13 +458,11 @@
           <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Join thousands of professionals who love working with us
           </p>
-          <p v-if="testimonialsApiError" class="mt-3 text-red-500 text-sm">
-            {{ testimonialsErrorMessage }}
-          </p>
+          
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="testimonial in testimonials" :key="testimonial.id" 
+          <div v-for="testimonial in displayTestimonials" :key="testimonial.id" 
                class="bg-white dark:bg-black p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transform hover:-translate-y-2">
             <div class="mb-4 flex justify-between items-center">
               <div class="flex text-primary items-center">
@@ -518,9 +530,7 @@
               <img src="/src/assets/img/hero.jpg" 
                 alt="Modern workspace" class="w-full h-full object-cover">
             </div>
-            <div class="absolute -bottom-8 -right-8 bg-white dark:bg-black p-5 rounded-2xl shadow-lg border-2 border-primary transform hover:rotate-3 transition-all duration-300">
-              <p class="font-bold text-primary text-lg">Est. 2020</p>
-            </div>
+           
             
             <!-- Decorative element -->
             <div class="absolute -top-6 -left-6 w-16 h-16 bg-primary/20 rounded-full"></div>
@@ -529,24 +539,15 @@
           <div class="space-y-6">
             <h3 class="text-xl font-bold text-black dark:text-white">Creating Productive Work Environments</h3>
             <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
-              At {{ companyProfile.name }}, we believe in providing more than just a desk. Our mission is to create environments where 
-              professionals thrive, connections are made, and productivity reaches new heights.
+              At Ceylinco-Works, we believe that everyone deserves access to professional workspaces without the high costs and rigid contracts of traditional offices. Born from a collaboration between Ceylinco Life and SquareHub, our mission is to make coworking accessible for freelancers, entrepreneurs, startups, and established businesses alike. 
             </p>
             <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
-              Founded in 2020, we've expanded to over 25 locations across major cities, serving thousands of 
-              entrepreneurs, freelancers, and businesses looking for flexible, high-quality workspace solutions.
+              From hot desks to private offices, we provide spaces that adapt to the way you work, helping you stay productive, connected, and inspired.
             </p>
-            
-            <div class="grid grid-cols-2 gap-8 pt-6 mt-6 border-t-2 border-gray-100 dark:border-gray-800">
-              <div class="bg-white dark:bg-black rounded-2xl p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transition-all duration-300 shadow-md text-center">
-                <p class="text-3xl font-bold text-primary mb-2">25+</p>
-                <p class="text-gray-600 dark:text-gray-400 font-medium text-sm">Locations</p>
-              </div>
-              <div class="bg-white dark:bg-black rounded-2xl p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-primary transition-all duration-300 shadow-md text-center">
-                <p class="text-3xl font-bold text-primary mb-2">5,000+</p>
-                <p class="text-gray-600 dark:text-gray-400 font-medium text-sm">Happy Members</p>
-              </div>
-            </div>
+             <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+              More than just a place to sit, Ceylinco-Works is about community and growth. Our locations are designed with modern interiors, reliable amenities, and flexible plans that support both individuals and teams. Whether you’re hosting clients in a meeting room, working late at night, or networking with like-minded professionals, you’ll find everything you need to thrive under one roof — all backed by the trust and stability of Ceylinco Life and the entrepreneurial spirit of SquareHub.
+
+            </p>
           </div>
         </div>
       </div>
@@ -939,6 +940,36 @@ export default defineComponent({
   computed: {
     currentYear(): number {
       return new Date().getFullYear();
+    },
+
+    displayTestimonials(): TestimonialDto[] {
+      // Always show fake testimonials for now
+      return [
+        new TestimonialDto({
+          id: 1,
+          name: 'Nimna Fernando',
+          role: 'Marketing Director',
+          content: 'Ceylinco-Works has transformed how our team collaborates. The meeting rooms are professional, the hot desks are always available, and the community is incredibly supportive. Highly recommend!',
+          avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face',
+          rating: 5.0
+        }),
+        new TestimonialDto({
+          id: 2,
+          name: 'Kavindi Perera',
+          role: 'Freelance Developer',
+          content: 'As a freelancer, I need flexibility and reliability. Ceylinco-Works delivers on both. The dedicated desks give me a home base, and the high-speed WiFi never disappoints. Perfect for focused work.',
+          avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face',
+          rating: 4.8
+        }),
+        new TestimonialDto({
+          id: 3,
+          name: 'Tharindu Jayasinghe',
+          role: 'Startup Founder',
+          content: 'The facilities are top-notch and the location is perfect for client meetings. What really stands out is the community - I\'ve made valuable connections that have helped grow my business.',
+          avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+          rating: 4.9
+        })
+      ];
     }
   },
 
@@ -1328,37 +1359,38 @@ export default defineComponent({
           // Sort ratings by value (highest first)
           const sortedRatings = [...response.ratings].sort((a, b) => b.value - a.value);
           
-          // Take all 4+ rated testimonials, or lower if not enough available
-          let filteredRatings = sortedRatings.filter(rating => rating.value >= 4);
+          // Only show real testimonials if they have 4.5+ star ratings
+          const highRatedReviews = sortedRatings.filter(rating => rating.value >= 4.5);
           
-          // If we don't have at least 3 ratings with 4+ stars, include 3-star ratings
-          if (filteredRatings.length < 3) {
-            filteredRatings = sortedRatings.filter(rating => rating.value >= 3);
-          }
-          
-          // Convert ratings to testimonials (take up to 3)
-          const testimonials = filteredRatings.slice(0, 3).map((rating, index) => {
-            return new TestimonialDto({
-              id: rating.product_id || rating.user_id || index + 1,
-              name: rating.first_name || 'Happy Customer',
-              role: 'Customer',
-              content: rating.review_description || 'Great space with amazing amenities.',
-              avatar: rating.user_avatar || '/logo.png',
-              rating: rating.value
+          if (highRatedReviews.length > 0) {
+            // Convert high-rated reviews to testimonials (take up to 3)
+            const testimonials = highRatedReviews.slice(0, 3).map((rating, index) => {
+              return new TestimonialDto({
+                id: rating.product_id || rating.user_id || index + 1,
+                name: rating.first_name || 'Happy Customer',
+                role: 'Customer',
+                content: rating.review_description || 'Great space with amazing amenities.',
+                avatar: rating.user_avatar || '/logo.png',
+                rating: rating.value
+              });
             });
-          });
-          
-          this.testimonials = testimonials;
-          
-          // Cache the testimonials
-          localStorage.setItem('cached_testimonials', JSON.stringify({
-            timestamp: Date.now(),
-            data: testimonials
-          }));
-          
-          console.log(`Loaded ${testimonials.length} testimonials from API with ratings: ${testimonials.map(t => t.rating).join(', ')}`);
+            
+            this.testimonials = testimonials;
+            
+            // Cache the testimonials
+            localStorage.setItem('cached_testimonials', JSON.stringify({
+              timestamp: Date.now(),
+              data: testimonials
+            }));
+            
+            console.log(`Loaded ${testimonials.length} high-rated testimonials from API with ratings: ${testimonials.map(t => t.rating).join(', ')}`);
+          } else {
+            // No high-rated reviews (4.5+ stars) found, will show fake reviews
+            console.log('No high-rated reviews found, will display fake testimonials');
+            this.testimonials = [];
+          }
         } else {
-          // No ratings found or API error
+          // No ratings found or API error - will show fake reviews
           this.testimonialsApiError = true;
           this.testimonialsErrorMessage = response.message || 'Unable to load testimonials. No ratings found.';
           this.testimonials = [];
@@ -1481,43 +1513,18 @@ export default defineComponent({
         this.spacesApiError = false;
         this.spacesErrorMessage = '';
         
-        // Check for cached spaces first
-        const cachedData = localStorage.getItem('cached_featured_spaces');
-        
-        if (cachedData) {
-          try {
-            const parsed = JSON.parse(cachedData);
-            const cacheAge = Date.now() - parsed.timestamp;
-            
-            // Use cache if it's less than 12 hours old
-            if (cacheAge < 12 * 60 * 60 * 1000) {
-              this.featuredSpaces = parsed.data;
-              console.log('Using cached featured spaces data');
-              return;
-            }
-          } catch (e) {
-            console.error('Error parsing cached spaces:', e);
-            // Continue with API call if cache parsing fails
-          }
-        }
-        
         // Call the API to get all spaces
         const response = await NetworkManager.getSpaces({});
         
         if (response.success && response.spaces && response.spaces.length > 0) {
-          // Sort spaces by rating (highest first)
-          const sortedSpaces = [...response.spaces].sort((a, b) => b.rating - a.rating);
+          // Filter spaces by rating > 4.5 and sort by rating (highest first)
+          const filteredSpaces = response.spaces.filter(space => space.rating > 4.5);
+          const sortedSpaces = [...filteredSpaces].sort((a, b) => b.rating - a.rating);
           
           // Take only the top 3 spaces
           this.featuredSpaces = sortedSpaces.slice(0, 3);
           
-          console.log('Loaded top-rated featured spaces:', this.featuredSpaces);
-          
-          // Cache the results
-          localStorage.setItem('cached_featured_spaces', JSON.stringify({
-            timestamp: Date.now(),
-            data: this.featuredSpaces
-          }));
+          console.log('Loaded top-rated featured spaces (rating > 4.5):', this.featuredSpaces);
         } else {
           // Handle empty response
           console.warn('No spaces returned from API');
@@ -1528,25 +1535,9 @@ export default defineComponent({
       } catch (error) {
         console.error('Error loading featured spaces:', error);
         
-        // Try to use cached data regardless of age
-        const cachedData = localStorage.getItem('cached_featured_spaces');
-        if (cachedData) {
-          try {
-            const parsed = JSON.parse(cachedData);
-            this.featuredSpaces = parsed.data;
-            this.spacesApiError = true;
-            this.spacesErrorMessage = 'Using previously cached spaces. Some information may not be up to date.';
-          } catch (e) {
-            console.error('Error parsing cached spaces during error recovery:', e);
-            this.featuredSpaces = [];
-            this.spacesApiError = true;
-            this.spacesErrorMessage = 'Unable to load featured spaces at this time.';
-          }
-        } else {
-          this.featuredSpaces = [];
-          this.spacesApiError = true;
-          this.spacesErrorMessage = 'Unable to load featured spaces at this time.';
-        }
+        this.featuredSpaces = [];
+        this.spacesApiError = true;
+        this.spacesErrorMessage = 'Unable to load featured spaces at this time.';
       } finally {
         this.isLoadingSpaces = false;
       }

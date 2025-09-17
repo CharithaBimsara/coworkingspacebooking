@@ -49,7 +49,7 @@ const routes: RouteRecordRaw[] = [
       component: Payment
     },
     {
-      path: '/booking/confirmation/:bookingId',
+      path: '/booking-confirmation',
       name: 'BookingConfirmation',
       component: BookingConfirmation
     },

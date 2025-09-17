@@ -25,16 +25,20 @@ export default defineComponent({
     const themeStore = useThemeStore();
     const route = useRoute();
     
-    // Flag to track if user is on the booking summary page
-    const isOnBookingSummaryPage = computed(() => route.name === 'BookingSummary');
-    
-    // Flag to control the display of the floating summary
+
+    // Hide floating summary on payment, summary, confirmation, and IPG loading pages
+    const hiddenRoutes = [
+      'Payment',
+      'BookingSummary',
+      'BookingConfirmation',
+      'PaymentGateway',
+    ];
     const showFloatingBookingSummary = computed(() => {
-      // Show if there are items in the booking AND either:
-      // 1. User explicitly clicked "Add another service" (isAddingMoreServices) OR
-      // 2. User is NOT on the booking summary page
-      return bookingStore.currentBooking.length > 0 && 
-        (bookingStore.isAddingMoreServices || !isOnBookingSummaryPage.value);
+      return (
+        bookingStore.currentBooking.length > 0 &&
+        bookingStore.isAddingMoreServices &&
+        !hiddenRoutes.includes(route.name as string)
+      );
     });
 
     onMounted(() => {
@@ -58,5 +62,12 @@ export default defineComponent({
 #app {
 
   min-height: 100vh;
+}
+
+#appheader {
+  display: block;
+}
+body[iframe-mode] #appheader {
+  display: none;
 }
 </style>

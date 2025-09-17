@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 shadow-sm transition-colors duration-300">
+  <header id="appheader" class="bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 shadow-sm transition-colors duration-300">
     <div class="max-w-8xl mx-auto px-3 sm:px-4 md:px-5 container-padding">
       <div class="flex items-center justify-between h-14 sm:h-16">
         <!-- Logo -->
