@@ -48,18 +48,14 @@
                     v-model="searchForm.location" 
                     label="Location"
                     placeholder="Where do you want to work?" 
-                    :locations="locations" 
+                    :locations="locations"
+                    :disabled="locationApiError"
                     @change="onLocationChange" 
                   />
                   
                   <!-- API Error Message -->
                   <p v-if="locationApiError" class="text-amber-600 dark:text-amber-400 text-xs mt-1">
                     Location service is temporarily unavailable
-                  </p>
-                  
-                  <!-- Warning for stale cached data -->
-                  <p v-if="showLocationWarning && !locationApiError" class="text-amber-600 dark:text-amber-400 text-xs mt-1">
-                    {{ locationErrorMessage }}
                   </p>
                 </div>
 
@@ -902,8 +898,6 @@ export default defineComponent({
       spacesApiError: false,
       companyProfileApiError: false,
       testimonialsApiError: false,
-      showLocationWarning: false,
-      locationErrorMessage: '',
       advertisementErrorMessage: '',
       spacesErrorMessage: '',
       companyProfileErrorMessage: '',
@@ -911,6 +905,7 @@ export default defineComponent({
       testimonials: [] as TestimonialDto[],
       locations: [] as { id: number; name: string; address: string; url: string }[],
       selectedLocationObject: null as { id: number; name: string; address: string; url: string } | null, // To store full location object
+      selectedLocationId: null as number | null, // To store selected location ID for API calls
       companyProfile: {} as CompanyProfileDto,
       spaceTypeOptions: [
         {
@@ -1120,33 +1115,9 @@ export default defineComponent({
     
     /**
      * Load locations from API for the location dropdown
-     * Implements production-level error handling with caching, retry, and user feedback
      */
-    async loadLocationsFromApi(retryCount = 0): Promise<void> {
+    async loadLocationsFromApi(): Promise<void> {
       try {
-        // Check for cached locations first
-        const cachedData = localStorage.getItem('cached_locations');
-        
-        if (cachedData) {
-          try {
-            const parsed = JSON.parse(cachedData);
-            const cacheAge = Date.now() - parsed.timestamp;
-            
-            // Use cache if it's less than 24 hours old
-            if (cacheAge < 24 * 60 * 60 * 1000) {
-              this.locations = parsed.data;
-              console.log('Using cached locations data');
-              
-              // Make API call in background to update cache
-              this.refreshLocationCache();
-              return;
-            }
-          } catch (e) {
-            console.error('Error parsing cached locations:', e);
-            // Continue with API call if cache parsing fails
-          }
-        }
-        
         console.log('Loading locations from API...');
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
@@ -1157,86 +1128,24 @@ export default defineComponent({
         if (Array.isArray(locationsResponse) && locationsResponse.length > 0) {
           console.log('Loaded locations from API:', locationsResponse.length, 'locations');
           this.locations = locationsResponse;
-          
-          // Store in cache with timestamp
-          localStorage.setItem('cached_locations', JSON.stringify({
-            data: locationsResponse,
-            timestamp: Date.now()
-          }));
         } else {
           console.warn('API returned empty locations array');
           this.handleLocationApiFailure('No locations available');
         }
       } catch (error) {
-        console.error(`Error loading locations from API (attempt ${retryCount + 1}):`, error);
-        
-        // Retry logic with exponential backoff (max 3 retries)
-        if (retryCount < 2) {
-          const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s
-          console.log(`Retrying in ${backoffTime}ms...`);
-          
-          setTimeout(() => {
-            this.loadLocationsFromApi(retryCount + 1);
-          }, backoffTime);
-          return;
-        }
-        
+        console.error('Error loading locations from API:', error);
         this.handleLocationApiFailure(error instanceof Error ? error.message : 'Unknown error');
       }
     },
     
     /**
-     * Refresh location cache in the background
-     */
-    async refreshLocationCache(): Promise<void> {
-      try {
-        const locationsResponse = await NetworkManager.getLocations();
-        
-        if (Array.isArray(locationsResponse) && locationsResponse.length > 0) {
-          // Update the locations if we got new data
-          this.locations = locationsResponse;
-          
-          // Store in cache with timestamp
-          localStorage.setItem('cached_locations', JSON.stringify({
-            data: locationsResponse,
-            timestamp: Date.now()
-          }));
-        }
-      } catch (error) {
-        // Silent fail for background refresh - we already have cached data
-        console.warn('Background location cache refresh failed:', error);
-      }
-    },
-    
-    /**
-     * Handle location API failure with graceful degradation
+     * Handle location API failure
      */
     handleLocationApiFailure(errorMessage: string): void {
       console.warn('Location API failure:', errorMessage);
       
-      // First try to use cached data regardless of age
-      const cachedData = localStorage.getItem('cached_locations');
-      if (cachedData) {
-        try {
-          const parsed = JSON.parse(cachedData);
-          this.locations = parsed.data;
-          console.log('Using expired cached locations data due to API failure');
-          
-          // Add notification about stale data
-          this.showLocationWarning = true;
-          this.locationErrorMessage = 'Using previously saved location data. Some information may not be up to date.';
-          
-          return;
-        } catch (e) {
-          console.error('Error parsing cached locations:', e);
-        }
-      }
-      
-      // If no cache available, show error message but keep dropdown
-      // This will display empty locations in the dropdown with the error message
+      // Show error message and empty locations
       this.locations = [];
-      
-      // Set error state for UI feedback
       this.locationApiError = true;
     },
     
@@ -1415,6 +1324,7 @@ export default defineComponent({
       const query: Record<string, string> = {};
       if (this.searchForm.location) query.location = this.searchForm.location;
       if (this.searchForm.spaceType) query.spaceType = this.searchForm.spaceType;
+      if (this.selectedLocationId) query.location_id = this.selectedLocationId.toString();
 
       this.$router.push({ name: 'SearchResults', query })
         .catch(error => console.error('Error during search:', error))
@@ -1486,7 +1396,7 @@ export default defineComponent({
       return 0;
     },
 
-    onLocationChange(location: { id: number; name: string; address: string; url: string }): void {
+    onLocationChange(location: { id: number; name: string; address: string; url: string } | null): void {
       if (location) {
         console.log('Selected location:', location);
         
@@ -1496,11 +1406,19 @@ export default defineComponent({
         // Store the full location object for future use if needed
         this.selectedLocationObject = location;
         
+        // Store the location ID for API calls
+        this.selectedLocationId = location.id;
+        
         // We could filter spaces by location here if needed in the future:
         // this.filterSpacesByLocation(location.id);
         
         // Or load spaces specific to this location from the API:
         // this.loadSpacesForLocation(location.id);
+      } else {
+        // Location was cleared
+        this.searchForm.location = '';
+        this.selectedLocationObject = null;
+        this.selectedLocationId = null;
       }
     },
     

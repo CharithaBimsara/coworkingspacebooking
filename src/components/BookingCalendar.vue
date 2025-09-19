@@ -261,7 +261,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
+import { formatDateLocal } from '../utils/dateUtils'
 
 interface BookingItem {
   id: string
@@ -349,7 +351,7 @@ export default defineComponent({
       const today = new Date()
       
       while (currentDate <= endDate) {
-        const dateString = currentDate.toISOString().split('T')[0]
+        const dateString = formatDateLocal(currentDate)
         const dayBookings = this.bookings.filter(booking => booking.date === dateString)
         
         days.push({
@@ -376,7 +378,7 @@ export default defineComponent({
         const date = new Date(startOfWeek)
         date.setDate(date.getDate() + i)
         
-        const dateString = date.toISOString().split('T')[0]
+        const dateString = formatDateLocal(date)
         const dayBookings = this.bookings.filter(booking => booking.date === dateString)
         
         days.push({

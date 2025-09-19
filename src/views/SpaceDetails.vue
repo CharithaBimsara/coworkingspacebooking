@@ -661,9 +661,11 @@
 
             <!-- Description with collapsible option -->
             <div class="bg-gray-50 p-3 rounded-lg">
-              <p :class="['text-gray-700 dark:text-gray-300 leading-relaxed text-sm', { 'line-clamp-3': !isDescriptionExpanded }]">
-                {{ space?.description || 'Loading description...' }}
-              </p>
+              <div :class="['transition-all duration-300 ease-in-out', { 'max-h-20 overflow-hidden': !isDescriptionExpanded, 'max-h-none': isDescriptionExpanded }]">
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
+                  {{ space?.description || 'Loading description...' }}
+                </p>
+              </div>
               <button @click="isDescriptionExpanded = !isDescriptionExpanded" 
                       class="mt-1 text-xs font-medium text-primary hover:underline transition-colors">
                 {{ isDescriptionExpanded ? 'Read less' : 'Read more' }}
@@ -871,11 +873,11 @@
 
                 <!-- Duration Display (Compact) -->
                 <div v-if="bookingForm.timeRange.start && bookingForm.timeRange.end && calculateDurationInHours() > 0" 
-                  class="text-center py-1 px-1.5 bg-blue-50 rounded-md border border-blue-100 mb-2 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 text-blue-600 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  class="text-center py-1 px-1.5 bg-green-50 rounded-md border border-green-100 mb-2 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 text-green-600 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="text-xs font-medium text-blue-900">Duration: {{ calculateDurationInHours() }} hours</span>
+                  <span class="text-xs font-medium text-green-900">Duration: {{ calculateDurationInHours() }} hours</span>
                 </div>
 
                 <!-- Additional Facilities as Cards with visual enhancements -->
@@ -972,53 +974,10 @@
               </div>
             </div>
 
-            <!-- Enhanced Dedicated Desk Booking Form - Responsive -->
+            <!-- Enhanced Dedicated Desk Booking Form -->
             <div v-else-if="productType === 'dedicated-desk'" class="space-y-3 sm:space-y-4 dedicated-desk-form">
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <h3 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Subscription Details</h3>
-              </div>
-              
-              <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
-                <!-- Date and Team Size in Same Row with improved visual organization -->
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Start Date
-                    </label>
-                    <SingleDatePicker
-                      v-model="bookingForm.date"
-                      placeholder="Select start date"
-                      :min-date="today"
-                      @change="onDateChange"
-                      class="compact-date-picker"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
-                      Team Size
-                    </label>
-                    <TeamSizeDropdown
-                      v-model="bookingForm.teamSize"
-                      :max-capacity="space?.maxCapacity || space?.capacity || 50"
-                      compact
-                      height-class="h-10"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Enhanced Package Selection with visual improvements -->
-              <div class="subscription-plans mt-3">
+              <!-- Enhanced Package Selection with visual improvements - Moved above subscription details -->
+              <div class="subscription-plans">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
@@ -1126,10 +1085,67 @@
                   </label>
                 </div>
               </div>
-            </div>
 
-            <!-- Enhanced Price Calculation - Only for meeting-room and hot-desk -->
-            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <h3 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Subscription Details</h3>
+              </div>
+              
+              <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+                <!-- Date selection for dedicated desk -->
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Start Date
+                  </label>
+                  <SingleDatePicker
+                    v-model="bookingForm.date"
+                    placeholder="Select start date"
+                    :min-date="today"
+                    @change="onDateChange"
+                    class="compact-date-picker"
+                  />
+                </div>
+                
+                <!-- Duration Selection based on selected package -->
+                <div v-if="selectedPackage" class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {{ selectedPackage === 'monthly' ? 'Subscription Duration (Months)' : 'Subscription Duration (Years)' }}
+                  </label>
+                  <select 
+                    v-model="selectedDuration" 
+                    class="compact-select-field w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md transition-colors duration-200"
+                    @change="onDurationChange"
+                  >
+                    <option value="">Select duration</option>
+                    <option v-for="option in getDurationOptions()" :key="option.value" :value="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                  
+                  <!-- Eye-catching Subscription End Date Display -->
+                  <div v-if="subscriptionEndDate" class="mt-3 p-3 bg-gradient-to-r from-green-50 to-indigo-50 dark:from-green-900/20 dark:to-indigo-900/20 border border-green-200 dark:border-green-800 rounded-lg shadow-sm">
+                    <div class="flex items-center justify-center space-x-2">
+                     
+                      <div class="text-center">
+                        <div class="text-xs font-medium text-green-800 dark:text-green-200 uppercase tracking-wide">Subscription Ends</div>
+                        <div class="text-sm font-bold text-green-900 dark:text-green-100">{{ subscriptionEndDate }}</div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            <!-- Enhanced Price Calculation - Only for dedicated desk -->
+            <div class="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
               <h4 class="font-medium text-gray-900 mb-3 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -1141,31 +1157,23 @@
                 <div class="flex items-center justify-between py-1.5 border-b border-gray-100">
                   <div>
                     <span class="text-gray-800 text-sm font-medium">
-                      {{ getSpaceTypeName() }} 
-                      <!-- For meeting rooms, show hourly duration -->
-                      <span v-if="productType === 'meeting-room' && calculateDurationInHours() > 0" class="text-gray-600 font-normal">
-                        ({{ calculateDurationInHours() }}h)
+                      {{ getSpaceTypeName() }}
+                      <!-- For dedicated desk, show subscription duration -->
+                      <span v-if="selectedDuration" class="text-gray-600 font-normal">
+                        ({{ getDurationDisplayText() }})
                       </span>
-                      <!-- For hot desks, show 'full day' -->
-                      <span v-else-if="productType === 'hot-desk' && bookingForm.date" class="text-gray-600 font-normal">
-                        (full day)
-                      </span>
-                      <!-- Show warning if time not selected (meeting rooms only) -->
-                      <span v-else-if="productType === 'meeting-room'" class="text-amber-600 font-normal">
-                        (Select time)
-                      </span>
-                      <!-- Show warning if date not selected (hot desks) -->
-                      <span v-else-if="productType === 'hot-desk'" class="text-amber-600 font-normal">
-                        (Select date)
+                      <!-- Show warning if duration not selected -->
+                      <span v-else class="text-amber-600 font-normal">
+                        (Select duration)
                       </span>
                     </span>
-                    <!-- Price calculation for meeting rooms (hourly) -->
-                    <div v-if="productType === 'meeting-room' && calculateDurationInHours() > 0" class="text-xs text-gray-500 mt-0.5">
-                      LKR {{ space?.pricing?.hourly || 85 }}/hour × {{ calculateDurationInHours() }} hours
+                    <!-- Price calculation for dedicated desk -->
+                    <div v-if="selectedDuration" class="text-xs text-gray-500 mt-0.5">
+                      LKR {{ getPackagePrice() / parseInt(selectedDuration) }}/{{ selectedPackage === 'monthly' ? 'month' : 'year' }} × {{ selectedDuration }} {{ selectedPackage === 'monthly' ? 'month' + (parseInt(selectedDuration) > 1 ? 's' : '') : 'year' + (parseInt(selectedDuration) > 1 ? 's' : '') }}
                     </div>
-                    <!-- Price display for hot desks (daily) -->
-                    <div v-else-if="productType === 'hot-desk' && bookingForm.date" class="text-xs text-gray-500 mt-0.5">
-                      LKR {{ space?.pricing?.daily || 500 }}/day
+                    <!-- Show base price if duration not selected -->
+                    <div v-else class="text-xs text-gray-500 mt-0.5">
+                      LKR {{ getPackagePrice() / (selectedDuration ? parseInt(selectedDuration) : 1) }}/{{ selectedPackage === 'monthly' ? 'month' : 'year' }}
                     </div>
                   </div>
                   <span class="font-semibold text-sm">LKR {{ roomBasePrice }}</span>
@@ -1218,21 +1226,20 @@
             </div>
 
             <!-- Enhanced Action Buttons -->
-            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-3">
-              <button 
-                @click="proceedToBooking"
-                :disabled="!isBookingFormValid || isProcessing"
-                class="w-full bg-primary text-white py-3.5 px-4 rounded-lg font-semibold text-sm hover:bg-primary-dark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:translate-y-[-2px] active:translate-y-[1px] shadow-lg hover:shadow-xl flex items-center justify-center"
-                :class="{'animate-pulse': isProcessing}"
+            <div class="space-y-3">
+              <button
+                @click="proceedToSubscription"
+                :disabled="!isSubscriptionFormValid || isProcessing"
+                class="w-full py-2 px-4 bg-primary text-white font-medium text-sm rounded-lg shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center"
               >
-                <svg v-if="isProcessing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ isProcessing ? 'Processing...' : 'Book Now' }}
-                <svg v-if="!isProcessing" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
+                <span v-if="isProcessing" class="flex items-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+                <span v-else>Subscribe Now</span>
               </button>
               
               <div class="flex items-center justify-center space-x-2 text-xs text-gray-500">
@@ -1245,24 +1252,16 @@
               </div>
             </div>
             
-            <div v-else>
-              <button
-                @click="proceedToSubscription"
-                :disabled="!isSubscriptionFormValid || isProcessing"
-                class="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg"
-              >
-                {{ isProcessing ? 'Processing...' : 'Subscribe Now' }}
-              </button>
-              <p v-if="productType === 'dedicated-desk'" class="text-xs text-gray-500 text-center mt-1">
-                {{ currentUser ? 'Ready to book' : 'Login required for subscriptions' }}
+              <p class="text-xs text-gray-500 text-center mt-1">
+                {{ currentUser ? 'Ready to subscribe' : 'Login required for subscriptions' }}
               </p>
-            </div>
 
            
           </div>
         </div>
       </div>
-
+      </div>
+      
       <!-- Product Information Sections -->
       <div class="grid lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
@@ -1318,8 +1317,8 @@
     </div>
 
     <!-- Mobile Booking Modal -->
-    <div 
-      v-if="showMobileBookingModal" 
+    <div
+      v-if="showMobileBookingModal"
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex flex-col justify-end lg:hidden"
       @click.self="showMobileBookingModal = false"
     >
@@ -1379,9 +1378,17 @@
                   @change="onDateChange"
                   class="compact-date-picker w-full"
                 />
+                <!-- Availability message for hot desks -->
+                <div v-if="productType === 'hot-desk' && bookingForm.date && isHotDeskBooked" class="mt-2 text-xs text-red-600 dark:text-red-400">
+                  This date is already booked
+                </div>
+                <div v-else-if="productType === 'hot-desk' && bookingForm.date && !isHotDeskBooked" class="mt-2 text-xs text-green-600 dark:text-green-400">
+                  Available for booking
+                </div>
               </div>
               
-              <div>
+              <!-- Time selection (meeting rooms only) -->
+              <div v-if="productType === 'meeting-room'">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1521,15 +1528,15 @@
             
             <!-- Duration Display -->
             <div v-if="bookingForm.timeRange.start && bookingForm.timeRange.end && calculateDurationInHours() > 0" 
-              class="text-center py-1 px-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-md border border-blue-100 dark:border-blue-800 mb-2 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 text-blue-600 dark:text-blue-400 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              class="text-center py-1 px-1.5 bg-green-50 dark:bg-green-900/30 rounded-md border border-green-100 dark:border-green-800 mb-2 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 text-green-600 dark:text-green-400 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span class="text-xs font-medium text-blue-700 dark:text-blue-300">Duration: {{ calculateDurationInHours() }} hour(s)</span>
+              <span class="text-xs font-medium text-green-700 dark:text-green-300">Duration: {{ calculateDurationInHours() }} hour(s)</span>
             </div>
 
               <!-- Enhanced Facilities Selection - Using dynamic data -->
-            <div class="space-y-2 mb-4">
+            <div v-if="productType === 'meeting-room'" class="space-y-2 mb-4">
               <div class="flex justify-between items-center mb-1">
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1620,6 +1627,116 @@
         
         <!-- Dedicated Desk Booking Form -->
         <div v-else-if="productType === 'dedicated-desk'" class="space-y-3">
+          <!-- Enhanced Package Selection with visual improvements - Moved above subscription details -->
+          <div class="subscription-plans">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+              </svg>
+              Select Subscription Plan
+            </label>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <label class="relative overflow-hidden bg-white dark:!bg-gray-800 border-2 rounded-xl cursor-pointer transition-all duration-300 group subscription-plan-tile" 
+                     :class="selectedPackage === 'monthly' ? 'border-primary shadow-lg shadow-primary/20 bg-primary/5 dark:bg-primary/10 scale-105' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md dark:hover:shadow-dark-md'">
+                <input v-model="selectedPackage" value="monthly" type="radio" class="sr-only">
+                <div class="p-4 text-center">
+                  <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="selectedPackage === 'monthly' ? 'text-primary' : 'text-gray-400 dark:text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div class="mb-2">
+                    <div class="text-base font-semibold text-gray-900 dark:text-white mb-1">Monthly Plan</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">Flexible subscription</div>
+                  </div>
+                  <div class="text-xl font-bold text-primary mb-1">LKR {{ space?.pricing?.monthly || 2500 }}</div>
+                  <div class="text-xs text-gray-600 dark:text-gray-400">per month</div>
+                  
+                  <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
+                    <ul class="space-y-1.5">
+                      <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        sample
+                      </li>
+                      <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Cancel anytime
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div v-if="selectedPackage === 'monthly'" class="absolute top-3 right-3">
+                  <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-md">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </label>
+              
+              <label class="relative overflow-hidden bg-white dark:!bg-gray-800 border-2 rounded-xl cursor-pointer transition-all duration-300 group subscription-plan-tile" 
+                     :class="selectedPackage === 'annual' ? 'border-primary shadow-lg shadow-primary/20 bg-primary/5 dark:bg-primary/10 scale-105' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md dark:hover:shadow-dark-md'">
+                <input v-model="selectedPackage" value="annual" type="radio" class="sr-only">
+                <div class="p-4 text-center relative">
+                  <div class="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-0.5 rounded-bl-lg rounded-tr-xl font-medium shadow-sm transform rotate-3">
+                    Best Value
+                  </div>
+                  
+                  <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="selectedPackage === 'annual' ? 'text-primary' : 'text-gray-400 dark:text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  
+                  <div class="mb-2 mt-1">
+                    <div class="text-base font-semibold text-gray-900 dark:text-white mb-1">Annual Plan</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">Best savings</div>
+                  </div>
+                  <div class="text-xl font-bold text-primary mb-1">LKR {{ space?.pricing?.annual || 27000 }}</div>
+                  <div class="text-xs text-gray-600 dark:text-gray-400">per year</div>
+                  
+                  <div class="mt-2 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full inline-flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-600 dark:text-green-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-xs font-medium text-green-800 dark:text-green-300">Save LKR {{ getSavings() }}</span>
+                  </div>
+                  
+                  <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
+                    <ul class="space-y-1.5">
+                      <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        2 months free
+                      </li>
+                      <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Priority access
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div v-if="selectedPackage === 'annual'" class="absolute top-3 right-3">
+                  <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-md">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
           <div class="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -1628,56 +1745,52 @@
           </div>
           
           <div class="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700">
-            <!-- Date and Team Size in Same Row -->
-            <div class="grid grid-cols-2 gap-3 mb-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Start Date
-                </label>
-                <SingleDatePicker
-                  v-model="bookingForm.date"
-                  placeholder="Select start date"
-                  :min-date="today"
-                  @change="onDateChange"
-                  class="compact-date-picker w-full"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Team Size
-                </label>
-                <TeamSizeDropdown v-model="bookingForm.teamSize" class="w-full" />
-              </div>
-            </div>
-            
-            <!-- Plan Duration Selection with enhanced visuals -->
+            <!-- Date selection for dedicated desk -->
             <div class="mb-4">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Subscription Length
+                Start Date
               </label>
-              <div class="grid grid-cols-3 gap-2">
-                <button 
-                  v-for="(duration, index) in ['1 Month', '3 Months', '6 Months']" 
-                  :key="index"
-                  @click="selectPackage(duration)"
-                  type="button" 
-                  :class="[
-                    'py-1.5 px-2 rounded-lg text-xs font-medium focus:outline-none border transition-all duration-200',
-                    selectedPackage === duration ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'
-                  ]"
-                >
-                  {{ duration }}
-                </button>
+              <SingleDatePicker
+                v-model="bookingForm.date"
+                placeholder="Select start date"
+                :min-date="today"
+                @change="onDateChange"
+                class="compact-date-picker w-full"
+              />
+            </div>
+            
+            <!-- Duration Selection based on selected package -->
+            <div v-if="selectedPackage" class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {{ selectedPackage === 'monthly' ? 'Subscription Duration (Months)' : 'Subscription Duration (Years)' }}
+              </label>
+              <select 
+                v-model="selectedDuration" 
+                class="compact-select-field w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md transition-colors duration-200"
+                @change="onDurationChange"
+              >
+                <option value="">Select duration</option>
+                <option v-for="option in getDurationOptions()" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              
+              <!-- Eye-catching Subscription End Date Display for Mobile -->
+              <div v-if="subscriptionEndDate" class="mt-3 p-3 bg-gradient-to-r from-green-50 to-indigo-50 dark:from-green-900/20 dark:to-indigo-900/20 border border-green-200 dark:border-green-800 rounded-lg shadow-sm">
+                <div class="flex items-center justify-center space-x-2">
+                 
+                  <div class="text-center">
+                    <div class="text-xs font-medium text-green-800 dark:text-green-200 uppercase tracking-wide">Subscription Ends</div>
+                    <div class="text-sm font-bold text-green-900 dark:text-green-100">{{ subscriptionEndDate }}</div>
+                  </div>
+                  
+                </div>
               </div>
             </div>
             
@@ -1711,16 +1824,10 @@
                 </div>
               </div>
               
-              <!-- Team size -->
-              <div class="flex justify-between mb-1 border-t border-gray-200 dark:border-gray-600 pt-2">
-                <span class="text-xs text-gray-600 dark:text-gray-400">Team size</span>
-                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ bookingForm.teamSize || '1' }} people</span>
-              </div>
-              
               <!-- Subscription duration -->
               <div class="flex justify-between mb-1">
                 <span class="text-xs text-gray-600 dark:text-gray-400">Duration</span>
-                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ selectedPackage || '1 Month' }}</span>
+                <span class="text-xs font-medium text-gray-800 dark:text-gray-200">{{ getDurationDisplayText() }}</span>
               </div>
               
               <!-- Total price with highlighted display -->
@@ -1751,7 +1858,8 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
+    
   </div>
 </template>
 
@@ -1860,6 +1968,7 @@ export default defineComponent({
       } as BookingForm,
       selectedFacilities: [] as (string | number)[],
       selectedPackage: 'monthly',
+      selectedDuration: '',
       isFullDayBooking: false, // Track if current booking is full day
       
       // Space data from API
@@ -2006,10 +2115,47 @@ export default defineComponent({
     isSubscriptionFormValid(): boolean {
       return !!(this.bookingForm.date &&
                this.selectedPackage &&
-               (this.productType !== 'dedicated-desk' || this.bookingForm.teamSize))
+               (this.productType !== 'dedicated-desk' || this.selectedDuration))
+    },
+
+    subscriptionEndDate(): string | null {
+      if (!this.bookingForm.date || !this.selectedDuration || !this.selectedPackage) {
+        return null
+      }
+
+      const startDate = new Date(this.bookingForm.date)
+      const duration = parseInt(this.selectedDuration)
+
+      if (this.selectedPackage === 'monthly') {
+        // Add months to the start date
+        const endDate = new Date(startDate)
+        endDate.setMonth(startDate.getMonth() + duration)
+        // Subtract one day to get the last day of the subscription period
+        endDate.setDate(endDate.getDate() - 1)
+        return endDate.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      } else if (this.selectedPackage === 'annual') {
+        // Add years to the start date
+        const endDate = new Date(startDate)
+        endDate.setFullYear(startDate.getFullYear() + duration)
+        // Subtract one day to get the last day of the subscription period
+        endDate.setDate(endDate.getDate() - 1)
+        return endDate.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      }
+
+      return null
     }
   },
-  
+
   async mounted() {
     // Initialize stores
     const authStore = useAuthStore()
@@ -2041,6 +2187,33 @@ export default defineComponent({
   },
   
   methods: {
+    calculateSubscriptionEndDate(): string | null {
+      if (!this.bookingForm.date || !this.selectedDuration || !this.selectedPackage) {
+        return null
+      }
+
+      const startDate = new Date(this.bookingForm.date)
+      const duration = parseInt(this.selectedDuration)
+
+      if (this.selectedPackage === 'monthly') {
+        // Add months to the start date
+        const endDate = new Date(startDate)
+        endDate.setMonth(startDate.getMonth() + duration)
+        // Subtract one day to get the last day of the subscription period
+        endDate.setDate(endDate.getDate() - 1)
+        return endDate.toISOString().split('T')[0] // Return YYYY-MM-DD format
+      } else if (this.selectedPackage === 'annual') {
+        // Add years to the start date
+        const endDate = new Date(startDate)
+        endDate.setFullYear(startDate.getFullYear() + duration)
+        // Subtract one day to get the last day of the subscription period
+        endDate.setDate(endDate.getDate() - 1)
+        return endDate.toISOString().split('T')[0] // Return YYYY-MM-DD format
+      }
+
+      return null
+    },
+
     scrollToReviews() {
       const reviewsElement = document.getElementById('reviews');
       if (reviewsElement) {
@@ -2642,16 +2815,28 @@ export default defineComponent({
     getPackagePrice(): number {
       if (!this.space?.pricing) return 0
       
+      let basePrice = 0
       switch (this.selectedPackage) {
         case 'daily':
-          return this.space.pricing.daily || 0
+          basePrice = this.space.pricing.daily || 0
+          break
         case 'monthly':
-          return this.space.pricing.monthly || 0
+          basePrice = this.space.pricing.monthly || 0
+          break
         case 'annual':
-          return this.space.pricing.annual || 0
+          basePrice = this.space.pricing.annual || 0
+          break
         default:
           return 0
       }
+      
+      // For dedicated desk, multiply by selected duration
+      if (this.productType === 'dedicated-desk' && this.selectedDuration) {
+        const duration = parseInt(this.selectedDuration)
+        return basePrice * duration
+      }
+      
+      return basePrice
     },
     
     getPackageDescription(): string {
@@ -2672,6 +2857,60 @@ export default defineComponent({
         return Math.round((this.space.pricing.monthly * 12) - this.space.pricing.annual)
       }
       return 0
+    },
+    
+    getDurationOptions(): Array<{ value: string; label: string }> {
+      if (!this.bookingForm.date || !this.selectedPackage) {
+        return []
+      }
+      
+      const startDate = new Date(this.bookingForm.date)
+      const options: Array<{ value: string; label: string }> = []
+      
+      if (this.selectedPackage === 'monthly') {
+        // Generate next 12 months starting from the selected date
+        for (let i = 1; i <= 12; i++) {
+          const date = new Date(startDate)
+          date.setMonth(startDate.getMonth() + i)
+          const monthName = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+          options.push({
+            value: `${i}`,
+            label: `${monthName} (${i} ${i === 1 ? 'month' : 'months'})`
+          })
+        }
+      } else if (this.selectedPackage === 'annual') {
+        // Generate next 5 years starting from the selected date
+        const startYear = startDate.getFullYear()
+        for (let i = 1; i <= 5; i++) {
+          const year = startYear + i
+          options.push({
+            value: `${i}`,
+            label: `${year} (${i} ${i === 1 ? 'year' : 'years'})`
+          })
+        }
+      }
+      
+      return options
+    },
+    
+    onDurationChange(): void {
+      // Recalculate price when duration changes
+      this.$forceUpdate()
+    },
+    
+    getDurationDisplayText(): string {
+      if (!this.selectedDuration) {
+        return this.selectedPackage === 'monthly' ? '1 Month' : '1 Year'
+      }
+      
+      const duration = parseInt(this.selectedDuration)
+      if (this.selectedPackage === 'monthly') {
+        return `${duration} ${duration === 1 ? 'Month' : 'Months'}`
+      } else if (this.selectedPackage === 'annual') {
+        return `${duration} ${duration === 1 ? 'Year' : 'Years'}`
+      }
+      
+      return '1 Month'
     },
     
     previousImage(): void {
@@ -2988,9 +3227,12 @@ export default defineComponent({
           },
           subscription: {
             startDate: this.bookingForm.date,
-            endDate: this.bookingForm.date,
+            endDate: this.calculateSubscriptionEndDate(),
             packageType: this.selectedPackage,
-            teamSize: this.bookingForm.teamSize
+            teamSize: this.bookingForm.teamSize,
+            ...(this.productType === 'dedicated-desk' && this.selectedDuration && {
+              duration: parseInt(this.selectedDuration)
+            })
           },
           totalPrice: this.getPackagePrice(),
           pricing: {

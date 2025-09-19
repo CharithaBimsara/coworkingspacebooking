@@ -136,11 +136,11 @@ export default defineComponent({
 }
 
 .dark .btn-primary:hover {
-  background-color: #5B5CF6;
+  background-color: #00FE01;
 }
 
 .dark .btn-secondary {
-  background-color: #374151;
+  background-color: #00FE01;
   color: #F3F4F6;
 }
 

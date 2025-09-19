@@ -237,7 +237,7 @@
                       </svg>
                       {{ booking.space?.name || 'Space Booking' }}
                     </h4>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 flex items-center">
+                    <p v-if="booking.productType !== 'dedicated-desk'" class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -248,13 +248,21 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        {{ (booking.productType === 'meeting-room' || booking.productType === 'hot-desk') ? (booking.space?.capacity || 'N/A') : (booking.subscription?.teamSize || 'N/A') }} people
+                        {{ booking.productType === 'dedicated-desk' ? (booking.space?.capacity || 'N/A') : (booking.productType === 'meeting-room' || booking.productType === 'hot-desk') ? (booking.space?.capacity || 'N/A') : (booking.subscription?.teamSize || 'N/A') }} people
                       </span>
-                      <span class="flex items-center">
+                      <!-- Time display (hidden for dedicated desk) -->
+                      <span v-if="booking.productType !== 'dedicated-desk'" class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         {{ getBookingTimeDisplay(booking) }}
+                      </span>
+                      <!-- Subscription dates for dedicated desk -->
+                      <span v-if="booking.productType === 'dedicated-desk'" class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {{ formatSubscriptionDates(booking) }}
                       </span>
                     </div>
                   </div>
@@ -307,18 +315,6 @@
                         LKR {{ Math.round(booking.pricing.facilitiesPrice / booking.facilities.length).toFixed(2) }}
                       </span>
                     </div>
-                  </div>
-
-                  <!-- Service Fee -->
-                  <div v-if="booking.pricing?.serviceFee && booking.pricing?.serviceFee > 0" class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-700 dark:text-gray-300">Service Fee</span>
-                    <span class="text-gray-900 dark:text-white">LKR {{ booking.pricing?.serviceFee?.toFixed(2) || (0).toFixed(2) }}</span>
-                  </div>
-
-                  <!-- Taxes -->
-                  <div v-if="booking.pricing?.taxes && booking.pricing?.taxes > 0" class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-700 dark:text-gray-300">Taxes</span>
-                    <span class="text-gray-900 dark:text-white">LKR {{ booking.pricing?.taxes?.toFixed(2) || (0).toFixed(2) }}</span>
                   </div>
 
                   <!-- Subtotal for this booking -->
@@ -598,6 +594,30 @@ export default defineComponent({
       return multiplier > 0 ? Math.round(totalFacilityPrice / multiplier) : totalFacilityPrice;
     }
 
+    // Format subscription dates for dedicated desk display
+    function formatSubscriptionDates(booking: BookingDetails): string {
+      const startDate = booking.subscription?.startDate;
+      const endDate = booking.subscription?.endDate;
+
+      if (!startDate || !endDate) {
+        return 'Dates not specified';
+      }
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      };
+
+      const startFormatted = start.toLocaleDateString('en-US', formatOptions);
+      const endFormatted = end.toLocaleDateString('en-US', formatOptions);
+
+      return `${startFormatted} - ${endFormatted}`;
+    }
+
     // Get booking time display with start time, end time, and duration
     function getBookingTimeDisplay(booking: BookingDetails): string {
       // For hot desks, just show "Full day"
@@ -667,99 +687,99 @@ export default defineComponent({
         // Add recaptcha token to all API requests for verification on backend
         NetworkManager.setAuthHeader('X-Recaptcha-Token', recaptchaToken.value);
 
-        // Get the booking (single booking)
-        const bookingDetail = bookingDetails.value[0];
-        if (!bookingDetail) {
+        // Get all bookings
+        const allBookings = bookingDetails.value;
+        if (!allBookings || allBookings.length === 0) {
           alert('No booking details found');
           return;
         }
 
-        // Extract booking information
-        let bookingDate = '';
-        let startTime = '';
-        let endTime = '';
-        let facilityIds: number[] = [];
+        // Build booking_products array
+        const bookingProducts = allBookings.map(bookingDetail => {
+          let bookingDate = '';
+          let startTime = '';
+          let endTime = '';
+          let facilities: Array<{ facility_id: number; price: number }> = [];
 
-        if (bookingDetail.productType === 'meeting-room' || bookingDetail.productType === 'hot-desk') {
-          // For meeting rooms and hot desks
-          bookingDate = bookingDetail.booking?.startDate || '';
-          startTime = bookingDetail.booking?.startTime || '';
+          if (bookingDetail.productType === 'meeting-room' || bookingDetail.productType === 'hot-desk') {
+            // For meeting rooms and hot desks
+            bookingDate = bookingDetail.booking?.startDate || '';
+            startTime = bookingDetail.booking?.startTime || '';
 
-          // Calculate end time based on start time and duration
-          if (startTime && bookingDetail.booking?.duration) {
-            const durationHours = parseInt(bookingDetail.booking.duration);
-            if (!isNaN(durationHours)) {
-              const [hours, minutes] = startTime.split(':').map(Number);
-              const startDateTime = new Date();
-              startDateTime.setHours(hours, minutes, 0, 0);
-              startDateTime.setHours(startDateTime.getHours() + durationHours);
-              endTime = `${startDateTime.getHours().toString().padStart(2, '0')}:${startDateTime.getMinutes().toString().padStart(2, '0')}`;
+            // For hot desks, use the end time directly from booking details
+            if (bookingDetail.productType === 'hot-desk') {
+              endTime = bookingDetail.booking?.endTime || '';
             } else {
-              endTime = startTime; // Fallback if duration parsing fails
+              // For meeting rooms, calculate end time based on start time and duration
+              if (startTime && bookingDetail.booking?.duration) {
+                const durationHours = parseInt(bookingDetail.booking.duration);
+                if (!isNaN(durationHours)) {
+                  const [hours, minutes] = startTime.split(':').map(Number);
+                  const startDateTime = new Date();
+                  startDateTime.setHours(hours, minutes, 0, 0);
+                  startDateTime.setHours(startDateTime.getHours() + durationHours);
+                  endTime = `${startDateTime.getHours().toString().padStart(2, '0')}:${startDateTime.getMinutes().toString().padStart(2, '0')}`;
+                } else {
+                  endTime = startTime; // Fallback if duration parsing fails
+                }
+              } else {
+                endTime = startTime; // Fallback if no duration
+              }
             }
-          } else {
-            endTime = startTime; // Fallback if no duration
+
+            // Map facility names to IDs and prices using space facility data
+            if (bookingDetail.facilities && bookingDetail.facilities.length > 0) {
+              const allFacilities = [
+                ...(bookingDetail.space.additional_facilities || []),
+                ...(bookingDetail.space.default_facilities || []),
+                ...(bookingDetail.space.facilities || [])
+              ];
+
+              // Calculate price per facility
+              const totalFacilitiesPrice = bookingDetail.pricing?.facilitiesPrice || 0;
+              const pricePerFacility = bookingDetail.facilities.length > 0 ? 
+                Math.round(totalFacilitiesPrice / bookingDetail.facilities.length) : 0;
+
+              facilities = bookingDetail.facilities
+                .map(facilityName => {
+                  const facility = allFacilities.find(f =>
+                    f.facility_name.toLowerCase() === facilityName.toLowerCase()
+                  );
+                  return facility ? { 
+                    facility_id: facility.facility_id, 
+                    price: pricePerFacility 
+                  } : null;
+                })
+                .filter(f => f !== null) as Array<{ facility_id: number; price: number }>;
+            }
+          } else if (bookingDetail.productType === 'dedicated-desk') {
+            // For dedicated desks, use subscription dates
+            bookingDate = bookingDetail.subscription?.startDate || '';
+            startTime = '09:00'; // Default start time for dedicated desks
+            endTime = '18:00';   // Default end time for dedicated desks
+            facilities = [];    // Dedicated desks might not have additional facilities
           }
 
-          // Map facility names to IDs using space facility data
-          if (bookingDetail.facilities && bookingDetail.facilities.length > 0) {
-            console.log('Facilities in booking:', bookingDetail.facilities);
-            console.log('Space facility data:', {
-              additional_facilities: bookingDetail.space.additional_facilities,
-              default_facilities: bookingDetail.space.default_facilities,
-              facilities: bookingDetail.space.facilities
-            });
+          return {
+            product_id: bookingDetail.spaceId,
+            booking_date: bookingDate, // Send ISO date format: "2025-09-23" (yyyy-MM-dd)
+            start_time: startTime,
+            end_time: endTime,
+            total_price: bookingDetail.pricing?.basePrice || 0,
+            facilities: facilities
+          };
+        });
 
-            const allFacilities = [
-              ...(bookingDetail.space.additional_facilities || []),
-              ...(bookingDetail.space.default_facilities || []),
-              ...(bookingDetail.space.facilities || [])
-            ];
-
-            console.log('All facilities combined:', allFacilities);
-
-            facilityIds = bookingDetail.facilities
-              .map(facilityName => {
-                console.log('Looking for facility:', facilityName);
-                const facility = allFacilities.find(f =>
-                  f.facility_name.toLowerCase() === facilityName.toLowerCase()
-                );
-                console.log('Found facility:', facility);
-                return facility ? facility.facility_id : null;
-              })
-              .filter(id => id !== null) as number[];
-
-            console.log('Mapped facility IDs:', facilityIds);
-          }
-        } else if (bookingDetail.productType === 'dedicated-desk') {
-          // For dedicated desks, use subscription dates
-          bookingDate = bookingDetail.subscription?.startDate || '';
-          startTime = '09:00'; // Default start time for dedicated desks
-          endTime = '18:00';   // Default end time for dedicated desks
-          facilityIds = [];    // Dedicated desks might not have additional facilities
-        }
-
-        // Format booking date (assuming it's in YYYY-MM-DD format, convert to YYYY.MM.DD)
-        const formattedBookingDate = bookingDate.replace(/-/g, '.');
-
-        // Construct payload with single booking
+        // Construct payload with multiple products
         const paymentPayload = {
           first_name: billingAddress.value.firstName || '',
           last_name: billingAddress.value.lastName || '',
           email: billingAddress.value.email || '',
           phone: billingAddress.value.phone || '',
           user_id: authStore.user?.id,
-          is_card_add: false, // As per user requirement
+          is_card_add: false,
           amount: totalAmount.value,
-          booking: {
-            user_id: authStore.user?.id,
-            product_id: bookingDetail.spaceId,
-            booking_date: formattedBookingDate,
-            start_time: startTime,
-            end_time: endTime,
-            facility_ids: facilityIds, // Correct facility IDs for this single product
-            total_price: totalAmount.value
-          }
+          booking_products: bookingProducts
         };
 
         console.log('Payment payload being sent:', paymentPayload);
@@ -824,78 +844,87 @@ export default defineComponent({
       try {
         // Add recaptcha token to all API requests for verification on backend
         NetworkManager.setAuthHeader('X-Recaptcha-Token', recaptchaToken.value);
-        // Get the booking (single booking)
-        const bookingDetail = bookingDetails.value[0];
-        if (!bookingDetail) {
+        
+        // Get all bookings
+        const allBookings = bookingDetails.value;
+        if (!allBookings || allBookings.length === 0) {
           alert('No booking details found');
           return;
         }
 
-        // Extract booking information (same logic as new card)
-        let bookingDate = '';
-        let startTime = '';
-        let endTime = '';
-        let facilityIds: number[] = [];
+        // Build booking_products array
+        const bookingProducts = allBookings.map(bookingDetail => {
+          let bookingDate = '';
+          let startTime = '';
+          let endTime = '';
+          let facilities: Array<{ facility_id: number; price: number }> = [];
 
-        if (bookingDetail.productType === 'meeting-room' || bookingDetail.productType === 'hot-desk') {
-          bookingDate = bookingDetail.booking?.startDate || '';
-          startTime = bookingDetail.booking?.startTime || '';
+          if (bookingDetail.productType === 'meeting-room' || bookingDetail.productType === 'hot-desk') {
+            bookingDate = bookingDetail.booking?.startDate || '';
+            startTime = bookingDetail.booking?.startTime || '';
 
-          // Calculate end time based on start time and duration
-          if (startTime && bookingDetail.booking?.duration) {
-            const durationHours = parseInt(bookingDetail.booking.duration);
-            if (!isNaN(durationHours)) {
-              const [hours, minutes] = startTime.split(':').map(Number);
-              const startDateTime = new Date();
-              startDateTime.setHours(hours, minutes, 0, 0);
-              startDateTime.setHours(startDateTime.getHours() + durationHours);
-              endTime = `${startDateTime.getHours().toString().padStart(2, '0')}:${startDateTime.getMinutes().toString().padStart(2, '0')}`;
+            // For hot desks, use the end time directly from booking details
+            if (bookingDetail.productType === 'hot-desk') {
+              endTime = bookingDetail.booking?.endTime || '';
             } else {
-              endTime = startTime;
+              // For meeting rooms, calculate end time based on start time and duration
+              if (startTime && bookingDetail.booking?.duration) {
+                const durationHours = parseInt(bookingDetail.booking.duration);
+                if (!isNaN(durationHours)) {
+                  const [hours, minutes] = startTime.split(':').map(Number);
+                  const startDateTime = new Date();
+                  startDateTime.setHours(hours, minutes, 0, 0);
+                  startDateTime.setHours(startDateTime.getHours() + durationHours);
+                  endTime = `${startDateTime.getHours().toString().padStart(2, '0')}:${startDateTime.getMinutes().toString().padStart(2, '0')}`;
+                } else {
+                  endTime = startTime;
+                }
+              } else {
+                endTime = startTime;
+              }
             }
-          } else {
-            endTime = startTime;
+
+            // Map facility names to IDs and prices using space facility data
+            if (bookingDetail.facilities && bookingDetail.facilities.length > 0) {
+              const allFacilities = [
+                ...(bookingDetail.space.additional_facilities || []),
+                ...(bookingDetail.space.default_facilities || []),
+                ...(bookingDetail.space.facilities || [])
+              ];
+
+              // Calculate price per facility
+              const totalFacilitiesPrice = bookingDetail.pricing?.facilitiesPrice || 0;
+              const pricePerFacility = bookingDetail.facilities.length > 0 ? 
+                Math.round(totalFacilitiesPrice / bookingDetail.facilities.length) : 0;
+
+              facilities = bookingDetail.facilities
+                .map(facilityName => {
+                  const facility = allFacilities.find(f =>
+                    f.facility_name.toLowerCase() === facilityName.toLowerCase()
+                  );
+                  return facility ? { 
+                    facility_id: facility.facility_id, 
+                    price: pricePerFacility 
+                  } : null;
+                })
+                .filter(f => f !== null) as Array<{ facility_id: number; price: number }>;
+            }
+          } else if (bookingDetail.productType === 'dedicated-desk') {
+            bookingDate = bookingDetail.subscription?.startDate || '';
+            startTime = '09:00';
+            endTime = '18:00';
+            facilities = [];
           }
 
-          // Map facility names to IDs using space facility data
-          if (bookingDetail.facilities && bookingDetail.facilities.length > 0) {
-            console.log('Facilities in booking:', bookingDetail.facilities);
-            console.log('Space facility data:', {
-              additional_facilities: bookingDetail.space.additional_facilities,
-              default_facilities: bookingDetail.space.default_facilities,
-              facilities: bookingDetail.space.facilities
-            });
-
-            const allFacilities = [
-              ...(bookingDetail.space.additional_facilities || []),
-              ...(bookingDetail.space.default_facilities || []),
-              ...(bookingDetail.space.facilities || [])
-            ];
-
-            console.log('All facilities combined:', allFacilities);
-
-            facilityIds = bookingDetail.facilities
-              .map(facilityName => {
-                console.log('Looking for facility:', facilityName);
-                const facility = allFacilities.find(f =>
-                  f.facility_name.toLowerCase() === facilityName.toLowerCase()
-                );
-                console.log('Found facility:', facility);
-                return facility ? facility.facility_id : null;
-              })
-              .filter(id => id !== null) as number[];
-
-            console.log('Mapped facility IDs:', facilityIds);
-          }
-        } else if (bookingDetail.productType === 'dedicated-desk') {
-          bookingDate = bookingDetail.subscription?.startDate || '';
-          startTime = '09:00';
-          endTime = '18:00';
-          facilityIds = [];
-        }
-
-        // Format booking date
-        const formattedBookingDate = bookingDate.replace(/-/g, '.');
+          return {
+            product_id: bookingDetail.spaceId,
+            booking_date: bookingDate, // Send ISO date format: "2025-09-23" (yyyy-MM-dd)
+            start_time: startTime,
+            end_time: endTime,
+            total_price: bookingDetail.pricing?.basePrice || 0,
+            facilities: facilities
+          };
+        });
 
         // Construct payload for existing card payment
         const paymentPayload = {
@@ -906,15 +935,7 @@ export default defineComponent({
           user_id: authStore.user?.id,
           is_card_add: false,
           amount: totalAmount.value,
-          booking: {
-            user_id: authStore.user?.id,
-            product_id: bookingDetail.spaceId,
-            booking_date: formattedBookingDate,
-            start_time: startTime,
-            end_time: endTime,
-            facility_ids: facilityIds, // Correct facility IDs for this single product
-            total_price: totalAmount.value
-          }
+          booking_products: bookingProducts
         };
 
         console.log('Payment payload being sent:', paymentPayload);
@@ -1067,6 +1088,7 @@ export default defineComponent({
   getMultiplier,
   getMultiplierLabel,
   getFacilityPricePerUnit,
+  formatSubscriptionDates,
   getBookingTimeDisplay,
   processPayment,
   closeGatewayModal,

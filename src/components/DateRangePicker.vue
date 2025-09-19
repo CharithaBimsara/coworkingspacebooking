@@ -175,7 +175,11 @@ export default defineComponent({
       // Generate 42 days (6 weeks)
       for (let i = 0; i < 42; i++) {
         const isCurrentMonth = currentDateObj.getMonth() === month
-        const dateString = currentDateObj.toISOString().split('T')[0]
+        // Use local date components to avoid timezone conversion issues
+        const year = currentDateObj.getFullYear()
+        const monthStr = String(currentDateObj.getMonth() + 1).padStart(2, '0')
+        const dayStr = String(currentDateObj.getDate()).padStart(2, '0')
+        const dateString = `${year}-${monthStr}-${dayStr}`
         
         days.push({
           date: new Date(currentDateObj),
@@ -240,7 +244,11 @@ export default defineComponent({
     selectDate(dateObj: CalendarDate): void {
       if (dateObj.disabled) return
       
-      const dateString = dateObj.date.toISOString().split('T')[0]
+      // Use local date components to avoid timezone conversion issues
+      const year = dateObj.date.getFullYear()
+      const month = String(dateObj.date.getMonth() + 1).padStart(2, '0')
+      const day = String(dateObj.date.getDate()).padStart(2, '0')
+      const dateString = `${year}-${month}-${day}`
       
       if (!this.tempStartDate || (this.tempStartDate && this.tempEndDate)) {
         // Start new selection
@@ -259,7 +267,11 @@ export default defineComponent({
     },
     
     isDateDisabled(date: Date): boolean {
-      const dateString = date.toISOString().split('T')[0]
+      // Use local date components to avoid timezone conversion issues
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const dateString = `${year}-${month}-${day}`
       
       if (this.minDate && dateString < this.minDate) {
         return true
@@ -273,7 +285,11 @@ export default defineComponent({
     },
     
     getDateClasses(dateObj: CalendarDate): string {
-      const dateString = dateObj.date.toISOString().split('T')[0]
+      // Use local date components to avoid timezone conversion issues
+      const year = dateObj.date.getFullYear()
+      const month = String(dateObj.date.getMonth() + 1).padStart(2, '0')
+      const day = String(dateObj.date.getDate()).padStart(2, '0')
+      const dateString = `${year}-${month}-${day}`
       const classes = []
       
       if (dateObj.disabled) {
@@ -295,9 +311,13 @@ export default defineComponent({
         classes.push('bg-primary/20 dark:bg-primary/30 text-primary')
       }
       
-      // Today's date
-      const today = new Date().toISOString().split('T')[0]
-      if (dateString === today && !classes.some(c => c.includes('bg-primary'))) {
+      // Today's date - use local date components to avoid timezone conversion issues
+      const today = new Date()
+      const todayYear = today.getFullYear()
+      const todayMonth = String(today.getMonth() + 1).padStart(2, '0')
+      const todayDay = String(today.getDate()).padStart(2, '0')
+      const todayString = `${todayYear}-${todayMonth}-${todayDay}`
+      if (dateString === todayString && !classes.some(c => c.includes('bg-primary'))) {
         classes.push('ring-2 ring-primary ring-inset')
       }
       

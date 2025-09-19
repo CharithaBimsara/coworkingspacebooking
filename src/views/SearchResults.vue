@@ -139,7 +139,7 @@
     <div class="w-full max-w-screen-8xl mx-auto px-4 sm:px-6 lg:px-6 py-8 mt-24">
       <div class="flex flex-col lg:flex-row gap-1 relative">
         <!-- Filters Sidebar -->
-        <div class="lg:w-1/3 xl:w-1/4 w-full mb-4 lg:mb-0 self-start">
+        <div class="lg:w-1/3 xl:w-1/4 w-full mb-4 lg:mb-0 self-start flex-shrink-0">
           <!-- Combined Mobile Filter & Search Overlay -->
           <div v-if="isFilterOpen" 
             class="fixed inset-0 bg-black bg-opacity-50 z-50 flex lg:hidden items-end transition-opacity duration-300 backdrop-blur-sm combined-filter-search-overlay"
@@ -217,15 +217,14 @@
                     </svg>
                     Location
                   </h4>
-                  <div class="relative">
-                    <input v-model="editSearchForm.location" type="text" placeholder="Enter location"
-                      class="input-field w-full text-sm py-2.5 px-3 pr-8 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                  </div>
+                  <LocationDropdown
+                    v-model="editSearchForm.location"
+                    :locations="locations"
+                    :disabled="loadingLocations"
+                    placeholder="Select location"
+                    class="w-full"
+                    @change="onLocationChange"
+                  />
                 </div>
                 
                 <!-- Space Type Filter (Mobile) -->
@@ -267,7 +266,7 @@
                       <span>LKR {{ priceRange.min }}</span>
                       <span>LKR {{ priceRange.max }}</span>
                     </div>
-                    <DualRangeSlider v-model:min="priceRange.min" v-model:max="priceRange.max" :minVal="10" :maxVal="1000"
+                    <DualRangeSlider v-model:min="priceRange.min" v-model:max="priceRange.max" :minVal="0" :maxVal="10000"
                       @change="updateQueryAndReload" class="w-full" />
                   </div>
                 </div>
@@ -313,30 +312,16 @@
                       </label>
                     </template>
                     
-                    <!-- Fallback to hardcoded facilities if API fails -->
+                    <!-- Show error message if API fails -->
                     <template v-else>
-                      <label 
-                        v-for="facility in ['High-Speed WiFi', '4K Display', 'Video Conferencing', 'Natural Light']" 
-                        :key="facility"
-                        :class="[
-                          'px-3 py-2 rounded-lg text-sm leading-tight cursor-pointer flex items-center gap-2 border transition-all duration-200',
-                          selectedFacilities.includes(facility) 
-                            ? 'bg-primary/10 border-primary text-primary font-medium' 
-                            : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
-                        ]"
-                      >
-                        <input 
-                          v-model="selectedFacilities" 
-                          :value="facility" 
-                          type="checkbox"
-                          class="hidden" 
-                          @change="updateQueryAndReload"
-                        >
-                        <svg v-if="selectedFacilities.includes(facility)" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>{{ facility }}</span>
-                      </label>
+                      <div class="w-full text-center py-3 px-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <div class="flex items-center justify-center gap-2 text-red-600 dark:text-red-400 text-sm">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                          </svg>
+                          <span>Unable to load facilities</span>
+                        </div>
+                      </div>
                     </template>
                   </div>
                 </div>
@@ -412,7 +397,7 @@
 
           <!-- Desktop Filters Sidebar -->
           <div
-            class="filters-sidebar bg-white dark:bg-gray-900 rounded-xl shadow-md dark:shadow-dark-card hidden lg:block border border-gray-200 dark:border-gray-800 overflow-y-auto scrollbar-hide p-4 text-[15px]">
+            class="filters-sidebar bg-white dark:bg-gray-900 rounded-xl shadow-md dark:shadow-dark-card hidden lg:block border border-gray-200 dark:border-gray-800 overflow-y-auto scrollbar-hide p-4 text-[15px] max-h-[70vh]">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-[17px] font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -440,16 +425,15 @@
                 </svg>
                 Location
               </h4>
-              <div class="relative">
-                  <input v-model="filters.location" type="text" placeholder="Enter location"
-                    class="input-field w-full text-sm py-2.5 px-3 pr-9 bg-white dark:bg-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-700" 
-                    @input="updateQueryAndReload">
-                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                  <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
+              <LocationDropdown
+                v-model="filters.location"
+                :locations="locations"
+                :disabled="loadingLocations"
+                placeholder="Select location"
+                class="w-full"
+                @update:modelValue="updateQueryAndReload"
+                @change="onLocationChange"
+              />
             </div>
 
             <!-- Price Range -->
@@ -465,7 +449,7 @@
                   <span>LKR {{ priceRange.min }}</span>
                   <span>LKR {{ priceRange.max }}</span>
                 </div>
-                <DualRangeSlider v-model:min="priceRange.min" v-model:max="priceRange.max" :minVal="10" :maxVal="1000"
+                <DualRangeSlider v-model:min="priceRange.min" v-model:max="priceRange.max" :minVal="0" :maxVal="10000"
                   @change="updateQueryAndReload" class="w-full" />
               </div>
             </div>
@@ -512,30 +496,16 @@
                     </label>
                 </template>
                 
-                <!-- Fallback to hardcoded facilities if API fails -->
+                <!-- Show error message if API fails -->
                 <template v-else>
-                    <label 
-                      v-for="facility in ['High-Speed WiFi', '4K Display', 'Video Conferencing', 'Natural Light']" 
-                      :key="facility"
-                      :class="[
-                        'px-2.5 py-1.5 rounded-lg text-sm cursor-pointer flex items-center gap-1.5 border transition-all duration-200',
-                        selectedFacilities.includes(facility) 
-                          ? 'bg-primary/10 border-primary text-primary font-medium' 
-                          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
-                      ]"
-                    >
-                      <input 
-                        v-model="selectedFacilities" 
-                        :value="facility" 
-                        type="checkbox"
-                        class="hidden" 
-                        @change="updateQueryAndReload"
-                      >
-                      <svg v-if="selectedFacilities.includes(facility)" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>{{ facility }}</span>
-                    </label>
+                    <div class="w-full text-center py-3 px-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                      <div class="flex items-center justify-center gap-2 text-red-600 dark:text-red-400 text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <span>Unable to load facilities</span>
+                      </div>
+                    </div>
                 </template>
               </div>
             </div>
@@ -921,16 +891,25 @@
             <div class="w-20 h-20 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner animate-pulse">
               <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  :d="apiError ? 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z' : 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">No spaces found</h3>
-            <p class="text-gray-600 dark:text-gray-400 mb-6 text-base">We couldn't find any spaces matching your criteria. Try adjusting your filters or search for something different.</p>
-            <button @click="clearAllFilters" class="btn-primary text-sm py-2.5 px-6 shadow-lg hover:scale-105 transition-all duration-300 flex items-center mx-auto gap-2">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">
+              {{ apiError ? 'Unable to load spaces' : 'No spaces found' }}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6 text-base">
+              {{ apiError 
+                ? 'We\'re having trouble connecting to our servers. Please check your internet connection and try again.' 
+                : 'We couldn\'t find any spaces matching your criteria. Try adjusting your filters or search for something different.' 
+              }}
+            </p>
+            <button @click="apiError ? loadSpaces() : clearAllFilters()" 
+              class="btn-primary text-sm py-2.5 px-6 shadow-lg hover:scale-105 transition-all duration-300 flex items-center mx-auto gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  :d="apiError ? 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' : 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'" />
               </svg>
-              Reset All Filters
+              {{ apiError ? 'Try Again' : 'Reset All Filters' }}
             </button>
 
             <!-- Suggestions from other locations -->
@@ -1057,8 +1036,13 @@
         <div class="grid sm:grid-cols-2 gap-3 mb-4">
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1.5">Location</label>
-            <input v-model="editSearchForm.location" type="text" placeholder="Enter location"
-              class="input-field text-sm py-1.5 px-2">
+            <LocationDropdown
+              v-model="editSearchForm.location"
+              :locations="locations"
+              :disabled="loadingLocations"
+              placeholder="Select location"
+              class="w-full"
+            />
           </div>
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1.5">Space Type</label>
@@ -1092,6 +1076,7 @@ import DualRangeSlider from '../components/DualRangeSlider.vue';
 import SingleDatePicker from '../components/SingleDatePicker.vue';
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
+import LocationDropdown from '../components/LocationDropdown.vue';
 import type { RouteLocationNormalizedLoaded, NavigationFailure, LocationQueryValue } from 'vue-router';
 
 // Helper function to safely parse query parameters
@@ -1140,7 +1125,7 @@ class PriceRange {
   min: number;
   max: number;
 
-  constructor(min = 10, max = 1000) {
+  constructor(min = 0, max = 10000) {
     this.min = min;
     this.max = max;
   }
@@ -1183,12 +1168,14 @@ export default defineComponent({
     DualRangeSlider,
     SingleDatePicker,
     CustomTimeRangePicker,
-    SpaceTypeDropdown
+    SpaceTypeDropdown,
+    LocationDropdown
   },
 
   data() {
     const query: RouteLocationNormalizedLoaded['query'] = this.$route.query;
     const capacity = getQueryParam(query.capacity);
+    const locationIdParam = getQueryParam(query.location_id);
 
     return {
       isLoading: false,
@@ -1201,6 +1188,8 @@ export default defineComponent({
       showSortOptions: false,
       facilities: [] as Array<{ facility_id: number; facility_name: string; description?: string }>, // Available facilities from API
       loadingFacilities: false, // Track loading state for facilities
+      locations: [] as Array<{ id: number; name: string; address: string; url: string }>, // Available locations from API
+      loadingLocations: false, // Track loading state for locations
       sortOptions: [
         { value: 'price-low', label: 'Price: Low to High' },
         { value: 'price-high', label: 'Price: High to Low' },
@@ -1220,8 +1209,8 @@ export default defineComponent({
       ),
       sortBy: 'price-low',
       priceRange: new PriceRange(
-        query.minPrice ? parseInt(getQueryParam(query.minPrice), 10) : 10,
-        query.maxPrice ? parseInt(getQueryParam(query.maxPrice), 10) : 1000
+        query.minPrice ? parseInt(getQueryParam(query.minPrice), 10) : 0,
+        query.maxPrice ? parseInt(getQueryParam(query.maxPrice), 10) : 10000
       ),
       selectedSpaceTypes: query.spaceType ? [getQueryParam(query.spaceType)] : [] as string[],
       selectedFacilities: query.facilities ? decodeURIComponent(getQueryParam(query.facilities)).split(',') : [] as string[],
@@ -1231,74 +1220,7 @@ export default defineComponent({
       filteredSpaces: [] as SpaceDto[],
       sortedSpaces: [] as SpaceDto[],
       favoriteSpaceIds: [] as number[],
-      // Sample hardcoded spaces to ensure we always have content
-      sampleSpaces: [
-        {
-          id: 1001,
-          name: "Urban Co-Working Hub",
-          location: "Downtown Central",
-          productType: "hot-desk",
-          images: ["/logo.png"],
-          rating: 4.8,
-          reviews: 42,
-          pricing: { hourly: 15, daily: 45, monthly: 800 },
-          features: ["High-Speed WiFi", "Standing Desks", "Coffee Bar", "Quiet Zone", "Outdoor Terrace"],
-          maxCapacity: 1,
-          isAvailable: true
-        },
-        {
-          id: 1002,
-          name: "Executive Meeting Suite",
-          location: "Financial District",
-          productType: "meeting-room",
-          images: ["/logo.png"],
-          rating: 4.9,
-          reviews: 28,
-          pricing: { hourly: 75, daily: 500, monthly: null },
-          features: ["Video Conferencing", "Whiteboard", "Catering Available", "Large Screen", "Private Bathroom"],
-          maxCapacity: 12,
-          isAvailable: true
-        },
-        {
-          id: 1003,
-          name: "Creative Studio Space",
-          location: "Arts District",
-          productType: "dedicated-desk",
-          images: ["/logo.png"],
-          rating: 4.6,
-          reviews: 36,
-          pricing: { hourly: null, daily: 30, monthly: 550 },
-          features: ["Natural Lighting", "Art Supplies", "Storage Space", "24/7 Access", "Community Events"],
-          maxCapacity: 1,
-          isAvailable: true
-        },
-        {
-          id: 1004,
-          name: "Quiet Focus Pod",
-          location: "Tech Park",
-          productType: "hot-desk",
-          images: ["/logo.png"],
-          rating: 4.7,
-          reviews: 19,
-          pricing: { hourly: 12, daily: 35, monthly: null },
-          features: ["Soundproof", "Ergonomic Chair", "Power Outlets", "Adjustable Lighting", "Climate Control"],
-          maxCapacity: 1,
-          isAvailable: true
-        },
-        {
-          id: 1005,
-          name: "Collaborative Workshop",
-          location: "Innovation Center",
-          productType: "meeting-room",
-          images: ["/logo.png"],
-          rating: 4.5,
-          reviews: 31,
-          pricing: { hourly: 50, daily: 350, monthly: null },
-          features: ["Modular Furniture", "Digital Tools", "Projector", "Brainstorming Wall", "Refreshments"],
-          maxCapacity: 20,
-          isAvailable: false
-        }
-      ] as SpaceDto[],
+      apiError: false, // Track if API failed
       spaceTypeOptions: [
         {
           value: '',
@@ -1321,6 +1243,7 @@ export default defineComponent({
           icon: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
         }
       ],
+      selectedLocationId: locationIdParam ? parseInt(locationIdParam, 10) : null,
      
     };
   },
@@ -1332,10 +1255,11 @@ export default defineComponent({
       timeRange: { start: this.filters.startTime || '', end: this.filters.endTime || '' }
     };
     
-    // Load spaces and facilities in parallel
+    // Load spaces, facilities, and locations in parallel
     await Promise.all([
       this.loadSpaces(),
-      this.loadFacilities()
+      this.loadFacilities(),
+      this.loadLocations()
     ]);
     
     this.applyFiltersAndSorting();
@@ -1350,29 +1274,9 @@ export default defineComponent({
   },
 
   computed: {
-    // Display spaces combines API results with sample spaces if needed
+    // Display spaces - just return sorted spaces without sample data
     displaySpaces(): SpaceDto[] {
-      const spaces = [...this.sortedSpaces];
-      
-      // If there are fewer than 5 spaces, add some sample spaces
-      if (spaces.length < 5) {
-        // Filter sample spaces to avoid duplicating existing spaces and respect space type filter
-        const additionalSpaces = this.sampleSpaces.filter(space => 
-          !spaces.some(s => s.id === space.id) && 
-          (!this.filters.spaceType || this.filters.spaceType === space.productType)
-        );
-        
-        // Add sample spaces until we have at least 5 or run out of samples
-        for (const space of additionalSpaces) {
-          if (spaces.length >= 5) break;
-          // Add a flag to identify sample spaces
-          const sampleSpace = {...space};
-          sampleSpace.name = sampleSpace.name + " (Sample)";
-          spaces.push(sampleSpace);
-        }
-      }
-      
-      return spaces;
+      return [...this.sortedSpaces];
     },
     
     activeFilters(): string[] {
@@ -1386,7 +1290,7 @@ export default defineComponent({
       if (this.minRating !== '0') {
         filters.push(`${this.minRating}+ stars`);
       }
-      if (this.priceRange.min !== 10 || this.priceRange.max !== 1000) {
+      if (this.priceRange.min !== 0 || this.priceRange.max !== 10000) {
         filters.push(`${this.priceRange.min} - ${this.priceRange.max}`);
       }
       if (this.filters.location) {
@@ -1449,6 +1353,21 @@ export default defineComponent({
         this.loadingFacilities = false;
       }
     },
+
+    async loadLocations(): Promise<void> {
+      try {
+        this.loadingLocations = true;
+        // Call NetworkManager to get locations from API
+        const locations = await NetworkManager.getLocations();
+        this.locations = locations;
+        console.log('Loaded locations:', locations);
+      } catch (error) {
+        console.error('Error loading locations:', error);
+        this.locations = [];
+      } finally {
+        this.loadingLocations = false;
+      }
+    },
     
     toggleMobileSearch(): void {
       // For backward compatibility, open the combined filter sidebar
@@ -1480,11 +1399,9 @@ export default defineComponent({
         // Create search parameters object directly for NetworkManager
         const searchParams: Record<string, unknown> = {};
         
-        // Map location to location_id if needed (you might need to get the location ID from a list)
-        if (this.filters.location) {
-          // For now, we'll pass the location as a string
-          // In a real implementation, you'd look up the location_id from a locations list
-          searchParams.location_name = this.filters.location;
+        // Map location to location_id if needed
+        if (this.selectedLocationId !== null) {
+          searchParams.location_id = this.selectedLocationId;
         }
         
         // Map space type to the format expected by NetworkManager
@@ -1512,7 +1429,7 @@ export default defineComponent({
         }
         
         // Add price range filters
-        if (this.priceRange.min !== 10 || this.priceRange.max !== 1000) {
+        if (this.priceRange.min !== 0 || this.priceRange.max !== 10000) {
           searchParams.min_daily_rate = this.priceRange.min;
           searchParams.max_daily_rate = this.priceRange.max;
         }
@@ -1550,14 +1467,17 @@ export default defineComponent({
         
         if (response.success) {
           this.allSpaces = response.spaces || [];
+          this.apiError = false;
           console.log(`Loaded ${this.allSpaces.length} spaces:`, this.allSpaces);
         } else {
           console.error('Failed to load spaces:', response.message);
           this.allSpaces = [];
+          this.apiError = true;
         }
       } catch (error) {
         console.error('Error loading spaces:', error);
         this.allSpaces = [];
+        this.apiError = true;
       } finally {
         this.isLoading = false;
       }
@@ -1734,10 +1654,11 @@ export default defineComponent({
     },
 
     async clearAllFilters(): Promise<void> {
-      this.priceRange = new PriceRange(10, 1000);
+      this.priceRange = new PriceRange(0, 10000);
       this.selectedSpaceTypes = [];
       this.selectedFacilities = [];
       this.minRating = '0';
+      this.selectedLocationId = null;
       this.filters = new SearchFilters();
       this.editSearchForm = new EditSearchForm();
       this.sortBy = 'price-low';
@@ -1767,7 +1688,7 @@ export default defineComponent({
       });
 
       try {
-        await this.$router.push({
+        await this.$router.replace({
           name: 'SearchResults',
           query: queryParams as Record<string, string>
         });
@@ -1777,6 +1698,14 @@ export default defineComponent({
         if (navError.name !== 'NavigationDuplicated') {
           console.error('Error updating route:', error);
         }
+      }
+    },
+
+    onLocationChange(location: any): void {
+      if (location && location.id !== undefined) {
+        this.selectedLocationId = location.id;
+      } else {
+        this.selectedLocationId = null;
       }
     },
 
@@ -1819,7 +1748,7 @@ export default defineComponent({
       if (filterToRemove.includes(' - ')) {
         const [min, max] = filterToRemove.split(' - ').map(val => parseInt(val));
         if (this.priceRange.min === min && this.priceRange.max === max) {
-          this.priceRange = new PriceRange(10, 1000);
+          this.priceRange = new PriceRange(0, 10000);
           this.updateQueryAndReload();
           return;
         }
@@ -2026,9 +1955,23 @@ export default defineComponent({
         this.selectedFacilities = newQuery.facilities ? decodeURIComponent(getQueryParam(newQuery.facilities)).split(',') : [];
         this.minRating = newQuery.minRating ? getQueryParam(newQuery.minRating) : '0';
         this.priceRange = new PriceRange(
-          newQuery.minPrice ? parseInt(getQueryParam(newQuery.minPrice), 10) : 10,
-          newQuery.maxPrice ? parseInt(getQueryParam(newQuery.maxPrice), 10) : 1000
+          newQuery.minPrice ? parseInt(getQueryParam(newQuery.minPrice), 10) : 0,
+          newQuery.maxPrice ? parseInt(getQueryParam(newQuery.maxPrice), 10) : 10000
         );
+        
+        // Set selectedLocationId based on location_id from query or location name
+        const locationIdParam = getQueryParam(newQuery.location_id);
+        if (locationIdParam) {
+          this.selectedLocationId = parseInt(locationIdParam, 10);
+        } else {
+          const locationName = getQueryParam(newQuery.location);
+          if (locationName && this.locations.length > 0) {
+            const location = this.locations.find(loc => loc.name === locationName);
+            this.selectedLocationId = location ? location.id : null;
+          } else {
+            this.selectedLocationId = null;
+          }
+        }
         
         try {
           await this.loadSpaces();
@@ -2041,7 +1984,12 @@ export default defineComponent({
     },
     priceRange: {
       handler() {
-        this.applyFilters();
+        // If price range is back to default (0-10000), reload without price filter
+        if (this.priceRange.min === 0 && this.priceRange.max === 10000) {
+          this.updateQueryAndReload();
+        } else {
+          this.applyFilters();
+        }
       },
       deep: true
     },

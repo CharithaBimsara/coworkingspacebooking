@@ -171,6 +171,24 @@
           <div v-if="activeTab === 'security'" class="bg-white dark:bg-gray-800 rounded-xl shadow-card p-6">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Security Settings</h2>
             
+            <!-- Password Reset Option -->
+            <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100">Password Reset</h3>
+                  <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                    Reset your password if you've forgotten it or want to change it
+                  </p>
+                </div>
+                <button
+                  @click="openPasswordResetModal"
+                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  Reset Password
+                </button>
+              </div>
+            </div>
+            
             <form @submit.prevent="updatePassword" class="space-y-6">
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
@@ -331,12 +349,21 @@
       :message="successMessage"
       @close="closeSuccessOverlay"
     />
+
+    <!-- Password Reset Modal -->
+    <PasswordResetModal
+      :show="showPasswordResetModal"
+      :user-email="profileForm.email"
+      @close="closePasswordResetModal"
+      @switch-to-signin="handlePasswordResetSwitchToSignIn"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import SuccessOverlay from '../components/SuccessOverlay.vue'
+import PasswordResetModal from '../components/PasswordResetModal.vue'
 import { useAuthStore } from '../stores/auth'
 // Note: NetworkManager is dynamically imported in the updateProfile method to avoid circular dependencies
 
@@ -356,6 +383,7 @@ export default defineComponent({
   
   components: {
     SuccessOverlay,
+    PasswordResetModal,
     LogOutIcon
   },
   
@@ -369,6 +397,7 @@ export default defineComponent({
       successTitle: '',
       successMessage: '',
       avatarFile: null as File | null,
+      showPasswordResetModal: false,
       
       tabs: [
         {
@@ -587,6 +616,24 @@ export default defineComponent({
       this.showSuccessOverlay = false
       this.successTitle = ''
       this.successMessage = ''
+    },
+
+    openPasswordResetModal(): void {
+      const authStore = useAuthStore()
+      const user = authStore.currentUser
+      this.showPasswordResetModal = true
+    },
+
+    closePasswordResetModal(): void {
+      this.showPasswordResetModal = false
+    },
+
+    handlePasswordResetSwitchToSignIn(): void {
+      this.closePasswordResetModal()
+      // Since we're in profile settings, we might want to redirect to home or show a message
+      this.showSuccessOverlay = true
+      this.successTitle = 'Password Reset Complete'
+      this.successMessage = 'Your password has been successfully reset. You can now use your new password to sign in.'
     }
   }
 })

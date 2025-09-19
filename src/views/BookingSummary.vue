@@ -232,7 +232,10 @@
       </div>
       
       <!-- Info Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mt-2">
+      <div :class="[
+        'grid gap-2 sm:gap-3 mt-2',
+        booking.productType === 'dedicated-desk' ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-4'
+      ]">
         <!-- Type -->
         <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">Type</span>
@@ -250,15 +253,32 @@
         
         <!-- Date -->
         <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">Date</span>
+          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">
+            {{ booking.productType === 'dedicated-desk' ? 'Subscription Start Date' : 'Date' }}
+          </span>
           <div class="font-medium text-gray-900 dark:text-white text-xs sm:text-sm flex items-center mt-0.5 sm:mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span class="line-clamp-1">
-              {{ booking.productType === 'hot-desk' || booking.productType === 'dedicated-desk' || booking.productType === 'meeting-room'
+              {{ booking.productType === 'dedicated-desk'
+                  ? formatDate(booking.subscription?.startDate || booking.booking?.startDate || '')
+                  : booking.productType === 'hot-desk' || booking.productType === 'meeting-room'
                   ? formatDate(booking.booking?.startDate || '') 
                   : formatDateRange(booking) }}
+            </span>
+          </div>
+        </div>
+        
+        <!-- Subscription End Date (only for dedicated desk) -->
+        <div v-if="booking.productType === 'dedicated-desk'" class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">Subscription End Date</span>
+          <div class="font-medium text-gray-900 dark:text-white text-xs sm:text-sm flex items-center mt-0.5 sm:mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="line-clamp-1">
+              {{ formatDate(booking.subscription?.endDate || '') }}
             </span>
           </div>
         </div>
@@ -266,7 +286,7 @@
         <!-- Time/Package -->
         <div class="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <span class="text-xxs xs:text-xs text-gray-500 dark:text-gray-400 block">
-            {{ booking.productType === 'meeting-room' ? 'Time' : booking.productType === 'hot-desk' ? 'Duration' : 'Package' }}
+            {{ booking.productType === 'meeting-room' ? 'Time' : booking.productType === 'hot-desk' ? 'Duration' : booking.productType === 'dedicated-desk' ? 'Subscription Duration' : 'Package' }}
           </span>
           <div class="font-medium text-gray-900 dark:text-white text-xs sm:text-sm flex items-center mt-0.5 sm:mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-1.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -275,6 +295,9 @@
             </svg>
             <span v-if="booking.productType === 'meeting-room'" class="line-clamp-1">{{ booking.booking?.startTime }} - {{ getEndTime(booking) }}</span>
             <span v-else-if="booking.productType === 'hot-desk'" class="line-clamp-1">Full Day</span>
+            <span v-else-if="booking.productType === 'dedicated-desk'" class="line-clamp-1">
+              {{ getDedicatedDeskDuration(booking) }}
+            </span>
             <span v-else class="line-clamp-1">{{ getPackageDisplayName(booking) }}</span>
           </div>
         </div>
@@ -358,24 +381,6 @@
                       </span>
                       <span class="text-xs font-medium">LKR {{ getFacilityPricePerUnit(booking, index) }} × {{ getMultiplierLabel(booking) }} = LKR {{ Math.round(booking.pricing.facilitiesPrice / booking.facilities.length) }}</span>
                     </div>
-                  </div>
-                  <div v-if="booking.pricing.serviceFee !== undefined && booking.pricing.serviceFee > 0" class="flex justify-between items-center">
-                    <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      Service Fee:
-                    </span>
-                    <span>LKR {{ booking.pricing.serviceFee || 0 }}</span>
-                  </div>
-                  <div v-if="booking.pricing.taxes !== undefined && booking.pricing.taxes > 0" class="flex justify-between items-center">
-                    <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 sm:h-3 w-2.5 sm:w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
-                      </svg>
-                      Taxes:
-                    </span>
-                    <span>LKR {{ booking.pricing.taxes || 0 }}</span>
                   </div>
                 </div>
               </div>
@@ -788,8 +793,9 @@ export default defineComponent({
     formatDate(dateString: string): string {
       if (!dateString) return 'Not specified'
       return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric'
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
       })
     },
 
@@ -821,9 +827,10 @@ export default defineComponent({
       const types: Record<string, string> = {
         'meeting-room': 'Meeting Room',
         'hot-desk': 'Hot Desk',
+        'dedicated-desk': 'Dedicated Desk',
         'coworking-space': 'Co-working Space'
       }
-      return types[type] || type
+      return types[type] || type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' ')
     },
 
     getServiceDisplayName(booking: BookingItem) {
@@ -854,6 +861,56 @@ export default defineComponent({
       const [hours, minutes] = startTime.split(':').map(Number)
       const endHour = hours + duration
       return `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+    },
+
+    getDedicatedDeskDuration(booking: BookingItem): string {
+      if (booking.productType !== 'dedicated-desk') return ''
+      
+      const packageType = booking.subscription?.packageType || 'monthly'
+      
+      // Try to get duration from various possible sources
+      let duration = 1
+      
+      // Check if duration is stored in subscription
+      if ((booking.subscription as any)?.duration) {
+        duration = (booking.subscription as any).duration
+      }
+      // Check if duration is stored in booking
+      else if ((booking.booking as any)?.duration) {
+        duration = (booking.booking as any).duration
+      }
+      // Check if selectedDuration is stored anywhere
+      else if ((booking as any).selectedDuration) {
+        duration = (booking as any).selectedDuration
+      }
+      // Check if duration is stored in the booking data
+      else if ((booking as any).duration) {
+        duration = (booking as any).duration
+      }
+      
+      // If duration is still 0 or invalid, try to calculate from dates
+      if (!duration || duration <= 0) {
+        if (booking.subscription?.startDate && booking.subscription?.endDate) {
+          const start = new Date(booking.subscription.startDate)
+          const end = new Date(booking.subscription.endDate)
+          
+          if (packageType === 'monthly') {
+            duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30))
+          } else {
+            duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 365))
+          }
+        }
+      }
+      
+      // Ensure we have a valid duration
+      if (!duration || duration <= 0) {
+        duration = 1
+      }
+      
+      const unit = packageType === 'monthly' ? 'month' : 'year'
+      const plural = duration > 1 ? 's' : ''
+      
+      return `${duration} ${unit}${plural}`
     },
 
     addAnotherService() {
@@ -957,18 +1014,32 @@ export default defineComponent({
 
     getBasePriceLabel(booking: any): string {
       const productType = booking.productType;
+
+      if (productType === 'dedicated-desk' || productType === 'coworking-space') {
+        // For subscriptions, show the package type
+        const packageType = booking.subscription?.packageType || 'monthly';
+        const capitalizedPackage = packageType.charAt(0).toUpperCase() + packageType.slice(1);
+        return `${capitalizedPackage} Rate`;
+      }
+
       const types: Record<string, string> = {
         'meeting-room': 'Meeting Room only price',
-        'hot-desk': 'Hot Desk only price',
-        'dedicated-desk': 'Dedicated Desk only price',
-        'coworking-space': 'Co-working Space only price'
+        'hot-desk': 'Hot Desk only price'
       };
       return types[productType] || 'Base Price';
     },
 
     getBasePricePerUnit(booking: any): number {
       if (!booking.pricing?.basePrice) return 0;
-      
+
+      if (booking.productType === 'dedicated-desk') {
+        // For dedicated desk, base price is the package rate (monthly/annual)
+        // We need to get the per-unit rate by dividing by the package duration
+        const packageType = booking.subscription?.packageType || 'monthly';
+        const packageMultiplier = packageType === 'annual' ? 12 : 1; // Annual = 12 months, Monthly = 1 month
+        return Math.round(booking.pricing.basePrice / packageMultiplier);
+      }
+
       const multiplier = this.getMultiplier(booking);
       return multiplier > 0 ? Math.round(booking.pricing.basePrice / multiplier) : booking.pricing.basePrice;
     },
@@ -978,11 +1049,9 @@ export default defineComponent({
         // For meeting rooms and hot desks, multiplier is duration in hours
         return parseInt(booking.booking?.duration || '1');
       } else if (booking.productType === 'dedicated-desk' || booking.productType === 'coworking-space') {
-        // For subscriptions, calculate based on package type
-        const packageType = booking.subscription?.packageType || 'monthly';
-        if (packageType === 'daily') return 1;
-        if (packageType === 'monthly') return 30; // Approximate days in month
-        if (packageType === 'annual') return 365; // Days in year
+        // For dedicated desk subscriptions, multiplier is the selected duration
+        const duration = booking.subscription?.duration || 1;
+        return duration;
       }
       return 1; // Default fallback
     },
@@ -994,10 +1063,15 @@ export default defineComponent({
       } else if (booking.productType === 'hot-desk') {
         return '1 day';
       } else if (booking.productType === 'dedicated-desk' || booking.productType === 'coworking-space') {
-        const packageType = booking.subscription?.packageType || booking.booking?.package || 'monthly';
-        if (packageType === 'daily') return '1 day';
-        if (packageType === 'monthly') return '1 month';
-        if (packageType === 'annual') return '1 year';
+        const packageType = booking.subscription?.packageType || 'monthly';
+        const duration = booking.subscription?.duration || 1;
+
+        if (packageType === 'monthly') {
+          return `${duration} month${duration > 1 ? 's' : ''}`;
+        } else if (packageType === 'annual') {
+          return `${duration} year${duration > 1 ? 's' : ''}`;
+        }
+        return `${duration} unit${duration > 1 ? 's' : ''}`;
       }
       return '1 unit';
     },

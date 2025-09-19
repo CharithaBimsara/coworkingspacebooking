@@ -398,6 +398,16 @@ export class NetworkManager {
         });
 
         if (!response.ok) {
+          // Handle 404 as "no products found" instead of error
+          if (response.status === 404) {
+            console.log('No products found (404 response)');
+            return {
+              success: true,
+              message: 'No spaces found matching your criteria',
+              spaces: [],
+              totalCount: 0
+            };
+          }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -2262,7 +2272,7 @@ export class NetworkManager {
    *     "token": "35907b5584cf4a92",
    *     "sms_status": null,
    *     "email_status": null
-   *   }
+   *     *   }
    * }
    */
   static async processCardPayment(paymentData: {
@@ -2273,15 +2283,17 @@ export class NetworkManager {
     user_id?: number;
     is_card_add: boolean;
     amount: number;
-    booking: {
-      user_id?: number;
+    booking_products: Array<{
       product_id: number;
       booking_date: string;
       start_time: string;
       end_time: string;
-      facility_ids: number[];
       total_price: number;
-    };
+      facilities: Array<{
+        facility_id: number;
+        price: number;
+      }>;
+    }>;
   }): Promise<{
     success: boolean;
     message: string;
@@ -2392,6 +2404,279 @@ export class NetworkManager {
       return {
         success: false,
         message: 'Network error while fetching booking'
+      };
+    }
+  }
+
+  /**
+   * Send password reset link to user's email
+   * Endpoint: /users/send-reset-link
+   * Method: POST
+   * Request:
+   * {
+   *   "email": "bimsaraadikari99@gmail.com"
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Request processed successfully",
+   *   "data": "Password reset instructions sent to your email"
+   * }
+   */
+  static async sendPasswordResetLink(email: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/users/send-reset-link`, {
+        method: 'POST',
+        headers: this.getCustomHeaders(),
+        body: JSON.stringify({ email })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to send reset link')
+        };
+      }
+
+      const data = await response.json();
+      console.log('sendPasswordResetLink API response:', data);
+
+      if (data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Password reset instructions sent to your email'
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to send reset link'
+        };
+      }
+    } catch (error) {
+      console.error('Error sending password reset link:', error);
+      return {
+        success: false,
+        message: 'Network error while sending reset link'
+      };
+    }
+  }
+
+  /**
+   * Verify password reset code
+   * Endpoint: /users/reset-with-code
+   * Method: POST
+   * Request:
+   * {
+   *   "email": "bimsaraadikari99@gmail.com",
+   *   "code": "775576"
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Request processed successfully",
+   *   "data": "Code verified successfully"
+   * }
+   */
+  static async verifyPasswordResetCode(email: string, code: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/users/reset-with-code`, {
+        method: 'POST',
+        headers: this.getCustomHeaders(),
+        body: JSON.stringify({
+          email,
+          code
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        
+        // Handle specific error codes for OTP verification
+        if (response.status === 400) {
+          return {
+            success: false,
+            message: 'OTP invalid or expired'
+          };
+        }
+        
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to verify code')
+        };
+      }
+
+      const data = await response.json();
+      console.log('verifyPasswordResetCode API response:', data);
+
+      if (data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Code verified successfully'
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Invalid code'
+        };
+      }
+    } catch (error) {
+      console.error('Error verifying code:', error);
+      return {
+        success: false,
+        message: 'Network error while verifying code'
+      };
+    }
+  }
+
+  /**
+   * Reset password with verification code
+   * Endpoint: /users/reset-with-code
+   * Method: POST
+   * Request:
+   * {
+   *   "email": "bimsaraadikari99@gmail.com",
+   *   "code": "695170",
+   *   "new_password": "charitha99"
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Request processed successfully",
+   *   "data": "Password reset successfully"
+   * }
+   */
+  static async resetPasswordWithCode(email: string, code: string, newPassword: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/users/reset-with-code`, {
+        method: 'POST',
+        headers: this.getCustomHeaders(),
+        body: JSON.stringify({
+          email,
+          code,
+          new_password: newPassword
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        
+        // Handle specific error codes for password reset
+        if (response.status === 400) {
+          return {
+            success: false,
+            message: 'Invalid code or password requirements not met'
+          };
+        }
+        
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to reset password')
+        };
+      }
+
+      const data = await response.json();
+      console.log('resetPasswordWithCode API response:', data);
+
+      if (data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Password reset successfully'
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to reset password'
+        };
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      return {
+        success: false,
+        message: 'Network error while resetting password'
+      };
+    }
+  }
+
+  /**
+   * Update booking date and time
+   * @param bookingData The booking update data
+   * @returns Promise with success status and message
+   */
+  public static async updateBooking(bookingData: {
+    BookingId: number;
+    ProductId: number;
+    BookingDate: string;
+    StartTime?: string;
+    EndTime?: string;
+  }): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      console.log('Updating booking with data:', bookingData);
+
+      // Always use FormData for this API endpoint
+      const formData = new FormData();
+
+      // Add required fields
+      formData.append('BookingId', bookingData.BookingId.toString());
+      formData.append('ProductId', bookingData.ProductId.toString());
+      formData.append('BookingDate', bookingData.BookingDate);
+
+      // Add time fields - send as empty values if not provided (for hot desks)
+      formData.append('StartTime', bookingData.StartTime || '');
+      formData.append('EndTime', bookingData.EndTime || '');
+
+      // Let the browser set the correct Content-Type with boundary
+      const headers = {};
+
+      // Log the form data entries for debugging
+      console.log('Update booking FormData entries:');
+      for (const pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+
+      const response = await fetch(`${this.BASE_URL}/booking/update-boooking`, {
+        method: 'POST',
+        headers,
+        body: formData
+      });
+
+      const data = await response.json();
+      this.lastRawResponseData = data;
+
+      if (response.ok && data.success) {
+        return {
+          success: true,
+          message: data.message || 'Booking updated successfully'
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to update booking'
+        };
+      }
+    } catch (error) {
+      console.error('Error updating booking:', error);
+      return {
+        success: false,
+        message: 'Network error while updating booking'
       };
     }
   }

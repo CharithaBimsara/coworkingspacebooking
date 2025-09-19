@@ -11,19 +11,21 @@
       </div>
       <input 
         v-model="searchQuery"
-        @input="onInput"
         @focus="showDropdown = true"
         @blur="onBlur"
         type="text" 
         :placeholder="placeholder"
-        class="input-field pl-10 text-gray-800 dark:text-white bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+        :disabled="disabled"
+        readonly
+        class="input-field pl-10 text-gray-800 dark:text-white bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
         autocomplete="off"
       >
       <!-- Clear button -->
       <button 
         v-if="searchQuery"
         @click="clearSearch"
-        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white"
+        :disabled="disabled"
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white disabled:text-gray-400 disabled:cursor-not-allowed"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -33,7 +35,7 @@
     
     <!-- Dropdown -->
     <div 
-      v-if="showDropdown && (filteredLocations.length > 0 || isLoading || locations.length === 0)"
+      v-if="showDropdown && !disabled && (filteredLocations.length > 0 || isLoading || locations.length === 0)"
   class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-32 overflow-y-auto custom-scrollbar min-w-[260px]"
     >
       <!-- Loading state -->
@@ -117,6 +119,10 @@ export default defineComponent({
     locations: {
       type: Array as PropType<Location[]>,
       default: () => []
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   
@@ -174,11 +180,13 @@ export default defineComponent({
   
   methods: {
     onInput(): void {
+      if (this.disabled) return;
       this.$emit('update:modelValue', this.searchQuery)
       this.showDropdown = true
     },
     
     onBlur(): void {
+      if (this.disabled) return;
       // Delay hiding dropdown to allow for click events
       setTimeout(() => {
         this.showDropdown = false
@@ -186,6 +194,7 @@ export default defineComponent({
     },
     
     selectLocation(location: Location): void {
+      if (this.disabled) return;
       this.searchQuery = location.name
       this.selectedLocation = location
       
@@ -199,6 +208,7 @@ export default defineComponent({
     },
     
     clearSearch(): void {
+      if (this.disabled) return;
       this.searchQuery = ''
       this.selectedLocation = null
       this.$emit('update:modelValue', '')

@@ -39,14 +39,29 @@
         
         <div>
           <label class="block text-sm font-medium text-black dark:text-white mb-1">Password</label>
-          <input
-            v-model="signInForm.password"
-            type="password"
-            required
-            class="input-field"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-          >
+          <div class="relative">
+            <input
+              v-model="signInForm.password"
+              :type="showSignInPassword ? 'text' : 'password'"
+              required
+              class="input-field pr-10"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            >
+            <button
+              type="button"
+              @click="toggleSignInPasswordVisibility"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            >
+              <svg v-if="showSignInPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+              </svg>
+              <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="flex items-center justify-between">
@@ -54,7 +69,7 @@
             <input type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
             <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">Remember me</span>
           </label>
-          <a href="#" class="text-sm font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">Forgot password?</a>
+          <a href="#" @click.prevent="openPasswordReset" class="text-sm font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">Forgot password?</a>
         </div>
 
         <button type="submit" class="w-full btn-primary" :disabled="isSigningIn">
@@ -144,24 +159,54 @@
         
         <div>
           <label class="block text-sm font-medium text-black dark:text-white mb-1">Password</label>
-          <input
-            v-model="signUpForm.password"
-            type="password"
-            required
-            class="input-field"
-            placeholder="Create a password"
-          >
+          <div class="relative">
+            <input
+              v-model="signUpForm.password"
+              :type="showSignUpPassword ? 'text' : 'password'"
+              required
+              class="input-field pr-10"
+              placeholder="Create a password"
+            >
+            <button
+              type="button"
+              @click="toggleSignUpPasswordVisibility"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            >
+              <svg v-if="showSignUpPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+              </svg>
+              <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div>
           <label class="block text-sm font-medium text-black dark:text-white mb-1">Confirm Password</label>
-          <input
-            v-model="signUpForm.confirmPassword"
-            type="password"
-            required
-            class="input-field"
-            placeholder="Confirm your password"
-          >
+          <div class="relative">
+            <input
+              v-model="signUpForm.confirmPassword"
+              :type="showSignUpConfirmPassword ? 'text' : 'password'"
+              required
+              class="input-field pr-10"
+              placeholder="Confirm your password"
+            >
+            <button
+              type="button"
+              @click="toggleSignUpConfirmPasswordVisibility"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            >
+              <svg v-if="showSignUpConfirmPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+              </svg>
+              <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
         </div>        <div>
           <label class="flex items-center">
             <input 
@@ -201,11 +246,20 @@
     :primary-action="successAction"
     @close="closeSuccessOverlay"
   />
+
+  <!-- Password Reset Modal -->
+  <PasswordResetModal
+    :show="showPasswordResetModal"
+    :user-email="passwordResetEmail"
+    @close="closePasswordResetModal"
+    @switch-to-signin="handlePasswordResetSwitchToSignIn"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import SuccessOverlay from './SuccessOverlay.vue';
+import PasswordResetModal from './PasswordResetModal.vue';
 import { NetworkManager } from '../api/networkManager';
 import { SignInForm, SignUpForm } from '../helpers/forms';
 
@@ -221,7 +275,8 @@ export default defineComponent({
   name: 'AuthModals',
   
   components: {
-    SuccessOverlay
+    SuccessOverlay,
+    PasswordResetModal
   },
   
   emits: ['close', 'user-authenticated', 'switch-to-signup', 'switch-to-signin'],
@@ -256,13 +311,30 @@ export default defineComponent({
       successAction: null as PrimaryAction | null,
       errorMessage: '',
       showError: false,
-      errorTimeoutId: null as ReturnType<typeof setTimeout> | null
+      errorTimeoutId: null as ReturnType<typeof setTimeout> | null,
+      showPasswordResetModal: false,
+      passwordResetEmail: '',
+      showSignInPassword: false,
+      showSignUpPassword: false,
+      showSignUpConfirmPassword: false
     };
   },
   
   methods: {
     closeModals() {
       this.$emit('close');
+    },
+    
+    toggleSignInPasswordVisibility() {
+      this.showSignInPassword = !this.showSignInPassword;
+    },
+    
+    toggleSignUpPasswordVisibility() {
+      this.showSignUpPassword = !this.showSignUpPassword;
+    },
+    
+    toggleSignUpConfirmPasswordVisibility() {
+      this.showSignUpConfirmPassword = !this.showSignUpConfirmPassword;
     },
     
     switchToSignUp() {
@@ -431,6 +503,22 @@ export default defineComponent({
         this.showError = false;
         this.errorMessage = '';
       }, 6000);
+    },
+
+    openPasswordReset() {
+      // Use the email from the sign-in form if available, otherwise empty
+      this.passwordResetEmail = this.signInForm.email || '';
+      this.showPasswordResetModal = true;
+    },
+
+    closePasswordResetModal() {
+      this.showPasswordResetModal = false;
+      this.passwordResetEmail = '';
+    },
+
+    handlePasswordResetSwitchToSignIn() {
+      this.closePasswordResetModal();
+      this.switchToSignIn();
     }
   }
 })

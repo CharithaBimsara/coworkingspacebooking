@@ -8,17 +8,29 @@ export interface BookingData {
   booking_id: number;
   user_id: number;
   first_name?: string | null;
+  last_name?: string | null;
+  order_id?: string;
   product_id: number;
-  payment_id: number;
-  total_price: number;
-  facility_ids: number[];
-  booking_date: string;
-  start_time: string;
-  end_time: string;
   is_onetime_changed: boolean;
-  product_name?: string;
-  product_image?: string;
-  location_name?: string;
+  is_updatable: boolean;
+  wallet_id?: number;
+  facility_ids: number[];
+  products: Array<{
+    product_id: number;
+    product_name: string;
+    price: number;
+    location_name: string;
+    booking_date: string;
+    start_time: string;
+    end_time: string;
+    product_image?: string;
+    facilities: Array<{
+      facility_id: number;
+      facility_name: string | null;
+      price: number;
+    }>;
+  }>;
+  total_price: number;
 }
 
 export interface BookingResponse {
@@ -34,30 +46,28 @@ export class BookingManager {
    * Helper method to process bookings with product details
    */
   private static async processBookingsWithDetails(bookings: BookingData[]): Promise<BookingData[]> {
-    return await Promise.all(
-      bookings.map(async (booking: BookingData) => {
-        try {
-          // Get product details using NetworkManager
-          const productResponse = await NetworkManager.getSpaces({ id: booking.product_id });
-          
-          if (productResponse.success && productResponse.space) {
-            return {
-              ...booking,
-              product_name: productResponse.space.name || 'Unknown Space',
-              product_image: productResponse.space.images && productResponse.space.images.length > 0 
-                ? productResponse.space.images[0] 
-                : '',
-              location_name: productResponse.space.location || ''
-            };
-          }
-          
-          return booking;
-        } catch (error) {
-          console.warn(`Error fetching details for booking ${booking.booking_id}:`, error);
-          return booking;
-        }
-      })
-    );
+    // Since product details are now embedded in the products array,
+    // we don't need to fetch additional details from the API
+    return bookings.map(booking => {
+      // Flatten the products array - for now, take the first product
+      // In the future, you might want to handle multiple products per booking differently
+      const primaryProduct = booking.products && booking.products.length > 0 ? booking.products[0] : null;
+
+      if (primaryProduct) {
+        return {
+          ...booking,
+          product_name: primaryProduct.product_name,
+          product_image: '', // You can set a default image or fetch it separately if needed
+          location_name: primaryProduct.location_name,
+          booking_date: primaryProduct.booking_date,
+          start_time: primaryProduct.start_time,
+          end_time: primaryProduct.end_time,
+          facility_ids: primaryProduct.facilities ? primaryProduct.facilities.map(f => f.facility_id) : booking.facility_ids
+        };
+      }
+
+      return booking;
+    });
   }
 
   /**

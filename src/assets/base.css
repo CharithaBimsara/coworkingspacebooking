@@ -87,15 +87,46 @@ html {
 /* Custom component styles */
 @layer components {
   .btn-primary {
-    @apply bg-primary text-black px-6 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 transform hover:-translate-y-0.5 shadow-md;
+    @apply relative bg-gradient-to-r from-primary to-primary/90 text-black px-6 py-2 rounded-2xl font-semibold hover:from-primary/90 hover:to-primary/80 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary/30 focus:ring-offset-2 transform hover:-translate-y-1 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none overflow-hidden;
+  }
+  
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-primary:hover::before {
+    @apply opacity-100;
+  }
+  
+  .btn-primary:active::before {
+    @apply opacity-30;
   }
   
   .btn-secondary {
-    @apply bg-white dark:bg-black text-primary border-2 border-primary px-6 py-3 rounded-full font-medium hover:bg-primary/5 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 transform hover:-translate-y-0.5 shadow-md;
+    @apply relative bg-white dark:bg-gray-900 text-primary border-2 border-primary px-6 py-2 rounded-2xl font-semibold hover:bg-primary/5 dark:hover:bg-primary/10 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary/30 focus:ring-offset-2 transform hover:-translate-y-1 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none overflow-hidden;
+  }
+  
+  .btn-secondary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-secondary:hover::before {
+    @apply opacity-100;
   }
   
   .btn-danger {
-    @apply bg-red-600 text-white px-6 py-3 rounded-full font-medium hover:bg-red-700 transition-all focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 transform hover:-translate-y-0.5 shadow-md;
+    @apply relative bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-2xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-500/30 focus:ring-offset-2 transform hover:-translate-y-1 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none overflow-hidden;
+  }
+  
+  .btn-danger::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-danger:hover::before {
+    @apply opacity-100;
   }
   
   .input-field {
