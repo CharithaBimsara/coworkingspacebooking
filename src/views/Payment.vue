@@ -753,16 +753,22 @@ export default defineComponent({
                 .filter(f => f !== null) as Array<{ facility_id: number; price: number }>;
             }
           } else if (bookingDetail.productType === 'dedicated-desk') {
-            // For dedicated desks, use subscription dates
-            bookingDate = bookingDetail.subscription?.startDate || '';
-            startTime = '09:00'; // Default start time for dedicated desks
-            endTime = '18:00';   // Default end time for dedicated desks
-            facilities = [];    // Dedicated desks might not have additional facilities
+            // For dedicated desks - subscription-based
+            return {
+              product_id: bookingDetail.spaceId,
+              subscription_start_date: bookingDetail.subscription?.startDate || '',
+              subscription_end_date: bookingDetail.subscription?.endDate || '',
+              package_type: bookingDetail.subscription?.packageType || 'monthly',
+              booking_date: bookingDetail.subscription?.startDate || '', // Keep for backward compatibility
+              total_price: bookingDetail.pricing?.basePrice || 0,
+              facilities: []
+            };
           }
 
+          // Return for meeting-room and hot-desk
           return {
             product_id: bookingDetail.spaceId,
-            booking_date: bookingDate, // Send ISO date format: "2025-09-23" (yyyy-MM-dd)
+            booking_date: bookingDate,
             start_time: startTime,
             end_time: endTime,
             total_price: bookingDetail.pricing?.basePrice || 0,
@@ -922,7 +928,13 @@ export default defineComponent({
             start_time: startTime,
             end_time: endTime,
             total_price: bookingDetail.pricing?.basePrice || 0,
-            facilities: facilities
+            facilities: facilities,
+            // Add subscription properties for dedicated desk
+            ...(bookingDetail.productType === 'dedicated-desk' && {
+              subscription_start_date: bookingDetail.subscription?.startDate || '',
+              subscription_end_date: bookingDetail.subscription?.endDate || '',
+              package_type: bookingDetail.subscription?.packageType || 'monthly'
+            })
           };
         });
 

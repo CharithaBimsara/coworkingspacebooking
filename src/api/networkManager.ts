@@ -2286,13 +2286,17 @@ export class NetworkManager {
     booking_products: Array<{
       product_id: number;
       booking_date: string;
-      start_time: string;
-      end_time: string;
+      start_time?: string;
+      end_time?: string;
       total_price: number;
       facilities: Array<{
         facility_id: number;
         price: number;
       }>;
+      // Subscription properties (for dedicated desk)
+      subscription_start_date?: string;
+      subscription_end_date?: string;
+      package_type?: string;
     }>;
   }): Promise<{
     success: boolean;

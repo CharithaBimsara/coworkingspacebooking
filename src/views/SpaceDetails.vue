@@ -974,6 +974,110 @@
               </div>
             </div>
 
+            <!-- Enhanced Price Calculation and Booking Button - For Meeting Rooms and Hot Desks -->
+            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
+              <h4 class="font-medium text-gray-900 mb-3 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Price Summary
+              </h4>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between py-1.5 border-b border-gray-100">
+                  <div>
+                    <span class="text-gray-800 text-sm font-medium">
+                      {{ getSpaceTypeName() }}
+                      <span v-if="calculateDurationInHours() > 0" class="text-gray-600 font-normal">
+                        ({{ calculateDurationInHours() }} hour{{ calculateDurationInHours() > 1 ? 's' : '' }})
+                      </span>
+                      <span v-else class="text-amber-600 font-normal">
+                        (Select time duration)
+                      </span>
+                    </span>
+                    <div v-if="calculateDurationInHours() > 0" class="text-xs text-gray-500 mt-0.5">
+                      LKR {{ getBasePricePerHour() }}/hour × {{ calculateDurationInHours() }} hour{{ calculateDurationInHours() > 1 ? 's' : '' }}
+                    </div>
+                    <div v-else class="text-xs text-gray-500 mt-0.5">
+                      LKR {{ getBasePricePerHour() }}/hour
+                    </div>
+                  </div>
+                  <span class="font-semibold text-sm">LKR {{ roomBasePrice }}</span>
+                </div>
+
+                <!-- Selected Facilities with enhanced styling -->
+                <div v-if="selectedFacilities.length > 0" class="pt-1 pb-2">
+                  <div class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Selected Amenities</div>
+                  <div v-for="facility in selectedFacilities" :key="typeof facility === 'object' ? (facility as Facility).facility_id || String(facility) : String(facility)"
+                       class="flex items-center justify-between text-sm text-gray-600 mb-1.5 bg-gray-50 px-3 py-1.5 rounded-md">
+                    <div class="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-primary mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{{ getFeatureName(facility) }}</span>
+                    </div>
+                    <span class="font-medium text-primary">+LKR {{ facilityPrice(facility) }} × {{ calculateDurationInHours() }}h = LKR {{ facilityPrice(facility) * calculateDurationInHours() }}</span>
+                  </div>
+                </div>
+
+                <!-- Divider with visual enhancement -->
+                <div class="relative py-3">
+                  <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div class="relative flex justify-center">
+                    <span class="px-2 bg-white text-xs text-gray-500">ORDER SUMMARY</span>
+                  </div>
+                </div>
+
+                <!-- Total with visual emphasis -->
+                <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
+                  <span class="text-base font-bold text-gray-900">Total Amount</span>
+                  <div class="text-right">
+                    <span class="text-xl font-bold text-primary">LKR {{ totalPrice }}</span>
+                    <div class="text-xs text-gray-500">includes taxes & fees</div>
+                  </div>
+                </div>
+
+                <!-- Payment info with enhanced visual cues -->
+                <div class="flex items-start mt-2 bg-amber-50 dark:bg-gray-800 dark:border border-gray-800 border border-amber-100 rounded-md p-2.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 mr-1.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div class="text-xs text-amber-800 dark:text-gray-100">
+                    <span class="font-medium">Non-refundable booking.</span> Payment will be processed immediately upon confirmation.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enhanced Action Buttons for Meeting Rooms and Hot Desks -->
+            <div v-if="productType === 'meeting-room' || productType === 'hot-desk'" class="space-y-3">
+              <button
+                @click="proceedToBooking"
+                :disabled="!isBookingFormValid || isProcessing"
+                class="w-full py-2 px-4 bg-primary text-white font-medium text-sm rounded-lg shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+              >
+                <span v-if="isProcessing" class="flex items-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+                <span v-else>Book Now</span>
+              </button>
+
+              <div class="flex items-center justify-center space-x-2 text-xs text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>Secure payment process</span>
+                <span class="mx-1">•</span>
+                <span>Instant confirmation</span>
+              </div>
+            </div>
+
             <!-- Enhanced Dedicated Desk Booking Form -->
             <div v-else-if="productType === 'dedicated-desk'" class="space-y-3 sm:space-y-4 dedicated-desk-form">
               <!-- Enhanced Package Selection with visual improvements - Moved above subscription details -->
@@ -2856,6 +2960,27 @@ export default defineComponent({
       if (this.space?.pricing?.monthly && this.space?.pricing?.annual) {
         return Math.round((this.space.pricing.monthly * 12) - this.space.pricing.annual)
       }
+      return 0
+    },
+
+    getBasePricePerHour(): number {
+      if (!this.space?.pricing) return 0
+
+      // For meeting-room, return hourly pricing
+      if (this.productType === 'meeting-room') {
+        return this.space.pricing.hourly || 85
+      }
+
+      // For hot-desk, return daily pricing (since hot desks are priced per day)
+      if (this.productType === 'hot-desk') {
+        return this.space.pricing.daily || 500
+      }
+
+      // For dedicated-desk, return the selected package pricing per unit
+      if (this.productType === 'dedicated-desk') {
+        return this.getPackagePrice() / (this.selectedDuration ? parseInt(this.selectedDuration) : 1)
+      }
+
       return 0
     },
     
