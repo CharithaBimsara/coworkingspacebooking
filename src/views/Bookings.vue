@@ -186,7 +186,12 @@
       <div v-if="showSubscriptions && activeTab !== 'total'">
         <!-- Subscriptions Section -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-card border border-gray-200 dark:border-gray-700 overflow-hidden">
-         
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Your Subscriptions</h2>
+             
+            </div>
+          </div>
 
           <!-- Loading State -->
           <div v-if="loadingSubscriptions" class="p-8 text-center">
