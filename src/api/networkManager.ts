@@ -2267,7 +2267,7 @@ export class NetworkManager {
    * {
    *   "status_code": 200,
    *   "message": "Card add session & booking created successfully. Awaiting callback.",
-   *   "data": {
+     *   "data": {
    *     "link": "https://test-gateway.directpay.lk/35907b5584cf4a92",
    *     "token": "35907b5584cf4a92",
    *     "sms_status": null,
@@ -2681,6 +2681,136 @@ export class NetworkManager {
       return {
         success: false,
         message: 'Network error while updating booking'
+      };
+    }
+  }
+
+  /**
+   * Get user subscriptions
+   * Endpoint: /booking/get-user-subscriptions
+   * Method: POST
+   * Request:
+   * {
+   *   "user_id": 3
+   * }
+   * 
+   * Response:
+   * {
+   *   "status_code": 200,
+   *   "message": "Request processed successfully",
+   *   "data": {
+   *     "total_count": 1,
+   *     "subscriptions": [
+   *       {
+   *         "booking_product_id": 1,
+   *         "booking_id": 1,
+   *         "product_id": 1,
+   *         "product_name": "Paymeida",
+   *         "location_name": "Colombo 5",
+   *         "subscription_start_date": "2025-09-25",
+   *         "subscription_end_date": "2026-03-24",
+   *         "package_type": "monthly",
+   *         "total_price": 480,
+   *         "status": "CONFIRMED"
+   *       }
+   *     ]
+   *   }
+   * }
+   */
+  static async getUserSubscriptions(userId: number): Promise<{
+    success: boolean;
+    message: string;
+    totalCount: number;
+    subscriptions: Array<{
+      booking_product_id: number;
+      booking_id: number;
+      product_id: number;
+      product_name: string;
+      location_name: string;
+      subscription_start_date: string;
+      subscription_end_date: string;
+      package_type: string;
+      total_price: number;
+      status: string;
+    }>;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/booking/get-user-subscriptions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId
+        })
+      });
+
+      // Handle specific HTTP error status codes with user-friendly messages
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid request. Please check your user ID.';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized. Please sign in again.';
+            break;
+          case 404:
+            errorMessage = 'No subscriptions found.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+          default:
+            errorMessage = this.getErrorMessageForStatus(response.status, 'Failed to fetch subscriptions.');
+        }
+        
+        return {
+          success: false,
+          message: errorMessage,
+          totalCount: 0,
+          subscriptions: []
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200 && data.data) {
+        return {
+          success: true,
+          message: data.message || 'Subscriptions retrieved successfully',
+          totalCount: data.data.total_count || 0,
+          subscriptions: data.data.subscriptions || []
+        };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve subscriptions',
+          totalCount: 0,
+          subscriptions: []
+        };
+      }
+    } catch (error) {
+      console.error('Get user subscriptions error:', error);
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to retrieve subscriptions';
+      
+      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      return {
+        success: false,
+        message: errorMessage,
+        totalCount: 0,
+        subscriptions: []
       };
     }
   }
