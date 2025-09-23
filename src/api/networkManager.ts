@@ -1209,18 +1209,18 @@ export class NetworkManager {
    * 
    * Response:
    * {
-   *   "status_code": 200,
-   *   "message": "User retrieved successfully",
-   *   "data": {
-   *     "id": 3,
-   *     "first_name": "nissanka",
-   *     "last_name": "Nadun",
-   *     "email": "n@gmail.com",
-   *     "phone": "0719934597",
+   *   "success": true,
+   *   "message": "success",
+   *   "user": {
+   *     "id": 1,
+   *     "first_name": "charitha",
+   *     "last_name": "bimsara",
+   *     "email": "charithabimsara@gmail.com",
+   *     "phone": "+94785366196",
    *     "company": "Paymedia",
-   *     "job_title": "SE",
-   *     "bio": "I am SE",
-   *     "avatar": "/uploads/users/cf8a535f-9c5e-451d-af1c-c0aa8a8f78fe.jpeg",
+   *     "job_title": null,
+   *     "bio": null,
+   *     "avatar": "/uploads/users/37d8c636-7b5f-4b8d-b861-fb73744fc78e.png",
    *     "is_active": true
    *   }
    * }
@@ -1268,9 +1268,9 @@ export class NetworkManager {
       
       const data = await response.json();
       
-      if (data.status_code === 200 && data.data) {
+      if (data.success && data.user) {
         // Transform snake_case to camelCase
-        const userData = data.data;
+        const userData = data.user;
         
         return {
           success: true,
@@ -1408,15 +1408,19 @@ export class NetworkManager {
           last_name: data.data.last_name
         };
 
-        // Try to get complete user details - but this is just to save in localStorage
+        // Try to get complete user details - but this is just to save in Pinia store
         // for other parts of the app that might need it later
         try {
           // We have the user ID from login response, now fetch complete details
           const userDetailsResponse = await this.getUserById(data.data.id);
           
           if (userDetailsResponse.success && userDetailsResponse.user) {
-            // Save the full user data to localStorage for use elsewhere in the app
-            localStorage.setItem('user_details', JSON.stringify(userDetailsResponse.user));
+            // Import the auth store dynamically to avoid circular dependencies
+            const { useAuthStore } = await import('../stores/auth');
+            const authStore = useAuthStore();
+            
+            // Save the full user data to the Pinia store (which persists to localStorage internally)
+            authStore.setUserDetails(userDetailsResponse.user);
           }
         } catch (detailsError) {
           console.warn('Error fetching user details after login:', detailsError);

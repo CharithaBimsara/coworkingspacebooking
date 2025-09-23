@@ -17,6 +17,18 @@ interface UserDataDto {
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<UserDto | null>(null)
+  const userDetails = ref<{
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    jobTitle?: string;
+    bio?: string;
+    avatar?: string;
+    isActive?: boolean;
+  } | null>(null)
   const token = ref<string | null>(null)
   const isLoading = ref(false)
   const showSignOutMessage = ref(false) // State for sign-out message
@@ -25,45 +37,54 @@ export const useAuthStore = defineStore('auth', () => {
   // Getters
   const isAuthenticated = computed(() => !!user.value && !!token.value)
   const currentUser = computed(() => user.value)
+  const currentUserDetails = computed(() => userDetails.value)
 
   // Actions
-  const setUser = (userData: UserDataDto, authToken: string) => {
-    // Try to get saved full user details
-    const savedUserDetails = localStorage.getItem('user_details')
+  const setUser = (userData: UserDataDto, authToken: string, fullUserDetails?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    jobTitle?: string;
+    bio?: string;
+    avatar?: string;
+    isActive?: boolean;
+  }) => {
+    // If full user details are provided, save them to the store
+    if (fullUserDetails) {
+      userDetails.value = fullUserDetails
+    } else {
+      // Try to get saved full user details from localStorage (for backward compatibility)
+      const savedUserDetails = localStorage.getItem('user_details')
+      if (savedUserDetails) {
+        try {
+          userDetails.value = JSON.parse(savedUserDetails)
+        } catch (error) {
+          console.error('Error parsing saved user details:', error)
+        }
+      }
+    }
+
+    // Create UserDto from the combination of login response and user details
     let fullUserData: UserDto
     
-    if (savedUserDetails) {
-      try {
-        // Parse the saved user details
-        const userDetails = JSON.parse(savedUserDetails)
-        
-        // Create a proper UserDto from the combination of login response and saved details
-        fullUserData = new UserDto({
-          id: userData.id,
-          firstName: userDetails.firstName || userData.first_name || '',
-          lastName: userDetails.lastName || userData.last_name || '',
-          email: userData.email,
-          phone: userDetails.phone || '',
-          company: userDetails.company || '',
-          jobTitle: userDetails.jobTitle || '',
-          bio: userDetails.bio || '',
-          avatar: userDetails.avatar || '',
-          createdAt: userDetails.createdAt || new Date().toISOString(),
-          updatedAt: userDetails.updatedAt || new Date().toISOString()
-        })
-      } catch (error) {
-        console.error('Error parsing saved user details:', error)
-        // If there's an error, create a basic UserDto from the login data
-        fullUserData = new UserDto({
-          id: userData.id,
-          firstName: userData.first_name || '',
-          lastName: userData.last_name || '',
-          email: userData.email,
-          avatar: '',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        })
-      }
+    if (userDetails.value) {
+      // Use the full user details from the store
+      fullUserData = new UserDto({
+        id: userData.id,
+        firstName: userDetails.value.firstName || userData.first_name || '',
+        lastName: userDetails.value.lastName || userData.last_name || '',
+        email: userData.email,
+        phone: userDetails.value.phone || '',
+        company: userDetails.value.company || '',
+        jobTitle: userDetails.value.jobTitle || '',
+        bio: userDetails.value.bio || '',
+        avatar: userDetails.value.avatar || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
     } else {
       // No saved details, create a basic UserDto from the login data
       fullUserData = new UserDto({
@@ -91,6 +112,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const clearUser = () => {
     user.value = null
+    userDetails.value = null
     token.value = null
     
     // Clear from localStorage
@@ -118,26 +140,30 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = parsedUser
         token.value = storedToken
         
-        // If we have detailed user info and the stored user doesn't have complete fields,
-        // try to update it with the full details
-        if (storedDetails && (!parsedUser.phone || !parsedUser.company || !parsedUser.jobTitle)) {
+        // Load user details from localStorage and set in store
+        if (storedDetails) {
           try {
-            const userDetails = JSON.parse(storedDetails)
-            // Update user with full details
-            user.value = new UserDto({
-              ...parsedUser,
-              phone: userDetails.phone || parsedUser.phone,
-              company: userDetails.company || parsedUser.company,
-              jobTitle: userDetails.jobTitle || parsedUser.jobTitle,
-              bio: userDetails.bio || parsedUser.bio,
-              avatar: userDetails.avatar || parsedUser.avatar
-            })
-            
-            // Update the stored user with the enhanced data
-            localStorage.setItem('workspace_user', JSON.stringify(user.value))
+            userDetails.value = JSON.parse(storedDetails)
           } catch (detailsError) {
             console.warn('Error parsing stored user details:', detailsError)
           }
+        }
+        
+        // If we have detailed user info and the stored user doesn't have complete fields,
+        // try to update it with the full details
+        if (userDetails.value && (!parsedUser.phone || !parsedUser.company || !parsedUser.jobTitle)) {
+          // Update user with full details
+          user.value = new UserDto({
+            ...parsedUser,
+            phone: userDetails.value.phone || parsedUser.phone,
+            company: userDetails.value.company || parsedUser.company,
+            jobTitle: userDetails.value.jobTitle || parsedUser.jobTitle,
+            bio: userDetails.value.bio || parsedUser.bio,
+            avatar: userDetails.value.avatar || parsedUser.avatar
+          })
+          
+          // Update the stored user with the enhanced data
+          localStorage.setItem('workspace_user', JSON.stringify(user.value))
         }
       }
     } catch (error) {
@@ -155,6 +181,23 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = { ...user.value, ...userData }
       localStorage.setItem('workspace_user', JSON.stringify(user.value))
     }
+  }
+
+  const setUserDetails = (details: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    jobTitle?: string;
+    bio?: string;
+    avatar?: string;
+    isActive?: boolean;
+  }) => {
+    userDetails.value = details
+    // Also persist to localStorage for page reload persistence
+    localStorage.setItem('user_details', JSON.stringify(details))
   }
 
   const setShowSignOutMessage = (value: boolean) => {
@@ -176,6 +219,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     // State
     user,
+    userDetails,
     token,
     isLoading,
     showSignOutMessage,
@@ -184,9 +228,11 @@ export const useAuthStore = defineStore('auth', () => {
     // Getters
     isAuthenticated,
     currentUser,
+    currentUserDetails,
     
     // Actions
     setUser,
+    setUserDetails,
     clearUser,
     initializeAuth,
     setLoading,

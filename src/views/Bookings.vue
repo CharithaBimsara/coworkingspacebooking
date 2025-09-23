@@ -1985,12 +1985,7 @@ const downloadReceipt = async (booking: Booking) => {
     // Get user data from auth store for receipt
     const authStore = useAuthStore()
     const user = authStore.currentUser
-    let userDetails: { firstName?: string; lastName?: string; email?: string } | null = null
-    try {
-      userDetails = JSON.parse(localStorage.getItem('user_details') || '{}')
-    } catch {
-      userDetails = {}
-    }
+    const userDetails = authStore.currentUserDetails
     
     // Map booking data to the format expected by the PDF generator
     const mappedBooking: ReceiptData['bookings'][0] = {

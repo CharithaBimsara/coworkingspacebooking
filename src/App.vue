@@ -12,6 +12,7 @@ import AppHeader from './components/AppHeader.vue'
 import FloatingBookingSummary from './components/FloatingBookingSummary.vue'
 import { useBookingStore } from './stores/booking'
 import { useThemeStore } from './stores/theme'
+import { useAuthStore } from './stores/auth'
 import { useRoute } from 'vue-router'
 
 export default defineComponent({
@@ -23,6 +24,7 @@ export default defineComponent({
   setup() {
     const bookingStore = useBookingStore();
     const themeStore = useThemeStore();
+    const authStore = useAuthStore();
     const route = useRoute();
     
 
@@ -44,6 +46,9 @@ export default defineComponent({
     onMounted(() => {
       // Initialize theme first for consistent appearance
       themeStore.initTheme();
+      
+      // Initialize auth data from localStorage
+      authStore.initializeAuth();
       
       // Then initialize booking data
       bookingStore.initializeBooking();
