@@ -112,6 +112,38 @@ interface BookingData {
   location_name?: string;
 }
 
+// Interface for invoice data from API
+interface InvoiceData {
+  order_id: string;
+  transaction_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  total_amount: number;
+  products: InvoiceProduct[];
+}
+
+interface InvoiceProduct {
+  product_id: number;
+  product_type: string;
+  location_name: string;
+  booking_date: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  subscription_start_date: string | null;
+  subscription_end_date: string | null;
+  package_type: string | null;
+  total_price: number;
+  additional_facilities: InvoiceFacility[];
+}
+
+interface InvoiceFacility {
+  facility_id: number;
+  facility_name: string;
+  price: number;
+}
+
 export class NetworkManager {
   private static readonly BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
   public static lastRawResponseData: unknown = null;
@@ -2811,6 +2843,127 @@ export class NetworkManager {
         message: errorMessage,
         totalCount: 0,
         subscriptions: []
+      };
+    }
+  }
+
+  /**
+   * Get invoice details by order ID
+   * Endpoint: /cards/get-invoice
+   * Method: POST
+   * Request:
+   * {
+   *   "order_id": "ee06f667b6f7451291afa2e51c2d63cf"
+   * }
+   * 
+   * Response for normal booking:
+   * {
+   *   "status_code": 200,
+   *   "message": "Invoice retrieved successfully",
+   *   "data": {
+   *     "order_id": "ee06f667b6f7451291afa2e51c2d63cf",
+   *     "transaction_id": "232270",
+   *     "first_name": "bimsara",
+   *     "last_name": "adikari",
+   *     "email": "bimsaraadikari99@gmail.com",
+   *     "phone": "0719934597",
+   *     "total_amount": 800,
+   *     "products": [
+   *       {
+   *         "product_id": 2,
+   *         "product_type": "MeetingRoom",
+   *         "location_name": "Colombo 5",
+   *         "booking_date": "2025-09-23",
+   *         "start_time": "09:00:00",
+   *         "end_time": "17:00:00",
+   *         "subscription_start_date": null,
+   *         "subscription_end_date": null,
+   *         "package_type": null,
+   *         "total_price": 800,
+   *         "additional_facilities": [
+   *           {
+   *             "facility_id": 1,
+   *             "facility_name": "TV",
+   *             "price": 440
+   *           }
+   *         ]
+   *       }
+   *     ]
+   *   }
+   * }
+   * 
+   * Response for subscription booking:
+   * {
+   *   "status_code": 200,
+   *   "message": "Invoice retrieved successfully",
+   *   "data": {
+   *     "order_id": "39610e449df640ea83bec9e145c3f292",
+   *     "transaction_id": "232271",
+   *     "first_name": "bimsara",
+   *     "last_name": "adikari",
+   *     "email": "bimsaraadikari99@gmail.com",
+   *     "phone": "0719934597",
+   *     "total_amount": 2709,
+   *     "products": [
+   *       {
+   *         "product_id": 1,
+   *         "product_type": "DedicatedDesk",
+   *         "location_name": "Colombo 5",
+   *         "booking_date": null,
+   *         "start_time": null,
+   *         "end_time": null,
+   *         "subscription_start_date": "2025-09-23",
+   *         "subscription_end_date": "2028-09-22",
+   *         "package_type": "annual",
+   *         "total_price": 2709,
+   *         "additional_facilities": []
+   *       }
+   *     ]
+   *   }
+   * }
+   */
+  static async getInvoice(orderId: string): Promise<{
+    success: boolean;
+    message: string;
+    data?: InvoiceData;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/cards/get-invoice`, {
+        method: 'POST',
+        headers: this.getCustomHeaders(),
+        body: JSON.stringify({ order_id: orderId })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to retrieve invoice')
+        };
+      }
+
+      const data = await response.json();
+      this.lastRawResponseData = data;
+
+      if (data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Invoice retrieved successfully',
+          data: data.data
+        };
+      } else {
+        console.error('getInvoice: API error:', data);
+        return {
+          success: false,
+          message: data.message || 'Failed to retrieve invoice'
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching invoice:', error);
+      return {
+        success: false,
+        message: 'Network error while fetching invoice'
       };
     }
   }
