@@ -1104,24 +1104,7 @@
                         <div class="text-xs text-gray-500 dark:text-gray-400">Flexible subscription</div>
                       </div>
                       <div class="text-xl font-bold text-primary mb-1">LKR {{ space?.pricing?.monthly || 2500 }}</div>
-                      <div class="text-xs text-gray-600 dark:text-gray-400">per month</div>
-                      
-                      <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
-                        <ul class="space-y-1.5">
-                          <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            sample
-                          </li>
-                          <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Cancel anytime
-                          </li>
-                        </ul>
-                      </div>
+                      <div class="text-xs text-gray-600 dark:text-gray-400">per month</div>                     
                     </div>
                     
                     <div v-if="selectedPackage === 'monthly'" class="absolute top-3 right-3">
@@ -1159,24 +1142,7 @@
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
                         </svg>
                         <span class="text-xs font-medium text-green-800 dark:text-green-300">Save LKR {{ getSavings() }}</span>
-                      </div>
-                      
-                      <div class="mt-3 text-xs text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
-                        <ul class="space-y-1.5">
-                          <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            2 months free
-                          </li>
-                          <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Priority access
-                          </li>
-                        </ul>
-                      </div>
+                      </div>                     
                     </div>
                     
                     <div v-if="selectedPackage === 'annual'" class="absolute top-3 right-3">
@@ -1973,6 +1939,7 @@ import AuthModals from '../components/AuthModals.vue'
 import SingleDatePicker from '../components/SingleDatePicker.vue'
 import TeamSizeDropdown from '../components/TeamSizeDropdown.vue'
 import { NetworkManager } from '../api/networkManager'
+import { logger } from '../utils/logger'
 
 // Facility interface for the new API response format
 interface Facility {
@@ -2463,7 +2430,7 @@ export default defineComponent({
         
         this.calculateDisabledTimes();
       } catch (error) {
-        console.error('Error fetching booked time slots:', error);
+        logger.error('Error fetching booked time slots:', error);
         this.bookedTimeSlots = [];
       } finally {
         this.isLoadingBookedSlots = false;
@@ -2715,25 +2682,25 @@ export default defineComponent({
         
         // Use NetworkManager directly to get space details
         const response = await NetworkManager.getSpaces({ id: spaceId })
-        console.log('Raw API response for space:', response);
+        logger.log('Raw API response for space:', response);
         
         if (response.success && response.space) {
           // API response data is stored in NetworkManager.lastRawResponseData
-          console.log('Raw API data stored in NetworkManager:', NetworkManager.lastRawResponseData);
+          logger.log('Raw API data stored in NetworkManager:', NetworkManager.lastRawResponseData);
           
           // Load operation schedule from raw API data
           const rawSchedule = (NetworkManager.lastRawResponseData as RawSpaceApiResponse)?.operation_schedule || [];
-          console.log('Raw operation_schedule from API:', rawSchedule);
+          logger.log('Raw operation_schedule from API:', rawSchedule);
           this.operationSchedule = rawSchedule.map(day => ({
             day: day.day,
             is_enabled: day.is_enabled,
             start_time: day.start_time,
             end_time: day.end_time
           }));
-          console.log('Processed operation schedule:', this.operationSchedule);
+          logger.log('Processed operation schedule:', this.operationSchedule);
           
           this.space = response.space
-          console.log('Space object after assignment:', this.space);
+          logger.log('Space object after assignment:', this.space);
           
           // Map recent_ratings from API response to reviews format
           if (this.space.recent_ratings && this.space.recent_ratings.length > 0) {
@@ -2751,7 +2718,7 @@ export default defineComponent({
           }
           
           // Load facilities from the space response if available
-          console.log("Checking for facilities in space:", this.space);
+          logger.log("Checking for facilities in space:", this.space);
           
           if (this.space?.default_facilities && Array.isArray(this.space.default_facilities) && this.space.default_facilities.length > 0) {
             // Keep default_facilities directly accessible on the space object
@@ -3384,15 +3351,15 @@ export default defineComponent({
     openLocationMap(): void {
       // Get the raw data directly from NetworkManager
       const rawApiData = NetworkManager.lastRawResponseData;
-      console.log('Raw API data:', rawApiData);
+      logger.log('Raw API data:', rawApiData);
       
       // Get location_url directly from raw API response
       const locationUrl = (rawApiData as RawSpaceApiResponse)?.location_url;
-      console.log('Location URL from API:', locationUrl);
+      logger.log('Location URL from API:', locationUrl);
       
       if (locationUrl) {
         // Open location URL in a new tab
-        console.log('Opening location URL:', locationUrl);
+        logger.log('Opening location URL:', locationUrl);
         window.open(locationUrl, '_blank');
       } else {
         // Show notification that no map is available

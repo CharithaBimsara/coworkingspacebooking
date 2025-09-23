@@ -1,8 +1,6 @@
 // src/api/bookingManager.ts
 // Manages booking-related API calls
 
-import { NetworkManager } from './networkManager';
-
 // Interface for booking data returned by the API
 export interface BookingData {
   booking_id: number;

@@ -157,6 +157,17 @@ export class NetworkManager {
   public static setAuthHeader(key: string, value: string): void {
     this.customHeaders[key] = value;
   }
+
+  /**
+   * Validate if a token is a properly formatted JWT
+   * @param token The token to validate
+   * @returns true if valid JWT format
+   */
+  private static isValidToken(token: string): boolean {
+    if (!token || typeof token !== 'string') return false;
+    const parts = token.split('.');
+    return parts.length === 3 && parts.every(part => part.length > 0);
+  }
   
   /**
    * Remove a custom header
@@ -176,9 +187,9 @@ export class NetworkManager {
       ...this.customHeaders
     };
     
-    // Add authorization token if available
+    // Add authorization token if available and valid
     const token = localStorage.getItem('token');
-    if (token) {
+    if (token && this.isValidToken(token)) {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
@@ -888,7 +899,7 @@ export class NetworkManager {
    *   "FirstName": "charitha",
    *   "LastName": "bimsara",
    *   "Email": "charithabimsara@gmail.com",
-   *   "Password": "Bimsara99",
+   *   "Password": "[SECURE_PASSWORD]",
    *   "Phone": "",  // Optional
    *   "Company": "", // Optional
    *   "JobTitle": "", // Optional
@@ -1320,7 +1331,7 @@ export class NetworkManager {
    * Request:
    * {
    *   "email": "charithabimsara@gmail.com",
-   *   "password": "Bimsara99"
+   *   "password": "[SECURE_PASSWORD]"
    * }
    * 
    * Response:

@@ -128,7 +128,7 @@
             ]"
           >
             <div class="flex items-center gap-2">
-              <span v-html="option.icon" v-if="option.icon" class="text-[1.1em]"></span>
+              <span v-html="sanitizeIcon(option.icon)" v-if="option.icon" class="text-[1.1em]"></span>
               <span class="truncate max-w-[100px]">{{ option.label }}</span>
             </div>
           </button>
@@ -247,7 +247,7 @@
                           : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700'
                       ]"
                     >
-                      <span v-html="option.icon" v-if="option.icon" class="text-primary flex-shrink-0"></span>
+                      <span v-html="sanitizeIcon(option.icon)" v-if="option.icon" class="text-primary flex-shrink-0"></span>
                       <span class="truncate">{{ option.label }}</span>
                     </button>
                   </div>
@@ -1072,6 +1072,7 @@
 import { defineComponent } from 'vue';
 import type { SpaceDto } from '../dto/response';
 import { NetworkManager } from '../api/networkManager'; // Import NetworkManager directly
+import { sanitizeHtml } from '../utils/sanitizer';
 import DualRangeSlider from '../components/DualRangeSlider.vue';
 import SingleDatePicker from '../components/SingleDatePicker.vue';
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue';
@@ -1339,6 +1340,9 @@ export default defineComponent({
   },
 
   methods: {
+    sanitizeIcon(icon: string): string {
+      return sanitizeHtml(icon);
+    },
     async loadFacilities(): Promise<void> {
       try {
         this.loadingFacilities = true;

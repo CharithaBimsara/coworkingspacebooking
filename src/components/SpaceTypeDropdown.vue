@@ -7,7 +7,7 @@
       type="button"
     >
       <span class="flex items-center">
-        <span v-if="selectedOption.icon" class="mr-2 text-gray-700 dark:text-gray-300" v-html="selectedOption.icon"></span>
+        <span v-if="selectedOption.icon" class="mr-2 text-gray-700 dark:text-gray-300" v-html="sanitizeIcon(selectedOption.icon)"></span>
         <span :class="{'text-gray-800 dark:text-white': selectedOption.value !== '', 'text-gray-500 dark:text-gray-400': selectedOption.value === ''}">{{ selectedOption.label }}</span>
       </span>
       <svg class="w-4 h-4 ml-2 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,7 +29,7 @@
           isHomePage ? 'py-2' : 'py-3'
         ]"
       >
-        <span v-if="option.icon" class="mr-2 text-gray-700 dark:text-gray-300" v-html="option.icon"></span>
+        <span v-if="option.icon" class="mr-2 text-gray-700 dark:text-gray-300" v-html="sanitizeIcon(option.icon)"></span>
         <span :class="[
           'text-gray-800 dark:text-white',
           isHomePage ? 'text-xs' : 'text-sm'
@@ -42,6 +42,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onUnmounted } from 'vue'
 import type { PropType } from 'vue'
+import { sanitizeHtml } from '../utils/sanitizer'
 
 export default defineComponent({
   name: 'SpaceTypeDropdown',
@@ -79,6 +80,10 @@ export default defineComponent({
     })
     const dropdownContainer = ref<HTMLElement | null>(null)
 
+    function sanitizeIcon(icon: string): string {
+      return sanitizeHtml(icon);
+    }
+
     function toggleDropdown() {
       showDropdown.value = !showDropdown.value
     }
@@ -109,7 +114,8 @@ export default defineComponent({
       selectedOption,
       toggleDropdown,
       selectOption,
-      dropdownContainer
+      dropdownContainer,
+      sanitizeIcon
     }
   }
 })
