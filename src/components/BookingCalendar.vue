@@ -275,8 +275,6 @@ interface BookingItem {
   totalAmount: number
   basePrice: number
   extraFees: number
-  serviceFee: number
-  taxes: number
   hasReview: boolean
   space: {
     id: number

@@ -766,7 +766,6 @@
                   <div class="flex items-center justify-between">
                     <div>
                       <p class="text-lg font-bold text-gray-900 dark:text-white">Total Amount</p>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">Including all facilities and taxes</p>
                     </div>
                     <div class="text-right">
                       <p class="text-3xl font-bold text-primary">LKR {{ detailedBookingData.total_price.toLocaleString() }}</p>
@@ -1256,7 +1255,7 @@ defineComponent({
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BookingCalendar from '../components/BookingCalendar.vue'
-import { generatePDFReceipt } from '../utils/pdfReceipt'
+import { generatePDFReceipt, generatePDFFromData } from '../utils/pdfReceipt'
 import SuccessOverlay from '../components/SuccessOverlay.vue'
 import CancelBooking from '../components/CancelBooking.vue'
 import { BookingManager, type BookingData } from '../api/bookingManager'
@@ -1286,8 +1285,6 @@ interface Booking {
   totalAmount: number;
   basePrice: number;
   extraFees: number;
-  serviceFee: number;
-  taxes: number;
   hasReview: boolean;
   dateChanged: boolean;
   paymentId?: string;
@@ -1427,8 +1424,6 @@ const transformBookingData = (booking: BookingData, status: 'Confirmed' | 'Compl
       totalAmount: booking.total_price,
       basePrice: booking.total_price * 0.8,
       extraFees: 0,
-      serviceFee: booking.total_price * 0.1,
-      taxes: booking.total_price * 0.1,
       hasReview: false,
       dateChanged: !!booking.is_onetime_changed,
       paymentId: booking.order_id,
@@ -1468,8 +1463,6 @@ const transformBookingData = (booking: BookingData, status: 'Confirmed' | 'Compl
     totalAmount: booking.total_price,
     basePrice: primaryProduct.price * 0.8, // Estimate if not provided
     extraFees: 0,
-    serviceFee: primaryProduct.price * 0.1, // Estimate if not provided
-    taxes: primaryProduct.price * 0.1, // Estimate if not provided
     hasReview: false,
     dateChanged: !!booking.is_onetime_changed,
     paymentId: booking.order_id,
@@ -1648,8 +1641,6 @@ const useSampleBookingData = () => {
       totalAmount: 85,
       basePrice: 65,
       extraFees: 0,
-      serviceFee: 8,
-      taxes: 12,
       hasReview: false,
       dateChanged: false,
       space: {
@@ -1982,7 +1973,13 @@ const getDirections = (booking: Booking) => {
 
 const downloadReceipt = async (booking: Booking) => {
   try {
-    // Get user data from auth store for receipt
+    // If we have order_id from detailed booking data, use API to get complete invoice
+    if (detailedBookingData.value?.order_id) {
+      await generatePDFReceipt(detailedBookingData.value.order_id)
+      return
+    }
+
+    // Fallback: construct receipt data from available booking info
     const authStore = useAuthStore()
     const user = authStore.currentUser
     const userDetails = authStore.currentUserDetails
@@ -2029,7 +2026,7 @@ const downloadReceipt = async (booking: Booking) => {
       products: detailedBookingData.value?.products || []
     }
     
-    await generatePDFReceipt(receiptData)
+    await generatePDFFromData(receiptData)
   } catch (error) {
     console.error('Failed to generate PDF receipt:', error)
     alert('Could not generate PDF receipt. Please try again later.')
@@ -2348,8 +2345,6 @@ const addSessionBookings = () => {
         totalAmount: confirmationData.pricing?.total || 170,
         basePrice: confirmationData.pricing?.basePrice || 170,
         extraFees: confirmationData.pricing?.facilitiesPrice || 0,
-        serviceFee: confirmationData.pricing?.serviceFee || 17,
-        taxes: confirmationData.pricing?.taxes || 15,
         hasReview: false,
         dateChanged: false,
         space: {

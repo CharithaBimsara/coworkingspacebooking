@@ -66,9 +66,9 @@
               </div>
 
               <button @click="searchSpaces" :disabled="isSearching"
-                class="w-full mt-6 bg-primary text-black dark:text-white py-3 px-6 rounded-full font-semibold text-sm hover:bg-primary/90 hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 shadow-lg">
+                class="w-full mt-6 bg-primary text-black dark:text-black py-3 px-6 rounded-full font-semibold text-sm hover:bg-primary/90 hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 shadow-lg">
                 <span class="flex items-center justify-center">
-                  <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-4 w-4 text-black dark:text-white" fill="none" viewBox="0 0 24 24">
+                  <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-4 w-4 text-black dark:text-black" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -223,9 +223,9 @@
             class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
               class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
-              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 122.88 73.12">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  d="M97.13,61.06c3.25,0,5.88,0.56,5.88,1.25s-2.63,1.25-5.88,1.25c-3.25,0-5.88-0.56-5.88-1.25 S93.88,61.06,97.13,61.06L97.13,61.06z M25.08,14.73v56.31c0,0.58-0.24,1.1-0.61,1.48c-0.38,0.38-0.9,0.61-1.48,0.61h-9.92 c-0.57,0-1.09-0.23-1.47-0.61l0,0l0,0l0,0c-0.38-0.38-0.61-0.9-0.61-1.47V14.73H2.96c-0.82,0-1.56-0.33-2.09-0.87 C0.33,13.32,0,12.58,0,11.77V2.96C0,2.14,0.33,1.4,0.87,0.87S2.14,0,2.96,0h116.96c0.82,0,1.56,0.33,2.09,0.87s0.87,1.28,0.87,2.09 v8.81c0,0.82-0.33,1.56-0.87,2.09c-0.54,0.54-1.28,0.87-2.09,0.87h-0.19v56.31c0,0.57-0.24,1.09-0.61,1.47l-0.01,0.01 c-0.38,0.38-0.9,0.61-1.47,0.61H77.18c-0.58,0-1.1-0.23-1.48-0.61c-0.07-0.07-0.13-0.14-0.19-0.22c-0.27-0.35-0.43-0.79-0.43-1.26 V14.73H25.08L25.08,14.73z M78.54,30.64h37.74V14.73H78.54V30.64L78.54,30.64z M116.28,34.09H78.54V50.3h37.74V34.09L116.28,34.09z M116.28,53.75H78.54v15.93h37.74V53.75L116.28,53.75z M119.43,3.45H3.45v7.83h115.98V3.45L119.43,3.45z M21.63,14.73h-7.21v54.94 h7.21V14.73L21.63,14.73z M97.13,21.27c3.25,0,5.88,0.53,5.88,1.19s-2.63,1.19-5.88,1.19c-3.25,0-5.88-0.53-5.88-1.19 S93.88,21.27,97.13,21.27L97.13,21.27z M97.13,41.13c3.25,0,5.88,0.56,5.88,1.25s-2.63,1.25-5.88,1.25c-3.25,0-5.88-0.56-5.88-1.25 S93.88,41.13,97.13,41.13L97.13,41.13z" />
               </svg>
             </div>
             <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Hot Desk</h3>
@@ -243,9 +243,9 @@
             class="group cute-card flex flex-col items-center hover:-translate-y-2 transition-all duration-300">
             <div
               class="w-20 h-20 bg-primary/20 dark:bg-primary/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-primary">
-              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 122.88 107.29">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  d="M28,18.22a1,1,0,0,0-.36.42,1.54,1.54,0,0,0-.12.67,5.83,5.83,0,0,0,1.2,2.91h0l2.51,4a21.61,21.61,0,0,0,3.37,4.45,6.91,6.91,0,0,0,4.82,1.94,7.12,7.12,0,0,0,5.1-2A22.16,22.16,0,0,0,48,25.85l2.83-4.66a10.13,10.13,0,0,0,.53-1.48c.45-1.8-.72-1.4-2.08-1.43a4.23,4.23,0,0,1-.5-.05l1-3.69c-7.2,1.14-12.58-4.21-20.18-1.07l.55,4.46c-.77,0-1.41-.21-2.13.29ZM74.68,10H114.3a3.25,3.25,0,0,1,3.23,3.23V39.48a3.25,3.25,0,0,1-3.23,3.23H99.54l2.52,6.35H118a4.89,4.89,0,0,1,4.88,4.88V65.08A4.91,4.91,0,0,1,118,70h-2.47V103.6a3.69,3.69,0,0,1-3.69,3.69H11.59a3.73,3.73,0,0,1-3.71-3.72V70h-3A4.9,4.9,0,0,1,0,65.07V53.93a4.88,4.88,0,0,1,4.88-4.87h7.59c0-1.35,0-2.11,0-3.46,0-8.5,14.26-7.89,19.18-11.1a27.65,27.65,0,0,0,1.29-3.38L33,31A26.54,26.54,0,0,1,30,27l-2.51-4a7.27,7.27,0,0,1-1.43-3.64,3,3,0,0,1,.25-1.32,2.42,2.42,0,0,1,.86-1,3.07,3.07,0,0,1,.6-.31,55.24,55.24,0,0,1-.12-6.59A10.62,10.62,0,0,1,28,8.52a10.53,10.53,0,0,1,7-6.76c1.57-.54,1-1.83,2.56-1.76,3.74.21,9.53,2.63,11.76,5.18C52.4,8.78,51.6,12.6,51.49,17h0a1.78,1.78,0,0,1,1.32,1.36,5.73,5.73,0,0,1-.68,3.43h0a.14.14,0,0,1-.05.08l-2.86,4.71a23,23,0,0,1-3.73,5l-.06.09.46.67c.5.73,1.06,1.56,1.59,2.21,3.94,2.45,17.81,3,18.05,9.13l.21,5.35H87l3-6.35H74.68a3.25,3.25,0,0,1-3.23-3.23V13.2A3.24,3.24,0,0,1,74.68,10Zm-70,43.76a.3.3,0,0,0-.08.2V65.07a.27.27,0,0,0,.27.29H118a.27.27,0,0,0,.28-.29V53.93a.27.27,0,0,0-.09-.2.29.29,0,0,0-.2-.09c-10.48,0-113-.14-113.28.09ZM12.47,70v32.73H111V70ZM34.92,39a3.1,3.1,0,0,1,0-4.55,10.66,10.66,0,0,1,3.78,2,2.21,2.21,0,0,1,1-.16,24.37,24.37,0,0,1,4.13-2.12c1.85,1.8,1.66,3.47-.16,5a8.27,8.27,0,0,1-2.32-1.07,3.27,3.27,0,0,1-.2.79l2,7.81c1.54-3.24,3.14-6.6,3.54-10.79a30.66,30.66,0,0,1-2-2.71c-.15-.21-.28-.4-.4-.59A8.33,8.33,0,0,1,39.44,34a8.08,8.08,0,0,1-5.29-1.9,16.7,16.7,0,0,1-1.53,3.59,1.07,1.07,0,0,1-.14.16A38.16,38.16,0,0,0,36.26,46.7l2-7.81a2.4,2.4,0,0,1-.4-1.29,8.88,8.88,0,0,1-3,1.36Z" />
               </svg>
             </div>
             <h3 class="text-lg font-semibold text-black dark:text-white mb-3">Dedicated Desk</h3>
@@ -534,13 +534,13 @@
           
           <div class="space-y-6">
             <h3 class="text-xl font-bold text-black dark:text-white">Creating Productive Work Environments</h3>
-            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base text-justify">
               At Ceylinco-Works, we believe that everyone deserves access to professional workspaces without the high costs and rigid contracts of traditional offices. Born from a collaboration between Ceylinco Life and SquareHub, our mission is to make coworking accessible for freelancers, entrepreneurs, startups, and established businesses alike. 
             </p>
-            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base text-justify">
               From hot desks to private offices, we provide spaces that adapt to the way you work, helping you stay productive, connected, and inspired.
             </p>
-             <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+             <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base text-justify">
               More than just a place to sit, Ceylinco-Works is about community and growth. Our locations are designed with modern interiors, reliable amenities, and flexible plans that support both individuals and teams. Whether you’re hosting clients in a meeting room, working late at night, or networking with like-minded professionals, you’ll find everything you need to thrive under one roof — all backed by the trust and stability of Ceylinco Life and the entrepreneurial spirit of SquareHub.
 
             </p>
@@ -628,17 +628,6 @@
                 </a>
                 <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
                   <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
-                  </svg>
-                </a>
-                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
-                  <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21.75 21.5H2.25A2.25 2.25 0 010 19.25V4.75A2.25 2.25 0 012.25 2.5h19.5A2.25 2.25 0 0124 4.75v14.5a2.25 2.25 0 01-2.25 2.25zM2.25 3.5a1.25 1.25 0 00-1.25 1.25v14.5a1.25 1.25 0 001.25 1.25h19.5a1.25 1.25 0 001.25-1.25V4.75a1.25 1.25 0 00-1.25-1.25H2.25z"/>
-                    <path d="M8 17.5a.5.5 0 01-.5-.5v-7a.5.5 0 011 0v7a.5.5 0 01-.5.5zM5 8.5a3 3 0 116 0 3 3 0 01-6 0zm3-2a2 2 0 100 4 2 2 0 000-4zM18.5 17.5a.5.5 0 01-.5-.5v-4c0-1.103-.897-2-2-2s-2 .897-2 2v4a.5.5 0 01-1 0v-4a3 3 0 016 0v4a.5.5 0 01-.5.5z"/>
-                  </svg>
-                </a>
-                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
-                  <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                   </svg>
                 </a>
@@ -712,36 +701,6 @@
               Discover premium workspaces designed for productivity, flexibility, and collaboration. Book your perfect
               space today.
             </p>
-            <div class="flex space-x-4">
-              <a href="https://twitter.com/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-              <a href="https://facebook.com/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-                </svg>
-              </a>
-              <a href="https://linkedin.com/company/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
-                </svg>
-              </a>
-              <a href="https://instagram.com/workspace" target="_blank"
-                class="w-10 h-10 bg-gray-100 dark:bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary hover:text-black dark:hover:text-white transition-all duration-300 hover:scale-110">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.948-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                </svg>
-              </a>
-            </div>
           </div>
 
           <!-- Navigation -->
@@ -829,14 +788,6 @@
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
               &copy; {{ currentYear }} {{ companyProfile.name }}. All rights reserved.
-            </div>
-            <div class="h-1 w-1 bg-primary/50 rounded-full hidden md:block"></div>
-            <div class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
-              <a href="#" class="underline underline-offset-4 decoration-primary/30 hover:decoration-primary">Terms & Conditions</a>
-            </div>
-            <div class="h-1 w-1 bg-primary/50 rounded-full hidden md:block"></div>
-            <div class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
-              <a href="#" class="underline underline-offset-4 decoration-primary/30 hover:decoration-primary">Privacy Policy</a>
             </div>
           </div>
         </div>
@@ -942,26 +893,26 @@ export default defineComponent({
       return [
         new TestimonialDto({
           id: 1,
-          name: 'Nimna Fernando',
-          role: 'Marketing Director',
+          name: 'Charitha Bimsara',
+          role: 'Software Engineer',
           content: 'Ceylinco-Works has transformed how our team collaborates. The meeting rooms are professional, the hot desks are always available, and the community is incredibly supportive. Highly recommend!',
-          avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face',
+          avatar: '/src/assets/img/charitha.jpg',
           rating: 5.0
         }),
         new TestimonialDto({
           id: 2,
-          name: 'Kavindi Perera',
+          name: 'Dulan Herath',
           role: 'Freelance Developer',
           content: 'As a freelancer, I need flexibility and reliability. Ceylinco-Works delivers on both. The dedicated desks give me a home base, and the high-speed WiFi never disappoints. Perfect for focused work.',
-          avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face',
+          avatar: '/src/assets/img/dulan.jpg',
           rating: 4.8
         }),
         new TestimonialDto({
           id: 3,
-          name: 'Tharindu Jayasinghe',
+          name: 'Upeksha Delwala',
           role: 'Startup Founder',
           content: 'The facilities are top-notch and the location is perfect for client meetings. What really stands out is the community - I\'ve made valuable connections that have helped grow my business.',
-          avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
+          avatar: '/src/assets/img/upeksha.jpg',
           rating: 4.9
         })
       ];
@@ -1339,25 +1290,39 @@ export default defineComponent({
       .catch(error => console.error('Error navigating to space details:', error));
     },
 
-    sendContactMessage(): void {
+    async sendContactMessage(): Promise<void> {
       if (!this.newsletterEmail || !this.messageContent) return;
 
       this.isSubscribing = true;
       this.subscriptionMessage = '';
-      
-      // Mock successful message sending without API call
-      setTimeout(() => {
-        this.subscriptionMessage = 'Message sent successfully! We\'ll get back to you soon.';
-        this.newsletterEmail = '';
-        this.newsletterName = '';
-        this.messageContent = '';
+
+      try {
+        const result = await NetworkManager.sendContactMessage({
+          name: this.newsletterName,
+          email: this.newsletterEmail,
+          message: this.messageContent
+        });
+
+        if (result.success) {
+          this.subscriptionMessage = result.message || 'Message sent successfully! We\'ll get back to you soon.';
+          // Clear form
+          this.newsletterEmail = '';
+          this.newsletterName = '';
+          this.messageContent = '';
+        } else {
+          this.subscriptionMessage = result.message || 'Failed to send message. Please try again.';
+        }
+      } catch (error) {
+        console.error('Error sending contact message:', error);
+        this.subscriptionMessage = 'Network error. Please check your connection and try again.';
+      } finally {
         this.isSubscribing = false;
-        
+
         // Clear message after delay
         setTimeout(() => {
           this.subscriptionMessage = '';
         }, 5000);
-      }, 500); // Simulate network delay
+      }
     },
 
     // Footer newsletter subscription removed

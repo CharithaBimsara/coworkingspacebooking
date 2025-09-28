@@ -150,7 +150,6 @@
           <div class="flex justify-between items-center">
             <div>
               <h3 class="text-xl font-heading font-bold text-gray-900 dark:text-white">Total Amount Paid</h3>
-              <p class="text-gray-600 dark:text-gray-400">Including all facilities and taxes</p>
             </div>
             <div class="text-right">
               <p class="text-3xl font-bold text-primary">LKR {{ invoiceData.total_amount.toFixed(2) }}</p>
@@ -159,6 +158,7 @@
         </div>
 
         <!-- QR Code Section -->
+        <!--
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Access QR Code</h3>
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -171,6 +171,7 @@
             </div>
           </div>
         </div>
+        -->
       </div>
 
       <!-- Loading State -->
@@ -224,7 +225,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { generatePDFReceipt } from '../utils/pdfReceipt'
-import QRCode from 'qrcode'
+// import QRCode from 'qrcode'
 import { NetworkManager } from '../api/networkManager'
 
 // Payment result state
@@ -236,7 +237,7 @@ const invoiceData = ref<any>(null)
 const route = useRoute()
 const router = useRouter()
 
-const qrCanvas = ref<HTMLCanvasElement | null>(null)
+// const qrCanvas = ref<HTMLCanvasElement | null>(null)
 
 // Interface for invoice data
 interface InvoiceProduct {
@@ -257,6 +258,7 @@ interface InvoiceProduct {
   }>;
 }
 
+/*
 const generateQRCode = async (orderId: string) => {
   try {
     const qrData = JSON.stringify({
@@ -271,6 +273,7 @@ const generateQRCode = async (orderId: string) => {
     console.error('Failed to generate QR code:', error)
   }
 }
+*/
 
 const formatDate = (dateString: string | null) => {
   if (!dateString) return 'N/A'
@@ -303,56 +306,11 @@ const downloadReceipt = async () => {
   if (!invoiceData.value) return
 
   try {
-    // Map invoice products to booking items format expected by PDF generator
-    const bookings = invoiceData.value.products.map((product: any) => {
-      const bookingItem: any = {
-        spaceId: product.product_id,
-        productType: product.product_type,
-        space: {
-          name: getProductTypeDisplayName(product.product_type),
-          location: product.location_name
-        },
-        totalPrice: product.total_price
-      }
-
-      // Add booking or subscription details based on product type
-      if (product.booking_date) {
-        // Normal booking
-        bookingItem.booking = {
-          startDate: product.booking_date,
-          endDate: product.booking_date,
-          startTime: product.start_time || '09:00',
-          duration: product.end_time ? '8h' : '1h' // Calculate duration if needed
-        }
-      } else if (product.subscription_start_date) {
-        // Subscription
-        bookingItem.subscription = {
-          startDate: product.subscription_start_date,
-          endDate: product.subscription_end_date,
-          packageType: product.package_type || 'monthly'
-        }
-      }
-
-      return bookingItem
-    })
-
-    const receiptData = {
-      bookings: bookings,
-      bookingId: invoiceData.value.order_id,
-      paymentMethod: 'Credit Card', // Could be enhanced to get actual payment method
-      confirmedAt: new Date().toISOString(),
-      totalAmount: invoiceData.value.total_amount,
-      guestInfo: {
-        firstName: invoiceData.value.first_name,
-        lastName: invoiceData.value.last_name
-      },
-      orderId: invoiceData.value.order_id
-    }
-
-    await generatePDFReceipt(receiptData)
+    // Generate PDF invoice using real API data
+    await generatePDFReceipt(invoiceData.value.order_id)
   } catch (error) {
-    console.error('Failed to generate PDF receipt:', error)
-    alert('Could not generate PDF receipt. Please try again later.')
+    console.error('Failed to generate PDF invoice:', error)
+    alert('Could not generate PDF invoice. Please try again later.')
   }
 }
 
@@ -429,9 +387,11 @@ onMounted(async () => {
     await loadInvoiceData(paymentResult.value.orderId)
 
     // Generate QR code with order ID
+    /*
     if (invoiceData.value?.order_id) {
       generateQRCode(invoiceData.value.order_id)
     }
+    */
   } else {
     loading.value = false
   }

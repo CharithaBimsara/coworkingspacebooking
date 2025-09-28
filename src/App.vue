@@ -7,13 +7,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, computed } from 'vue'
+import { defineComponent } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import FloatingBookingSummary from './components/FloatingBookingSummary.vue'
 import { useBookingStore } from './stores/booking'
 import { useThemeStore } from './stores/theme'
 import { useAuthStore } from './stores/auth'
-import { useRoute } from 'vue-router'
 
 export default defineComponent({
   name: 'App',
@@ -21,44 +20,44 @@ export default defineComponent({
     AppHeader,
     FloatingBookingSummary
   },
-  setup() {
-    const bookingStore = useBookingStore();
-    const themeStore = useThemeStore();
-    const authStore = useAuthStore();
-    const route = useRoute();
-    
-
+  computed: {
+    bookingStore() {
+      return useBookingStore();
+    },
+    themeStore() {
+      return useThemeStore();
+    },
+    authStore() {
+      return useAuthStore();
+    },
     // Hide floating summary on payment, summary, confirmation, and IPG loading pages
-    const hiddenRoutes = [
-      'Payment',
-      'BookingSummary',
-      'BookingConfirmation',
-      'PaymentGateway',
-    ];
-    const showFloatingBookingSummary = computed(() => {
+    hiddenRoutes() {
+      return [
+        'Payment',
+        'BookingSummary',
+        'BookingConfirmation',
+        'PaymentGateway',
+      ];
+    },
+    showFloatingBookingSummary() {
       return (
-        bookingStore.currentBooking.length > 0 &&
-        bookingStore.isAddingMoreServices &&
-        !hiddenRoutes.includes(route.name as string)
+        this.bookingStore.currentBooking.length > 0 &&
+        this.bookingStore.isAddingMoreServices &&
+        !this.hiddenRoutes.includes(this.$route.name as string)
       );
-    });
-
-    onMounted(() => {
-      // Initialize theme first for consistent appearance
-      themeStore.initTheme();
-      
-      // Initialize auth data from localStorage
-      authStore.initializeAuth();
-      
-      // Then initialize booking data
-      bookingStore.initializeBooking();
-      // Ensure isAddingMoreServices is false on app load, as a safeguard
-      bookingStore.setAddingMoreServices(false);
-    });
-
-    return {
-      showFloatingBookingSummary
-    };
+    }
+  },
+  mounted() {
+    // Initialize theme first for consistent appearance
+    this.themeStore.initTheme();
+    
+    // Initialize auth data from localStorage
+    this.authStore.initializeAuth();
+    
+    // Then initialize booking data
+    this.bookingStore.initializeBooking();
+    // Ensure isAddingMoreServices is false on app load, as a safeguard
+    this.bookingStore.setAddingMoreServices(false);
   }
 })
 </script>

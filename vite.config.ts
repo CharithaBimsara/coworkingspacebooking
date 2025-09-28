@@ -42,8 +42,8 @@ export default defineConfig({
           ],
           'pdf-utils': [
             'jspdf', 
-            'html2canvas', 
-            'qrcode'
+            'html2canvas'
+            // 'qrcode'
           ],
           'ui-components': [
             './src/components/AppHeader.vue',

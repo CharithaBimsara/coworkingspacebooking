@@ -68,10 +68,6 @@
             <span>Subtotal</span>
             <span>LKR {{ totalAmount }}</span>
           </div>
-          <div class="flex items-center justify-between text-gray-600 dark:text-gray-400">
-            <span>Service Fee</span>
-            <span>Included</span>
-          </div>
           <div class="flex items-center justify-between font-bold text-lg mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 text-gray-900 dark:text-white">
             <span>Total</span>
             <span class="text-green-600 dark:text-green-400">LKR {{ totalAmount }}</span>
@@ -275,7 +271,7 @@ export default defineComponent({
         if (!isHovering.value && !isExpanded.value) {
           isHidden.value = true;
         }
-      }, 1500); // Hide after 1.5 seconds of inactivity for faster response
+      }, 3500); // Hide after 3.5 seconds of inactivity for faster response
     }
     
     // Initialize the component's behavior on mount

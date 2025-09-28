@@ -84,6 +84,7 @@ interface AdvertisementData {
   description?: string;
   button_text?: string;
   image_path?: string;
+  images?: string;
   link?: string;
   [key: string]: unknown;
 }
@@ -142,6 +143,20 @@ interface InvoiceFacility {
   facility_id: number;
   facility_name: string;
   price: number;
+}
+
+// Interface for contact message request
+interface ContactMessageRequest {
+  name: string;
+  email: string;
+  message: string;
+}
+
+// Interface for contact message response
+interface ContactMessageResponse {
+  success: boolean;
+  message: string;
+  ticket_id?: string;
 }
 
 export class NetworkManager {
@@ -848,7 +863,7 @@ export class NetworkManager {
    */
   static async getAdvertisements(): Promise<AdvertisementDto[]> {
     try {
-      const response = await fetch(`${this.BASE_URL}/advertising/get-all`, {
+      const response = await fetch(`${this.BASE_URL}/advertising/get-all-promotion`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -866,7 +881,7 @@ export class NetworkManager {
         // Convert API response to AdvertisementDto objects
         return data.data.map((ad: AdvertisementData, index: number) => {
           // Process the image path to make it an absolute URL
-          const imagePath = ad.image_path || '';
+          const imagePath = ad.images || ad.image_path || '';
           const processedImageUrl = this.processAdImageUrl(imagePath);
           
           return new AdvertisementDto({
@@ -2979,6 +2994,55 @@ export class NetworkManager {
       return {
         success: false,
         message: 'Network error while fetching invoice'
+      };
+    }
+  }
+
+  /**
+   * Send contact message
+   * API: POST /contact/send-message
+   * Body: { name: string, email: string, message: string }
+   */
+  static async sendContactMessage(contactData: ContactMessageRequest): Promise<ContactMessageResponse> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/contact/send-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactData)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        return {
+          success: false,
+          message: this.getErrorMessageForStatus(response.status, 'Failed to send contact message')
+        };
+      }
+
+      const data = await response.json();
+      this.lastRawResponseData = data;
+
+      if (data.status_code === 200 || data.success) {
+        return {
+          success: true,
+          message: data.message || 'Message sent successfully',
+          ticket_id: data.ticket_id || data.data?.ticket_id
+        };
+      } else {
+        console.error('sendContactMessage: API error:', data);
+        return {
+          success: false,
+          message: data.message || 'Failed to send contact message'
+        };
+      }
+    } catch (error) {
+      console.error('Error sending contact message:', error);
+      return {
+        success: false,
+        message: 'Network error while sending contact message'
       };
     }
   }

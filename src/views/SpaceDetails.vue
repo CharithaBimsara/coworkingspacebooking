@@ -773,6 +773,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                               </svg>
                             </div>
+                            <!-- Full Day Unavailable Message -->
+                            <div v-if="!isFullDayAvailable() && bookingForm.date && (productType === 'meeting-room' || productType === 'hot-desk')" class="px-3 py-1 text-[7px] text-red-500 text-center">
+                              {{ isDateToday(bookingForm.date) ? 'day started' : 'booked' }}
+                            </div>
                             <!-- Regular Time Slots -->
                             <div v-if="!bookingForm.date" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
                               Select a date first
@@ -796,7 +800,7 @@
                                 {{ formatTimeDisplay(time) }}
                               </span>
                               <span v-if="disabledTimes.start.includes(time)" class="text-[7px] text-red-500 ml-0.5 whitespace-nowrap">
-                                booked
+                                {{ isTimeBeforeCurrentTimeForToday(time) ? 'past' : 'booked' }}
                               </span>
                             </div>
                           </div>
@@ -881,7 +885,7 @@
                 </div>
 
                 <!-- Additional Facilities as Cards with visual enhancements -->
-                <div v-if="productType === 'meeting-room'">
+                <div v-if="productType === 'meeting-room' && availableFacilities.length > 0">
                   <label class="block text-sm font-medium text-gray-700 mb-2 mt-5 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -1035,7 +1039,6 @@
                   <span class="text-base font-bold text-gray-900">Total Amount</span>
                   <div class="text-right">
                     <span class="text-xl font-bold text-primary">LKR {{ totalPrice }}</span>
-                    <div class="text-xs text-gray-500">includes taxes & fees</div>
                   </div>
                 </div>
 
@@ -1279,7 +1282,6 @@
                   <span class="text-base font-bold text-gray-900">Total Amount</span>
                   <div class="text-right">
                     <span class="text-xl font-bold text-primary">LKR {{ totalPrice }}</span>
-                    <div class="text-xs text-gray-500">includes taxes & fees</div>
                   </div>
                 </div>
                 
@@ -1520,6 +1522,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                           </svg>
                         </div>
+                        <!-- Full Day Unavailable Message for Mobile -->
+                        <div v-if="!isFullDayAvailable() && bookingForm.date && (productType === 'meeting-room' || productType === 'hot-desk')" class="px-3 py-1 text-[8px] text-red-500 text-center">
+                          {{ isDateToday(bookingForm.date) ? 'day started' : 'booked' }}
+                        </div>
                         <div
                           v-for="time in generateTimeSlots()" 
                           :key="time"
@@ -1534,7 +1540,7 @@
                             {{ formatTimeDisplay(time) }}
                           </span>
                           <span v-if="disabledTimes.start.includes(time)" class="text-[7px] text-red-500 ml-0.5 whitespace-nowrap">
-                            booked
+                            {{ isTimeBeforeCurrentTimeForToday(time) ? 'past' : 'booked' }}
                           </span>
                         </div>
                       </div>
@@ -1673,8 +1679,6 @@
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total</span>
                 <span class="text-lg font-bold text-primary">LKR {{ totalPrice }}</span>
               </div>
-              
-              <div class="text-xs text-gray-500 mt-1 text-center">includes taxes & fees</div>
             </div>
             
             <!-- Book Now Button -->
@@ -1905,7 +1909,6 @@
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total</span>
                 <div class="text-right">
                   <span class="text-lg font-bold text-primary">LKR {{ totalPrice }}</span>
-                  <div class="text-[10px] text-gray-500">includes taxes & fees</div>
                 </div>
               </div>
             </div>
@@ -1940,6 +1943,10 @@ import SingleDatePicker from '../components/SingleDatePicker.vue'
 import TeamSizeDropdown from '../components/TeamSizeDropdown.vue'
 import { NetworkManager } from '../api/networkManager'
 import { logger } from '../utils/logger'
+import type { SpaceDto, ReviewDto, UserDto, RawSpaceApiResponse } from '../dto/response'
+import { useAuthStore } from '../stores/auth'
+import { useBookingStore } from '../stores/booking'
+import ReviewDialog from '../components/ReviewDialog.vue'
 
 // Facility interface for the new API response format
 interface Facility {
@@ -1973,11 +1980,6 @@ interface OperationDay {
   start_time?: string;
   end_time?: string;
 }
-
-import type { SpaceDto, ReviewDto, UserDto, RawSpaceApiResponse } from '../dto/response'
-import { useAuthStore } from '../stores/auth'
-import { useBookingStore } from '../stores/booking'
-import ReviewDialog from '../components/ReviewDialog.vue'
 
 interface BookingForm {
   date: string | undefined
@@ -2462,9 +2464,15 @@ export default defineComponent({
       const disabledStartTimes: string[] = [];
       const disabledEndTimes: string[] = [];
 
-      // Disable start times that conflict with existing bookings
+      // Check if selected date is today
+      const isToday = this.bookingForm.date ? this.isDateToday(this.bookingForm.date) : false;
+      const currentTime = new Date();
+
+      // Disable start times that conflict with existing bookings or are before current time (for today)
       for (const slot of allTimeSlots) {
         if (this.isTimeSlotBooked(slot, 'start')) {
+          disabledStartTimes.push(slot);
+        } else if (isToday && this.isTimeBeforeCurrentTime(slot, currentTime)) {
           disabledStartTimes.push(slot);
         }
       }
@@ -2482,6 +2490,41 @@ export default defineComponent({
         start: disabledStartTimes,
         end: disabledEndTimes
       };
+    },
+
+    /**
+     * Check if the given date is today
+     */
+    isDateToday(dateString: string): boolean {
+      const today = new Date();
+      const selectedDate = new Date(dateString);
+      
+      return selectedDate.getDate() === today.getDate() &&
+             selectedDate.getMonth() === today.getMonth() &&
+             selectedDate.getFullYear() === today.getFullYear();
+    },
+
+    /**
+     * Check if a time slot is before the current time
+     */
+    isTimeBeforeCurrentTime(timeSlot: string, currentTime: Date): boolean {
+      const [hours, minutes] = timeSlot.split(':').map(Number);
+      const slotTime = new Date(currentTime);
+      slotTime.setHours(hours, minutes, 0, 0);
+      
+      return slotTime < currentTime;
+    },
+
+    /**
+     * Check if a time slot is before current time for today's date
+     */
+    isTimeBeforeCurrentTimeForToday(timeSlot: string): boolean {
+      if (!this.bookingForm.date || !this.isDateToday(this.bookingForm.date)) {
+        return false;
+      }
+      
+      const currentTime = new Date();
+      return this.isTimeBeforeCurrentTime(timeSlot, currentTime);
     },
 
     generateTimeSlots(): string[] {
@@ -2542,6 +2585,15 @@ export default defineComponent({
       // If no operational hours, full day is not available
       if (!selectedDateHours.is_enabled || !selectedDateHours.start_time || !selectedDateHours.end_time) {
         return false;
+      }
+
+      // Check if selected date is today and current time has passed operational start time
+      if (this.bookingForm.date && this.isDateToday(this.bookingForm.date)) {
+        const currentTime = new Date();
+        const operationalStartTime = this.convertTo24HourFormat(selectedDateHours.start_time);
+        if (this.isTimeBeforeCurrentTime(operationalStartTime, currentTime)) {
+          return false; // Full day not available if operational hours have already started today
+        }
       }
 
       // Convert operational times to minutes for comparison
@@ -2749,15 +2801,6 @@ export default defineComponent({
           // Process additional_facilities for Additional Amenities section
           if (this.space?.additional_facilities && Array.isArray(this.space.additional_facilities) && this.space.additional_facilities.length > 0) {
             this.availableFacilities = this.space.additional_facilities.map((facility: Facility) => ({
-              facility_id: facility.facility_id,
-              facility_name: facility.facility_name,
-              hourly_price: facility.hourly_price || 0,
-              icon: facility.icon || this.getFacilityIcon(facility.facility_name.toLowerCase())
-            }));
-          } else if (this.space?.facilities && Array.isArray(this.space.facilities) && this.space.facilities.length > 0) {
-            // Fallback to old facilities property if additional_facilities is not available
-            // This is for backward compatibility
-            this.availableFacilities = this.space.facilities.map((facility: Facility) => ({
               facility_id: facility.facility_id,
               facility_name: facility.facility_name,
               hourly_price: facility.hourly_price || 0,
@@ -3330,8 +3373,6 @@ export default defineComponent({
           pricing: {
             basePrice: this.getPackagePrice(),
             facilitiesPrice: 0,
-            serviceFee: Math.round(this.getPackagePrice() * 0.1),
-            taxes: Math.round(this.getPackagePrice() * 0.0875),
             total: this.getPackagePrice()
           }
         }
