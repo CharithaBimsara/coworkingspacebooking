@@ -1973,60 +1973,15 @@ const getDirections = (booking: Booking) => {
 
 const downloadReceipt = async (booking: Booking) => {
   try {
-    // If we have order_id from detailed booking data, use API to get complete invoice
-    if (detailedBookingData.value?.order_id) {
-      await generatePDFReceipt(detailedBookingData.value.order_id)
+    // Always use API to get complete invoice with order_id
+    if (booking.paymentId) {
+      await generatePDFReceipt(booking.paymentId)
       return
     }
 
-    // Fallback: construct receipt data from available booking info
-    const authStore = useAuthStore()
-    const user = authStore.currentUser
-    const userDetails = authStore.currentUserDetails
-    
-    // Map booking data to the format expected by the PDF generator
-    const mappedBooking: ReceiptData['bookings'][0] = {
-      spaceId: booking.space.id,
-      productType: booking.spaceType,
-      space: {
-        name: booking.space.name,
-        location: booking.space.location,
-      },
-      totalPrice: booking.totalAmount,
-    };
-
-    // Add booking details based on the space type
-    if (booking.spaceType === 'meeting-room') {
-      mappedBooking.booking = {
-        startDate: booking.date,
-        endDate: booking.date,
-        startTime: booking.start_time || '09:00', // Use actual start time if available
-        duration: booking.duration,
-      };
-    } else {
-      mappedBooking.subscription = {
-        startDate: booking.date,
-        endDate: booking.date,
-        packageType: booking.duration,
-      };
-    }
-
-    // Build receipt data with real user information and comprehensive details
-    const receiptData = {
-      bookings: [mappedBooking],
-      bookingId: booking.id,
-      orderId: detailedBookingData.value?.order_id || booking.id,
-      paymentMethod: booking.paymentId ? `Payment #${booking.paymentId}` : 'Credit Card',
-      confirmedAt: new Date().toISOString(),
-      totalAmount: booking.totalAmount,
-      guestInfo: { 
-        firstName: userDetails?.firstName || user?.firstName || 'Guest', 
-        lastName: userDetails?.lastName || user?.lastName || ''
-      },
-      products: detailedBookingData.value?.products || []
-    }
-    
-    await generatePDFFromData(receiptData)
+    // Fallback: if paymentId is not available, show error
+    console.error('No order_id available for booking:', booking.id)
+    alert('Could not generate PDF receipt. Order ID is missing.')
   } catch (error) {
     console.error('Failed to generate PDF receipt:', error)
     alert('Could not generate PDF receipt. Please try again later.')

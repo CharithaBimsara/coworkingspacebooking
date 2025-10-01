@@ -172,64 +172,23 @@
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Security Settings</h2>
             
             <!-- Password Reset Option -->
-            <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div class="mb-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100">Password Reset</h3>
-                  <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                    Reset your password if you've forgotten it or want to change it
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white">Password</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                    Need to change your password? Reset it securely.
                   </p>
                 </div>
                 <button
                   @click="openPasswordResetModal"
-                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  class="text-primary hover:text-primary/80 font-medium text-sm transition-colors"
                 >
                   Reset Password
                 </button>
               </div>
-            </div>
-            
-            <form @submit.prevent="updatePassword" class="space-y-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
-                <input
-                  v-model="passwordForm.currentPassword"
-                  type="password"
-                  required
-                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                >
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">New Password</label>
-                <input
-                  v-model="passwordForm.newPassword"
-                  type="password"
-                  required
-                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                >
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm New Password</label>
-                <input
-                  v-model="passwordForm.confirmPassword"
-                  type="password"
-                  required
-                  class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                >
-              </div>
-
-              <div class="flex justify-end">
-                <button
-                  type="submit"
-                  :disabled="isUpdatingPassword"
-                  class="btn-primary"
-                >
-                  {{ isUpdatingPassword ? 'Updating...' : 'Update Password' }}
-                </button>
-              </div>
-            </form>
+            </div>          
+         
           </div>
 
           <!-- Sign Out -->
@@ -448,7 +407,7 @@ export default defineComponent({
   
   computed: {
     defaultAvatar(): string {
-      return `https://ui-avatars.com/api/?name=${this.profileForm.firstName}+${this.profileForm.lastName}&background=6366F1&color=fff&size=80`
+      return 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face&auto=format'
     }
   },
   

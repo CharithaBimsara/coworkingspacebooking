@@ -879,18 +879,14 @@ export class NetworkManager {
 
       if ((data.status_code === 200 || data.statusCode === 200) && Array.isArray(data.data)) {
         // Convert API response to AdvertisementDto objects
-        return data.data.map((ad: AdvertisementData, index: number) => {
+        return data.data.map((ad: any) => {
           // Process the image path to make it an absolute URL
-          const imagePath = ad.images || ad.image_path || '';
+          const imagePath = ad.images || '';
           const processedImageUrl = this.processAdImageUrl(imagePath);
-          
+
           return new AdvertisementDto({
-            id: index + 1, // Generate an ID since it's not in the response
-            title: ad.company_name || 'Advertisement', // Map company_name to title with fallback
-            description: ad.description || '',
-            buttonText: ad.button_text || 'Learn More', // Use API button text if available
-            image: processedImageUrl, // Use the processed absolute URL
-            link: ad.link || '#' // Use API link if available
+            images: processedImageUrl, // Use the processed absolute URL
+            url: ad.url || '#' // Use API url field
           });
         });
       } else {

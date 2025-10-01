@@ -480,27 +480,15 @@ export class TransactionHistoryResponseDto extends BaseResponseDto {
 
 // Home Page DTOs
 export class AdvertisementDto {
-  id: number;
-  title: string;
-  description: string;
-  buttonText: string;
-  image: string;
-  link?: string;
+  images: string;
+  url: string;
 
   constructor(params: {
-    id: number;
-    title: string;
-    description: string;
-    buttonText: string;
-    image: string;
-    link?: string;
+    images: string;
+    url: string;
   }) {
-    this.id = params.id;
-    this.title = params.title;
-    this.description = params.description;
-    this.buttonText = params.buttonText;
-    this.image = params.image;
-    this.link = params.link;
+    this.images = params.images;
+    this.url = params.url;
   }
 }
 

@@ -49,7 +49,7 @@
           <div v-if="currentUser" class="relative">
             <button @click="toggleUserMenu"
               class="flex items-center space-x-1 sm:space-x-2 p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors z-50">
-              <img :src="currentUser.avatar" :alt="currentUser.firstName" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-primary">
+              <img :src="currentUser.avatar || defaultAvatar" :alt="currentUser.firstName" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-primary">
               <span class="hidden lg:block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate max-w-20 sm:max-w-24">
                 {{ currentUser.firstName }} {{ currentUser.lastName }}
               </span>
@@ -214,6 +214,9 @@ export default defineComponent({
     isContactActive(): boolean {
       return this.currentRoute.path === '/' && 
              (this.currentRoute.hash === '#contact' || this.activeSection === 'contact')
+    },
+    defaultAvatar(): string {
+      return 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face&auto=format'
     }
   },
 

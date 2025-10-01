@@ -136,47 +136,62 @@
             {{ advertisementErrorMessage }}
           </p>
         </div>
-        <div class="relative">
-          <div class="overflow-hidden rounded-3xl border-2 border-primary shadow-xl">
-            <div class="flex transition-transform duration-500 ease-in-out"
-              :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-              <div v-for="(ad, index) in advertisements" :key="index" class="w-full flex-shrink-0 relative">
-                <div class="aspect-[3/1] bg-gradient-to-r from-primary/30 to-primary/10 dark:from-primary/20 dark:to-black relative overflow-hidden">
-                  <img :src="ad.image" :alt="ad.title" class="w-full h-full object-cover mix-blend-luminosity hover:mix-blend-normal transition-all duration-300">
-                  <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
-                  <div class="absolute inset-0 flex items-center justify-center text-center text-white">
-                    <div class="max-w-2xl px-6">
-                      <div class="transform hover:scale-105 transition-all duration-300">
-                        <h3 class="text-xl lg:text-2xl font-bold mb-4 text-white drop-shadow-lg">{{ ad.title }}</h3>
-                        <p class="text-base opacity-90 text-white/90">{{ ad.description }}</p>
-                      </div>
-                    </div>
+
+        <!-- Infinite Scrolling Cards Carousel -->
+        <div class="relative overflow-hidden">
+          <!-- Left arrow button -->
+          <button @click="moveCarousel('left')"
+                  class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black text-gray-600 dark:text-gray-300 hover:text-primary p-3 rounded-full shadow-lg transition-all duration-200 transform hover:scale-110">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+          <!-- Right arrow button -->
+          <button @click="moveCarousel('right')"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black text-gray-600 dark:text-gray-300 hover:text-primary p-3 rounded-full shadow-lg transition-all duration-200 transform hover:scale-110">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+
+          <!-- Gradient fade edges for smooth transition -->
+          <div class="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none"></div>
+          <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none"></div>
+
+          <!-- Create multiple duplicates for seamless infinite scroll -->
+          <div class="flex carousel-container"
+               :style="{ width: `${advertisements.length * 4 * 336}px`, transform: `translateX(${carouselPosition}px)` }"
+               ref="carouselRef">
+            <!-- Duplicate advertisements 4 times for smooth infinite loop -->
+            <template v-for="n in 4" :key="`group-${n}`">
+              <div v-for="(ad, index) in advertisements" :key="`ad-${n}-${index}`"
+                   class="flex-shrink-0 w-80 mx-6 first:ml-0 last:mr-0">
+                <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-2"
+                     @click="openAdModal(ad)">
+                  <!-- Advertisement Image -->
+                  <div class="aspect-[4/3] overflow-hidden">
+                    <img :src="ad.images"
+                         :alt="'Advertisement'"
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                   </div>
+
+                  <!-- Overlay with button -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+                    <button @click.stop="openAdUrl(ad.url)"
+                            class="bg-primary text-black px-6 py-2 rounded-full font-semibold hover:bg-primary/90 transition-colors duration-200 transform hover:scale-105 shadow-lg">
+                      <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                      Visit
+                    </button>
+                  </div>
+
+                  <!-- Subtle border animation -->
+                  <div class="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-primary/50 transition-colors duration-300"></div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Navigation arrows - updated with cuter styles -->
-          <button @click="previousSlide"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-primary text-black dark:text-white p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button @click="nextSlide"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary text-black dark:text-white p-4 rounded-full shadow-lg hover:scale-110 transition-all duration-300">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-
-          <!-- Cute slide indicators -->
-          <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
-            <button v-for="(ad, index) in advertisements" :key="index" @click="currentSlide = index"
-              :class="['w-4 h-4 rounded-full transition-all duration-300 border-2', 
-                      currentSlide === index ? 'bg-primary border-primary scale-125' : 'bg-white/70 dark:bg-black/70 border-primary/50 hover:scale-110']">
-            </button>
+            </template>
           </div>
         </div>
       </div>
@@ -621,17 +636,26 @@
             <div>
               <h4 class="text-base font-bold text-black dark:text-white mb-5">Follow Us</h4>
               <div class="flex space-x-4">
-                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
+                <!-- Facebook - Pending -->
+                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform opacity-50 cursor-not-allowed">
                   <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
                   </svg>
                 </a>
-                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform">
+                <!-- Instagram - Pending -->
+                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform opacity-50 cursor-not-allowed">
                   <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                   </svg>
                 </a>
+                <!-- LinkedIn - Pending -->
+                <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center hover:scale-110 transition-transform opacity-50 cursor-not-allowed">
+                  <svg class="w-6 h-6 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
               </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Social media links coming soon</p>
             </div>
           </div>
           
@@ -793,6 +817,41 @@
         </div>
       </div>
     </footer>
+
+    <!-- Advertisement Modal -->
+    <div v-if="showAdModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click="closeAdModal">
+      <div class="relative max-w-6xl w-full max-h-[90vh] bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden transform animate-modal-enter"
+           @click.stop>
+        <!-- Close button -->
+        <button @click="closeAdModal"
+                class="absolute top-4 right-4 z-10 bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 p-2 rounded-full transition-all duration-200 shadow-lg">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+
+        <!-- Modal content -->
+        <div v-if="selectedAd" class="relative">
+          <!-- Responsive image container - maintains original aspect ratio -->
+          <div class="relative w-full">
+            <img :src="selectedAd.images"
+                 :alt="'Advertisement'"
+                 class="w-full h-auto max-h-[70vh] object-contain rounded-t-3xl">
+          </div>
+
+          <!-- Action buttons -->
+          <div class="absolute bottom-6 left-6 right-6 flex justify-center">
+            <button @click="openAdUrl(selectedAd.url)"
+                    class="bg-primary text-black px-4 py-4 rounded-2xl font-bold hover:bg-primary/90 transition-all duration-200 transform hover:scale-105 shadow-xl flex items-center justify-center gap-3 min-w-[200px] max-w-[300px]">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+              Visit Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -858,6 +917,15 @@ export default defineComponent({
       selectedLocationObject: null as { id: number; name: string; address: string; url: string } | null, // To store full location object
       selectedLocationId: null as number | null, // To store selected location ID for API calls
       companyProfile: {} as CompanyProfileDto,
+      // Advertisement modal
+      showAdModal: false,
+      selectedAd: null as AdvertisementDto | null,
+      // Touch handling for carousel
+      touchStartX: 0,
+      touchEndX: 0,
+      // Carousel position for manual control
+      carouselPosition: 0,
+      carouselAnimationId: null as number | null,
       spaceTypeOptions: [
         {
           value: '',
@@ -927,10 +995,14 @@ export default defineComponent({
   async mounted() {
     // Start slideshow after mounting
     this.startSlideshow();
+    // Start carousel animation
+    this.startCarouselAnimation();
   },
 
   beforeUnmount() {
+    // Clean up animations
     this.stopSlideshow();
+    this.stopCarouselAnimation();
   },
 
   methods: {
@@ -1108,63 +1180,34 @@ export default defineComponent({
         this.isLoadingCompanyProfile = true;
         this.companyProfileApiError = false;
         this.companyProfileErrorMessage = '';
-        
-        // Check for cached company profile
-        const cachedData = localStorage.getItem('cached_company_profile');
-        
-        if (cachedData) {
-          try {
-            const parsed = JSON.parse(cachedData);
-            const cacheAge = Date.now() - parsed.timestamp;
-            
-            // Use cache if it's less than 24 hours old
-            if (cacheAge < 24 * 60 * 60 * 1000) {
-              this.companyProfile = parsed.data;
-              console.log('Using cached company profile data');
-              return;
-            }
-          } catch (e) {
-            console.error('Error parsing cached company profile:', e);
-            // Continue with API call if cache parsing fails
-          }
-        }
-        
-        console.log('Loading company profile from API...');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        // Since the API doesn't exist, we set a default empty profile
+
+        console.log('Loading company profile...');
+
+        // Since the API doesn't exist, we set the default profile directly
         // When API is available, replace this with the actual API call
         // const profileData = await NetworkManager.getCompanyProfile();
-        clearTimeout(timeoutId);
-        
+
         // Set default company profile
         const defaultProfile = {
           name: 'WorkSpace',
-          email: 'info@workspace.com',
-          phone: '+1 (234) 567-8900',
-          address: '123 Business District, Colombo',
+          email: 'info@squarehub.com',
+          phone: '+94771 118 254 / +94772 673 533',
+          address: 'NO 210, Havelock Road Colombo 05',
           image: ''
         };
-        
+
         this.companyProfile = defaultProfile;
-        
-        // Store in cache with timestamp
-        localStorage.setItem('cached_company_profile', JSON.stringify({
-          data: defaultProfile,
-          timestamp: Date.now()
-        }));
-        
-        // Indicate error if this was not a real API call
+
+        // Indicate that this is using default information
         this.companyProfileApiError = true;
         this.companyProfileErrorMessage = 'Using default company information. API not available.';
       } catch (error) {
         console.error('Error loading company profile:', error);
         this.companyProfileApiError = true;
-        this.companyProfileErrorMessage = error instanceof Error ? 
-          `Unable to load company information: ${error.message}` : 
+        this.companyProfileErrorMessage = error instanceof Error ?
+          `Unable to load company information: ${error.message}` :
           'Unable to load company information. Please try again later.';
-        
+
         // Use a default company name at minimum
         this.companyProfile = {
           name: 'WorkSpace',
@@ -1352,6 +1395,106 @@ export default defineComponent({
       }
     },
 
+    // Advertisement modal methods
+    openAdModal(ad: AdvertisementDto): void {
+      this.selectedAd = ad;
+      this.showAdModal = true;
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    },
+
+    closeAdModal(): void {
+      this.showAdModal = false;
+      this.selectedAd = null;
+      // Restore body scroll
+      document.body.style.overflow = 'auto';
+    },
+
+    openAdUrl(url: string): void {
+      if (url && url !== '#') {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+      this.closeAdModal();
+    },
+
+    // Carousel animation control methods
+    startCarouselAnimation(): void {
+      if (this.carouselAnimationId) return; // Already running
+
+      const animate = () => {
+        this.carouselPosition -= 0.5; // Slow continuous movement
+
+        // Reset position when we've moved through one set
+        const totalWidth = this.advertisements.length * 336;
+        if (this.carouselPosition < -totalWidth * 3) {
+          this.carouselPosition = 0;
+        }
+
+        this.carouselAnimationId = requestAnimationFrame(animate);
+      };
+
+      this.carouselAnimationId = requestAnimationFrame(animate);
+    },
+
+    stopCarouselAnimation(): void {
+      if (this.carouselAnimationId) {
+        cancelAnimationFrame(this.carouselAnimationId);
+        this.carouselAnimationId = null;
+      }
+    },
+
+    // Carousel manual control methods
+    moveCarousel(direction: 'left' | 'right'): void {
+      const cardWidth = 336; // w-80 = 320px + mx-6 = 336px total
+      const totalWidth = this.advertisements.length * cardWidth; // Width of one set of unique ads
+
+      if (direction === 'left') {
+        this.carouselPosition += cardWidth;
+      } else {
+        this.carouselPosition -= cardWidth;
+      }
+
+      // Handle infinite loop bounds
+      if (this.carouselPosition > 0) {
+        this.carouselPosition = -totalWidth * 3; // Jump to equivalent position in previous set
+      } else if (this.carouselPosition < -totalWidth * 3) {
+        this.carouselPosition = 0; // Jump back to start
+      }
+
+      // Pause auto-scroll temporarily
+      this.stopCarouselAnimation();
+      setTimeout(() => {
+        this.startCarouselAnimation();
+      }, 2000);
+    },
+
+    // Touch handling methods for carousel
+    handleTouchStart(event: TouchEvent): void {
+      this.touchStartX = event.touches[0].clientX;
+    },
+
+    handleTouchMove(event: TouchEvent): void {
+      if (!this.touchStartX) return;
+      this.touchEndX = event.touches[0].clientX;
+    },
+
+    handleTouchEnd(): void {
+      if (!this.touchStartX || !this.touchEndX) return;
+
+      const distance = this.touchStartX - this.touchEndX;
+      const isLeftSwipe = distance > 50;
+      const isRightSwipe = distance < -50;
+
+      if (isLeftSwipe) {
+        this.moveCarousel('right');
+      } else if (isRightSwipe) {
+        this.moveCarousel('left');
+      }
+
+      this.touchStartX = 0;
+      this.touchEndX = 0;
+    },
+
     // Hero slideshow methods removed - using single static hero image
 
     getStartingPrice(space: SpaceDto): number {
@@ -1490,5 +1633,26 @@ export default defineComponent({
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--color-primary);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+/* Carousel container styles */
+.carousel-container {
+  transition: transform 0.3s ease-out;
+}
+
+/* Modal entrance animation */
+@keyframes modal-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-enter {
+  animation: modal-enter 0.3s ease-out;
 }
 </style>
