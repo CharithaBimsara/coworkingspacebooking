@@ -263,8 +263,8 @@
                   </h4>
                   <div class="space-y-3">
                     <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 font-medium">
-                      <span>LKR {{ priceRange.min }}</span>
-                      <span>LKR {{ priceRange.max }}</span>
+                      <span>{{ formatCurrencyValue(priceRange.min) }}</span>
+                      <span>{{ formatCurrencyValue(priceRange.max) }}</span>
                     </div>
                     <DualRangeSlider v-model:min="priceRange.min" v-model:max="priceRange.max" :minVal="0" :maxVal="10000"
                       @change="updateQueryAndReload" class="w-full" />
@@ -446,8 +446,8 @@
               </h4>
               <div class="space-y-3">
                 <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 font-medium">
-                  <span>LKR {{ priceRange.min }}</span>
-                  <span>LKR {{ priceRange.max }}</span>
+                  <span>{{ formatCurrencyValue(priceRange.min) }}</span>
+                  <span>{{ formatCurrencyValue(priceRange.max) }}</span>
                 </div>
                 <DualRangeSlider v-model:min="priceRange.min" v-model:max="priceRange.max" :minVal="0" :maxVal="10000"
                   @change="updateQueryAndReload" class="w-full" />
@@ -773,7 +773,7 @@
                       'hidden sm:flex bg-primary/10 dark:bg-primary/20 rounded-full font-bold text-gray-900 dark:text-white flex-shrink-0',
                       isCompactView ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-1 text-xs'
                     ]">
-                      LKR {{ getStartingPrice(space).toFixed(0) }}
+                      {{ formatCurrencyValue(getStartingPrice(space)) }}
                       <span :class="[isCompactView ? 'text-[9px]' : 'text-xs', 'font-medium text-gray-700 dark:text-gray-300']">/{{ getPriceUnit(space.displayProductType || space.productType) }}</span>
                     </div>
                   </div>
@@ -987,7 +987,7 @@
                         </div>
                         
                         <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-lg text-xs font-bold text-gray-900 dark:text-white">
-                          LKR {{ getStartingPrice(space).toFixed(0) }}
+                          {{ formatCurrencyValue(getStartingPrice(space)) }}
                           <span class="text-[10px] font-normal">/{{ getPriceUnit(space.displayProductType || space.productType) }}</span>
                         </div>
                       </div>
@@ -1073,6 +1073,7 @@ import { defineComponent } from 'vue';
 import type { SpaceDto } from '../dto/response';
 import { NetworkManager } from '../api/networkManager'; // Import NetworkManager directly
 import { sanitizeHtml } from '../utils/sanitizer';
+import { formatPrice, formatCurrency } from '../utils/formatUtils';
 import DualRangeSlider from '../components/DualRangeSlider.vue';
 import SingleDatePicker from '../components/SingleDatePicker.vue';
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue';
@@ -1342,6 +1343,15 @@ export default defineComponent({
   methods: {
     sanitizeIcon(icon: string): string {
       return sanitizeHtml(icon);
+    },
+    
+    formatCurrencyValue(price: any): string {
+      // Use the imported function from formatUtils
+      return formatCurrency(price);
+    },
+    
+    formatPrice(price: any): string {
+      return formatPrice(price);
     },
     async loadFacilities(): Promise<void> {
       try {

@@ -1,6 +1,8 @@
 // src/api/bookingManager.ts
 // Manages booking-related API calls
 
+import { useSystemStore } from '../stores/system'
+
 // Interface for booking data returned by the API
 export interface BookingData {
   booking_id: number;
@@ -19,9 +21,15 @@ export interface BookingData {
     price: number;
     location_name: string;
     booking_date: string;
-    start_time: string;
-    end_time: string;
+    start_time: string | null;
+    end_time: string | null;
     product_image?: string;
+    is_cancelled: boolean;
+    is_onetime_changed: boolean;
+    is_updatable: boolean;
+    subscription_start_date: string | null;
+    subscription_end_date: string | null;
+    package_type: string | null;
     facilities: Array<{
       facility_id: number;
       facility_name: string | null;
@@ -39,6 +47,20 @@ export interface BookingResponse {
 
 export class BookingManager {
   private static readonly BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
+
+  private static reportError(message: string, endpoint: string, statusCode?: number) {
+    try {
+      const systemStore = useSystemStore();
+      systemStore.reportApiError({
+        message,
+        endpoint,
+        statusCode,
+        timestamp: Date.now(),
+      });
+    } catch (error) {
+      console.warn('Unable to record booking API error:', error);
+    }
+  }
 
   /**
    * Helper method to process bookings with product details
@@ -105,6 +127,8 @@ export class BookingManager {
             break;
         }
         
+        this.reportError(errorMessage, endpoint, response.status);
+
         return {
           success: false,
           message: errorMessage,
@@ -134,14 +158,16 @@ export class BookingManager {
       console.error(`Error fetching bookings from ${endpoint}:`, error);
       
       // Provide more user-friendly error messages
-      let errorMessage = `Failed to retrieve bookings`;
-      
-      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
-        errorMessage = 'Network error. Please check your internet connection and try again.';
-      } else if (error instanceof Error) {
-        errorMessage = `Error: ${error.message}`;
+      let errorMessage = 'We could not load your bookings right now. Please try again later.';
+
+      if (!navigator.onLine) {
+        errorMessage = 'You appear to be offline. Reconnect to load your bookings.';
+      } else if (error instanceof Error && error.message) {
+        errorMessage = error.message;
       }
-      
+
+      this.reportError(errorMessage, endpoint);
+
       return {
         success: false,
         message: errorMessage,
@@ -230,6 +256,7 @@ export class BookingManager {
             errorMessage = 'Server error. Please try again later.';
             break;
         }
+        this.reportError(errorMessage, '/booking/cancel-booking', response.status);
         
         return {
           success: false,
@@ -245,22 +272,120 @@ export class BookingManager {
           message: data.message || 'Booking canceled successfully'
         };
       } else {
+        const errorMessage = data.message || 'Failed to cancel booking';
+        this.reportError(errorMessage, '/booking/cancel-booking');
         return {
           success: false,
-          message: data.message || 'Failed to cancel booking'
+          message: errorMessage
         };
       }
     } catch (error) {
       console.error('Cancel booking error:', error);
       
       // Provide more user-friendly error messages
-      let errorMessage = 'Failed to cancel booking';
-      
-      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
-        errorMessage = 'Network error. Please check your internet connection and try again.';
-      } else if (error instanceof Error) {
-        errorMessage = `Error: ${error.message}`;
+      let errorMessage = 'Failed to cancel booking. Please try again shortly.';
+
+      if (!navigator.onLine) {
+        errorMessage = 'You are offline. Reconnect before cancelling the booking.';
+      } else if (error instanceof Error && error.message) {
+        errorMessage = error.message;
       }
+
+      this.reportError(errorMessage, '/booking/cancel-booking');
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+  
+  /**
+   * Cancel a specific product in a booking
+   * Endpoint: /booking/cancel-product
+   * Method: POST
+   * Request:
+   * {
+   *   "booking_id": 1,
+   *   "product_id": 5,
+   *   "cancelation_reason": ""
+   * }
+   */
+  static async cancelBookingProduct(bookingId: number, productId: number): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const response = await fetch(`${this.BASE_URL}/booking/cancel-booking`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          booking_id: bookingId,
+          product_id: productId,
+          cancelation_reason: ""
+        })
+      });
+
+      if (!response.ok) {
+        let errorMessage = 'Failed to cancel product.';
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid booking or product ID.';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized. Please sign in again.';
+            break;
+          case 404:
+            errorMessage = 'Product or booking not found.';
+            break;
+          case 409:
+            errorMessage = 'Cannot cancel product at this time.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'Server error. Please try again later.';
+            break;
+        }
+        this.reportError(errorMessage, '/booking/cancel-product', response.status);
+        
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.status_code === 200) {
+        return {
+          success: true,
+          message: data.message || 'Product canceled successfully'
+        };
+      } else {
+        const errorMessage = data.message || 'Failed to cancel product';
+        this.reportError(errorMessage, '/booking/cancel-product');
+        return {
+          success: false,
+          message: errorMessage
+        };
+      }
+    } catch (error) {
+      console.error('Cancel product error:', error);
+      
+      let errorMessage = 'Failed to cancel product. Please try again.';
+
+      if (!navigator.onLine) {
+        errorMessage = 'You are offline. Reconnect before cancelling this product.';
+      } else if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      }
+
+      this.reportError(errorMessage, '/booking/cancel-product');
       
       return {
         success: false,

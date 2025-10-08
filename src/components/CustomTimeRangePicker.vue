@@ -87,12 +87,20 @@ export default defineComponent({
       type: Array as PropType<string[]>,
       default: () => []
     },
+    operatingStartTime: {
+      type: String,
+      default: '09:00'
+    },
+    operatingEndTime: {
+      type: String,
+      default: '18:00'
+    },
     loading: {
       type: Boolean,
       default: false
     }
   },
-  emits: ['update:modelValue', 'start-time-change'],
+  emits: ['update:modelValue', 'start-time-change', 'end-time-change'],
   setup(props, { emit }) {
     const showStartDropdown = ref(false)
     const showEndDropdown = ref(false)
@@ -119,10 +127,32 @@ export default defineComponent({
       localEndTime.value = val.end
     })
 
-    const timeOptions = Array.from({ length: 9 * 2 }, (_, i) => {
-      const hour = Math.floor(i / 2) + 9  // Start from 9 AM
-      const min = i % 2 === 0 ? '00' : '30'
-      return `${hour.toString().padStart(2, '0')}:${min}`
+    // Generate time options based on operating hours
+    const timeOptions = computed(() => {
+      // Parse operating hours
+      const startHour = parseInt(props.operatingStartTime.split(':')[0])
+      const startMin = parseInt(props.operatingStartTime.split(':')[1])
+      const endHour = parseInt(props.operatingEndTime.split(':')[0])
+      const endMin = parseInt(props.operatingEndTime.split(':')[1])
+      
+      // Calculate total minutes and number of 30-minute slots
+      const startTotalMinutes = startHour * 60 + startMin
+      const endTotalMinutes = endHour * 60 + endMin
+      
+      // For start times, we generate options up to 30 minutes before the end time
+      // For end times (when selected by the user), we'll include the actual end time
+      const lastStartTimeMinutes = endTotalMinutes - 30
+      
+      const durationMinutes = lastStartTimeMinutes - startTotalMinutes
+      const numSlots = Math.floor(durationMinutes / 30) + 1
+      
+      // Generate time slots at 30-minute intervals, ensuring the last start time is 30 minutes before end time
+      return Array.from({ length: numSlots }, (_, i) => {
+        const slotMinutes = startTotalMinutes + (i * 30)
+        const hour = Math.floor(slotMinutes / 60)
+        const min = slotMinutes % 60
+        return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`
+      })
     })
 
     const startTimeDisplay = computed(() => localStartTime.value || '')
@@ -141,6 +171,7 @@ export default defineComponent({
         localEndTime.value = time
         showEndDropdown.value = false
         emit('update:modelValue', { start: localStartTime.value, end: time })
+        emit('end-time-change', time) // Emit end time change event
       }
     }
 
@@ -163,11 +194,26 @@ export default defineComponent({
     const availableEndTimeOptions = computed(() => {
       if (!localStartTime.value) return [];
       
+      // Make sure to include the end time in options
+      const endHour = parseInt(props.operatingEndTime.split(':')[0]);
+      const endMin = parseInt(props.operatingEndTime.split(':')[1]);
+      const endTimeOption = `${endHour.toString().padStart(2, '0')}:${endMin.toString().padStart(2, '0')}`;
+      
       const startTimeMinutes = convertTimeToMinutes(localStartTime.value);
-      return timeOptions.filter(time => {
+      
+      // Get all time options after the selected start time
+      let validEndTimes = timeOptions.value.filter((time: string) => {
         const timeMinutes = convertTimeToMinutes(time);
         return timeMinutes > startTimeMinutes; // End time must be after start time
       });
+      
+      // Add the end time if it's not already in the list and is after the selected start time
+      const endTimeMinutes = convertTimeToMinutes(endTimeOption);
+      if (endTimeMinutes > startTimeMinutes && !validEndTimes.includes(endTimeOption)) {
+        validEndTimes = [...validEndTimes, endTimeOption];
+      }
+      
+      return validEndTimes;
     });
 
     // Check if we should highlight end time (start time selected but end time not)

@@ -8,6 +8,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
+import { useSystemStore } from './stores/system'
 
 // Prevent flash of wrong theme by adding a class immediately
 document.documentElement.classList.add('theme-initializing')
@@ -22,4 +23,16 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+
+const systemStore = useSystemStore()
+systemStore.setOnlineStatus(navigator.onLine)
+
+window.addEventListener('online', () => {
+  systemStore.setOnlineStatus(true)
+})
+
+window.addEventListener('offline', () => {
+  systemStore.setOnlineStatus(false)
+})
+
 app.mount('#app')

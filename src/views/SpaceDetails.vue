@@ -2250,6 +2250,28 @@ export default defineComponent({
 
     // Load space details (which will also load facilities)
     await this.loadSpaceDetails()   
+    
+    // Check if we should auto-open the review dialog
+    if (this.$route.query.openReview === 'true') {
+      // Small delay to ensure the component is fully mounted
+      setTimeout(() => {
+        this.showReviewDialog = true
+        
+        // Remove the query parameters from URL to prevent reopening on reload
+        const newQuery = { ...this.$route.query }
+        delete newQuery.openReview
+        delete newQuery.bookingId
+        delete newQuery.productId
+        delete newQuery.productName
+        
+        // Replace the current route without the review-related query params
+        this.$router.replace({ 
+          name: this.$route.name || undefined,
+          params: this.$route.params,
+          query: newQuery
+        })
+      }, 300)
+    }
        
     // Add click outside listener for dropdowns
     document.addEventListener('click', this.handleClickOutside)
@@ -3640,9 +3662,25 @@ export default defineComponent({
     },
     
     handleReviewSubmitted(review: SubmittedReview): void {
-      // Instead of manually adding the review, refresh the page to get updated data
-      // This ensures reviews are correctly displayed with all proper formatting
-      window.location.reload();
+      // Close the review dialog first
+      this.showReviewDialog = false
+      
+      // Clear any review-related query parameters before reload
+      const newQuery = { ...this.$route.query }
+      delete newQuery.openReview
+      delete newQuery.bookingId
+      delete newQuery.productId
+      delete newQuery.productName
+      
+      // Update URL without review params, then reload
+      this.$router.replace({ 
+        name: this.$route.name || undefined,
+        params: this.$route.params,
+        query: newQuery
+      }).then(() => {
+        // Reload the page to get updated reviews
+        window.location.reload()
+      })
       
       // The code below is kept for reference but won't execute due to page reload
       const newReview = {

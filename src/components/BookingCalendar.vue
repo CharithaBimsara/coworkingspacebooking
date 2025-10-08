@@ -58,7 +58,7 @@
         <span class="text-gray-600 dark:text-gray-300">Confirmed</span>
       </div>
       <div class="flex items-center space-x-2">
-        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+        <div class="w-3 h-3 bg-primary rounded-full"></div>
         <span class="text-gray-600 dark:text-gray-300">Completed</span>
       </div>
       <div class="flex items-center space-x-2">
@@ -85,7 +85,7 @@
         :class="[
           'min-h-[100px] p-2 border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors',
           day.isCurrentMonth ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900',
-          day.isToday ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : ''
+          day.isToday ? 'bg-primary/5 dark:bg-primary/20 border-primary/30 dark:border-primary/40' : ''
         ]"
       >
         <!-- Day Number -->
@@ -93,7 +93,7 @@
           :class="[
             'text-sm font-medium mb-1',
             day.isCurrentMonth ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500',
-            day.isToday ? 'text-blue-600 dark:text-blue-400' : ''
+            day.isToday ? 'text-primary dark:text-primary/80' : ''
           ]"
         >
           {{ day.date }}
@@ -154,7 +154,7 @@
                 <p class="text-sm opacity-75">{{ booking.space.location }}</p>
               </div>
               <div class="text-right">
-                <div class="text-sm font-medium">LKR {{ booking.totalAmount }}</div>
+                <div class="text-sm font-medium">{{ formatCurrency(booking.totalAmount) }}</div>
                 <div class="text-xs opacity-75">{{ formatDuration(booking.duration) }}</div>
               </div>
             </div>
@@ -236,7 +236,7 @@
             </div>
             <div>
               <span class="text-gray-600 dark:text-gray-400">Total:</span>
-              <p class="font-medium">LKR {{ selectedBooking.totalAmount }}</p>
+              <p class="font-medium">{{ formatCurrency(selectedBooking.totalAmount) }}</p>
             </div>
           </div>
 
@@ -264,6 +264,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import { formatDateLocal } from '../utils/dateUtils'
+import { formatCurrency } from '../utils/formatUtils'
 
 interface BookingItem {
   id: string
@@ -430,7 +431,7 @@ export default defineComponent({
         case 'Confirmed':
           return `${baseClasses} bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800`
         case 'Completed':
-          return `${baseClasses} bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800`
+          return `${baseClasses} bg-primary/10 dark:bg-primary/30 text-primary/90 dark:text-primary/80 border-primary/30 dark:border-primary/40`
         case 'Cancelled':
           return `${baseClasses} bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800`
         default:
@@ -443,7 +444,7 @@ export default defineComponent({
         case 'Confirmed':
           return 'text-green-600 dark:text-green-400'
         case 'Completed':
-          return 'text-blue-600 dark:text-blue-400'
+          return 'text-primary dark:text-primary/80'
         case 'Cancelled':
           return 'text-red-600 dark:text-red-400'
         default:
@@ -468,6 +469,10 @@ export default defineComponent({
         'monthly': 'Monthly'
       }
       return durationMap[duration] || 'Full Day'
+    },
+    
+    formatCurrency(price: any): string {
+      return formatCurrency(price)
     }
   }
 })

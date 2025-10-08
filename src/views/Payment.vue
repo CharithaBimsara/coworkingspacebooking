@@ -430,7 +430,8 @@ import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { useBookingStore } from '../stores/booking';
 import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
-import { NetworkManager } from '../api/networkManager';
+import { NetworkManager } from '../api/networkManager'
+import { formatPrice, formatCurrency } from '../utils/formatUtils';
 import type { BookingDetails } from '../stores/booking';
 import ReCaptchaModal from '../components/ReCaptchaModal.vue';
 

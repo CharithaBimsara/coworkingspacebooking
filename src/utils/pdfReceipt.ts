@@ -1,440 +1,323 @@
-import jsPDF from 'jspdf'
-// import QRCode from 'qrcode'
-import logoImage from '../assets/logo.png'
-import { NetworkManager } from '../api/networkManager'
-import type { CompanyProfileDto } from '../dto/response'
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import logoImage from "../assets/logo.png";
+import { NetworkManager } from '../api/networkManager';
 
-interface Facility {
-  facility_id: number
-  facility_name: string
-  price: number
+// Define interfaces directly here since we're having issues with imports
+export interface InvoiceFacility {
+  name: string;
+  price: number;
 }
 
-interface BookingProduct {
-  product_id: number
-  product_name: string
-  booking_date: string
-  start_time: string
-  end_time: string
-  price: number
-  location_name: string
-  facilities?: Facility[]
-  spaceDetails?: {
-    capacity?: number
-    images?: string[]
-  }
+export interface InvoiceItem {
+  name: string;
+  date: string;
+  time?: string;
+  price: number;
+  location?: string;
+  facilities?: InvoiceFacility[];
 }
 
-interface BookingItem {
-  spaceId: number
-  productType: string
-  space: {
-    name: string
-    location: string
-  }
-  booking?: {
-    startDate: string | null
-    endDate: string | null
-    startTime: string
-    duration: string
-  }
-  subscription?: {
-    startDate: string | null
-    endDate: string | null
-    packageType: string
-  }
-  totalPrice: number
-  products?: BookingProduct[]
+export interface InvoiceData {
+  orderId: string;
+  date: string;
+  customer: {
+    name: string;
+    email: string;
+    phone?: string;
+  };
+  paymentMethod: string;
+  items: InvoiceItem[];
+  total: number;
 }
 
-interface ReceiptData {
-  bookings: BookingItem[]
-  bookingId: string
-  paymentMethod: string
-  confirmedAt: string
-  totalAmount: number
-  guestInfo: {
-    firstName: string
-    lastName: string
-    email?: string
-  }
-  orderId?: string
-  products?: BookingProduct[]
-  companyInfo?: CompanyProfileDto
-}
-
-export class PDFReceiptGenerator {
-  private doc: jsPDF
-  private pageWidth: number
-  private pageHeight: number
-  private margin: number
-  private blackColor: [number, number, number] = [0, 0, 0] // Black
-  private grayColor: [number, number, number] = [128, 128, 128] // Gray
-  private lightGrayColor: [number, number, number] = [211, 211, 211] // Light Gray
-  private whiteColor: [number, number, number] = [255, 255, 255] // White
+class InvoiceGenerator {
+  private doc: jsPDF;
+  private pageWidth: number;
+  private margin: number;
 
   constructor() {
-    this.doc = new jsPDF()
-    this.pageWidth = this.doc.internal.pageSize.getWidth()
-    this.pageHeight = this.doc.internal.pageSize.getHeight()
-    this.margin = 20
+    this.doc = new jsPDF();
+    this.pageWidth = this.doc.internal.pageSize.getWidth();
+    this.margin = 20;
   }
 
-  async generateReceipt(receiptData: ReceiptData): Promise<void> {
+  generateInvoice(data: InvoiceData): void {
+    // ===== HEADER - Logo and Invoice title on same row =====
     try {
-      // Set up document properties
-      this.doc.setProperties({
-        title: `Invoice - ${receiptData.bookingId}`,
-        subject: 'Booking Invoice',
-        author: receiptData.companyInfo?.name || 'CoworkSpace Booking',
-        keywords: 'invoice, booking, coworking, receipt',
-        creator: 'CoworkSpace Booking System'
-      });
+      // Logo on the left side
+      this.doc.addImage(logoImage, "PNG", this.margin, 20, 50, 12);
+    } catch (err) {
+      console.warn("Logo loading failed:", err);
+    }
 
-      // Fetch company information if not provided
-      let companyInfo = receiptData.companyInfo
-      if (!companyInfo) {
-        // Use default company information
-        companyInfo = {
-          name: 'WorkSpace',
-          email: 'info@squarehub.com',
-          phone: '+94771 118 254 / +94772 673 533',
-          address: 'NO 210, Havelock Road Colombo 05',
-          image: ''
+    // Invoice title on the same line as logo
+    this.doc.setFontSize(22).setFont("helvetica", "bold");
+    this.doc.text("INVOICE", this.pageWidth - this.margin, 30, { align: "right" });
+
+    this.doc.setFontSize(10).setFont("helvetica", "normal").setTextColor(80);
+    this.doc.text(`Invoice No: ${data.orderId}`, this.pageWidth - this.margin, 45, { align: "right" });
+    this.doc.text(`Date: ${new Date(data.date).toLocaleDateString()}`, this.pageWidth - this.margin, 52, { align: "right" });
+    this.doc.text(`Order ID: ${data.orderId}`, this.pageWidth - this.margin, 59, { align: "right" });
+
+    this.doc.setDrawColor(200, 200, 200); // Standardized gray
+    this.doc.line(this.margin, 70, this.pageWidth - this.margin, 70);
+
+    // ===== BILL TO / PAYMENT INFO =====
+    this.doc.setFontSize(10).setFont("helvetica", "bold").setTextColor(0);
+    this.doc.text("BILL TO:", this.margin, 85);
+    this.doc.setFont("helvetica", "normal").setTextColor(50);
+    this.doc.text(`${data.customer.name}`, this.margin, 92);
+    this.doc.text(`${data.customer.email}`, this.margin, 99);
+    if (data.customer.phone) {
+      this.doc.text(`${data.customer.phone}`, this.margin, 106);
+    }
+
+    const rightX = this.pageWidth / 2 + 10;
+    this.doc.setFont("helvetica", "bold").setTextColor(0);
+    this.doc.text("PAYMENT INFORMATION:", rightX, 85);
+    this.doc.setFont("helvetica", "normal").setTextColor(50);
+    this.doc.text(`Payment Method: ${data.paymentMethod}`, rightX, 92);
+    this.doc.text(`Payment Date: ${new Date(data.date).toLocaleDateString()}`, rightX, 99);
+
+    // ===== ITEMS TABLE =====
+    /**
+     * Table structure implementation with hierarchical display of products and their facilities
+     * 
+     * The table has two types of rows:
+     * 1. Product rows: Main rows showing product details (name, location, time, date, price)
+     * 2. Facility sub-rows: Indented rows underneath products showing associated facilities
+     *    - Displayed with bullet points and italics
+     *    - Given a slightly different background color
+     *    - Shows facility name and price
+     */
+    const tableRows: any[][] = [];
+    
+    // Track custom styling for each row (to distinguish products from facilities)
+    // Empty object {} for product rows, custom style objects for facility rows
+    const rowStyles: any[] = [];
+
+    data.items.forEach((item: InvoiceItem) => {
+      // Add the main product row
+      tableRows.push([
+        `${item.name}${item.location ? ` - ${item.location}` : ""}${item.time ? `\n${item.time}` : ""}`,
+        item.date,
+        `LKR ${formatPrice(item.price)}`
+      ]);
+      rowStyles.push({});  // Regular style for product rows
+
+      // Add facility sub-rows if available
+      if (item.facilities && item.facilities.length > 0) {
+        item.facilities.forEach((facility: InvoiceFacility) => {
+          // Create a facility sub-row with indentation and bullet point
+          tableRows.push([
+            `     • ${facility.name}`,
+            "",
+            `LKR ${formatPrice(facility.price)}`
+          ]);
+          // Custom style for facility rows - italics and lighter text color
+          rowStyles.push({ fontStyle: 'italic', textColor: [80, 80, 80] });
+        });
+      }
+    });
+
+    autoTable(this.doc, {
+      startY: 115,
+      head: [["DESCRIPTION", "DATE", "AMOUNT"]],
+      body: tableRows,
+      theme: "grid",
+      styles: {
+        fontSize: 10,
+        cellPadding: 6,
+        lineColor: [200, 200, 200], // Standardized gray for lines
+        lineWidth: 0.2
+      },
+      headStyles: {
+        fillColor: [40, 40, 40], // Dark gray instead of blue
+        textColor: 255,
+        fontStyle: "bold",
+        halign: "center"
+      },
+      bodyStyles: { textColor: [33, 33, 33] },
+      alternateRowStyles: { fillColor: [248, 248, 248] }, // Lighter gray for subtle alternating rows
+      columnStyles: {
+        0: { cellWidth: "auto" },
+        1: { cellWidth: 50, halign: "center" },
+        2: { cellWidth: 50, halign: "right" }
+      },
+      /**
+       * Custom styling for rows based on whether they are products or facilities
+       * 
+       * This callback function runs for each cell during table creation and:
+       * 1. Applies the custom styles from the rowStyles array based on row index
+       * 2. For facility rows (identified by italic style), applies a different 
+       *    background color to visually distinguish them as sub-items
+       * 3. This creates a clear visual hierarchy between products and their facilities
+       */
+      didParseCell: function(data) {
+        // Apply custom styling if it's a facility row
+        if (rowStyles[data.row.index]) {
+          Object.assign(data.cell.styles, rowStyles[data.row.index]);
+          
+          // For facility rows, use a lighter background color to indicate it's a sub-item
+          if (rowStyles[data.row.index].fontStyle === 'italic') {
+            data.cell.styles.fillColor = [245, 245, 245];
+          }
         }
       }
+    });
 
-      // Add company info to receipt data
-      receiptData.companyInfo = companyInfo
+    const finalY = (this.doc as any).lastAutoTable.finalY + 10;
 
-      // Generate the beautiful invoice
-      await this.addHeader(receiptData)
-      this.addInvoiceDetails(receiptData)
-      this.addCustomerInfo(receiptData)
-      this.addItemsTable(receiptData)
-      this.addTotalSection(receiptData)
-      this.addFooter(receiptData)
+    // ===== TOTAL SECTION =====
+    const totalY = Math.min(finalY, this.doc.internal.pageSize.getHeight() - 70);
 
-      // Save the PDF
-      this.doc.save(`invoice-${receiptData.bookingId}.pdf`)
-    } catch (error) {
-      console.error('Error generating PDF invoice:', error)
-      throw error
-    }
-  }
+    this.doc.setDrawColor(200, 200, 200); // Standardized gray
+    this.doc.line(this.pageWidth - 80, totalY + 5, this.pageWidth - this.margin, totalY + 5);
 
-  private async addHeader(receiptData: ReceiptData): Promise<void> {
-    let yPos = 25
+    this.doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(50);
+    this.doc.text("Subtotal:", this.pageWidth - 70, totalY + 15);
+    this.doc.text(`LKR ${formatPrice(data.total)}`, this.pageWidth - this.margin, totalY + 15, { align: "right" });
 
-    // Simple black border at top
-    this.doc.setDrawColor(...this.blackColor)
-    this.doc.setLineWidth(1)
-    this.doc.line(this.margin, 15, this.pageWidth - this.margin, 15)
+    this.doc.text("Tax (0%):", this.pageWidth - 70, totalY + 25);
+    this.doc.text(`LKR ${formatPrice(0)}`, this.pageWidth - this.margin, totalY + 25, { align: "right" });
 
-    // Company Logo
-    try {
-      this.doc.addImage(logoImage, 'PNG', this.margin, 20, 40, 30)
-    } catch (error) {
-      console.log('Logo loading failed')
-    }
+    // TOTAL Box - black instead of blue
+    this.doc.setFillColor(40, 40, 40);
+    this.doc.rect(this.pageWidth - 80, totalY + 35, 70, 12, "F");
+    this.doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(255);
+    this.doc.text("TOTAL:", this.pageWidth - 75, totalY + 43);
+    this.doc.text(`LKR ${formatPrice(data.total)}`, this.pageWidth - this.margin - 5, totalY + 43, { align: "right" });
 
-    // Company name
-    this.doc.setFontSize(20)
-    this.doc.setFont('helvetica', 'bold')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('Ceylinco-Works', this.margin + 50, yPos + 15)
+    // PAID badge - gray instead of green
+    this.doc.setFillColor(120, 120, 120);
+    this.doc.rect(this.pageWidth - 80, totalY + 50, 70, 12, "F");
+    this.doc.setTextColor(255).setFont("helvetica", "bold").setFontSize(10);
+    this.doc.text("PAID", this.pageWidth - 45, totalY + 58, { align: "center" });
 
-    // Company contact info
-    this.doc.setFontSize(9)
-    this.doc.setFont('helvetica', 'normal')
-    this.doc.setTextColor(...this.grayColor)
-    if (receiptData.companyInfo?.email) {
-      this.doc.text(receiptData.companyInfo.email, this.margin + 50, yPos + 25)
-    }
-    if (receiptData.companyInfo?.phone) {
-      this.doc.text(receiptData.companyInfo.phone, this.margin + 50, yPos + 32)
-    }
+    // ===== FOOTER =====
+    const footerY = this.doc.internal.pageSize.getHeight() - 20;
 
-    // Booking Receipt title
-    this.doc.setFontSize(24)
-    this.doc.setFont('helvetica', 'bold')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('BOOKING RECEIPT', this.pageWidth / 2, yPos + 50, { align: 'center' })
+    this.doc.setDrawColor(200, 200, 200); // Standardized gray
+    this.doc.line(this.margin, footerY - 5, this.pageWidth - this.margin, footerY - 5);
 
-    // Underline for title
-    this.doc.setDrawColor(...this.blackColor)
-    this.doc.setLineWidth(0.5)
-    this.doc.line(this.pageWidth / 2 - 60, yPos + 55, this.pageWidth / 2 + 60, yPos + 55)
-  }
+    this.doc.setFontSize(8).setFont("helvetica", "normal").setTextColor(100);
+    this.doc.text("Thank you for your business!", this.pageWidth / 2, footerY - 8, { align: "center" });
 
-  private addInvoiceDetails(receiptData: ReceiptData): void {
-    let yPos = 100
+    this.doc.text(
+      "Ceylinco-Works | info@squarehub.com | +94 771 118 254",
+      this.pageWidth / 2,
+      footerY,
+      { align: "center" }
+    );
 
-    // Invoice details section
-    this.doc.setFontSize(12)
-    this.doc.setFont('helvetica', 'bold')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('Invoice Details', this.margin, yPos)
-
-    yPos += 10
-
-    // Invoice details in two columns
-    this.doc.setFontSize(10)
-    this.doc.setFont('helvetica', 'normal')
-    this.doc.setTextColor(...this.blackColor)
-
-    // Left column
-    this.doc.text('Invoice Number:', this.margin, yPos)
-    this.doc.text('Date:', this.margin, yPos + 8)
-    this.doc.text('Order ID:', this.margin, yPos + 16)
-
-    // Right column values
-    this.doc.text(receiptData.bookingId, this.margin + 50, yPos)
-    this.doc.text(new Date(receiptData.confirmedAt).toLocaleDateString(), this.margin + 50, yPos + 8)
-    this.doc.text(receiptData.orderId || receiptData.bookingId, this.margin + 50, yPos + 16)
-
-    yPos += 35
-
-    // Billing Address section
-    this.doc.setFontSize(12)
-    this.doc.setFont('helvetica', 'bold')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('Billing Address', this.margin, yPos)
-
-    yPos += 10
-    this.doc.setFontSize(10)
-    this.doc.setFont('helvetica', 'normal')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text(`${receiptData.guestInfo.firstName} ${receiptData.guestInfo.lastName}`, this.margin, yPos)
-    if (receiptData.guestInfo.email) {
-      this.doc.text(receiptData.guestInfo.email, this.margin, yPos + 8)
-    }
-
-    // Billing Details section (right side)
-    this.doc.setFontSize(12)
-    this.doc.setFont('helvetica', 'bold')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('Billing Details', this.pageWidth - this.margin - 80, yPos - 10)
-
-    this.doc.setFontSize(10)
-    this.doc.setFont('helvetica', 'normal')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('Payment Method:', this.pageWidth - this.margin - 80, yPos + 8)
-    this.doc.text(receiptData.paymentMethod, this.pageWidth - this.margin - 80, yPos + 16)
-  }
-
-  private addCustomerInfo(receiptData: ReceiptData): void {
-    // This method is not used in the new black and white template
-    // Customer info is included in the invoice details section above
-  }
-
-  private addItemsTable(receiptData: ReceiptData): void {
-    let yPos = 180
-
-    // Table Header
-    this.doc.setFillColor(...this.lightGrayColor)
-    this.doc.rect(this.margin, yPos - 2, this.pageWidth - 2 * this.margin, 12, 'F')
-    this.doc.setDrawColor(...this.blackColor)
-    this.doc.setLineWidth(0.5)
-    this.doc.rect(this.margin, yPos - 2, this.pageWidth - 2 * this.margin, 12)
-
-    this.doc.setFontSize(10)
-    this.doc.setFont('helvetica', 'bold')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('DESCRIPTION', this.margin + 5, yPos + 5)
-    this.doc.text('QTY', this.pageWidth - this.margin - 80, yPos + 5)
-    this.doc.text('DATE', this.pageWidth - this.margin - 50, yPos + 5)
-    this.doc.text('AMOUNT', this.pageWidth - this.margin - 5, yPos + 5, { align: 'right' })
-
-    yPos += 15
-
-    // Items
-    const items = receiptData.products || []
-    items.forEach((item: any, index: number) => {
-      const rowHeight = 20
-
-      // Alternate row backgrounds
-      if (index % 2 === 1) {
-        this.doc.setFillColor(248, 248, 248) // Very light gray
-        this.doc.rect(this.margin, yPos - 2, this.pageWidth - 2 * this.margin, rowHeight, 'F')
-      }
-
-      // Main product row
-      this.doc.setDrawColor(...this.grayColor)
-      this.doc.setLineWidth(0.3)
-      this.doc.rect(this.margin, yPos - 2, this.pageWidth - 2 * this.margin, rowHeight)
-
-      // Product description
-      this.doc.setFontSize(10)
-      this.doc.setFont('helvetica', 'normal')
-      this.doc.setTextColor(...this.blackColor)
-      const description = item.product_name || 'Workspace'
-      const location = item.location_name || ''
-      const date = item.booking_date ? new Date(item.booking_date).toLocaleDateString() : ''
-      const time = item.start_time && item.end_time ? `${this.formatTime(item.start_time)} - ${this.formatTime(item.end_time)}` : ''
-
-      let descText = description
-      if (location) descText += ` - ${location}`
-      if (time) descText += ` (${time})`
-
-      this.doc.text(descText, this.margin + 5, yPos + 5)
-
-      // Quantity
-      this.doc.text('1', this.pageWidth - this.margin - 80, yPos + 5)
-
-      // Date
-      this.doc.text(date, this.pageWidth - this.margin - 50, yPos + 5)
-
-      // Base price
-      this.doc.text(`LKR ${item.price?.toLocaleString() || '0'}`, this.pageWidth - this.margin - 5, yPos + 5, { align: 'right' })
-
-      yPos += rowHeight
-
-      // Facilities as separate rows
-      if (item.facilities && item.facilities.length > 0) {
-        item.facilities.forEach((facility: Facility) => {
-          this.doc.setDrawColor(...this.grayColor)
-          this.doc.setLineWidth(0.3)
-          this.doc.rect(this.margin, yPos - 2, this.pageWidth - 2 * this.margin, 15)
-
-          this.doc.setFontSize(9)
-          this.doc.setFont('helvetica', 'normal')
-          this.doc.setTextColor(...this.grayColor)
-          this.doc.text(`  + ${facility.facility_name}`, this.margin + 5, yPos + 5)
-
-          // Facility price
-          this.doc.text(`LKR ${facility.price.toLocaleString()}`, this.pageWidth - this.margin - 5, yPos + 5, { align: 'right' })
-
-          yPos += 15
-        })
-      }
-    })
-  }
-
-  private addTotalSection(receiptData: ReceiptData): void {
-    const yPos = this.pageHeight - 60
-
-    // Total section with border
-    this.doc.setDrawColor(...this.blackColor)
-    this.doc.setLineWidth(0.5)
-    this.doc.rect(this.margin, yPos - 5, this.pageWidth - 2 * this.margin, 30)
-
-    // Total text
-    this.doc.setFontSize(14)
-    this.doc.setFont('helvetica', 'bold')
-    this.doc.setTextColor(...this.blackColor)
-    this.doc.text('FINAL AMOUNT:', this.pageWidth - this.margin - 80, yPos + 12)
-
-    this.doc.setFontSize(16)
-    this.doc.text(`LKR ${receiptData.totalAmount.toLocaleString()}`, this.pageWidth - this.margin - 5, yPos + 12, { align: 'right' })
-  }
-
-  private addFooter(receiptData: ReceiptData): void {
-    const yPos = this.pageHeight - 25
-
-    // Footer line
-    this.doc.setDrawColor(...this.blackColor)
-    this.doc.setLineWidth(0.5)
-    this.doc.line(this.margin, yPos, this.pageWidth - this.margin, yPos)
-
-    // Footer content
-    this.doc.setFontSize(9)
-    this.doc.setFont('helvetica', 'normal')
-    this.doc.setTextColor(...this.grayColor)
-
-    // Company information
-    this.doc.text('Thank you for choosing our coworking space', this.pageWidth / 2, yPos + 8, { align: 'center' })
-
-    if (receiptData.companyInfo?.address) {
-      this.doc.text(receiptData.companyInfo.address, this.pageWidth / 2, yPos + 15, { align: 'center' })
-    }
-
-    if (receiptData.companyInfo?.email) {
-      this.doc.text(receiptData.companyInfo.email, this.pageWidth / 2, yPos + 22, { align: 'center' })
-    }
-
-    if (receiptData.companyInfo?.phone) {
-      this.doc.text(receiptData.companyInfo.phone, this.pageWidth / 2, yPos + 29, { align: 'center' })
-    }
-  }
-
-  private formatTime(time: string): string {
-    if (!time) return ''
-    const [hours, minutes] = time.split(':')
-    const hour = parseInt(hours)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour % 12 || 12
-    return `${displayHour}:${minutes} ${ampm}`
+    // Save PDF
+    this.doc.save(`invoice-${data.orderId}.pdf`);
   }
 }
 
+// Helper functions
+/**
+ * Format time string to AM/PM format
+ */
+function formatTime(time: string): string {
+  if (!time) return '';
+  const [hours, minutes] = time.split(':');
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minutes} ${ampm}`;
+}
+
+// Using global format utilities
+import { parsePrice, formatPrice } from './formatUtils';
+
+/**
+ * Format product type to display name
+ */
+function formatProductType(type: string): string {
+  switch (type) {
+    case 'meeting-room': return 'Meeting Room';
+    case 'hot-desk': return 'Hot Desk';
+    case 'coworking-space': return 'Co-working Space';
+    default: return type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' ');
+  }
+}
+
+/**
+ * Generate PDF receipt from API data
+ * @param orderId Order ID to fetch invoice data for
+ */
 export const generatePDFReceipt = async (orderId: string): Promise<void> => {
   try {
     // Fetch invoice data from API
-    const invoiceResponse = await NetworkManager.getInvoice(orderId)
+    const invoiceResponse = await NetworkManager.getInvoice(orderId);
 
     if (!invoiceResponse.success || !invoiceResponse.data) {
-      throw new Error(invoiceResponse.message || 'Failed to fetch invoice data')
+      throw new Error(invoiceResponse.message || 'Failed to fetch invoice data');
     }
 
-    const invoiceData = invoiceResponse.data
+    const apiData = invoiceResponse.data;
 
-    // Default company information
-    const companyInfo = {
-      name: 'WorkSpace',
-      email: 'info@squarehub.com',
-      phone: '+94771 118 254 / +94772 673 533',
-      address: 'NO 210, Havelock Road Colombo 05',
-      image: ''
-    }
-
-    // Transform API data to PDF format with correct price breakdown
-    const receiptData: ReceiptData = {
-      bookings: [], // Not used in simple template
-      bookingId: invoiceData.order_id,
-      paymentMethod: 'Card Payment',
-      confirmedAt: new Date().toISOString(),
-      totalAmount: invoiceData.total_amount,
-      guestInfo: {
-        firstName: invoiceData.first_name,
-        lastName: invoiceData.last_name,
-        email: invoiceData.email
+    // Transform API data to our invoice format
+    const invoiceData: InvoiceData = {
+      orderId: apiData.order_id,
+      date: new Date().toISOString(),
+      customer: {
+        name: `${apiData.first_name} ${apiData.last_name}`,
+        email: apiData.email,
+        phone: apiData.phone
       },
-      orderId: invoiceData.order_id,
-      companyInfo: companyInfo,
-      products: invoiceData.products.map(product => {
-        // Calculate base price by subtracting facility prices from total_price
-        const facilityTotal = product.additional_facilities?.reduce((sum, facility) => sum + facility.price, 0) || 0
-        const basePrice = product.total_price - facilityTotal
+      paymentMethod: 'Card Payment',
+      items: apiData.products.map(product => {
+        // Calculate base price (excluding facilities)
+        // Calculate base price (excluding facilities)
+        const facilityTotal = product.additional_facilities?.reduce(
+          (sum, facility) => sum + parsePrice(facility.price), 0
+        ) || 0;
+        
+        // Parse product total price
+        const productTotalPrice = parsePrice(product.total_price);
+        
+        const basePrice = productTotalPrice - facilityTotal;
+
+        // Format time if available
+        const timeInfo = product.start_time && product.end_time 
+          ? `${formatTime(product.start_time)} - ${formatTime(product.end_time)}`
+          : undefined;
 
         return {
-          product_id: product.product_id,
-          product_name: product.product_type === 'meeting-room' ? 'Meeting Room' :
-                       product.product_type === 'hot-desk' ? 'Hot Desk' :
-                       product.product_type === 'coworking-space' ? 'Co-working Space' : product.product_type,
-          booking_date: product.booking_date || '',
-          start_time: product.start_time || '',
-          end_time: product.end_time || '',
-          price: basePrice, // Base price without facilities
-          location_name: product.location_name,
+          name: formatProductType(product.product_type),
+          date: product.booking_date ? new Date(product.booking_date).toLocaleDateString() : '-',
+          time: timeInfo,
+          price: basePrice,
+          location: product.location_name,
           facilities: product.additional_facilities?.map(facility => ({
-            facility_id: facility.facility_id,
-            facility_name: facility.facility_name,
-            price: facility.price
-          })) || []
-        }
-      })
-    }
+            name: facility.facility_name,
+            price: parsePrice(facility.price)
+          }))
+        };
+      }),
+      // Parse total amount
+      total: parsePrice(apiData.total_amount)
+    };
 
-    const generator = new PDFReceiptGenerator()
-    await generator.generateReceipt(receiptData)
+    // Generate and download PDF
+    const generator = new InvoiceGenerator();
+    generator.generateInvoice(invoiceData);
   } catch (error) {
-    console.error('Error generating PDF invoice:', error)
-    throw error
+    console.error('Error generating PDF invoice:', error);
+    throw error;
   }
-}
+};
 
-export const generatePDFFromData = async (receiptData: ReceiptData): Promise<void> => {
-  const generator = new PDFReceiptGenerator()
-  await generator.generateReceipt(receiptData)
-}
+/**
+ * Generate PDF from predefined data structure
+ * For testing or direct usage without API
+ */
+export const generatePDFFromData = async (receiptData: InvoiceData): Promise<void> => {
+  const generator = new InvoiceGenerator();
+  generator.generateInvoice(receiptData);
+};
+
+export default InvoiceGenerator;

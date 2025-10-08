@@ -4,6 +4,7 @@
 
 import type { SpaceDto } from '../dto/response';
 import { AdvertisementDto } from '../dto/response';
+import { useSystemStore } from '../stores/system';
 
 // Define AuthResponse interface
 export interface AuthResponse {
@@ -164,6 +165,36 @@ export class NetworkManager {
   public static lastRawResponseData: unknown = null;
   private static customHeaders: Record<string, string> = {};
   
+  private static notifyError(message: string, endpoint?: string, statusCode?: number) {
+    try {
+      const systemStore = useSystemStore();
+      systemStore.reportApiError({
+        message,
+        endpoint,
+        statusCode,
+        timestamp: Date.now(),
+      });
+    } catch (storeError) {
+      console.warn('Unable to report API error via system store:', storeError);
+    }
+  }
+
+  private static formatErrorMessage(error: unknown, fallback: string): string {
+    if (!navigator.onLine) {
+      return 'No internet connection detected. Please reconnect and try again.';
+    }
+
+    if (error instanceof Error) {
+      return error.message || fallback;
+    }
+
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    return fallback;
+  }
+  
   /**
    * Set a custom header for API requests. Useful for adding tokens like reCAPTCHA.
    * @param key The header key
@@ -263,6 +294,8 @@ export class NetworkManager {
       }
     } catch (error) {
       console.error('Error fetching locations:', error);
+      const message = this.formatErrorMessage(error, 'Unable to load locations right now. Please try again soon.');
+      this.notifyError(message, '/locations/get-all');
       // Return empty array instead of throwing error to prevent app crash
       return [];
     }
@@ -498,16 +531,10 @@ export class NetworkManager {
       }
     } catch (error) {
       console.error('Error fetching spaces:', error);
-      
-      // Provide standardized error message
-      let errorMessage = this.getErrorMessageForStatus(0, 'Failed to fetch spaces data');
-      
-      if (error instanceof TypeError && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
-        errorMessage = 'Network error. Please check your internet connection and try again.';
-      } else if (error instanceof Error) {
-        errorMessage = `Error: ${error.message}`;
-      }
-      
+      const errorMessage = this.formatErrorMessage(error, 'We could not load spaces right now. Please try again soon.');
+      const endpoint = params.id ? '/product/get-product-by-id' : '/product/filter-products';
+      this.notifyError(errorMessage, endpoint);
+
       return {
         success: false,
         message: errorMessage,
@@ -2686,12 +2713,20 @@ export class NetworkManager {
     BookingDate: string;
     StartTime?: string;
     EndTime?: string;
+    SingleProductId?: number;  // Added for individual product date changes
   }): Promise<{
     success: boolean;
     message: string;
   }> {
     try {
       console.log('Updating booking with data:', bookingData);
+      
+      // Log specific product ID if it's being updated
+      if (bookingData.SingleProductId) {
+        console.log(`Updating individual product with ID: ${bookingData.SingleProductId}`);
+      } else {
+        console.log('Updating entire booking (no specific product)');
+      }
 
       // Always use FormData for this API endpoint
       const formData = new FormData();

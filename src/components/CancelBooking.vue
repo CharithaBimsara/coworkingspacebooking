@@ -19,8 +19,12 @@
         </button>
       </div>
       <div class="my-4">
-        <p class="text-gray-600 dark:text-gray-300">
-          Are you sure you want to cancel this booking? Please note that there are
+        <p class="text-gray-600 dark:text-gray-300" v-if="isSingleProduct">
+          Are you sure you want to cancel this product? Please note that there are
+          <span class="font-bold text-red-600">no refunds</span> for cancellations.
+        </p>
+        <p class="text-gray-600 dark:text-gray-300" v-else>
+          Are you sure you want to cancel all products in this booking? Please note that there are
           <span class="font-bold text-red-600">no refunds</span> for cancellations.
         </p>
       </div>
@@ -37,6 +41,10 @@ defineProps({
   show: {
     type: Boolean,
     required: true
+  },
+  isSingleProduct: {
+    type: Boolean,
+    default: false
   }
 })
 

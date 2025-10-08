@@ -63,3 +63,7 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+## Resilience & Outage Handling
+
+See [`docs/resilience-guide.md`](docs/resilience-guide.md) for the incident playbook covering offline detection, the global error banner, and tips for communicating backend outages to end users.

@@ -13,8 +13,9 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] active:translate-y-0" @click="showAllBookings">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Bookings Card -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] active:translate-y-0" @click="() => showBookingsTab()">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <div class="w-14 h-14 bg-primary/15 dark:bg-primary/20 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
@@ -24,7 +25,11 @@
               </div>
               <div class="ml-5">
                 <p class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors duration-300">{{ stats.totalBookings }}</p>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">Total Bookings</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">Bookings</p>
+                <div class="flex gap-3 mt-1">
+                  <span class="text-xs px-2 py-0.5 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 rounded-full cursor-pointer" @click.stop="() => showBookingsTab('upcoming')">{{ stats.upcomingBookings }} upcoming</span>
+                  <span class="text-xs px-2 py-0.5 bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300 rounded-full cursor-pointer" @click.stop="() => showBookingsTab('cancelled')">{{ stats.cancelledBookings }} cancelled</span>
+                </div>
               </div>
             </div>
             <div class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
@@ -39,32 +44,8 @@
           <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
         </div>
         
-        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] active:translate-y-0" @click="showUpcomingBookings">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <div class="w-14 h-14 bg-primary/10 dark:bg-primary/15 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                <svg class="w-7 h-7 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div class="ml-5">
-                <p class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors duration-300">{{ stats.upcomingBookings }}</p>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">Upcoming</p>
-              </div>
-            </div>
-            <div class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-              <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-        </div>
-        
         <!-- Subscription Card -->
-        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] active:translate-y-0" @click="toggleSubscriptions">
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] active:translate-y-0" @click="() => showSubscriptionsTab()">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <div class="w-14 h-14 bg-primary/12 dark:bg-primary/18 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
@@ -73,8 +54,12 @@
                 </svg>
               </div>
               <div class="ml-5 flex-1">
-                <p class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors duration-300">{{ stats.activeSubscriptions }}</p>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">Active Subscriptions</p>
+                <p class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors duration-300">{{ stats.totalSubscriptions }}</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">Subscriptions</p>
+                <div class="flex gap-3 mt-1">
+                  <span class="text-xs px-2 py-0.5 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 rounded-full cursor-pointer" @click.stop="() => showSubscriptionsTab('active')">{{ stats.activeSubscriptions }} active</span>
+                  <span class="text-xs px-2 py-0.5 bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300 rounded-full cursor-pointer" @click.stop="() => showSubscriptionsTab('cancelled')">{{ stats.cancelledSubscriptions }} cancelled</span>
+                </div>
                 <p v-if="loadingSubscriptions" class="text-xs text-primary dark:text-primary mt-1 transition-colors duration-300">Loading...</p>
               </div>
             </div>
@@ -135,25 +120,7 @@
               </svg>
             </button>
             
-            <!-- View Toggle -->
-            <div class="flex items-center space-x-2">
-              <button 
-                @click="viewMode = 'list'" 
-                :class="['p-2 rounded-lg transition-colors', viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600']"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
-              </button>
-              <button 
-                @click="viewMode = 'calendar'" 
-                :class="['p-2 rounded-lg transition-colors', viewMode === 'calendar' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600']"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </button>
-            </div>
+           
 
             <!-- Export
             <button @click="exportBookings" class="btn-primary mr-2">
@@ -175,21 +142,32 @@
             <button @click="getDirections(upcomingBooking)" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors">
               Directions
             </button>
-            <button @click="viewBookingDetails(upcomingBooking)" class="bg-white text-primary px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-              View Details
-            </button>
           </div>
         </div>
       </div>
 
       <!-- Content -->
-      <div v-if="showSubscriptions && activeTab !== 'total'">
+      <div v-if="showSubscriptions">
         <!-- Subscriptions Section -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-card border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Your Subscriptions</h2>
-             
+              
+              <!-- Subscription Tabs -->
+              <div class="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button 
+                  v-for="tab in subscriptionTabs" 
+                  :key="tab.id"
+                  @click="activeTab = tab.id"
+                  :class="['px-4 py-2 rounded-md text-sm font-medium transition-colors', activeTab === tab.id ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white']"
+                >
+                  {{ tab.name }}
+                  <span v-if="tab.count" :class="['ml-2 px-2 py-0.5 rounded-full text-xs', activeTab === tab.id ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-500 text-gray-600 dark:text-gray-300']">
+                    {{ tab.count }}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -200,52 +178,152 @@
           </div>
 
           <!-- Subscriptions List -->
-          <div v-else-if="subscriptions.length > 0" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <div v-else-if="filteredSubscriptions.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
             <div 
-              v-for="subscription in subscriptions" 
+              v-for="subscription in filteredSubscriptions" 
               :key="subscription.booking_product_id"
-              class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
-              @click="viewSubscriptionDetails(subscription)"
+              class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 hover:border-primary/30"
             >
-              <div class="flex items-center justify-between">
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-2">
-                    <div class="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <!-- Card Header with Gradient -->
+              <div class="bg-gradient-to-r from-primary/10 to-purple-50 dark:from-primary/20 dark:to-purple-900/20 p-5 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-md">
+                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
                     </div>
                     <div>
-                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ subscription.product_name }}</h3>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ subscription.location_name }}</p>
+                      <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ subscription.product_name }}</h3>
+                      <div class="flex items-center gap-2">
+                        <span :class="['inline-flex px-2 py-0.5 text-xs font-semibold rounded-full', getSubscriptionStatusClass(subscription.status)]">
+                          {{ subscription.status }}
+                        </span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ subscription.location_name }}</span>
+                      </div>
                     </div>
                   </div>
                   
-                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    <div>
-                      <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Start Date</p>
-                      <p class="text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(subscription.subscription_start_date) }}</p>
+                  <div class="text-right">
+                    <div class="text-2xl font-bold text-primary">{{ formatCurrency(subscription.total_price) }}</div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">Total amount</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Subscription Period -->
+              <div class="p-5 bg-white dark:bg-gray-800">
+                <div class="flex flex-col md:flex-row gap-4">
+                  <div class="flex-1">
+                    <!-- Date Timeline -->
+                    <div class="relative pb-5">
+                      <!-- Start Date -->
+                      <div class="flex items-center mb-3">
+                        <div class="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mr-3">
+                          <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Start Date</p>
+                          <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ formatDate(subscription.subscription_start_date) }}</p>
+                        </div>
+                      </div>
+                      
+                      <!-- Connecting Line -->
+                      <div class="absolute left-5 top-10 bottom-10 w-0.5 bg-gradient-to-b from-green-500 to-amber-500 transform -translate-x-1/2"></div>
+                      
+                      <!-- End Date -->
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center mr-3">
+                          <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">End Date</p>
+                          <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ formatDate(subscription.subscription_end_date) }}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">End Date</p>
-                      <p class="text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(subscription.subscription_end_date) }}</p>
+                  </div>
+                  
+                  
+                    <!-- Package Info -->
+                    <div class="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 ">
+                      <div class="mb-1">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Package Type</p>
+                        <p class="text-base font-semibold text-gray-900 dark:text-white capitalize flex items-center">
+                          <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                          </svg>
+                          {{ subscription.package_type }}
+                        </p>
+                      </div>   
                     </div>
-                    <div>
-                      <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Package</p>
-                      <p class="text-sm font-medium text-gray-900 dark:text-white capitalize">{{ subscription.package_type }}</p>
+                
+                </div>
+
+               
+                
+                <!-- Payment Details -->
+                <div class="mt-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4">
+                  <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                    </svg>
+                    Payment Information
+                  </h4>
+                  
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Monthly Rate</span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-white">{{ formatCurrency(getMonthlyRate(subscription)) }}</span>
                     </div>
-                    <div>
-                      <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Status</p>
-                      <span :class="['inline-flex px-2 py-1 text-xs font-semibold rounded-full', getSubscriptionStatusClass(subscription.status)]">
-                        {{ subscription.status }}
-                      </span>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Duration</span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-white">{{ getDurationInMonths(subscription) }} month(s)</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2">
+                      <span class="text-sm font-semibold text-gray-900 dark:text-white">Total Amount</span>
+                      <span class="text-sm font-bold text-primary">{{ formatCurrency(subscription.total_price) }}</span>
                     </div>
                   </div>
                 </div>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="p-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <div class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                  <svg class="w-4 h-4 mr-1 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Last updated: {{ new Date().toLocaleDateString() }}
+                </div>
                 
-                <div class="text-right ml-4">
-                  <div class="text-2xl font-bold text-gray-900 dark:text-white">LKR {{ subscription.total_price.toLocaleString() }}</div>
-                  <div class="text-sm text-gray-600 dark:text-gray-400">Total</div>
+                <div class="flex gap-2">
+                  <button 
+                    @click="downloadSubscriptionReceipt(subscription)"
+                    class="text-xs px-3 py-1 bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light rounded-lg hover:bg-primary/20 transition-colors"
+                  >
+                    <svg class="w-3 h-3 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Receipt
+                  </button>
+                  
+                  <button 
+                    v-if="subscription.status === 'CONFIRMED'" 
+                    @click="cancelSubscription(subscription)"
+                    class="text-xs px-3 py-1 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                  >
+                    <svg class="w-3 h-3 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
@@ -258,8 +336,16 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Active Subscriptions</h3>
-            <p class="text-gray-600 dark:text-gray-400">You don't have any active subscriptions at the moment.</p>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              {{ activeTab === 'active' ? 'No Active Subscriptions' : 
+                 activeTab === 'cancelled' ? 'No Cancelled Subscriptions' : 
+                 'No Subscriptions Found' }}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              {{ activeTab === 'active' ? 'You don\'t have any active subscriptions at the moment.' : 
+                 activeTab === 'cancelled' ? 'You don\'t have any cancelled subscriptions.' : 
+                 'No subscriptions match your current filters.' }}
+            </p>
           </div>
         </div>
       </div>
@@ -298,133 +384,308 @@
         </div>
         
         <!-- Bookings List -->
-        <div v-else-if="filteredBookings.length > 0" class="space-y-6">
+        <div v-if="filteredBookings.length > 0 && viewMode === 'list'" class="space-y-6">
           <div 
             v-for="booking in filteredBookings" 
             :key="booking.id"
-            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-card border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow"
+            class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-card border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow"
           >
-            <div class="flex flex-col lg:flex-row lg:items-center gap-6">
-              <!-- Space Image and Info -->
-              <div class="flex space-x-4 flex-1">
-                <!-- Product Images -->
-                <div class="flex-shrink-0">
-                  <div v-if="booking.productImages && booking.productImages.length > 1" 
-                       class="grid grid-cols-2 gap-1 w-20 h-20 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                       @click="viewSpaceDetails(booking.space.id)">
-                    <img 
-                      v-for="(image, index) in booking.productImages.slice(0, 4)" 
-                      :key="index"
-                      :src="image" 
-                      :alt="`${booking.space.name} - Product ${index + 1}`"
-                      class="w-full h-full object-cover"
-                    >
+            <!-- Booking Header -->
+            <div class="p-5 border-b border-gray-100 dark:border-gray-700">
+              <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <!-- Booking Info -->
+                <div class="flex items-center gap-4">
+                  <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 text-primary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                   </div>
+                  <div>
+                    <div class="flex items-center gap-3">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Order Number {{ booking.paymentId }}</h3>
+                      <span :class="['px-3 py-0.5 rounded-full text-xs font-medium', getStatusClass(booking.status)]">
+                        {{ booking.status }}
+                        <span v-if="booking.partialCancellation" class="ml-1">(Partially Cancelled)</span>
+                      </span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-gray-600 dark:text-gray-400">
+                      <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ formatDate(booking.date) }}
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Price -->
+                <div class="flex items-center gap-4 ml-auto">
+                  <div class="text-right">
+                    <div class="text-xl font-bold text-gray-900 dark:text-white">{{ formatCurrency(booking.totalAmount) }}</div>
+                    <div class="text-xs text-gray-600 dark:text-gray-400">Total amount</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Products Section -->
+            <div v-if="booking.apiData && booking.apiData.products && booking.apiData.products.length > 0" class="bg-gray-50 dark:bg-gray-800/60">
+              <div v-for="(product, index) in booking.apiData.products" :key="product.product_id" 
+                class="flex flex-col md:flex-row p-4 gap-4 border-b border-gray-100 dark:border-gray-700/50"><!-- @ts-ignore -->
+                <!-- Product Image -->
+                <div class="flex-shrink-0">
                   <img 
-                    v-else-if="booking.productImages && booking.productImages.length === 1"
-                    :src="booking.productImages[0]" 
-                    :alt="booking.space.name"
-                    class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                    @click="viewSpaceDetails(booking.space.id)"
-                  >
-                  <img 
-                    v-else
-                    :src="booking.space.image" 
-                    :alt="booking.space.name"
-                    class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                    @click="viewSpaceDetails(booking.space.id)"
+                    :src="getProductImageUrl(product.product_image)" 
+                    :alt="product.product_name"
+                    class="w-16 h-16 rounded-lg object-cover shadow-sm"
+                    @error="handleImageError"
                   >
                 </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">{{ booking.space.name }}</h3>
-                    <span :class="['px-3 py-1 rounded-full text-sm font-medium', getStatusClass(booking.status)]">
-                      {{ booking.status }}
-                    </span>
+                
+                <!-- Product Details -->
+                <div class="flex-grow">
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                      <h4 class="font-medium text-gray-900 dark:text-white">{{ product.product_name }}</h4>
+                      
+                      <!-- Product Type Badge -->
+                      <span 
+                        v-if="(product as any).product_type" 
+                        :class="[
+                          'px-2 py-0.5 rounded-full text-xs font-medium',
+                          {
+                            'bg-blue-100 text-blue-800 dark:bg-blue-800/20 dark:text-blue-400': (product as any).product_type === 'HotDesk',
+                            'bg-purple-100 text-purple-800 dark:bg-purple-800/20 dark:text-purple-400': (product as any).product_type === 'DedicatedDesk',
+                            'bg-amber-100 text-amber-800 dark:bg-amber-800/20 dark:text-amber-400': (product as any).product_type === 'MeetingRoom',
+                            'bg-gray-100 text-gray-800 dark:bg-gray-800/20 dark:text-gray-400': !['HotDesk', 'DedicatedDesk', 'MeetingRoom'].includes((product as any).product_type)
+                          }
+                        ]">
+                        {{ formatProductType((product as any).product_type) }}
+                      </span>
+                      
+                      <!-- Status Badge -->
+                      <span 
+                        :class="{
+                          'bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-400': !isProductCancelled(product),
+                          'bg-red-100 text-red-800 dark:bg-red-800/20 dark:text-red-400': isProductCancelled(product)
+                        }" 
+                        class="px-2 py-0.5 rounded text-xs font-medium">
+                        {{ isProductCancelled(product) ? 'Cancelled' : 'Confirmed' }}
+                      </span>
+                    </div>
                   </div>
-                  <div class="flex items-center text-gray-600 dark:text-gray-400 mb-1">
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-1 text-sm">
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      </svg>
+                      {{ product.location_name }}
+                    </div>
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {{ formatDate(product.booking_date) }}
+                    </div>
+                    <div v-if="product.start_time && product.end_time && product.start_time !== '00:00:00'" class="flex items-center text-gray-600 dark:text-gray-400">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {{ formatTimeOnly(product.start_time) }} - {{ formatTimeOnly(product.end_time) }}
+                    </div>
+                    <div v-if="(product as Product)?.package_type" class="flex items-center text-gray-600 dark:text-gray-400">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                      {{ ((product as any)?.package_type || '')?.charAt(0).toUpperCase() + ((product as any)?.package_type || '')?.slice(1) }} Package
+                    </div>
+                    <div v-if="(product as any)?.subscription_start_date && (product as any)?.subscription_end_date" class="flex items-center text-gray-600 dark:text-gray-400 md:col-span-2">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                      Subscription: {{ formatDate((product as any)?.subscription_start_date || '') }} - {{ formatDate((product as any)?.subscription_end_date || '') }}
+                    </div>
+                  </div>
+                  
+                  <!-- Price Breakdown -->
+                  <div class="mt-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+                    <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Price Breakdown</h5>
+                    
+                    <div class="space-y-1.5 text-sm">
+                      <!-- Base Price -->
+                      <div class="flex justify-between text-gray-700 dark:text-gray-300">
+                        <span>Base Price:</span>
+                        <span>{{ formatCurrency(product.price) }}</span>
+                      </div>
+                      
+                      <!-- Facilities List -->
+                      <div v-if="product.facilities && product.facilities.length > 0" class="border-t border-gray-200 dark:border-gray-700 pt-1.5 mt-1.5">
+                        <div v-for="facility in product.facilities" :key="facility.facility_id" class="flex justify-between text-gray-600 dark:text-gray-400 text-xs">
+                          <span>{{ facility.facility_name }}:</span>
+                          <span>{{ formatCurrency(facility.price) }}</span>
+                        </div>
+                      </div>
+                      
+                      <!-- Product Total -->
+                      <div class="border-t border-gray-200 dark:border-gray-700 pt-2 mt-1.5 font-medium flex justify-between text-gray-900 dark:text-white">
+                        <span>Product Total:</span>
+                        <span>{{ formatCurrency(calculateProductTotal(product)) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+               
+                  
+                  <!-- Product Action Buttons (Change Date, Cancel, Rebook, and Review) -->
+                  <div v-if="booking.status === 'Confirmed'" class="mt-3 flex gap-2 flex-wrap">
+                    <!-- Change Date Button - Show only for MeetingRoom and HotDesk product types that are updatable -->
+                    <button 
+                      v-if="product.is_updatable && !product.is_onetime_changed && !isProductCancelled(product) && isReschedulableProductType(product)"
+                      @click="changeDateModal(booking, product)"
+                      class="text-xs px-2 py-1 border border-green-300 dark:border-green-600 text-green-600 dark:text-green-400 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Change Date
+                    </button>
+                    
+                    <!-- Rebook Button -->
+                    <button 
+                      @click="rebookProduct(booking, product)"
+                      class="text-xs px-2 py-1 border border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Rebook
+                    </button>
+                    
+                    <!-- Cancel Button -->
+                    <button 
+                      v-if="!isProductCancelled(product)"
+                      @click="cancelProduct(booking, product)"
+                      class="text-xs px-2 py-1 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Cancel
+                    </button>
+                    
+                    <!-- Cancelled Status Message -->
+                    <div v-if="isProductCancelled(product)" class="text-xs text-red-600 dark:text-red-400 flex items-center">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Cancelled
+                    </div>
+                  </div>
+                  
+                  <!-- Product Actions for Completed/Past Bookings -->
+                  <div v-else-if="booking.status === 'Completed' && !isProductCancelled(product)" class="mt-3 flex gap-2 flex-wrap">
+                    <!-- Rate & Review Button -->
+                    <button 
+                      @click="rateAndReviewProduct(booking, product)"
+                      class="text-xs px-2 py-1 border border-yellow-300 dark:border-yellow-600 text-yellow-600 dark:text-yellow-400 rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                      Rate & Review
+                    </button>
+                    
+                    <!-- Rebook Button -->
+                    <button 
+                      @click="rebookProduct(booking, product)"
+                      class="text-xs px-2 py-1 border border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Rebook
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Booking Total Summary -->
+              <div class="bg-gray-100 dark:bg-gray-700/60 p-4 rounded-b-lg">
+                <div class="max-w-md ml-auto">
+                  <div class="flex justify-between text-sm font-medium text-gray-600 dark:text-gray-300">
+                    <span>Products Subtotal ({{ booking.apiData.products.length }} item{{ booking.apiData.products.length > 1 ? 's' : '' }}):</span>
+                    <span>{{ formatCurrency(calculateBookingProductsTotal(booking)) }}</span>
+                  </div>
+                  
+                  <div class="flex justify-between text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">
+                    <span>Facilities Total:</span>
+                    <span>{{ formatCurrency(calculateBookingFacilitiesTotal(booking)) }}</span>
+                  </div>
+                  
+                  <div class="flex justify-between text-base font-bold text-gray-900 dark:text-white border-t border-gray-300 dark:border-gray-600 mt-2 pt-2">
+                    <span>Order Total:</span>
+                    <span>{{ formatCurrency(booking.apiData.total_price) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Fallback for old data structure -->
+            <div v-else class="p-4 flex items-center gap-4">
+              <div class="flex-shrink-0">
+                <img 
+                  :src="booking.space.image" 
+                  :alt="booking.space.name"
+                  class="w-16 h-16 rounded-lg object-cover"
+                  @error="handleImageError"
+                >
+              </div>
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-900 dark:text-white">{{ booking.space.name }}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  <div class="flex items-center">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
                     {{ booking.space.location }}
                   </div>
-                  <div class="flex items-center text-gray-600 dark:text-gray-400 mb-1">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {{ formatDate(booking.date) }} 
-                  </div>
-                  <div class="flex items-center text-gray-600 dark:text-gray-400">
+                  <div class="flex items-center">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                     {{ formatSpaceType(booking.spaceType) }}
                   </div>
-                  <div class="mt-2 flex flex-col gap-1">
-                    <!-- <span class="text-sm text-gray-500 dark:text-gray-400">Booking #{{ booking.id }}</span> -->
-                    <span v-if="booking.dateChanged" class="inline-block text-xs bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded px-2 py-0.5 mt-1 font-medium">
-                      Date already changed
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Price and Actions -->
-              <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-4 lg:gap-2">
-                <div class="text-right">
-                  <div class="text-xl font-bold text-gray-900 dark:text-white">LKR {{ booking.totalAmount }}</div>
-                  <div class="text-sm text-gray-600 dark:text-gray-400">Total paid</div>
-                </div>
-                
-                <div class="flex flex-wrap gap-2">
-                  <button 
-                    @click="viewBookingDetails(booking)"
-                    class="btn-primary text-sm px-3 py-1"
-                  >
-                    View Details
-                  </button>
-                  
-                  <button
-                    @click="downloadReceipt(booking)"
-                    class="text-sm px-3 py-1 border border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-                  >
-                    Receipt
-                  </button>
-
-                  <button
-                    v-if="booking.status === 'Confirmed' && canChangeDate(booking)"
-                    @click="changeDateModal(booking)"
-                    class="text-sm px-3 py-1 border border-green-300 dark:border-green-600 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-                  >
-                    Change Date
-                  </button>
-
-                  <button
-                    v-if="booking.status === 'Confirmed'"
-                    @click="cancelBooking(booking)"
-                    class="text-sm px-3 py-1 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    v-if="booking.status === 'Confirmed'"
-                    @click="rebookSpace(booking)"
-                    class="text-sm px-3 py-1 border border-green-300 dark:border-green-600 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-                  >
-                    Rebook
-                  </button>
-
-                  <button
-                    v-if="booking.status === 'Completed' && !booking.hasReview"
-                    @click="rateAndReview(booking)"
-                    class="text-sm px-3 py-1 border border-yellow-300 dark:border-yellow-600 text-yellow-600 dark:text-yellow-400 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors"
-                  >
-                    Rate & Review
-                  </button>
                 </div>
               </div>
             </div>
+            
+            <!-- Booking Actions -->
+            <div class="p-4 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex flex-wrap justify-end">
+              <button
+                @click="downloadReceipt(booking)"
+                class="text-sm px-3 py-1 border border-primary/30 dark:border-primary/40 text-primary dark:text-primary/80 rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+              >
+                <svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Receipt
+              </button>
+
+              <button
+                v-if="booking.status === 'Completed' && !booking.hasReview"
+                @click="rateAndReview(booking)"
+                class="text-sm px-3 py-1 border border-yellow-300 dark:border-yellow-600 text-yellow-600 dark:text-yellow-400 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors"
+              >
+                <svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                Rate & Review
+              </button>
+            </div>
+          </div>
           </div>
         </div>
 
@@ -443,388 +704,10 @@
         </div>
       </div>
 
-      <!-- Calendar View -->
-      <div v-else-if="viewMode === 'calendar'">
-        <BookingCalendar
-          :bookings="filteredBookings"
-          @booking-selected="viewBookingDetails"
-        />
-      </div>
+    
+      
     </div>
-
-    <!-- Booking Details Modal -->
-    <div v-if="selectedBooking" @click="handleBackdropClick" :class="[
-      'fixed inset-0 z-50 flex transition-all duration-300',
-      isModalMaximized 
-        ? 'bg-black/80 backdrop-blur-sm items-start justify-start p-0' 
-        : 'bg-black/60 backdrop-blur-sm items-center justify-center p-4'
-    ]">
-      <div @click.stop :class="[
-        'bg-white dark:bg-gray-900 shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300',
-        isModalMaximized 
-          ? 'w-full h-full rounded-none' 
-          : 'w-full max-w-5xl max-h-[90vh] rounded-2xl'
-      ]">
-        <!-- Header -->
-        <div class="relative bg-gradient-to-r from-primary/10 via-primary/5 to-transparent dark:from-primary/20 dark:via-primary/10 dark:to-transparent p-8 pb-6">
-          <div class="flex items-start justify-between">
-            <div class="flex-1">
-              <div class="flex items-center gap-3 mb-2">
-                <div class="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Booking Details</h1>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Order #{{ detailedBookingData?.order_id }}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-4 mt-3">
-                <span :class="['inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold', getStatusClass(selectedBooking.status)]">
-                  <div :class="['w-2 h-2 rounded-full mr-2', getStatusDotClass(selectedBooking.status)]"></div>
-                  {{ selectedBooking.status }}
-                </span>
-                <span class="text-sm text-gray-600 dark:text-gray-400">
-                  Booked by {{ detailedBookingData?.first_name }} {{ detailedBookingData?.last_name }}
-                </span>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button @click="toggleModalMaximize" class="p-2 hover:bg-white/10 rounded-xl transition-colors" :title="isModalMaximized ? 'Minimize' : 'Maximize'">
-                <svg v-if="!isModalMaximized" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                </svg>
-                <svg v-else class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7m0 0v3m0-3V7" />
-                </svg>
-              </button>
-              <button @click="closeModal" class="p-2 hover:bg-white/10 rounded-xl transition-colors">
-                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Content -->
-        <div :class="[
-          'overflow-y-auto transition-all duration-300',
-          isModalMaximized 
-            ? 'max-h-[calc(100vh-200px)]' 
-            : 'max-h-[calc(90vh-200px)]'
-        ]">
-          <!-- Loading State -->
-          <div v-if="loadingDetails" class="flex items-center justify-center py-20">
-            <div class="text-center">
-              <div class="relative">
-                <div class="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mx-auto"></div>
-                <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-primary/40 animate-spin mx-auto" style="animation-duration: 0.75s;"></div>
-              </div>
-              <p class="text-gray-600 dark:text-gray-400 mt-4 font-medium">Loading booking details...</p>
-            </div>
-          </div>
-
-          <!-- Booking Content -->
-          <div v-else-if="detailedBookingData" class="p-8 space-y-8">
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-xl p-4 border border-primary/20 dark:border-primary/30">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white">LKR {{ detailedBookingData.total_price.toLocaleString() }}</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Amount</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-700/30 rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/30">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-black/10 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ formatDate(detailedBookingData.products[0]?.booking_date || selectedBooking.date) }}</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">Booking Date</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-800 dark:to-gray-700/50 rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/30">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-black/10 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ detailedBookingData.products.length }}</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">Products</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Products Section -->
-            <div class="space-y-6">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Booked Products</h2>
-                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                  {{ detailedBookingData.products.length }} item{{ detailedBookingData.products.length > 1 ? 's' : '' }}
-                </span>
-              </div>
-
-              <div class="grid gap-6">
-                <div v-for="(product, index) in detailedBookingData.products" :key="product.product_id"
-                     class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 overflow-hidden">
-                  <div class="p-6">
-                    <div class="flex flex-col lg:flex-row gap-6">
-                      <!-- Product Image -->
-                      <div class="flex-shrink-0">
-                        <div class="relative">
-                          <img
-                            :src="product.product_image ? (product.product_image.startsWith('http') ? product.product_image : `http://localhost:9011${product.product_image}`) : 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'"
-                            :alt="product.product_name"
-                            class="w-24 h-24 lg:w-32 lg:h-32 rounded-xl object-cover shadow-md group-hover:shadow-lg transition-shadow"
-                          >
-                          <div class="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                            <span class="text-white text-xs font-bold">{{ index + 1 }}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Product Details -->
-                      <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between mb-4">
-                          <div class="flex-1">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ product.product_name }}</h3>
-                            <div class="flex items-center text-gray-600 dark:text-gray-400 text-sm">
-                              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              </svg>
-                              {{ product.location_name }}
-                            </div>
-                          </div>
-                          <div class="text-right">
-                            <div class="text-2xl font-bold text-primary">LKR {{ product.price.toLocaleString() }}</div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">Base Price</div>
-                          </div>
-                        </div>
-
-                        <!-- Product Info Grid -->
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                              </svg>
-                              <span class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Date</span>
-                            </div>
-                            <p class="font-semibold text-gray-900 dark:text-white">{{ formatDate(product.booking_date) }}</p>
-                          </div>
-
-                          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                              <span class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Time</span>
-                            </div>
-                            <p class="font-semibold text-gray-900 dark:text-white">
-                              {{ formatTimeOnly(product.start_time) }} - {{ formatTimeOnly(product.end_time) }}
-                            </p>
-                          </div>
-
-                          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                              <span class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Duration</span>
-                            </div>
-                            <p class="font-semibold text-gray-900 dark:text-white">{{ calculateDurationHours(product.start_time, product.end_time) }}h</p>
-                          </div>
-
-                          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                              </svg>
-                              <span class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Capacity</span>
-                            </div>
-                            <p class="font-semibold text-gray-900 dark:text-white">{{ product.spaceDetails?.capacity || 'N/A' }} people</p>
-                          </div>
-                        </div>
-
-                      
-
-                        <!-- Features & Facilities -->
-                        <div class="space-y-3">                         
-
-                          <!-- Included Facilities -->
-                          <div v-if="product.spaceDetails?.default_facilities && product.spaceDetails.default_facilities.length > 0">
-                            <div class="flex items-center gap-2 mb-2">
-                              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                              <span class="text-sm font-medium text-gray-900 dark:text-white">Included Facilities</span>
-                            </div>
-                            <div class="flex flex-wrap gap-2">
-                              <span v-for="facility in product.spaceDetails.default_facilities" :key="facility.facility_id"
-                                    class="inline-flex items-center px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium border border-primary/20">
-                                {{ facility.facility_name }}
-                              </span>
-                            </div>
-                          </div>
-
-                          <!-- Additional Facilities -->
-                          <div v-if="product.facilities && product.facilities.length > 0">
-                            <div class="flex items-center gap-2 mb-2">
-                              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                              </svg>
-                              <span class="text-sm font-medium text-gray-900 dark:text-white">Additional Facilities</span>
-                            </div>
-                            <div class="space-y-2">
-                              <div v-for="facility in product.facilities" :key="facility.facility_id"
-                                   class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ facility.facility_name || `Facility ${facility.facility_id}` }}</span>
-                                <span class="text-sm font-bold text-primary">+ LKR {{ facility.price.toLocaleString() }}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Price Breakdown -->
-            <div class="bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-700/30 rounded-2xl p-6 border border-gray-200/60 dark:border-gray-700/60">
-              <div class="flex items-center gap-3 mb-6">
-                <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Price Breakdown</h3>
-              </div>
-
-              <div class="space-y-4">
-                <!-- Products -->
-                <div class="space-y-3">
-                  <div v-for="product in detailedBookingData.products" :key="product.product_id"
-                       class="flex items-center justify-between p-4 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <span class="text-xs font-bold text-primary">{{ detailedBookingData.products.indexOf(product) + 1 }}</span>
-                      </div>
-                      <div>
-                        <p class="font-medium text-gray-900 dark:text-white">{{ product.product_name }}</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                          {{ formatDate(product.booking_date) }} • {{ calculateDurationHours(product.start_time, product.end_time) }}h
-                        </p>
-                      </div>
-                    </div>
-                    <span class="font-bold text-gray-900 dark:text-white">LKR {{ product.price.toLocaleString() }}</span>
-                  </div>
-                </div>
-
-                <!-- Additional Facilities -->
-                <div v-if="detailedBookingData.products.some((p: any) => p.facilities && p.facilities.length > 0)" class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">Additional Facilities</h4>
-                  <div class="space-y-2">
-                    <div v-for="product in detailedBookingData.products" :key="`facilities-${product.product_id}`">
-                      <div v-if="product.facilities && product.facilities.length > 0" class="space-y-2">
-                        <div v-for="facility in product.facilities" :key="facility.facility_id"
-                             class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-                          <span class="text-sm text-gray-700 dark:text-gray-300 ml-4">• {{ facility.facility_name || `Facility ${facility.facility_id}` }}</span>
-                          <span class="text-sm font-medium text-primary">LKR {{ facility.price.toLocaleString() }}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Total -->
-                <div class="border-t-2 border-primary/30 pt-4">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-lg font-bold text-gray-900 dark:text-white">Total Amount</p>
-                    </div>
-                    <div class="text-right">
-                      <p class="text-3xl font-bold text-primary">LKR {{ detailedBookingData.total_price.toLocaleString() }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-3 justify-center pt-6 border-t border-gray-200 dark:border-gray-700">
-              <button
-                @click="downloadReceipt(selectedBooking)"
-                class="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Download Receipt
-              </button>
-
-              <button
-                v-if="selectedBooking.status === 'Confirmed' && detailedBookingData.is_updatable"
-                @click="changeDateModal(selectedBooking)"
-                class="inline-flex items-center px-6 py-3 bg-black hover:bg-black text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Change Date
-              </button>
-
-              <button
-                v-if="selectedBooking.status === 'Confirmed'"
-                @click="cancelBooking(selectedBooking)"
-                class="inline-flex items-center px-6 py-3 bg-white hover:bg-gray-50 text-black border border-black rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                Cancel Booking
-              </button>
-
-              <button
-                v-if="selectedBooking.status === 'Completed' && !selectedBooking.hasReview"
-                @click="rateAndReview(selectedBooking)"
-                class="inline-flex items-center px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
-                Rate & Review
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    
     <!-- Date Change Modal -->
     <div v-if="showDateChangeModal" @click="showDateChangeModal = false" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
@@ -841,7 +724,7 @@
           <p class="text-gray-600 dark:text-gray-400 mb-2">Current date: {{ formatDate(bookingToChange?.date || '') }}</p>
           
           <!-- For meeting rooms: Date picker + Time range picker -->
-          <template v-if="bookingToChange?.spaceType === 'meeting-room'">
+          <template v-if="isMeetingRoomProduct">
             <div class="relative z-70">
               <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Date</label>
@@ -853,9 +736,26 @@
                   @change="onDateChange"
                   class="w-full"
                 />
+                <p v-if="dateError" class="text-xs text-red-500 mt-1 font-medium">{{ dateError }}</p>
               </div>
               
-              <div v-if="newDateRange" class="mb-4">
+              <!-- Closed day warning for meeting rooms -->
+              <div v-if="newDateRange && isSelectedDateClosed" class="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
+                <div class="flex items-center text-amber-800 dark:text-amber-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <span class="text-sm font-medium">Sorry, we're closed on this day</span>
+                </div>
+                <p class="text-xs text-amber-700 dark:text-amber-500 mt-1 ml-7">
+                  Please select a different date when we're open.
+                  <button @click="showWorkingHoursModal = true" class="text-amber-900 dark:text-amber-300 underline hover:text-amber-950 dark:hover:text-amber-200 font-medium ml-1">
+                    See working days
+                  </button>
+                </p>
+              </div>
+              
+              <div v-else-if="newDateRange" class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Time Range</label>
                 <CustomTimeRangePicker
                   v-model="newTimeRange"
@@ -863,10 +763,17 @@
                   :disabled-start-times="disabledTimes.start"
                   :disabled-end-times="disabledTimes.end"
                   :loading="loadingAvailability"
+                  :operating-start-time="operatingHours.start"
+                  :operating-end-time="operatingHours.end"
                   @start-time-change="onStartTimeChange"
+                  @end-time-change="validateDuration"
                   class="w-full"
                 />
-                <p v-if="availabilityError" class="text-xs text-red-500 mt-1">{{ availabilityError }}</p>
+                <p v-if="timeError" class="text-xs text-red-500 mt-1 font-medium">{{ timeError }}</p>
+                <p v-if="durationError" class="text-xs text-red-500 mt-1 font-medium">{{ durationError }}</p>
+                <p v-if="currentBookingDuration > 0 && !durationError" class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  Your current booking duration: {{ currentBookingDuration / 60 }} hour(s). Please select the same duration.
+                </p>
               </div>
             </div>
           </template>
@@ -883,11 +790,30 @@
                 @change="onDateChange"
                 class="w-full"
               />
-              <div v-if="loadingAvailability" class="mt-2">
+              <p v-if="dateError" class="text-xs text-red-500 mt-1 font-medium">{{ dateError }}</p>
+              
+              <!-- Closed day warning for hot desks -->
+              <div v-if="newDateRange && isSelectedDateClosed" class="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
+                <div class="flex items-center text-amber-800 dark:text-amber-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <span class="text-sm font-medium">Sorry, we're closed on this day</span>
+                </div>
+                <p class="text-xs text-amber-700 dark:text-amber-500 mt-1 ml-7">
+                  Please select a different date when we're open.
+                  <button @click="showWorkingHoursModal = true" class="text-amber-900 dark:text-amber-300 underline hover:text-amber-950 dark:hover:text-amber-200 font-medium ml-1">
+                    See working days
+                  </button>
+                </p>
+              </div>
+              
+              <div v-else-if="loadingAvailability" class="mt-2">
                 <div class="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Checking availability...</p>
               </div>
-              <p v-if="availabilityError" class="text-xs text-red-500 mt-1">{{ availabilityError }}</p>
+              
+              <!-- General error message is now handled by specific error fields -->
             </div>
           </template>
           
@@ -900,7 +826,12 @@
           </button>
           <button 
             @click="confirmDateChange" 
-            :disabled="loadingAvailability || (!newDateRange || (bookingToChange?.spaceType === 'meeting-room' && (!newTimeRange.start || !newTimeRange.end)))"
+            :disabled="loadingAvailability || 
+                      isSelectedDateClosed || 
+                      !!durationError || 
+                      !newDateRange || 
+                      (isMeetingRoomProduct && (!newTimeRange.start || !newTimeRange.end)) ||
+                      !!dateError || !!timeError"
             class="btn-primary disabled:opacity-50"
           >
             Confirm Change
@@ -979,7 +910,7 @@
           <!-- Sample Card -->
           <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex items-center justify-between bg-gray-50 dark:bg-gray-700">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded text-white flex items-center justify-center text-xs font-bold">
+              <div class="w-10 h-6 bg-gradient-to-r from-primary to-primary/80 rounded text-white flex items-center justify-center text-xs font-bold">
                 VISA
               </div>
               <div>
@@ -1045,6 +976,7 @@
 
     <CancelBooking
       :show="showCancelModal"
+      :isSingleProduct="productIdToCancel !== null"
       @close="showCancelModal = false"
       @confirm="confirmCancelBooking"
     />
@@ -1089,11 +1021,11 @@
                   </div>
                   <div>
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedSubscription.product_name }}</h2>
-                    <p class="text-gray-600 dark:text-gray-400">Premium Workspace Subscription</p>
+                    <p class="text-gray-600 dark:text-gray-400">{{ selectedSubscription.location_name }}</p>
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="text-3xl font-bold text-primary mb-1">LKR {{ selectedSubscription.total_price.toLocaleString() }}</div>
+                  <div class="text-3xl font-bold text-primary mb-1">{{ formatCurrency(selectedSubscription.total_price) }}</div>
                   <p class="text-sm text-gray-600 dark:text-gray-400">Total Amount</p>
                 </div>
               </div>
@@ -1104,14 +1036,14 @@
               <!-- Package Type -->
               <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300">
                 <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                  <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
                   <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Package Type</p>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white capitalize">{{ selectedSubscription.package_type }}</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white capitalize">{{ selectedSubscription?.package_type }}</p>
                   </div>
                 </div>
               </div>
@@ -1143,7 +1075,7 @@
                   </div>
                   <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Duration</p>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ calculateDurationDays(selectedSubscription.subscription_start_date, selectedSubscription.subscription_end_date) }} days</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ calculateDurationDays(selectedSubscription?.subscription_start_date || '', selectedSubscription?.subscription_end_date || '') }} days</p>
                   </div>
                 </div>
               </div>
@@ -1167,7 +1099,7 @@
                     </div>
                     <div>
                       <p class="text-sm text-gray-600 dark:text-gray-400">Start Date</p>
-                      <p class="text-lg font-bold text-gray-900 dark:text-white">{{ formatDate(selectedSubscription.subscription_start_date) }}</p>
+                      <p class="text-lg font-bold text-gray-900 dark:text-white">{{ formatDate(selectedSubscription?.subscription_start_date || '') }}</p>
                     </div>
                   </div>
                 </div>
@@ -1181,53 +1113,96 @@
                     </div>
                     <div>
                       <p class="text-sm text-gray-600 dark:text-gray-400">End Date</p>
-                      <p class="text-lg font-bold text-gray-900 dark:text-white">{{ formatDate(selectedSubscription.subscription_end_date) }}</p>
+                      <p class="text-lg font-bold text-gray-900 dark:text-white">{{ formatDate(selectedSubscription?.subscription_end_date || '') }}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Features/Benefits -->
-            <div class="bg-gradient-to-r from-primary/5 to-blue-50 dark:from-primary/10 dark:to-blue-900/10 rounded-2xl p-6 border border-primary/10 dark:border-primary/20">
+            <!-- Price Breakdown -->
+            <div class="bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/5 rounded-2xl p-6 border border-primary/10 dark:border-primary/20">
               <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                Subscription Benefits
+                Price Breakdown
               </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="flex items-center gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
-                  <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
+              
+              <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                <!-- Base Price Calculation -->
+                <div class="space-y-4">
+                  <!-- Monthly Rate -->
+                  <div class="flex justify-between items-center">
+                    <div>
+                      <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Monthly Rate</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">Base price per month</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-base font-semibold text-gray-900 dark:text-white">{{ formatCurrency(getMonthlyRate(selectedSubscription)) }}</p>
+                    </div>
                   </div>
-                  <span class="text-gray-700 dark:text-gray-300">Flexible workspace access</span>
+                  
+                  <!-- Subscription Duration -->
+                  <div class="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-700">
+                    <div>
+                      <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Subscription Period</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ getSubscriptionPeriod(selectedSubscription) }}</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ getDurationInMonths(selectedSubscription) }} month(s)</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Total Amount -->
+                  <div class="flex justify-between items-center pt-2">
+                    <div>
+                      <p class="text-base font-bold text-gray-800 dark:text-gray-200">Total Amount</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">For the entire subscription period</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-xl font-bold text-primary">{{ formatCurrency(selectedSubscription.total_price) }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="flex items-center gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
-                  <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
+              </div>
+              
+              <!-- Subscription Benefits -->
+              <div class="mt-6">
+                <h4 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3">Subscription Benefits</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+                    <div class="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Dedicated workspace</span>
                   </div>
-                  <span class="text-gray-700 dark:text-gray-300">High-speed internet</span>
-                </div>
-                <div class="flex items-center gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
-                  <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
+                  <div class="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+                    <div class="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">High-speed internet</span>
                   </div>
-                  <span class="text-gray-700 dark:text-gray-300">Meeting room access</span>
-                </div>
-                <div class="flex items-center gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
-                  <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
+                  <div class="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+                    <div class="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Meeting room credits</span>
                   </div>
-                  <span class="text-gray-700 dark:text-gray-300">24/7 support</span>
+                  <div class="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+                    <div class="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">24/7 support</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1242,7 +1217,126 @@
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- Working Hours Modal -->
+    <div v-if="showWorkingHoursModal" @click="showWorkingHoursModal = false" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+      <div @click.stop class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50 transform transition-all duration-300">
+        <!-- Header -->
+        <div class="relative bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center shadow-md">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white">Working Hours</h2>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Our weekly schedule</p>
+              </div>
+            </div>
+            <button @click="showWorkingHoursModal = false" class="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-all duration-200">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-5">
+          <!-- Days Grid (Horizontal) -->
+          <div class="grid grid-cols-7 gap-2 mb-4">
+            <div 
+              v-for="schedule in operationSchedule" 
+              :key="schedule.day"
+              class="flex flex-col items-center p-3 rounded-xl border transition-all duration-200 hover:shadow-md"
+              :class="{
+                'bg-gradient-to-b from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-green-800/10 border-green-200 dark:border-green-700': schedule.is_enabled,
+                'bg-gradient-to-b from-gray-50 to-gray-100/50 dark:from-gray-700/30 dark:to-gray-600/20 border-gray-200 dark:border-gray-600': !schedule.is_enabled
+              }"
+            >
+              <!-- Day Name -->
+              <div class="text-center mb-2">
+                <span 
+                  class="text-sm font-bold block"
+                  :class="{
+                    'text-green-800 dark:text-green-300': schedule.is_enabled,
+                    'text-gray-600 dark:text-gray-400': !schedule.is_enabled
+                  }"
+                >
+                  {{ schedule.day.substring(0, 3) }}
+                </span>
+                <span 
+                  v-if="isToday(schedule.day)" 
+                  class="px-1.5 py-0.5 bg-primary/20 text-primary text-[10px] font-medium rounded-full mt-1 inline-block"
+                >
+                  Today
+                </span>
+              </div>
+
+              <!-- Status Icon -->
+              <div 
+                class="w-8 h-8 rounded-lg flex items-center justify-center mb-2"
+                :class="{
+                  'bg-green-500 dark:bg-green-600': schedule.is_enabled,
+                  'bg-gray-400 dark:bg-gray-500': !schedule.is_enabled
+                }"
+              >
+                <svg v-if="schedule.is_enabled" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <svg v-else class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+
+              <!-- Time or Closed -->
+              <div class="text-center">
+                <p 
+                  v-if="schedule.is_enabled && schedule.start_time" 
+                  class="text-[10px] text-green-700 dark:text-green-400 font-medium leading-tight"
+                >
+                  {{ formatTime12Hour(schedule.start_time) }}
+                </p>
+                <p 
+                  v-if="schedule.is_enabled && schedule.end_time" 
+                  class="text-[10px] text-green-700 dark:text-green-400 font-medium leading-tight"
+                >
+                  {{ formatTime12Hour(schedule.end_time) }}
+                </p>
+                <p 
+                  v-else-if="!schedule.is_enabled" 
+                  class="text-xs text-gray-500 dark:text-gray-500 font-medium"
+                >
+                  Closed
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Note -->
+          <div class="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg mb-4">
+            <div class="flex items-start gap-2">
+              <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-xs text-blue-800 dark:text-blue-300">
+                Please select a date when we're open to proceed with your booking change.
+              </p>
+            </div>
+          </div>
+
+          <!-- Close Button -->
+          <button 
+            @click="showWorkingHoursModal = false" 
+            class="w-full px-4 py-2.5 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 text-sm"
+          >
+            Got it, thanks!
+          </button>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -1265,6 +1359,7 @@ import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue'
 import DateRangePicker from '../components/DateRangePicker.vue'
 import SingleDatePicker from '../components/SingleDatePicker.vue'
 import { getTodayLocal, formatDateLocal } from '../utils/dateUtils'
+import { formatPrice, formatCurrency } from '../utils/formatUtils'
 
 // Define interfaces for type safety
 interface Space {
@@ -1273,6 +1368,29 @@ interface Space {
   location: string;
   rating: number;
   image: string;
+}
+
+interface Product {
+  product_id: number;
+  product_name: string;
+  price: number;
+  location_name: string;
+  booking_date: string;
+  start_time: string | null;
+  end_time: string | null;
+  product_image?: string;
+  package_type?: string | null;
+  subscription_start_date?: string | null;
+  subscription_end_date?: string | null;
+  is_cancelled?: boolean;
+  is_onetime_changed?: boolean;
+  is_updatable?: boolean;
+  product_type?: 'HotDesk' | 'DedicatedDesk' | 'MeetingRoom' | string;
+  facilities?: Array<{
+    facility_id: number;
+    facility_name: string | null;
+    price: number;
+  }>;
 }
 
 interface Booking {
@@ -1287,12 +1405,17 @@ interface Booking {
   extraFees: number;
   hasReview: boolean;
   dateChanged: boolean;
+  partialCancellation?: boolean; // Flag to indicate some products are cancelled but not all
   paymentId?: string;
   facilityIds?: number[];
   space: Space;
   start_time?: string;
   end_time?: string;
   productImages?: string[]; // Array of product images from API
+  // Subscription-related properties
+  package_type?: string;
+  subscription_start_date?: string;
+  subscription_end_date?: string;
   // Add full API data for detailed view
   apiData?: BookingData;
 }
@@ -1332,28 +1455,41 @@ const router = useRouter()
 
 // Component state
 const loading = ref(true)
-const activeTab = ref('total')
+const activeTab = ref('upcoming')
 const viewMode = ref<'list' | 'calendar'>('list')
 const searchQuery = ref('')
-const selectedBooking = ref<Booking | null>(null)
 const showDateChangeModal = ref(false)
 const showProfileModal = ref(false)
 const showCardsModal = ref(false)
 const bookingToChange = ref<Booking | null>(null)
+const productIdToChange = ref<number | null>(null)
+const isMeetingRoomProduct = ref(false)
 const newDate = ref('')
 const newDateRange = ref<string | undefined>(undefined)
 const newTimeRange = ref<{ start: string; end: string }>({ start: '', end: '' })
 const bookedTimeSlots = ref<Array<{ startTime: string; endTime: string }>>([])
 const disabledTimes = ref<{ start: string[]; end: string[] }>({ start: [], end: [] })
+const operatingHours = ref<{ start: string; end: string }>({ start: '09:00', end: '18:00' })
 const loadingAvailability = ref(false)
-const availabilityError = ref('')
+const dateError = ref('')
+const timeError = ref('')
+const availabilityError = ref('') // keep for backward compatibility
+const operationSchedule = ref<Array<{
+  day: string;
+  is_enabled: boolean;
+  start_time?: string;
+  end_time?: string;
+}>>([])
+const isSelectedDateClosed = ref(false)
+const showWorkingHoursModal = ref(false)
+const currentBookingDuration = ref<number>(0) // Duration in minutes
+const durationError = ref('')
 const showSuccessOverlay = ref(false)
 const successOverlayTitle = ref('')
 const successOverlayMessage = ref('')
 const showCancelModal = ref(false)
 const bookingToCancel = ref<Booking | null>(null)
-const detailedBookingData = ref<any>(null)
-const loadingDetails = ref(false)
+const productIdToCancel = ref<number | null>(null)
 const isModalMaximized = ref(false)
 
 // Subscription state
@@ -1377,17 +1513,28 @@ const loadingSubscriptions = ref(false)
 const stats = computed(() => ({
   totalBookings: allBookings.value.length,
   upcomingBookings: allBookings.value.filter(b => b.status === 'Confirmed' && new Date(b.date) >= new Date()).length,
+  cancelledBookings: allBookings.value.filter(b => b.status === 'Cancelled' || ((b as any).products && (b as any).products.every((p: any) => p.is_cancelled === true))).length,
+  pastBookings: allBookings.value.filter(b => b.status === 'Confirmed' && new Date(b.date) < new Date()).length,
   favoriteSpaces: 5,
   totalSpent: allBookings.value.reduce((sum, b) => sum + b.totalAmount, 0),
-  activeSubscriptions: subscriptions.value.length
+  
+  // Subscription stats
+  totalSubscriptions: subscriptions.value.length,
+  activeSubscriptions: subscriptions.value.filter(sub => sub.status === 'CONFIRMED').length,
+  cancelledSubscriptions: subscriptions.value.filter(sub => sub.status === 'CANCELLED').length
 }))
 
 // Tabs
 const tabs = ref([
-  { id: 'total', name: 'Total', count: 12 },
   { id: 'upcoming', name: 'Upcoming', count: 3 },
   { id: 'past', name: 'Past', count: 8 },
   { id: 'cancelled', name: 'Cancelled', count: 1 }
+])
+
+// Subscription Tabs
+const subscriptionTabs = ref([
+  { id: 'active', name: 'Active', count: 0 },
+  { id: 'cancelled', name: 'Cancelled', count: 0 }
 ])
 
 // Bookings data
@@ -1396,15 +1543,27 @@ const errorMessage = ref('')
 
 // Function to transform API booking data to UI format
 const transformBookingData = (booking: BookingData, status: 'Confirmed' | 'Completed' | 'Cancelled'): Booking => {
+  // Check if all products in this booking are cancelled
+  const areAllCancelled = booking.products && 
+    booking.products.length > 0 && 
+    booking.products.every(p => (p as any).is_cancelled === true);
+  
+  // If all products are cancelled, override the status to be 'Cancelled'
+  const finalStatus = areAllCancelled ? 'Cancelled' : status;
+  
   // Get the primary product from the products array
   const primaryProduct = booking.products && booking.products.length > 0 ? booking.products[0] : null;
 
   // Collect all product images from the API response
+  const apiHost = getApiHost();
   const productImages = booking.products 
     ? booking.products
         .map(product => product.product_image)
         .filter((image): image is string => image !== undefined && image.trim() !== '')
-        .map(image => image.startsWith('http') ? image : `http://localhost:9011${image}`)
+        .map(image => {
+          if (image.startsWith('http')) return image;
+          return `${apiHost}${image}`;
+        })
     : [];
 
   // Use first product image as main space image, fallback to default
@@ -1451,11 +1610,20 @@ const transformBookingData = (booking: BookingData, status: 'Confirmed' | 'Compl
   }
 
   // Format dates and calculate duration
-  const duration = calculateDuration(primaryProduct.start_time, primaryProduct.end_time);
+  const duration = calculateDuration(primaryProduct.start_time || undefined, primaryProduct.end_time || undefined);
+
+  // We already checked if products are cancelled at the beginning
+  // and stored the result in finalStatus
+  
+  // Check if some but not all products are cancelled
+  const hasAnyCancelled = booking.products && 
+    booking.products.some(p => (p as any).is_cancelled === true) && 
+    !areAllCancelled;
 
   return {
     id: `BK${booking.booking_id}`,
-    status: status,
+    status: finalStatus,
+    partialCancellation: hasAnyCancelled,
     date: primaryProduct.booking_date,
     duration: duration,
     spaceType: spaceType,
@@ -1467,8 +1635,8 @@ const transformBookingData = (booking: BookingData, status: 'Confirmed' | 'Compl
     dateChanged: !!booking.is_onetime_changed,
     paymentId: booking.order_id,
     facilityIds: primaryProduct.facilities ? primaryProduct.facilities.map(f => f.facility_id) : [],
-    start_time: primaryProduct.start_time,
-    end_time: primaryProduct.end_time,
+    start_time: primaryProduct.start_time || undefined,
+    end_time: primaryProduct.end_time || undefined,
     productImages: productImages,
     space: {
       id: primaryProduct.product_id,
@@ -1589,7 +1757,7 @@ const calculateDuration = (startTime?: string, endTime?: string): 'hourly' | 'da
   return 'daily'; // For now, default to daily for longer bookings
 }
 
-// Update tab counts based on actual bookings
+// Update tab counts based on actual bookings and subscriptions
 const updateTabCounts = () => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -1611,13 +1779,25 @@ const updateTabCounts = () => {
     }
   })
   
-  // Update tabs with accurate counts
-  const totalCount = upcomingCount + pastCount + cancelledCount
+  // Update booking tabs with accurate counts
   tabs.value = [
-    { id: 'total', name: 'Total', count: totalCount },
     { id: 'upcoming', name: 'Upcoming', count: upcomingCount },
     { id: 'past', name: 'Past', count: pastCount },
     { id: 'cancelled', name: 'Cancelled', count: cancelledCount }
+  ]
+  
+  // Update subscription tabs with accurate counts
+  const activeSubscriptionsCount = subscriptions.value.filter(sub => 
+    sub.status?.toLowerCase() === 'confirmed' || sub.status?.toLowerCase() === 'active'
+  ).length;
+  
+  const cancelledSubscriptionsCount = subscriptions.value.filter(sub => 
+    sub.status?.toLowerCase() === 'cancelled'
+  ).length;
+  
+  subscriptionTabs.value = [
+    { id: 'active', name: 'Active', count: activeSubscriptionsCount },
+    { id: 'cancelled', name: 'Cancelled', count: cancelledSubscriptionsCount }
   ]
   
   // Stats are now computed automatically from reactive data
@@ -1672,9 +1852,8 @@ const filteredBookings = computed(() => {
       case 'past':
         return booking.status === 'Completed' || (booking.status === 'Confirmed' && bookingDate < today)
       case 'cancelled':
-        return booking.status === 'Cancelled'
-      case 'total':
-        return true // Show all bookings for total tab
+        return booking.status === 'Cancelled' || 
+               ((booking as any).products && (booking as any).products.every((p: any) => p.is_cancelled === true))
       default:
         return true
     }
@@ -1690,6 +1869,42 @@ const filteredBookings = computed(() => {
   }
   
   return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+})
+
+// Filtered subscriptions based on active tab
+const filteredSubscriptions = computed(() => {
+  let filtered = subscriptions.value;
+  
+  // Filter based on active tab
+  switch (activeTab.value) {
+    case 'active':
+      filtered = filtered.filter(sub => 
+        sub.status?.toLowerCase() === 'confirmed' || 
+        sub.status?.toLowerCase() === 'active'
+      );
+      break;
+    case 'cancelled':
+      filtered = filtered.filter(sub => 
+        sub.status?.toLowerCase() === 'cancelled'
+      );
+      break;
+    // Default case: show all subscriptions
+  }
+  
+  // Apply search query if any
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(sub => 
+      sub.product_name?.toLowerCase().includes(query) ||
+      sub.location_name?.toLowerCase().includes(query) ||
+      sub.package_type?.toLowerCase().includes(query)
+    );
+  }
+  
+  // Sort by start date (most recent first)
+  return filtered.sort((a, b) => 
+    new Date(b.subscription_start_date).getTime() - new Date(a.subscription_start_date).getTime()
+  );
 })
 
 const upcomingBooking = computed(() => {
@@ -1727,10 +1942,136 @@ const formatTime = (dateString: string) => {
 
 const formatTimeOnly = (timeString: string) => {
   if (!timeString) return 'N/A';
-  // Handle both "HH:MM:SS" and "HH:MM" formats
-  const time = timeString.split(':').slice(0, 2).join(':');
-  return time;
+  
+  try {
+    // Create a date object using the time string (adding a dummy date)
+    const date = new Date(`2000-01-01T${timeString}`);
+    
+    // Format the time in 12-hour format
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  } catch (error) {
+    console.error('Error formatting time:', error);
+    // Fallback to simple formatting
+    const time = timeString.split(':').slice(0, 2).join(':');
+    return time;
+  }
 }
+
+// Helper function to check if any product in the booking is a dedicated desk type
+const hasDedicatedDeskProduct = (products: any[]): boolean => {
+  if (!products || products.length === 0) return false;
+  
+  // Check if any product is a dedicated desk (typically full day booking or marked as dedicated)
+  return products.some(product => {
+    // Full day booking (00:00:00 start time) or dedicated desk type
+    return product.start_time === '00:00:00' || 
+           (product.space_type === 1 && product.is_full_day === true) || 
+           product.is_dedicated_desk === true;
+  });
+};
+
+// Helper function to check if all products in a booking are cancelled
+const areAllProductsCancelled = (products: any[]): boolean => {
+  if (!products || products.length === 0) return false;
+  return products.every(product => (product as any).is_cancelled === true);
+};
+
+// Helper function to check if any products in a booking are cancelled
+const hasAnyCancelledProducts = (products: any[]): boolean => {
+  if (!products || products.length === 0) return false;
+  return products.some(product => (product as any).is_cancelled === true);
+};
+
+// Helper function to check if a product is cancelled
+const isProductCancelled = (product: any): boolean => {
+  return product && (product.is_cancelled === true || product.status === 'cancelled');
+};
+
+// Format product type for display
+const formatProductType = (type: string): string => {
+  if (!type) return '';
+  
+  const typeMap: Record<string, string> = {
+    'HotDesk': 'Hot Desk',
+    'DedicatedDesk': 'Dedicated Desk',
+    'MeetingRoom': 'Meeting Room'
+  };
+  
+  return typeMap[type] || type.replace(/([A-Z])/g, ' $1').trim();
+};
+
+// Helper to identify if a product is MeetingRoom or HotDesk based on API response structure
+const isReschedulableProductType = (product: any): boolean => {
+  // MeetingRoom products have both start_time and end_time on the same day
+  if (product.start_time && product.end_time) {
+    return true; // This is a MeetingRoom
+  }
+  
+  // HotDesk products have booking_date but no subscription dates
+  if (product.booking_date && !product.subscription_start_date) {
+    return true; // This is a HotDesk
+  }
+  
+  // If it has subscription dates, it's a DedicatedDesk or another subscription product
+  if (product.subscription_start_date) {
+    return false;
+  }
+  
+  // For explicit check if product_type field is available
+  if (product.product_type) {
+    return product.product_type === 'MeetingRoom' || product.product_type === 'HotDesk';
+  }
+  
+  return false;
+};
+
+// Calculate total price for a product including all facilities
+const calculateProductTotal = (product: any): number => {
+  if (!product) return 0;
+  
+  // Start with the base price
+  let total = parseFloat(product.price) || 0;
+  
+  // Add all facility prices
+  if (product.facilities && product.facilities.length > 0) {
+    product.facilities.forEach((facility: any) => {
+      if (facility.price) {
+        total += parseFloat(facility.price) || 0;
+      }
+    });
+  }
+  
+  return total;
+};
+
+// Calculate subtotal of just product base prices in a booking (excluding facilities)
+const calculateBookingProductsTotal = (booking: any): number => {
+  if (!booking?.apiData?.products) return 0;
+  
+  return booking.apiData.products.reduce((sum: number, product: any) => {
+    return sum + (parseFloat(product.price) || 0);
+  }, 0);
+};
+
+// Calculate total of just facilities in a booking
+const calculateBookingFacilitiesTotal = (booking: any): number => {
+  if (!booking?.apiData?.products) return 0;
+  
+  return booking.apiData.products.reduce((sum: number, product: any) => {
+    if (!product.facilities || product.facilities.length === 0) return sum;
+    
+    const facilitiesSum = product.facilities.reduce((fSum: number, facility: any) => {
+      return fSum + (parseFloat(facility.price) || 0);
+    }, 0);
+    
+    return sum + facilitiesSum;
+  }, 0);
+};
+
 
 const calculateDurationHours = (startTime: string, endTime: string): number => {
   if (!startTime || !endTime) return 0;
@@ -1787,7 +2128,7 @@ const getStatusClass = (status: string) => {
     case 'Confirmed':
       return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
     case 'Completed':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
+      return 'bg-primary/10 text-primary/90 dark:bg-primary/20 dark:text-primary/80'
     case 'Cancelled':
       return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'
     default:
@@ -1800,7 +2141,7 @@ const getStatusDotClass = (status: string) => {
     case 'Confirmed':
       return 'bg-green-500'
     case 'Completed':
-      return 'bg-blue-500'
+      return 'bg-primary'
     case 'Cancelled':
       return 'bg-red-500'
     default:
@@ -1813,7 +2154,7 @@ const getStatusColor = (status: string) => {
     case 'Confirmed':
       return 'text-green-600'
     case 'Completed':
-      return 'text-blue-600'
+      return 'text-primary'
     case 'Cancelled':
       return 'text-red-600'
     default:
@@ -1847,112 +2188,132 @@ const getEmptyStateDescription = () => {
   }
 }
 
-const viewBookingDetails = async (booking: Booking) => {
-  selectedBooking.value = booking
-  isModalMaximized.value = false // Reset maximize state when opening modal
-  loadingDetails.value = true
-  detailedBookingData.value = null
 
-  try {
-    // If we have the full API data, use it directly
-    if (booking.apiData) {
-      detailedBookingData.value = booking.apiData
-
-      // Fetch additional details for each product if needed
-      if (booking.apiData.products && booking.apiData.products.length > 0) {
-        const enhancedProducts = await Promise.all(
-          booking.apiData.products.map(async (product) => {
-            try {
-              // Fetch additional space details
-              const spaceResponse = await NetworkManager.getSpaces({ id: product.product_id })
-              if (spaceResponse.success && spaceResponse.space) {
-                return {
-                  ...product,
-                  spaceDetails: spaceResponse.space,
-                  images: spaceResponse.space.images || [],
-                  description: spaceResponse.space.description || '',
-                  capacity: spaceResponse.space.capacity || 1,
-                  features: spaceResponse.space.features || [],
-                  default_facilities: spaceResponse.space.default_facilities || [],
-                  additional_facilities: spaceResponse.space.additional_facilities || []
-                }
-              }
-              return product
-            } catch (error) {
-              console.warn(`Failed to fetch details for product ${product.product_id}:`, error)
-              return product
-            }
-          })
-        )
-
-        detailedBookingData.value = {
-          ...booking.apiData,
-          products: enhancedProducts
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching booking details:', error)
-  } finally {
-    loadingDetails.value = false
-  }
-}
 
 const viewSpaceDetails = (spaceId: number) => {
   router.push(`/space/${spaceId}`)
 }
 
-const toggleModalMaximize = () => {
-  isModalMaximized.value = !isModalMaximized.value
-}
 
-const closeModal = () => {
-  selectedBooking.value = null
-  isModalMaximized.value = false
-}
-
-const handleBackdropClick = () => {
-  if (!isModalMaximized.value) {
-    closeModal()
-  }
-}
 
 const cancelBooking = (booking: Booking) => {
   bookingToCancel.value = booking
   showCancelModal.value = true
 }
 
+const cancelSubscription = (subscription: any) => {
+  // Create a booking-like object that works with existing cancel flow
+  bookingToCancel.value = {
+    id: `BK${subscription.booking_id}`,
+    apiData: {
+      products: [{
+        product_id: subscription.product_id,
+        product_name: subscription.product_name
+      }]
+    }
+  } as unknown as Booking
+  
+  // Set the product ID to cancel
+  productIdToCancel.value = subscription.product_id
+  
+  // Show the cancel modal
+  showCancelModal.value = true
+}
+
+// Function to prepare for cancelling an individual product
+const cancelProduct = (booking: Booking, product: any) => {
+  // Store booking and product info for the confirmation
+  bookingToCancel.value = booking
+  productIdToCancel.value = product.product_id
+  
+  // Show cancel confirmation modal
+  showCancelModal.value = true
+}
+
 const confirmCancelBooking = async () => {
   if (!bookingToCancel.value) return
-
+  
   try {
     const bookingId = parseInt(bookingToCancel.value.id.replace('BK', ''))
-    const response = await BookingManager.cancelBooking(bookingId)
     
-    if (response.success) {
-      // Update the booking status in the UI
-      bookingToCancel.value.status = 'Cancelled'
-      showCancelModal.value = false
+    // Check if we're cancelling a single product or the whole booking
+    if (productIdToCancel.value !== null) {
+      // Cancel a single product
+      const response = await BookingManager.cancelBookingProduct(bookingId, productIdToCancel.value)
       
-      // Show success message
-      successOverlayTitle.value = 'Booking Cancelled'
-      successOverlayMessage.value = 'Your booking has been successfully cancelled.'
-      showSuccessOverlay.value = true
-      
-      // Update the tabs count after cancellation
-      updateTabCounts()
-      
-      // Reset
-      bookingToCancel.value = null
+      if (response.success) {
+        // Close the modal first
+        showCancelModal.value = false
+        
+        // Find and update the cancelled product in the UI
+        let productName = 'Selected product'
+        
+        // Update in apiData if available
+        if (bookingToCancel.value.apiData && bookingToCancel.value.apiData.products) {
+          const product = bookingToCancel.value.apiData.products.find((p: any) => p.product_id === productIdToCancel.value)
+          if (product) {
+            (product as any).is_cancelled = true
+            productName = product.product_name
+          }
+        }
+        
+
+        
+        // Show success message
+        successOverlayTitle.value = 'Product Cancelled'
+        successOverlayMessage.value = `${productName} has been successfully cancelled.`
+        showSuccessOverlay.value = true
+        
+        // Check if all products are cancelled, then mark the entire booking as cancelled
+        if (bookingToCancel.value.apiData && bookingToCancel.value.apiData.products) {
+          const allCancelled = bookingToCancel.value.apiData.products.every((p: any) => isProductCancelled(p))
+          if (allCancelled) {
+            bookingToCancel.value.status = 'Cancelled'
+          }
+        }
+      } else {
+        alert(`Error: ${response.message || 'Failed to cancel product'}`)
+      }
     } else {
-      alert(`Error: ${response.message}`)
+      // Cancel the entire booking
+      const response = await BookingManager.cancelBooking(bookingId)
+      
+      if (response.success) {
+        // Update the booking status in the UI
+        bookingToCancel.value.status = 'Cancelled'
+        showCancelModal.value = false
+        
+        // Show success message
+        successOverlayTitle.value = 'Booking Cancelled'
+        successOverlayMessage.value = 'Your booking has been successfully cancelled.'
+        showSuccessOverlay.value = true
+        
+        // If we have apiData with products, update all products as cancelled
+        if (bookingToCancel.value.apiData && bookingToCancel.value.apiData.products) {
+          bookingToCancel.value.apiData.products.forEach((p: any) => {
+            p.is_cancelled = true
+          })
+        }
+        
+
+      } else {
+        alert(`Error: ${response.message}`)
+      }
     }
+    
+    // Update the tabs count after cancellation in either case
+    updateTabCounts()
+    
+    // Reset
+    bookingToCancel.value = null
+    productIdToCancel.value = null
   } catch (error) {
-    console.error('Error cancelling booking:', error)
-    alert('Failed to cancel booking. Please try again.')
+    console.error('Error during cancellation:', error)
+    alert('An unexpected error occurred. Please try again.')
   }
 }
 
+// Rebook the entire booking
 const rebookSpace = (booking: Booking) => {
   router.push({
     name: 'SpaceDetails',
@@ -1960,9 +2321,48 @@ const rebookSpace = (booking: Booking) => {
   })
 }
 
+// Rebook a specific product
+const rebookProduct = (booking: Booking, product: any) => {
+  // If the product has a space_id, use that; otherwise use the booking's space id
+  const spaceId = (product as any).space_id || (product as any).product_space_id || booking.space.id;
+  
+  // Navigate to the space details page with the product information
+  router.push({
+    name: 'SpaceDetails',
+    params: { id: spaceId },
+    query: {
+      productId: product.product_id,
+      productName: product.product_name,
+      rebooking: 'true'
+    }
+  })
+}
+
 const rateAndReview = (booking: Booking) => {
-  alert('Rating and review functionality will be implemented in the next phase.')
-  booking.hasReview = true
+  // Navigate to space details page with review dialog open
+  router.push({
+    name: 'SpaceDetails',
+    params: { id: booking.space.id },
+    query: {
+      openReview: 'true',
+      bookingId: booking.id
+    }
+  })
+}
+
+// Rate and review a specific product
+const rateAndReviewProduct = (booking: Booking, product: any) => {
+  // Navigate to space details page with review dialog open for specific product
+  router.push({
+    name: 'SpaceDetails',
+    params: { id: product.product_id },
+    query: {
+      openReview: 'true',
+      bookingId: booking.id,
+      productId: product.product_id.toString(),
+      productName: product.product_name
+    }
+  })
 }
 
 const getDirections = (booking: Booking) => {
@@ -1973,9 +2373,15 @@ const getDirections = (booking: Booking) => {
 
 const downloadReceipt = async (booking: Booking) => {
   try {
+    console.log('Generating receipt for booking:', booking.id, 'with payment ID:', booking.paymentId)
+    
     // Always use API to get complete invoice with order_id
     if (booking.paymentId) {
-      await generatePDFReceipt(booking.paymentId)
+      // Convert to string if it's a number
+      const orderId = String(booking.paymentId)
+      console.log('Calling generatePDFReceipt with order ID:', orderId)
+      
+      await generatePDFReceipt(orderId)
       return
     }
 
@@ -1988,6 +2394,29 @@ const downloadReceipt = async (booking: Booking) => {
   }
 }
 
+const downloadSubscriptionReceipt = async (subscription: any) => {
+  try {
+    console.log('Generating receipt for subscription:', subscription)
+    
+    // Generate receipt based on order_id from subscription
+    if (subscription.order_id) {
+      // Use the actual order_id provided in the subscription data
+      const orderIdStr = subscription.order_id
+      console.log('Calling generatePDFReceipt with order ID:', orderIdStr)
+      
+      await generatePDFReceipt(orderIdStr)
+      return
+    }
+
+    // Fallback: if order_id is not available, show error
+    console.error('No order_id available for subscription:', subscription)
+    alert('Could not generate PDF receipt. Order ID is missing.')
+  } catch (error) {
+    console.error('Failed to generate subscription PDF receipt:', error)
+    alert(`Could not generate PDF receipt: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}
+
 const canChangeDate = (booking: Booking) => {
   const bookingDate = new Date(booking.date)
   const now = new Date()
@@ -1996,48 +2425,149 @@ const canChangeDate = (booking: Booking) => {
   return hoursDiff > 48 && !booking.dateChanged
 }
 
-const changeDateModal = (booking: Booking) => {
+const changeDateModal = async (booking: Booking, product?: any) => {
   bookingToChange.value = booking
   console.log('Opening change date modal for booking:', booking)
-  console.log('Booking date:', booking.date)
+  console.log('Product to change:', product)
+  console.log('Product details:', {
+    product_id: product?.product_id,
+    product_name: product?.product_name,
+    booking_date: product?.booking_date,
+    start_time: product?.start_time,
+    end_time: product?.end_time
+  })
   
-  // Ensure consistent date handling - treat as local date
-  const bookingDate = new Date(booking.date + 'T12:00:00') // Use noon to avoid timezone issues
+  // Store the product ID if a specific product is being changed
+  if (product) {
+    // Store the product ID to use when saving changes
+    productIdToChange.value = product.product_id
+    console.log(`Setting product ID to change: ${product.product_id}`)
+  } else {
+    // If no specific product, we're changing the date for the entire booking
+    productIdToChange.value = null
+  }
+  
+  // Get the booking date from the product (more accurate than booking.date)
+  const productDate = product?.booking_date || booking.date
+  const bookingDate = new Date(productDate + 'T12:00:00') // Use noon to avoid timezone issues
   const normalizedDate = formatDateLocal(bookingDate)
   
   console.log('Normalized date:', normalizedDate)
   
-  // Initialize based on space type
-  if (booking.spaceType === 'meeting-room') {
-    // For meeting rooms, use time range picker
-    newTimeRange.value = { start: '', end: '' }
-    newDateRange.value = normalizedDate
+  // Determine if this is a meeting room by explicitly checking product_type
+  // Only show time pickers for MeetingRoom type, not for HotDesk or any other type
+  const isMeetingRoom = product?.product_type === 'MeetingRoom'
+  
+  console.log('Is meeting room:', isMeetingRoom)
+  
+  // Set the isMeetingRoomProduct ref for use in the template
+  isMeetingRoomProduct.value = isMeetingRoom
+  
+  // Calculate current booking duration for meeting rooms
+  if (isMeetingRoom && product?.start_time && product?.end_time) {
+    const startMinutes = timeToMinutes(product.start_time)
+    const endMinutes = timeToMinutes(product.end_time)
+    currentBookingDuration.value = endMinutes - startMinutes
+    console.log(`Current booking duration: ${currentBookingDuration.value} minutes (${currentBookingDuration.value / 60} hours)`)
   } else {
-    // For hot desks, use date range picker
+    currentBookingDuration.value = 0
+  }
+  
+  // Initialize based on product type
+  if (isMeetingRoom) {
+    // For meeting rooms (only product_type === 'MeetingRoom'), use time range picker
+    newTimeRange.value = { start: '', end: '' }
+    newDateRange.value = normalizedDate
+    console.log('Initializing date change modal for MeetingRoom with time pickers')
+  } else {
+    // For hot desks and dedicated desks, only use date picker
+    // (we'll still track the operational hours for these products in the background)
     newDateRange.value = normalizedDate
     newTimeRange.value = { start: '', end: '' }
+    
+    // Store the product type for later reference
+    const productType = product?.product_type || 'unknown';
+    console.log(`Initializing date change modal without time pickers for product type: ${productType}`);
+    
+    // For HotDesks, we'll use the operational schedule times when submitting
+    if (productType === 'HotDesk') {
+      console.log('This is a HotDesk product - operational schedule times will be used when submitting');
+    }
   }
   
   // Reset availability data
   bookedTimeSlots.value = []
   disabledTimes.value = { start: [], end: [] }
   loadingAvailability.value = false
+  dateError.value = ''
+  timeError.value = ''
   availabilityError.value = ''
+  durationError.value = ''
+  isSelectedDateClosed.value = false
+  
+  // Fetch operation schedule for the product
+  if (product?.product_id) {
+    await fetchOperationSchedule(product.product_id)
+    
+    // Automatically check operating hours for the current date
+    const operationalHours = getOperationalHoursForDate(normalizedDate)
+    isSelectedDateClosed.value = !operationalHours.is_enabled
+    
+    if (operationalHours.start_time && operationalHours.end_time) {
+      console.log(`Setting initial operating hours for ${normalizedDate} to ${operationalHours.start_time}-${operationalHours.end_time}`)
+      operatingHours.value = {
+        start: operationalHours.start_time.substring(0, 5), // Format to HH:MM
+        end: operationalHours.end_time.substring(0, 5)      // Format to HH:MM
+      }
+    } else {
+      console.log('No specific operating hours found for initial date, using defaults')
+      operatingHours.value = { start: '09:00', end: '18:00' }
+    }
+    
+    // Fetch booked time slots for the current date for all product types
+    console.log('Automatically fetching booked time slots for the current date:', normalizedDate)
+    await fetchBookedTimeSlots(product.product_id, normalizedDate)
+  }
   
   showDateChangeModal.value = true
 }
 
 const fetchBookedTimeSlots = async (spaceId: number, date: string) => {
   loadingAvailability.value = true
-  availabilityError.value = ''
+  timeError.value = ''
+  dateError.value = ''
   console.log('Fetching booked time slots for space:', spaceId, 'date:', date)
   try {
     bookedTimeSlots.value = await NetworkManager.getBookedTimeSlots(spaceId, date)
     console.log('Received booked time slots:', bookedTimeSlots.value)
-    calculateDisabledTimes()
+    
+    if (isMeetingRoomProduct.value) {
+      // For meeting rooms: Calculate disabled times
+      calculateDisabledTimes()
+      
+      // Check if all slots are booked for the day
+      if (bookedTimeSlots.value.length > 0) {
+        const startSlots = generateTimeSlots().filter(slot => !isTimeSlotBooked(slot, 'start'))
+        if (startSlots.length === 0) {
+          dateError.value = 'No available time slots on this date. Please select another date.'
+        }
+      }
+    } else {
+      // For hot desks: Check if date is fully booked
+      // If there are ANY bookings, the hot desk is considered unavailable for that date
+      if (bookedTimeSlots.value.length > 0) {
+        dateError.value = 'This date is already booked. Please select another date.'
+      } else {
+        dateError.value = ''
+      }
+    }
   } catch (error) {
     console.error('Error fetching booked time slots:', error)
-    availabilityError.value = 'Failed to check availability. Please try again.'
+    if (isMeetingRoomProduct.value) {
+      timeError.value = 'Failed to check availability. Please try again.'
+    } else {
+      dateError.value = 'Failed to check availability. Please try again.'
+    }
     bookedTimeSlots.value = []
   } finally {
     loadingAvailability.value = false
@@ -2074,15 +2604,36 @@ const calculateDisabledTimes = () => {
 }
 
 const generateTimeSlots = (): string[] => {
-  // For simplicity, generate standard business hours (9 AM to 6 PM) in 30-minute intervals
-  const slots: string[] = []
-  for (let hour = 9; hour <= 18; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      if (hour === 18 && minute > 0) break // Stop at 6:00 PM
-      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
-      slots.push(timeString)
-    }
+  // Get operational hours for the selected date
+  const operationalHours = newDateRange.value ? getOperationalHoursForDate(newDateRange.value) : { is_enabled: false }
+  
+  // If no date selected or day is not enabled, return empty array
+  if (!newDateRange.value || !operationalHours.is_enabled || !operationalHours.start_time || !operationalHours.end_time) {
+    return []
   }
+  
+  const slots: string[] = []
+  
+  // Convert operational times to 24-hour format
+  const startTime = convertTo24HourFormat(operationalHours.start_time)
+  const endTime = convertTo24HourFormat(operationalHours.end_time)
+  
+  // Parse start and end hours
+  const [startHour, startMinute] = startTime.split(':').map(Number)
+  const [endHour, endMinute] = endTime.split(':').map(Number)
+  
+  // Convert to total minutes for easier iteration
+  const startTotalMinutes = startHour * 60 + startMinute
+  const endTotalMinutes = endHour * 60 + endMinute
+  
+  // Generate time slots in 30-minute intervals
+  for (let totalMinutes = startTotalMinutes; totalMinutes <= endTotalMinutes; totalMinutes += 30) {
+    const hour = Math.floor(totalMinutes / 60)
+    const minute = totalMinutes % 60
+    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+    slots.push(timeString)
+  }
+  
   return slots
 }
 
@@ -2141,17 +2692,228 @@ const timeToMinutes = (timeString: string): number => {
 }
 
 const onDateChange = async (date: string | null) => {
-  if (date && bookingToChange.value) {
+  if (date && bookingToChange.value && productIdToChange.value) {
     // Ensure date is handled consistently as local date
     const selectedDate = date // Already in YYYY-MM-DD format from SingleDatePicker
     console.log('Date changed to:', selectedDate)
-    await fetchBookedTimeSlots(bookingToChange.value.space.id, selectedDate)
+    
+    // Check if selected date is closed
+    const operationalHours = getOperationalHoursForDate(selectedDate)
+    isSelectedDateClosed.value = !operationalHours.is_enabled
+    
+    if (isSelectedDateClosed.value) {
+      console.log('Selected date is closed')
+      dateError.value = 'Sorry, we are closed on this day'
+      bookedTimeSlots.value = []
+      disabledTimes.value = { start: [], end: [] }
+      return
+    } else {
+      dateError.value = ''
+    }
+    
+    // Set operating hours for the selected day
+    if (operationalHours.start_time && operationalHours.end_time) {
+      console.log(`Setting operating hours for ${selectedDate} to ${operationalHours.start_time}-${operationalHours.end_time}`)
+      operatingHours.value = {
+        start: operationalHours.start_time.substring(0, 5), // Format to HH:MM
+        end: operationalHours.end_time.substring(0, 5)    // Format to HH:MM
+      }
+    } else {
+      console.log('No specific operating hours found, using defaults')
+      operatingHours.value = { start: '09:00', end: '18:00' }
+    }
+    
+    // Clear error if date is open
+    dateError.value = ''
+    timeError.value = ''
+    availabilityError.value = ''
+    
+    // Only fetch time slots for meeting rooms (products with start_time and end_time)
+    // Hot desks and dedicated desks are full-day bookings, so no need to check time slots
+    const product = bookingToChange.value.apiData?.products.find(
+      (p: any) => p.product_id === productIdToChange.value
+    )
+    
+    const isMeetingRoom = product?.start_time && product?.end_time && 
+                          product.start_time !== '00:00:00' && product.start_time !== null
+    
+    // Always fetch booked time slots, regardless of product type
+    console.log('Fetching time slots for product:', productIdToChange.value)
+    await fetchBookedTimeSlots(productIdToChange.value, selectedDate)
   }
 }
 
 const onStartTimeChange = (startTime: string) => {
   // Recalculate disabled end times when start time changes
   calculateDisabledTimes()
+  
+  // Clear errors when start time changes
+  durationError.value = ''
+  timeError.value = ''
+  
+  // Validate duration if end time is already selected
+  if (newTimeRange.value.end && currentBookingDuration.value > 0) {
+    validateDuration()
+  }
+}
+
+const validateDuration = () => {
+  if (!newTimeRange.value.start || !newTimeRange.value.end) {
+    durationError.value = ''
+    return false
+  }
+  
+  const startMinutes = timeToMinutes(newTimeRange.value.start)
+  const endMinutes = timeToMinutes(newTimeRange.value.end)
+  const selectedDuration = endMinutes - startMinutes
+  
+  console.log(`Validating duration - Current: ${currentBookingDuration.value} min, Selected: ${selectedDuration} min`)
+  
+  if (selectedDuration < currentBookingDuration.value) {
+    const currentHours = currentBookingDuration.value / 60
+    const selectedHours = selectedDuration / 60
+    durationError.value = `You cannot select a shorter duration. Your current booking is ${currentHours} hour(s), but you selected ${selectedHours} hour(s). Please select the same duration to avoid additional charges.`
+    return false
+  } else if (selectedDuration > currentBookingDuration.value) {
+    const currentHours = currentBookingDuration.value / 60
+    const selectedHours = selectedDuration / 60
+    durationError.value = `You cannot select a longer duration. Your current booking is ${currentHours} hour(s), but you selected ${selectedHours} hour(s). This would require additional payment. Please select the same duration.`
+    return false
+  } else {
+    durationError.value = ''
+    return true
+  }
+}
+
+const fetchOperationSchedule = async (productId: number) => {
+  try {
+    console.log('Fetching operation schedule for product:', productId)
+    const response = await NetworkManager.getSpaces({ id: productId })
+    
+    if (response.success && response.space) {
+      // Get operation schedule from the raw API data
+      const rawSchedule = (NetworkManager as any).lastRawResponseData?.operation_schedule || []
+      console.log('Raw operation_schedule from API:', rawSchedule)
+      
+      operationSchedule.value = rawSchedule.map((day: any) => ({
+        day: day.day,
+        is_enabled: day.is_enabled,
+        start_time: day.start_time,
+        end_time: day.end_time
+      }))
+      
+      console.log('Processed operation schedule:', operationSchedule.value)
+    }
+  } catch (error) {
+    console.error('Error fetching operation schedule:', error)
+    // Set default schedule if fetch fails (all days open 9-6)
+    operationSchedule.value = [
+      { day: 'Monday', is_enabled: true, start_time: '09:00', end_time: '18:00' },
+      { day: 'Tuesday', is_enabled: true, start_time: '09:00', end_time: '18:00' },
+      { day: 'Wednesday', is_enabled: true, start_time: '09:00', end_time: '18:00' },
+      { day: 'Thursday', is_enabled: true, start_time: '09:00', end_time: '18:00' },
+      { day: 'Friday', is_enabled: true, start_time: '09:00', end_time: '18:00' },
+      { day: 'Saturday', is_enabled: false },
+      { day: 'Sunday', is_enabled: false }
+    ]
+  }
+}
+
+const getOperationalHoursForDate = (dateString: string): { day?: string; is_enabled: boolean; start_time?: string; end_time?: string } => {
+  if (!dateString) {
+    return { is_enabled: false }
+  }
+  
+  if (!operationSchedule.value || operationSchedule.value.length === 0) {
+    return { is_enabled: false }
+  }
+  
+  try {
+    // Convert date string to day of week
+    const selectedDate = new Date(dateString)
+    const selectedDay = selectedDate.toLocaleDateString('en-US', { weekday: 'long' })
+    
+    console.log('Selected date:', dateString, 'maps to day:', selectedDay)
+    console.log('Available schedule days:', operationSchedule.value.map(d => d.day))
+    
+    // Find the selected day in the schedule (case-insensitive match)
+    const daySchedule = operationSchedule.value.find((day: any) => {
+      if (!day || !day.day) return false
+      // Try exact match first
+      if (day.day === selectedDay) return true
+      // Try case-insensitive match
+      if (day.day.toLowerCase() === selectedDay.toLowerCase()) return true
+      return false
+    })
+    
+    console.log('Found schedule for day:', selectedDay, daySchedule)
+    
+    return daySchedule || { is_enabled: false }
+  } catch (error) {
+    console.error('Error getting operational hours for date:', error)
+    return { is_enabled: false }
+  }
+}
+
+const convertTo24HourFormat = (timeStr: string): string => {
+  if (!timeStr) return ''
+  
+  // If already in HH:MM format, return as is
+  if (/^\d{1,2}:\d{2}$/.test(timeStr)) {
+    const [hours, minutes] = timeStr.split(':').map(Number)
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+  }
+  
+  // If in HH:MM:SS format, remove seconds
+  if (/^\d{1,2}:\d{2}:\d{2}$/.test(timeStr)) {
+    const [hours, minutes] = timeStr.split(':').slice(0, 2).map(Number)
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+  }
+  
+  // If in 12-hour format with AM/PM
+  const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)
+  if (match) {
+    const [, hours, minutes, period] = match
+    let hour24 = parseInt(hours, 10)
+    
+    if (period.toUpperCase() === 'PM' && hour24 !== 12) {
+      hour24 += 12
+    } else if (period.toUpperCase() === 'AM' && hour24 === 12) {
+      hour24 = 0
+    }
+    
+    return `${hour24.toString().padStart(2, '0')}:${minutes}`
+  }
+  
+  // Fallback: try to extract HH:MM
+  const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/)
+  if (timeMatch) {
+    const [, hours, minutes] = timeMatch
+    return `${hours.toString().padStart(2, '0')}:${minutes}`
+  }
+  
+  // If nothing matches, return the original string
+  console.warn('Unable to parse time format:', timeStr)
+  return timeStr
+}
+
+const formatTime12Hour = (timeStr: string): string => {
+  if (!timeStr) return ''
+  
+  // Convert to 24-hour format first
+  const time24 = convertTo24HourFormat(timeStr)
+  const [hours, minutes] = time24.split(':').map(Number)
+  
+  const period = hours >= 12 ? 'PM' : 'AM'
+  const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours
+  
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
+}
+
+const isToday = (dayName: string): boolean => {
+  const today = new Date()
+  const todayName = today.toLocaleDateString('en-US', { weekday: 'long' })
+  return dayName.toLowerCase() === todayName.toLowerCase()
 }
 
 const confirmDateChange = async () => {
@@ -2162,12 +2924,23 @@ const confirmDateChange = async () => {
   let endTime = ''
   let isValid = false
 
-  if (bookingToChange.value.spaceType === 'meeting-room') {
+  // Check if this is a meeting room booking - either by spaceType or by isMeetingRoomProduct flag
+  if (bookingToChange.value.spaceType === 'meeting-room' || isMeetingRoomProduct.value) {
     // For meeting rooms, validate time range
     if (newDateRange.value && newTimeRange.value.start && newTimeRange.value.end) {
       selectedDate = newDateRange.value
       startTime = newTimeRange.value.start
       endTime = newTimeRange.value.end
+      console.log('Using selected time range for meeting room:', { startTime, endTime })
+
+      // Validate duration matches current booking
+      if (currentBookingDuration.value > 0) {
+        const isDurationValid = validateDuration()
+        if (!isDurationValid) {
+          // Error message is already set by validateDuration()
+          return
+        }
+      }
 
       // Check if the selected time slot is available
       const hasConflict = bookedTimeSlots.value.some(booking => {
@@ -2181,8 +2954,10 @@ const confirmDateChange = async () => {
       })
 
       if (hasConflict) {
-        alert('The selected time slot is not available. Please choose a different time.')
+        timeError.value = 'This time slot is not available. Please choose a different time.'
         return
+      } else {
+        timeError.value = ''
       }
 
       isValid = true
@@ -2192,11 +2967,31 @@ const confirmDateChange = async () => {
     if (newDateRange.value) {
       selectedDate = newDateRange.value
 
-      // For hot desks, check if the date is fully booked
-      const isDateBooked = bookedTimeSlots.value.length > 0
-      if (isDateBooked) {
-        alert('This date is not available for hot desk booking. Please choose a different date.')
+      // For hot desks, rely on the dateError that's set by fetchBookedTimeSlots
+      // If there's a dateError, we already know it's invalid
+      if (dateError.value) {
         return
+      }
+
+      // For hot desks, get operational schedule for the selected date
+      if (operationSchedule.value.length > 0) {
+        // Convert selected date to day of week
+        const selectedDateObj = new Date(selectedDate);
+        const dayOfWeek = selectedDateObj.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        // Find operational hours for this day
+        const daySchedule = operationSchedule.value.find(
+          schedule => schedule.day.toLowerCase() === dayOfWeek.toLowerCase()
+        );
+        
+        if (daySchedule && daySchedule.is_enabled) {
+          // Use the day's operational hours for start/end times
+          startTime = daySchedule.start_time || '';
+          endTime = daySchedule.end_time || '';
+          console.log(`Using operational schedule times for ${dayOfWeek}: ${startTime} - ${endTime}`);
+        } else {
+          console.log(`No operational hours found for ${dayOfWeek} or day is disabled`);
+        }
       }
 
       isValid = true
@@ -2205,12 +3000,26 @@ const confirmDateChange = async () => {
 
   if (isValid && selectedDate) {
     try {
-      // Extract booking ID (remove 'BK' prefix)
-      const bookingIdStr = bookingToChange.value.id.replace('BK', '')
-      const bookingId = parseInt(bookingIdStr, 10)
+      // Get booking ID directly from API data
+      const bookingId = bookingToChange.value.apiData?.booking_id
 
-      if (isNaN(bookingId)) {
+      if (!bookingId) {
         alert('Invalid booking ID. Please try again.')
+        console.error('No booking_id found in apiData:', bookingToChange.value)
+        return
+      }
+      
+      // Get the actual product ID from the product being changed
+      let productId = productIdToChange.value
+      
+      if (!productId && bookingToChange.value.apiData?.products?.[0]) {
+        // Fallback to first product if no specific product selected
+        productId = bookingToChange.value.apiData.products[0].product_id
+      }
+      
+      if (!productId) {
+        alert('Invalid product ID. Please try again.')
+        console.error('No product_id found')
         return
       }
 
@@ -2221,24 +3030,73 @@ const confirmDateChange = async () => {
         BookingDate: string;
         StartTime?: string;
         EndTime?: string;
+        SingleProductId?: number;  // For individual product updates
       } = {
         BookingId: bookingId,
-        ProductId: bookingToChange.value.space.id,
+        ProductId: productId,
         BookingDate: selectedDate
       }
+      
+      // If changing a specific product's date
+      if (productIdToChange.value !== null) {
+        updateData.SingleProductId = productIdToChange.value
+        console.log(`Updating specific product ID: ${productIdToChange.value}`)
+      }
 
-      // Add time fields only for meeting rooms
-      if (bookingToChange.value.spaceType === 'meeting-room') {
-        updateData.StartTime = startTime
-        updateData.EndTime = endTime
+      // Determine if we have valid times to send
+      const hasTimes = startTime && endTime && startTime !== '' && endTime !== '';
+      
+      // Add time fields for both meeting rooms AND hot desks
+      if (hasTimes) {
+        // Use the direct time values that were set
+        updateData.StartTime = startTime;
+        updateData.EndTime = endTime;
+        console.log('Adding time fields from available times:', { 
+          StartTime: updateData.StartTime, 
+          EndTime: updateData.EndTime 
+        });
+      } else if (newTimeRange.value && newTimeRange.value.start && newTimeRange.value.end) {
+        // Backup: use values from newTimeRange if direct values aren't set (for meeting rooms)
+        updateData.StartTime = newTimeRange.value.start;
+        updateData.EndTime = newTimeRange.value.end;
+        console.log('Adding time fields from time range picker:', { 
+          StartTime: updateData.StartTime, 
+          EndTime: updateData.EndTime 
+        });
+      } else if (isMeetingRoomProduct.value) {
+        // Warning for meeting rooms that should have times but don't
+        console.warn('Meeting room product has no valid time values to send');
+      } else {
+        // Only log if we don't have any times
+        console.log('No time fields available to add to the request');
       }
 
       console.log('Updating booking with data:', updateData)
 
       // Call the API
       const response = await NetworkManager.updateBooking(updateData)
+      console.log('API response for date change:', response)
 
-      if (response.success) {
+      // Cast to any type to handle different response formats
+      const typedResponse = response as any
+      console.log('API response type:', typeof response)
+      console.log('TypedResponse:', JSON.stringify(typedResponse))
+      console.log('Status code check:', typedResponse.status_code)
+      
+      // CRITICAL: Check all possible success indicators:
+      // 1. If status_code is 200
+      // 2. If success is true
+      // 3. Special case: If message contains "Booking updated" - this indicates a successful update despite success:false
+      const messageIndicatesSuccess = typedResponse.message && 
+        typedResponse.message.toLowerCase().includes('booking updated');
+      
+      const isSuccess = typedResponse.status_code === 200 || 
+                        response.success === true || 
+                        messageIndicatesSuccess;
+                        
+      console.log('Is success?', isSuccess, 'Message indicates success?', messageIndicatesSuccess)
+      
+      if (isSuccess) {
         // Update local data on success
         bookingToChange.value.date = selectedDate
         if (bookingToChange.value.spaceType === 'meeting-room') {
@@ -2247,21 +3105,49 @@ const confirmDateChange = async () => {
         }
         bookingToChange.value.dateChanged = true
 
+        // Close modal
         showDateChangeModal.value = false
-        alert('Date changed successfully! You will receive a confirmation email. You can only change the date once.')
+        
+        // Always show Date Changed Successfully when any success indicator is true
+        successOverlayTitle.value = 'Date Changed Successfully'
+        
+        // Use appropriate message from response
+        // Order of preference: data field, success message, or default message
+        let successMsg = 'Booking updated successfully';
+        if (typedResponse.data) {
+          successMsg = typedResponse.data;
+        } else if (messageIndicatesSuccess) {
+          // Extract just the success part from the message if it contains both success and limitation info
+          successMsg = 'Your booking date has been updated.';
+        }
+        
+        successOverlayMessage.value = successMsg;
+        showSuccessOverlay.value = true;
+        
+        // Clear temporary values
         bookingToChange.value = null
+        productIdToChange.value = null
 
         // Reset form data
         newDateRange.value = undefined
         newTimeRange.value = { start: '', end: '' }
         bookedTimeSlots.value = []
         disabledTimes.value = { start: [], end: [] }
+        
+        // Refresh bookings list to show updated data
+        fetchUpcomingBookings()
       } else {
-        alert(`Failed to update booking: ${response.message}`)
+        console.error('Failed to update booking:', response)
+        // Use success overlay instead of alert for better UX
+        successOverlayTitle.value = 'Unable to Update Booking'
+        successOverlayMessage.value = response.message || 'Unable to change booking date. Please try again later.'
+        showSuccessOverlay.value = true
       }
     } catch (error) {
       console.error('Error updating booking:', error)
-      alert('An error occurred while updating the booking. Please try again.')
+      successOverlayTitle.value = 'Error'
+      successOverlayMessage.value = 'An error occurred while updating the booking. Please try again.'
+      showSuccessOverlay.value = true
     }
   } else {
     alert('Please select a valid date and time.')
@@ -2342,9 +3228,9 @@ const toggleSubscriptions = async () => {
     await fetchSubscriptions()
   }
   
-  // When showing subscriptions, switch to a tab that allows subscriptions to be displayed
-  if (showSubscriptions.value && activeTab.value === 'total') {
-    activeTab.value = 'upcoming' // Switch to upcoming tab to allow subscriptions to show
+  // Ensure we're on the upcoming tab when showing subscriptions
+  if (showSubscriptions.value) {
+    activeTab.value = 'upcoming' // Always show subscriptions in upcoming tab
   }
 }
 
@@ -2383,22 +3269,116 @@ const closeSubscriptionModal = () => {
 }
 
 // Stats Card Click Handlers
-const showAllBookings = () => {
-  // Hide subscriptions if showing
+const showBookingsTab = (filterType = 'upcoming') => {
+  // Hide subscriptions
   showSubscriptions.value = false
   // Switch to list view
   viewMode.value = 'list'
-  // Switch to total tab to show all bookings
-  activeTab.value = 'total'
+  // Default to requested tab or upcoming tab
+  activeTab.value = filterType
 }
 
 const showUpcomingBookings = () => {
-  // Hide subscriptions if showing
-  showSubscriptions.value = false
-  // Switch to list view
-  viewMode.value = 'list'
-  // Switch to upcoming tab
-  activeTab.value = 'upcoming'
+  showBookingsTab('upcoming')
+}
+
+const showPastBookings = () => {
+  showBookingsTab('past')
+}
+
+const showCancelledBookings = () => {
+  showBookingsTab('cancelled')
+}
+
+// Subscription Tab Handlers
+const showSubscriptionsTab = (filterType = 'active') => {
+  // Make sure we're showing subscriptions
+  showSubscriptions.value = true
+  
+  // If we don't have subscriptions loaded yet, load them
+  if (subscriptions.value.length === 0) {
+    fetchSubscriptions()
+  }
+  
+  // Set the active tab for filtering
+  activeTab.value = filterType
+}
+
+const showActiveSubscriptions = () => {
+  showSubscriptionsTab('active')
+}
+
+const showCancelledSubscriptions = () => {
+  showSubscriptionsTab('cancelled')
+}
+
+// Helper functions for subscription display
+const getMonthlyRate = (subscription: any): number => {
+  if (!subscription) return 0;
+  
+  // Calculate monthly rate based on total price and duration
+  const durationMonths = getDurationInMonths(subscription);
+  if (durationMonths <= 0) return 0;
+  
+  return subscription.total_price / durationMonths;
+};
+
+const getDurationInMonths = (subscription: any): number => {
+  if (!subscription?.subscription_start_date || !subscription?.subscription_end_date) return 0;
+  
+  const startDate = new Date(subscription.subscription_start_date);
+  const endDate = new Date(subscription.subscription_end_date);
+  
+  // Calculate months between dates
+  const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                 (endDate.getMonth() - startDate.getMonth());
+  
+  // If start date is after the end of the month, round up
+  const startDay = startDate.getDate();
+  const endDay = endDate.getDate();
+  const lastDayOfMonth = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getDate();
+  
+  // Add partial month if significant portion of month is covered
+  if (startDay <= 15 && endDay >= 15) {
+    return months + 1;
+  }
+  
+  return Math.max(1, months);
+};
+
+const getSubscriptionPeriod = (subscription: any): string => {
+  if (!subscription?.subscription_start_date || !subscription?.subscription_end_date) return '';
+  
+  return `${formatDate(subscription.subscription_start_date)} to ${formatDate(subscription.subscription_end_date)}`;
+};
+
+// Extract the API host from the environment variable
+const getApiHost = (): string => {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9011/api';
+  // Extract host from API base URL (remove '/api' suffix)
+  return apiBaseUrl.replace(/\/api$/, '');
+};
+
+const getProductImageUrl = (imagePath: string | undefined): string => {
+  if (!imagePath) {
+    return 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+  }
+  
+  // If it's already a complete URL, return it as is
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // Otherwise, prepend the API host from environment
+  const apiHost = getApiHost();
+  return `${apiHost}${imagePath}`;
+}
+
+const handleImageError = (event: Event) => {
+  // Replace broken images with a default image
+  const target = event.target as HTMLImageElement;
+  target.src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+  target.onerror = null; // Prevent infinite loop if default image also fails
 }
 
 const getSubscriptionStatusClass = (status: string) => {
@@ -2406,7 +3386,7 @@ const getSubscriptionStatusClass = (status: string) => {
     case 'confirmed':
       return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
     case 'active':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
+      return 'bg-primary/10 text-primary/90 dark:bg-primary/20 dark:text-primary/80'
     case 'cancelled':
       return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'
     case 'expired':

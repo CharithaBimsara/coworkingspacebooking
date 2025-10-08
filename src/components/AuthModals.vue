@@ -216,8 +216,8 @@
               class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary"
             >
             <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">
-              I agree to the <a href="#" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">Terms of Service</a> and 
-              <a href="#" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">Privacy Policy</a>
+              I agree to the <button type="button" @click.prevent="showPolicyModal('terms')" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300 underline-offset-2 hover:underline">Terms of Service</button> and 
+              <button type="button" @click.prevent="showPolicyModal('privacy')" class="font-bold text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300 underline-offset-2 hover:underline">Payment Policy</button>
             </span>
           </label>
         </div>
@@ -254,12 +254,20 @@
     @close="closePasswordResetModal"
     @switch-to-signin="handlePasswordResetSwitchToSignIn"
   />
+  
+  <!-- Policy Modal for Terms & Privacy -->
+  <PolicyModal
+    :show="showPolicyModalFlag"
+    :type="policyModalType"
+    @close="closePolicyModal"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import SuccessOverlay from './SuccessOverlay.vue';
 import PasswordResetModal from './PasswordResetModal.vue';
+import PolicyModal from './PolicyModal.vue';
 import { NetworkManager } from '../api/networkManager';
 import { SignInForm, SignUpForm } from '../helpers/forms';
 
@@ -276,7 +284,8 @@ export default defineComponent({
   
   components: {
     SuccessOverlay,
-    PasswordResetModal
+    PasswordResetModal,
+    PolicyModal
   },
   
   emits: ['close', 'user-authenticated', 'switch-to-signup', 'switch-to-signin'],
@@ -316,7 +325,9 @@ export default defineComponent({
       passwordResetEmail: '',
       showSignInPassword: false,
       showSignUpPassword: false,
-      showSignUpConfirmPassword: false
+      showSignUpConfirmPassword: false,
+      showPolicyModalFlag: false,
+      policyModalType: 'terms' as 'terms' | 'privacy'
     };
   },
   
@@ -519,6 +530,15 @@ export default defineComponent({
     handlePasswordResetSwitchToSignIn() {
       this.closePasswordResetModal();
       this.switchToSignIn();
+    },
+    
+    showPolicyModal(type: 'terms' | 'privacy') {
+      this.policyModalType = type;
+      this.showPolicyModalFlag = true;
+    },
+    
+    closePolicyModal() {
+      this.showPolicyModalFlag = false;
     }
   }
 })

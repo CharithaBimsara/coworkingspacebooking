@@ -386,7 +386,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      LKR {{ booking.totalPrice || 0 }}
+                      {{ formatCurrency(booking.totalPrice || 0) }}
                     </div>
                   </div>
                 </div>
@@ -444,8 +444,7 @@
                     :title="booking.space?.name || 'Unknown Product'">
                     {{ booking.space?.name || 'Unknown Product' }}
                   </span>
-                  <span class="font-semibold text-xs sm:text-sm">LKR {{ booking.pricing?.total || booking.totalPrice ||
-                    0 }}</span>
+                  <span class="font-semibold text-xs sm:text-sm">{{ formatCurrency(booking.pricing?.total || booking.totalPrice || 0) }}</span>
                 </div>
 
                 <div v-if="booking.pricing"
@@ -459,8 +458,8 @@
                       </svg>
                       {{ getBasePriceLabel(booking) }}:
                     </span>
-                    <span class="text-xs font-medium">LKR {{ getBasePricePerUnit(booking) }} × {{
-                      getMultiplierLabel(booking) }} = LKR {{ booking.pricing.basePrice || 0 }}</span>
+                    <span class="text-xs font-medium">{{ formatCurrency(getBasePricePerUnit(booking)) }} × {{
+                      getMultiplierLabel(booking) }} = {{ formatCurrency(booking.pricing.basePrice || 0) }}</span>
                   </div>
                   <div v-if="booking.pricing.facilitiesPrice > 0 && booking.facilities && booking.facilities.length > 0"
                     class="space-y-0.5">
@@ -473,9 +472,8 @@
                         </svg>
                         {{ facility }}:
                       </span>
-                      <span class="text-xs font-medium">LKR {{ getFacilityPricePerUnit(booking, index) }} × {{
-                        getMultiplierLabel(booking) }} = LKR {{ Math.round(booking.pricing.facilitiesPrice /
-                          booking.facilities.length) }}</span>
+                      <span class="text-xs font-medium">{{ formatCurrency(getFacilityPricePerUnit(booking, index)) }} × 
+                        {{ getMultiplierLabel(booking) }} = {{ formatCurrency(Math.round(booking.pricing.facilitiesPrice / booking.facilities.length)) }}</span>
                     </div>
                   </div>
                 </div>
@@ -501,7 +499,7 @@
                   </svg>
                   Total
                 </span>
-                <span class="text-lg sm:text-xl font-bold text-primary">LKR {{ totalAmount }}</span>
+                <span class="text-lg sm:text-xl font-bold text-primary">{{ formatCurrency(totalAmount) }}</span>
               </div>
             </div>
 
@@ -553,7 +551,7 @@
               <h3 class="font-semibold text-gray-900 mb-3">Payment Methods</h3>
               <div class="flex items-center space-x-3">
                 <div
-                  class="w-8 h-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded text-white flex items-center justify-center text-xs font-bold">
+                  class="w-8 h-6 bg-gradient-to-r from-primary to-primary/80 rounded text-white flex items-center justify-center text-xs font-bold">
                   VISA
                 </div>
                 <div
@@ -561,7 +559,7 @@
                   MC
                 </div>
                 <div
-                  class="w-8 h-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded text-white flex items-center justify-center text-xs font-bold">
+                  class="w-8 h-6 bg-gradient-to-r from-primary/90 to-primary/70 rounded text-white flex items-center justify-center text-xs font-bold">
                   AX
                 </div>
                 <svg class="w-8 h-6" viewBox="0 0 24 24" fill="none">
@@ -588,7 +586,7 @@
               </h3>
               <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg">
                 <div
-                  class="w-12 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                  class="w-12 h-8 bg-gradient-to-r from-primary to-primary/80 rounded text-white flex items-center justify-center text-xs font-bold shadow-sm">
                   VISA
                 </div>
                 <div
@@ -596,10 +594,10 @@
                   MC
                 </div>
                 <div
-                  class="w-12 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                  class="w-12 h-8 bg-gradient-to-r from-primary/90 to-primary/70 rounded text-white flex items-center justify-center text-xs font-bold shadow-sm">
                   AMEX
                 </div>
-                <div class="w-12 h-8 bg-gradient-to-r from-blue-800 to-indigo-800 rounded flex items-center justify-center text-xs font-bold shadow-sm">
+                <div class="w-12 h-8 bg-gradient-to-r from-primary/90 to-gray-700 rounded flex items-center justify-center text-xs font-bold shadow-sm">
                   <svg class="w-8 h-5" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-.548 3.508-.024.078a.641.641 0 0 1-.633.54z"
@@ -627,10 +625,10 @@
 
             <!-- Cancellation policy -->
             <div
-              class="mt-4 sm:mt-5 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-l-4 border-gray-200 dark:border-gray-600">
+              class="mt-4 sm:mt-5 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border-l-4 border-red-400 dark:border-red-700">
               <h4
                 class="font-semibold text-gray-900 dark:text-white mb-1.5 sm:mb-2 text-xs sm:text-sm flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 sm:h-4 w-3.5 sm:w-4 mr-1 sm:mr-1.5 text-gray-600"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 sm:h-4 w-3.5 sm:w-4 mr-1 sm:mr-1.5 text-red-500 dark:text-red-400"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -639,27 +637,27 @@
               </h4>
               <ul class="text-xxs xs:text-xs text-gray-600 dark:text-gray-400 space-y-1.5 sm:space-y-2 mt-1">
                 <li class="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-green-500 mt-0.5"
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-red-500 mt-0.5"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Free cancellation up to 24 hours before check-in
-                </li>
-                <li class="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                    class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-yellow-500 mt-0.5" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
-                  50% refund for cancellations within 24 hours
+                  All bookings are non-refundable
+                </li>
+                <li class="flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-blue-500 mt-0.5"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Rescheduling may be available if requested at least 24 hours before booking time
                 </li>
                 <li class="flex items-start">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-3.5 w-3 sm:w-3.5 mr-1.5 text-red-500 mt-0.5"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  No refund for no-shows
+                  No-shows will be charged the full amount
                 </li>
               </ul>
             </div>
@@ -717,7 +715,7 @@
       class="bg-white dark:bg-gray-900 rounded-t-xl shadow-xl border border-gray-200 dark:border-gray-700 p-3.5 sm:p-4">
       <div class="flex justify-between items-center">
         <div class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
-          Total: <span class="text-base sm:text-lg text-primary font-bold">LKR {{ totalAmount }}</span>
+          Total: <span class="text-base sm:text-lg text-primary font-bold">{{ formatCurrency(totalAmount) }}</span>
         </div>
         <button @click="proceedToPayment" :disabled="!isFormValid"
           class="btn-primary text-xs py-2 px-3 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
@@ -792,6 +790,7 @@ import AuthModals from '../components/AuthModals.vue'
 
 // Add responsive styles
 import '../assets/base.css'
+import { formatPrice, formatCurrency } from '../utils/formatUtils'
 
 interface GuestInfo {
   firstName: string
@@ -925,6 +924,14 @@ export default defineComponent({
         day: 'numeric',
         year: 'numeric'
       })
+    },
+    
+    formatCurrency(price: any): string {
+      return formatCurrency(price)
+    },
+    
+    formatPrice(price: any): string {
+      return formatPrice(price)
     },
 
     formatDateRange(booking: BookingItem): string {

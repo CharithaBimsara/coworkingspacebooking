@@ -336,7 +336,7 @@
                     {{ space.name }}
                   </h3>
                   <div class="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-full text-xs font-bold text-gray-900 dark:text-white flex-shrink-0">
-                    LKR {{ getStartingPrice(space) }}
+                    {{ formatCurrency(getStartingPrice(space)) }}
                     <span class="text-xs font-medium text-gray-700 dark:text-gray-300">/day</span>
                   </div>
                 </div>
@@ -530,9 +530,7 @@
           <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-6">
             Your premium coworking solution for modern professionals
           </p>
-          <p v-if="companyProfileApiError" class="mt-3 text-red-500 text-sm">
-            {{ companyProfileErrorMessage }}
-          </p>
+         
         </div>
         
         <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -600,7 +598,7 @@
                 </div>
                 <div>
                   <h4 class="text-base font-bold text-black dark:text-white">Email Us</h4>
-                  <a :href="'mailto:' + companyProfile.email" class="text-primary hover:underline font-medium text-sm">{{ companyProfile.email }}</a>
+                  <a :href="'mailto:' + companyProfile.email" class="text-gray-600 dark:text-gray-400 text-sm">{{ companyProfile.email }}</a>
                 </div>
               </div>
               
@@ -613,7 +611,7 @@
                 </div>
                 <div>
                   <h4 class="text-base font-bold text-black dark:text-white">Call Us</h4>
-                  <a :href="'tel:' + companyProfile.phone" class="text-primary hover:underline font-medium text-sm">{{ companyProfile.phone }}</a>
+                  <a :href="'tel:' + companyProfile.phone" class="text-gray-600 dark:text-gray-400 text-sm">{{ companyProfile.phone }}</a>
                 </div>
               </div>
               
@@ -626,7 +624,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h4 class="text-base font-bold text-black dark:text-white">Headquarters</h4>
+                  <h4 class="text-base font-bold text-black dark:text-white">Address</h4>
                   <p class="text-gray-600 dark:text-gray-400 text-sm">{{ companyProfile.address }}</p>
                 </div>
               </div>
@@ -655,7 +653,7 @@
                   </svg>
                 </a>
               </div>
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Social media links coming soon</p>
+             
             </div>
           </div>
           
@@ -718,8 +716,10 @@
           <!-- Brand & Description -->
           <div class="space-y-6">
             <div class="flex items-center">
-              <h3 class="text-xl font-heading font-bold text-primary mr-2">{{ companyProfile.name }}</h3>
-              <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <div class="h-10 w-auto mr-2">
+                <img src="@/assets/logo.png" alt="Project Logo" class="h-full w-auto object-contain" />
+              </div>
+             
             </div>
             <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
               Discover premium workspaces designed for productivity, flexibility, and collaboration. Book your perfect
@@ -862,6 +862,7 @@ import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
 import type { SpaceDto, AdvertisementDto, CompanyProfileDto } from '../dto/response';
 import { TestimonialDto } from '../dto/response';
 import { NetworkManager } from '../api/networkManager';
+import { formatPrice, formatCurrency } from '../utils/formatUtils';
 
 interface SearchForm {
   location: string;
@@ -1502,6 +1503,14 @@ export default defineComponent({
         return space.pricing.daily || space.pricing.hourly || space.pricing.monthly || 0;
       }
       return 0;
+    },
+    
+    formatPrice(price: any): string {
+      return formatPrice(price);
+    },
+    
+    formatCurrency(price: any): string {
+      return formatCurrency(price);
     },
 
     onLocationChange(location: { id: number; name: string; address: string; url: string } | null): void {
