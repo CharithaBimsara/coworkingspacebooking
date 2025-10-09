@@ -226,7 +226,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { generatePDFReceipt } from '../utils/pdfReceipt'
 // import QRCode from 'qrcode'
-import { NetworkManager } from '../api/networkManager'
+import { apiManager } from '../api/apiManager'
 
 // Payment result state
 const isSuccess = ref(true)
@@ -356,7 +356,7 @@ const retryPayment = () => {
 const loadInvoiceData = async (orderId: string) => {
   try {
     loading.value = true
-    const response = await NetworkManager.getInvoice(orderId)
+    const response = await apiManager.getInvoice(orderId)
 
     if (response.success && response.data) {
       invoiceData.value = response.data

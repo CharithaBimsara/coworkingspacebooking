@@ -1071,13 +1071,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { SpaceDto } from '../dto/response';
-import { NetworkManager } from '../api/networkManager'; // Import NetworkManager directly
+import { apiManager } from '../api/apiManager'; // Import apiManager directly
 import { sanitizeHtml } from '../utils/sanitizer';
 import { formatPrice, formatCurrency } from '../utils/formatUtils';
 import DualRangeSlider from '../components/DualRangeSlider.vue';
 import SingleDatePicker from '../components/SingleDatePicker.vue';
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
+import logoImage from '@/assets/images/app-images/logo.png';
 import LocationDropdown from '../components/LocationDropdown.vue';
 import type { RouteLocationNormalizedLoaded, NavigationFailure, LocationQueryValue } from 'vue-router';
 
@@ -1356,8 +1357,8 @@ export default defineComponent({
     async loadFacilities(): Promise<void> {
       try {
         this.loadingFacilities = true;
-        // Call NetworkManager to get facilities from API
-        const facilities = await NetworkManager.getFacilities();
+        // Call apiManager to get facilities from API
+        const facilities = await apiManager.getFacilities();
         this.facilities = facilities;
         console.log('Loaded facilities:', facilities);
       } catch (error) {
@@ -1371,8 +1372,8 @@ export default defineComponent({
     async loadLocations(): Promise<void> {
       try {
         this.loadingLocations = true;
-        // Call NetworkManager to get locations from API
-        const locations = await NetworkManager.getLocations();
+        // Call apiManager to get locations from API
+        const locations = await apiManager.getLocations();
         this.locations = locations;
         console.log('Loaded locations:', locations);
       } catch (error) {
@@ -1476,8 +1477,8 @@ export default defineComponent({
           console.log('Selected facilities:', this.selectedFacilities);
         }
         
-        // Call NetworkManager with the recommended getSpaces() method
-        const response = await NetworkManager.getSpaces(searchParams);
+        // Call apiManager with the recommended getSpaces() method
+        const response = await apiManager.getSpaces(searchParams);
         
         if (response.success) {
           this.allSpaces = response.spaces || [];
@@ -1616,7 +1617,7 @@ export default defineComponent({
     getSpaceImage(space: SpaceDto): string {
       return space.images && space.images.length > 0
         ? space.images[0]
-        : '/logo.png'; // Use site logo as fallback instead of hardcoded image
+        : logoImage; // Use site logo as fallback instead of hardcoded image
     },
 
     formatSpaceType(type: string): string {

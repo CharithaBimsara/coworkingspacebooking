@@ -85,7 +85,7 @@
           <div class="relative animate-fade-in">
             <div class="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary/20 rounded-3xl overflow-hidden border-2 border-primary transform hover:scale-[1.02] transition-all duration-300">
               <img 
-                src="/src/assets/img/hero.jpg" 
+                src="/src/assets/images/app-images/hero.jpg" 
                 :alt="companyProfile.name" 
                 class="w-full h-full object-cover"
               >
@@ -499,7 +499,7 @@
               <div class="relative">
                 <img :src="testimonial.avatar" :alt="testimonial.name" 
                      class="w-14 h-14 rounded-full object-cover border-2 border-primary"
-                     onerror="this.src='/logo.png';this.onerror='';">
+                     :onerror="`this.src='${getFallbackLogoUrl()}';this.onerror='';`">
                 <div class="absolute -right-1 -bottom-1 bg-primary rounded-full w-5 h-5 flex items-center justify-center">
                   <svg class="w-3 h-3 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -536,7 +536,7 @@
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <div class="relative">
             <div class="aspect-[4/3] rounded-3xl overflow-hidden border-2 border-primary shadow-xl transform hover:scale-[1.02] transition-all duration-300">
-              <img src="/src/assets/img/hero.jpg" 
+              <img src="/src/assets/images/app-images/hero.jpg" 
                 alt="Modern workspace" class="w-full h-full object-cover">
             </div>
            
@@ -717,7 +717,7 @@
           <div class="space-y-6">
             <div class="flex items-center">
               <div class="h-10 w-auto mr-2">
-                <img src="@/assets/logo.png" alt="Project Logo" class="h-full w-auto object-contain" />
+                <img src="@/assets/images/app-images/logo.png" alt="Project Logo" class="h-full w-auto object-contain" />
               </div>
              
             </div>
@@ -861,8 +861,9 @@ import LocationDropdown from '../components/LocationDropdown.vue';
 import SpaceTypeDropdown from '../components/SpaceTypeDropdown.vue';
 import type { SpaceDto, AdvertisementDto, CompanyProfileDto } from '../dto/response';
 import { TestimonialDto } from '../dto/response';
-import { NetworkManager } from '../api/networkManager';
+import { apiManager } from '../api/apiManager';
 import { formatPrice, formatCurrency } from '../utils/formatUtils';
+import logoImage from '@/assets/images/app-images/logo.png';
 
 interface SearchForm {
   location: string;
@@ -965,7 +966,7 @@ export default defineComponent({
           name: 'Charitha Bimsara',
           role: 'Software Engineer',
           content: 'Ceylinco-Works has transformed how our team collaborates. The meeting rooms are professional, the hot desks are always available, and the community is incredibly supportive. Highly recommend!',
-          avatar: '/src/assets/img/charitha.jpg',
+          avatar: '/src/assets/images/user-images/charitha.jpg',
           rating: 5.0
         }),
         new TestimonialDto({
@@ -973,7 +974,7 @@ export default defineComponent({
           name: 'Dulan Herath',
           role: 'Freelance Developer',
           content: 'As a freelancer, I need flexibility and reliability. Ceylinco-Works delivers on both. The dedicated desks give me a home base, and the high-speed WiFi never disappoints. Perfect for focused work.',
-          avatar: '/src/assets/img/dulan.jpg',
+          avatar: '/src/assets/images/user-images/dulan.jpg',
           rating: 4.8
         }),
         new TestimonialDto({
@@ -981,7 +982,7 @@ export default defineComponent({
           name: 'Upeksha Delwala',
           role: 'Startup Founder',
           content: 'The facilities are top-notch and the location is perfect for client meetings. What really stands out is the community - I\'ve made valuable connections that have helped grow my business.',
-          avatar: '/src/assets/img/upeksha.jpg',
+          avatar: '/src/assets/images/user-images/upeksha.jpg',
           rating: 4.9
         })
       ];
@@ -1007,6 +1008,13 @@ export default defineComponent({
   },
 
   methods: {
+    /**
+     * Get the fallback logo URL for images
+     */
+    getFallbackLogoUrl(): string {
+      return logoImage;
+    },
+
     /**
      * Load all data needed for the home page
      */
@@ -1067,7 +1075,7 @@ export default defineComponent({
         const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
         
         try {
-          const advertisements = await NetworkManager.getAdvertisements();
+          const advertisements = await apiManager.getAdvertisements();
           
           // Clear the timeout since the request completed
           clearTimeout(timeoutId);
@@ -1119,7 +1127,7 @@ export default defineComponent({
      */
     async refreshAdvertisementCache() {
       try {
-        const advertisements = await NetworkManager.getAdvertisements();
+        const advertisements = await apiManager.getAdvertisements();
         
         if (advertisements && advertisements.length > 0) {
           // Update UI with new data
@@ -1146,7 +1154,7 @@ export default defineComponent({
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
         
-        const locationsResponse = await NetworkManager.getLocations();
+        const locationsResponse = await apiManager.getLocations();
         clearTimeout(timeoutId);
         
         if (Array.isArray(locationsResponse) && locationsResponse.length > 0) {
@@ -1256,7 +1264,7 @@ export default defineComponent({
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
         
         // Get all ratings directly from the API
-        const response = await NetworkManager.getAllRatings();
+        const response = await apiManager.getAllRatings();
         clearTimeout(timeoutId);
         
         if (response.success && response.ratings && response.ratings.length > 0) {
@@ -1274,7 +1282,7 @@ export default defineComponent({
                 name: rating.first_name || 'Happy Customer',
                 role: 'Customer',
                 content: rating.review_description || 'Great space with amazing amenities.',
-                avatar: rating.user_avatar || '/logo.png',
+                avatar: rating.user_avatar || logoImage,
                 rating: rating.value
               });
             });
@@ -1341,7 +1349,7 @@ export default defineComponent({
       this.subscriptionMessage = '';
 
       try {
-        const result = await NetworkManager.sendContactMessage({
+        const result = await apiManager.sendContactMessage({
           name: this.newsletterName,
           email: this.newsletterEmail,
           message: this.messageContent
@@ -1549,7 +1557,7 @@ export default defineComponent({
         this.spacesErrorMessage = '';
         
         // Call the API to get all spaces
-        const response = await NetworkManager.getSpaces({});
+        const response = await apiManager.getSpaces({});
         
         if (response.success && response.spaces && response.spaces.length > 0) {
           // Filter spaces by rating > 4.5 and sort by rating (highest first)

@@ -152,11 +152,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useAuthStore } from '../stores/auth';
-import { type RouteLocationNormalized } from 'vue-router';
 import AuthModals from './AuthModals.vue';
 import SuccessOverlay from './SuccessOverlay.vue';
 import ThemeToggle from './ThemeToggle.vue';
 import { UserDto, CompanyProfileDto } from '../dto/response';
+import logoImage from '@/assets/images/app-images/logo.png';
 
 export default defineComponent({
   name: 'AppHeader',
@@ -179,10 +179,8 @@ export default defineComponent({
       router: null as any, // Initialize router as null
       companyName: '', // Will be populated from hardcoded values
       companyProfile: null as CompanyProfileDto | null,
-      logoUrl: '/logo.png', // Hardcoded logo URL (default)
+      logoUrl: logoImage, // Hardcoded logo URL (default)
       isHeaderLoading: true, // Loading state for header
-      activeSection: '', // Track which section is currently in view
-      scrollTimeout: null as ReturnType<typeof setTimeout> | null // For debouncing scroll events
     }
   },
 
@@ -196,24 +194,22 @@ export default defineComponent({
     currentRoute(): { path: string; hash?: string } {
       // Get the route and log it for debugging
       const route = this.router?.currentRoute || { path: '/' };
-      console.log('currentRoute computed property returning:', route.path);
       return route;
     },
     isHomeActive(): boolean {
       return this.currentRoute.path === '/' && 
-             (!this.currentRoute.hash || this.currentRoute.hash === '') && 
-             this.activeSection === ''
+             (!this.currentRoute.hash || this.currentRoute.hash === '')
     },
     isMyBookingsActive(): boolean {
       return this.currentRoute.path === '/my-bookings'
     },
     isAboutActive(): boolean {
       return this.currentRoute.path === '/' && 
-             (this.currentRoute.hash === '#about' || this.activeSection === 'about')
+             this.currentRoute.hash === '#about'
     },
     isContactActive(): boolean {
       return this.currentRoute.path === '/' && 
-             (this.currentRoute.hash === '#contact' || this.activeSection === 'contact')
+             this.currentRoute.hash === '#contact'
     },
     defaultAvatar(): string {
       return 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face&auto=format'
@@ -221,14 +217,8 @@ export default defineComponent({
   },
 
   watch: {
-    '$route'(to: RouteLocationNormalized, from: RouteLocationNormalized) {
-      // Reset active section when route changes
-      if (to.path !== '/' || (!to.hash || to.hash === '')) {
-        this.activeSection = ''
-      }
-      
+    '$route'() {
       // Debug route changes
-      console.log('Route changed:', from.path, '->', to.path);
       this.$nextTick(() => {
         this.checkCurrentPath();
       });
@@ -254,12 +244,6 @@ export default defineComponent({
     // Add click outside listener to close menus
     document.addEventListener('click', this.handleClickOutside)
     
-    // Add scroll listener for section tracking
-    window.addEventListener('scroll', this.handleScroll)
-    
-    // Set initial active section based on current route
-    this.setInitialActiveSection()
-    
     // Check current path on mount
     this.$nextTick(() => {
       this.checkCurrentPath();
@@ -269,20 +253,11 @@ export default defineComponent({
   beforeUnmount() {
     // Remove click outside listener
     document.removeEventListener('click', this.handleClickOutside)
-    
-    // Remove scroll listener
-    window.removeEventListener('scroll', this.handleScroll)
-    
-    // Clear any pending scroll timeout
-    if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout)
-    }
   },
 
   methods: {
 
     openLogin(message: string = '', redirectPath: string = '/my-bookings') { // Modified to accept message and redirectPath
-      console.log('Opening login modal')
       this.showSignInModal = true
       this.authModalContextMessage = message; // Set the message
       this.redirectAfterAuth = redirectPath; // Set the redirect path
@@ -290,7 +265,6 @@ export default defineComponent({
     },
     
     openSignUp(message: string = '', redirectPath: string = '/my-bookings') {
-      console.log('Opening signup modal')
       this.showSignUpModal = true
       this.authModalContextMessage = message; // Set the message
       this.redirectAfterAuth = redirectPath; // Set the redirect path
@@ -298,44 +272,24 @@ export default defineComponent({
     },
 
     checkCurrentPath() {
-      console.log('Current route path:', this.router?.currentRoute?.path);
-      console.log('isMyBookingsActive computed value:', this.isMyBookingsActive);
-      console.log('Route path matches /my-bookings:', this.router?.currentRoute?.path === '/my-bookings');
       return this.router?.currentRoute?.path;
     },
 
     handleMyBookingsClick() {
       if (this.currentUser) {
-        console.log('Navigating to my-bookings, current user:', this.currentUser)
         this.router?.push('/my-bookings');
-        console.log('Current route after push:', this.router?.currentRoute?.path)
         // Check if the route updated correctly
         this.$nextTick(() => {
           this.checkCurrentPath();
         });
       } else {
-        console.log('No current user, showing login modal')
         this.openLogin('To view your bookings, please log in or register.', '/my-bookings'); // Pass the message and redirectPath
       }
       this.closeMobileMenu();
     },
 
     handleHomeClick() {
-      // Clear active section when navigating to home
-      this.activeSection = ''
-      console.log('Current route in handleHomeClick:', this.router?.currentRoute?.path)
       this.closeMobileMenu();
-    },
-
-    setInitialActiveSection() {
-      // Set active section based on current route hash
-      if (this.currentRoute.path === '/' && this.currentRoute.hash) {
-        if (this.currentRoute.hash === '#about') {
-          this.activeSection = 'about'
-        } else if (this.currentRoute.hash === '#contact') {
-          this.activeSection = 'contact'
-        }
-      }
     },
 
     closeAuthModals() {
@@ -354,14 +308,12 @@ export default defineComponent({
       this.showSignInModal = true
     },
 
-    handleUserAuthenticated(user: UserDto) {
-      console.log('User authenticated:', user)
+    handleUserAuthenticated(_user: UserDto) { // eslint-disable-line @typescript-eslint/no-unused-vars
       // The auth store is already updated by the AuthModals component
       this.closeAuthModals()
     },
 
     handleLogout() {
-      console.log('User logging out')
       this.authStore?.clearUser()
 
       this.closeUserMenu()
@@ -404,115 +356,21 @@ export default defineComponent({
         this.closeMobileMenu()
       }
     },
-    
-    handleScroll() {
-      // Debounce scroll events
-      if (this.scrollTimeout) {
-        clearTimeout(this.scrollTimeout)
+
+    scrollToAbout() {
+      const element = document.getElementById('about');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
-      
-      this.scrollTimeout = setTimeout(() => {
-        this.updateActiveSectionFromScroll()
-      }, 100)
+      this.closeMobileMenu();
     },
 
-    updateActiveSectionFromScroll() {
-      // Only track sections on the home page
-      if (this.currentRoute.path !== '/') {
-        this.activeSection = ''
-        return
-      }
-      
-      const aboutSection = document.getElementById('about')
-      const contactSection = document.getElementById('contact')
-      
-      if (aboutSection && contactSection) {
-        const scrollPosition = window.scrollY + 150 // Add offset for header
-        const aboutTop = aboutSection.offsetTop
-        const aboutBottom = aboutTop + aboutSection.offsetHeight
-        const contactTop = contactSection.offsetTop
-        const contactBottom = contactTop + contactSection.offsetHeight
-        
-        if (scrollPosition >= contactTop && scrollPosition < contactBottom) {
-          this.activeSection = 'contact'
-        } else if (scrollPosition >= aboutTop && scrollPosition < aboutBottom) {
-          this.activeSection = 'about'
-        } else {
-          this.activeSection = ''
-        }
-      }
-    },
-    
-    scrollToAbout() {
-      // Check if we're on the home page
-      if (this.router?.currentRoute.path !== '/') {
-        // Navigate to home page first, then scroll
-        this.router?.push({ path: '/', hash: 'about' }).then(() => {
-          // Let the router handle the scrolling via the hash
-          this.activeSection = 'about'
-        }).catch((err: Error) => {
-          console.error('Navigation error:', err);
-        });
-      } else {
-        // Already on home page, just scroll
-        this.scrollToAboutSection();
-        this.activeSection = 'about'
-      }
-      
-      // Close mobile menu if open
-      this.closeMobileMenu();
-    },
-    
-    scrollToAboutSection() {
-      // Wait for DOM to be ready
-      this.$nextTick(() => {
-        // Try multiple times with increasing delays
-        this.attemptScroll(0, 'about');
-      });
-    },
-    
-    attemptScroll(attempt: number, sectionId: string) {
-      // Find the section element
-      const section = document.getElementById(sectionId);
-      if (section) {
-        // Scroll the section into view with smooth animation
-        section.scrollIntoView({ behavior: 'smooth' });
-      } else if (attempt < 5) {
-        // Try again with increasing delay
-        setTimeout(() => {
-          this.attemptScroll(attempt + 1, sectionId);
-        }, 100 * Math.pow(2, attempt)); // Exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms
-      } else {
-        console.error(`Could not find ${sectionId} section after multiple attempts`);
-      }
-    },
-    
     scrollToContact() {
-      // Check if we're on the home page
-      if (this.router?.currentRoute.path !== '/') {
-        // Navigate to home page first, then scroll
-        this.router?.push({ path: '/', hash: 'contact' }).then(() => {
-          // Let the router handle the scrolling via the hash
-          this.activeSection = 'contact'
-        }).catch((err: Error) => {
-          console.error('Navigation error:', err);
-        });
-      } else {
-        // Already on home page, just scroll
-        this.scrollToContactSection();
-        this.activeSection = 'contact'
+      const element = document.getElementById('contact');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
-      
-      // Close mobile menu if open
       this.closeMobileMenu();
-    },
-    
-    scrollToContactSection() {
-      // Wait for DOM to be ready
-      this.$nextTick(() => {
-        // Try multiple times with increasing delays
-        this.attemptScroll(0, 'contact');
-      });
     },
     
     loadCompanyProfile() {
@@ -524,7 +382,7 @@ export default defineComponent({
           phone: '+1 (123) 456-7890',
           address: '123 Workspace Avenue, Business District, Colombo',
           image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-          logoUrl: '/logo.png'
+          logoUrl: logoImage
         };
         
         this.companyProfile = profileData;

@@ -1,3 +1,13 @@
+/*
+ * Custom Components - SpaceBooking Application
+ *
+ * Custom styling for specific UI components that extend beyond
+ * standard Tailwind classes:
+ * - Enhanced date range picker styling
+ * - Custom scrollbar designs
+ * - Component-specific hover and focus states
+ */
+
 .enhanced-date-range .dp-custom-input {
   background-color: white;
   border: 1px solid #e5e7eb; /* gray-200 */

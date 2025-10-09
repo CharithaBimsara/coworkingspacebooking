@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <NetworkStatusBanner />
     <AppHeader />
     <router-view />
     <FloatingBookingSummary v-if="showFloatingBookingSummary" />
@@ -11,7 +10,6 @@
 import { defineComponent } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import FloatingBookingSummary from './components/FloatingBookingSummary.vue'
-import NetworkStatusBanner from './components/NetworkStatusBanner.vue'
 import { useBookingStore } from './stores/booking'
 import { useThemeStore } from './stores/theme'
 import { useAuthStore } from './stores/auth'
@@ -20,8 +18,7 @@ export default defineComponent({
   name: 'App',
   components: {
     AppHeader,
-    FloatingBookingSummary,
-    NetworkStatusBanner
+    FloatingBookingSummary
   },
   computed: {
     bookingStore() {

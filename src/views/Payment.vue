@@ -111,11 +111,16 @@
         <div class="grid lg:grid-cols-3 gap-8">
           <!-- Payment Form -->
           <div class="lg:col-span-2 space-y-6">
-
-            <!-- ...existing code... -->
-
+            
             <!-- Payment Method Selection -->
-
+            <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
+              <SavedCardSelector 
+                :cards="savedCards" 
+                v-model="selectedPaymentMethod" 
+                v-model:saveCard="saveCardForFuture" 
+                :saveCardOption="saveCardForFuture"
+              />
+            </div>
 
             <!-- Compact Billing Address -->
             <div
@@ -291,6 +296,20 @@
                           {{ formatSubscriptionDates(booking) }}
                         </span>
                       </div>
+                      
+                      <!-- Facilities - show only if available -->
+                      <div v-if="booking.facilities && booking.facilities.length > 0" class="mt-2">
+                        <p class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Additional Facilities:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                          <span v-for="facility in booking.facilities" :key="facility"
+                            class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            {{ facility }}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     <div class="text-right">
                       <p class="font-semibold text-gray-900 dark:text-white">LKR {{ (booking.totalPrice || 0).toFixed(2)
@@ -302,73 +321,7 @@
                 <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div class="flex justify-between items-center">
                     <span class="text-lg font-semibold text-gray-900 dark:text-white">Total</span>
-                    <span class="text-lg font-bold text-primary">LKR {{ totalAmount.toFixed(2) }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Price breakdown -->
-              <div class="rounded-lg bg-gray-50 dark:bg-gray-800 p-4 mb-6">
-                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Price Breakdown</h4>
-                <div class="space-y-3">
-                  <div v-for="(booking, index) in bookingDetails" :key="booking.uniqueKey || booking.spaceId"
-                    class="relative">
-                    <!-- Product header -->
-                    <div class="mb-4 pb-2 border-b border-gray-200 dark:border-gray-600">
-                      <h5 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        {{ booking.space?.name || 'Product' }} {{ index + 1 }}
-                      </h5>
-                    </div>
-
-                    <!-- Base Price with calculation -->
-                    <div class="mb-3">
-                      <div class="flex justify-between items-center text-sm mb-1">
-                        <span class="text-gray-700 dark:text-gray-300 font-medium">{{ getBasePriceLabel(booking)
-                          }}</span>
-                        <span class="text-gray-900 dark:text-white font-medium">
-                          <span class="text-xs text-gray-500 dark:text-gray-400">LKR {{ getBasePricePerUnit(booking) }}
-                            × {{ getMultiplierLabel(booking) }} = </span>
-                          LKR {{ booking.pricing?.basePrice?.toFixed(2) || (0).toFixed(2) }}
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Individual Facilities with calculations -->
-                    <div
-                      v-if="booking.pricing?.facilitiesPrice && booking.pricing?.facilitiesPrice > 0 && booking.facilities && booking.facilities.length > 0"
-                      class="space-y-2 mb-3">
-                      <div v-for="(facility, index) in booking.facilities" :key="facility"
-                        class="flex justify-between items-center text-sm">
-                        <span class="text-gray-700 dark:text-gray-300">{{ facility }}</span>
-                        <span class="text-gray-900 dark:text-white">
-                          <span class="text-xs text-gray-500 dark:text-gray-400">LKR {{ getFacilityPricePerUnit(booking,
-                            index) }} × {{ getMultiplierLabel(booking) }} = </span>
-                          LKR {{ Math.round(booking.pricing.facilitiesPrice / booking.facilities.length).toFixed(2) }}
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Subtotal for this booking -->
-                    <div
-                      class="pt-2 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 -mx-4 px-4 py-3 rounded-lg">
-                      <div class="flex justify-between text-sm font-medium">
-                        <span class="text-gray-900 dark:text-white">{{ booking.space?.name }} Total</span>
-                        <span class="text-gray-900 dark:text-white font-semibold">LKR {{ (booking.totalPrice ||
-                          0).toFixed(2) }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Overall Total -->
-                  <div class="pt-4 border-t-2 border-gray-300 dark:border-gray-500 mt-6">
-                    <div class="flex justify-between font-medium text-lg">
-                      <span class="text-gray-900 dark:text-white font-semibold">Total Amount</span>
-                      <span class="text-primary font-bold">LKR {{ totalAmount.toFixed(2) }}</span>
-                    </div>
+                    <span class="text-lg font-bold text-primary price-value">LKR {{ totalAmount.toFixed(2) }}</span>
                   </div>
                 </div>
               </div>
@@ -396,21 +349,22 @@
               </button>
 
               <!-- Cancellation Policy -->
-              <div
-                class="mt-6 bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
-                <div class="flex items-start">
-                  <div class="flex-shrink-0">
-                    <svg class="w-6 h-6 text-amber-600 dark:text-amber-500" fill="none" stroke="currentColor"
-                      viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-50/50 dark:from-gray-800/80 dark:to-gray-800/50 rounded-xl p-4 backdrop-blur-sm">
+                  <div class="flex items-center mb-3">
+                    <svg class="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
+                    <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Cancellation Policy</h4>
                   </div>
-                  <div class="ml-4">
-                    <h4 class="text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">Cancellation Policy</h4>
-                    <div class="text-sm text-amber-700 dark:text-amber-300 space-y-1">
-                      <p>• <strong>No refunds</strong> for cancellations once booking is confirmed</p>
-                      <p>• Booking modifications allowed <strong>only once</strong> before the scheduled date</p>
+                  <div class="space-y-2.5 pl-7">
+                    <div class="flex items-start">
+                      <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 text-primary text-xs mr-2 flex-shrink-0 mt-0.5">1</span>
+                      <p class="text-sm text-gray-700 dark:text-gray-300">No refunds for cancellations once booking is confirmed</p>
+                    </div>
+                    <div class="flex items-start">
+                      <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 text-primary text-xs mr-2 flex-shrink-0 mt-0.5">2</span>
+                      <p class="text-sm text-gray-700 dark:text-gray-300">Booking modifications allowed only once before the scheduled date</p>
                     </div>
                   </div>
                 </div>
@@ -430,10 +384,11 @@ import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { useBookingStore } from '../stores/booking';
 import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
-import { NetworkManager } from '../api/networkManager'
+import { apiManager, ApiManager } from '../api/apiManager'
 import { formatPrice, formatCurrency } from '../utils/formatUtils';
 import type { BookingDetails } from '../stores/booking';
 import ReCaptchaModal from '../components/ReCaptchaModal.vue';
+import SavedCardSelector from '../components/payment/SavedCardSelector.vue';
 
 interface SavedCard {
   id: number;
@@ -454,7 +409,8 @@ interface BillingAddress {
 export default defineComponent({
   name: 'PaymentPage',
   components: {
-    ReCaptchaModal
+    ReCaptchaModal,
+    SavedCardSelector
   },
 
   setup() {
@@ -703,7 +659,7 @@ export default defineComponent({
           return;
         }
 
-        const response = await NetworkManager.getPaymentMethods(user.id);
+        const response = await apiManager.getPaymentMethods(user.id);
         if (response.success && response.paymentMethods.length > 0) {
           savedCards.value = response.paymentMethods;
           // Select the default card or first card
@@ -724,13 +680,43 @@ export default defineComponent({
       }
     }
 
+    // Load user's billing address from API
+    // Load billing address from user details
+    async function loadBillingAddress(): Promise<void> {
+      const user = authStore.user;
+      if (user) {
+        // Use the user details directly
+        billingAddress.value = {
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          email: user.email || '',
+          phone: user.phone || ''
+        };
+      } else {
+        // Try to populate from guest info if available in booking store
+        // Guest info is stored in each booking item
+        if (bookingStore.currentBooking.length > 0) {
+          // Get the first booking with guest info
+          const bookingWithGuestInfo = bookingStore.currentBooking.find(booking => booking.guestInfo);
+          if (bookingWithGuestInfo?.guestInfo) {
+            billingAddress.value = {
+              firstName: bookingWithGuestInfo.guestInfo.firstName || '',
+              lastName: bookingWithGuestInfo.guestInfo.lastName || '',
+              email: bookingWithGuestInfo.guestInfo.email || '',
+              phone: bookingWithGuestInfo.guestInfo.phone || ''
+            };
+          }
+        }
+      }
+    }
+
     // Create new card session and process booking
     async function createNewCardSession(): Promise<void> {
       try {
         processing.value = true;
 
         // Add recaptcha token to all API requests for verification on backend
-        NetworkManager.setAuthHeader('X-Recaptcha-Token', recaptchaToken.value);
+        ApiManager.setAuthHeader('X-Recaptcha-Token', recaptchaToken.value);
 
         // Get all bookings
         const allBookings = bookingDetails.value;
@@ -831,14 +817,14 @@ export default defineComponent({
           email: billingAddress.value.email || '',
           phone: billingAddress.value.phone || '',
           user_id: authStore.user?.id,
-          is_card_add: false,
+          is_card_add: saveCardForFuture.value, // True if user wants to save the card
           amount: totalAmount.value,
           booking_products: bookingProducts
         };
 
         console.log('Payment payload being sent:', paymentPayload);
 
-        const response = await NetworkManager.processCardPayment(paymentPayload);
+        const response = await apiManager.processCardPayment(paymentPayload);
 
         if (response.success && response.gatewayData?.link) {
           // Store booking data for retry scenarios
@@ -866,8 +852,13 @@ export default defineComponent({
     async function processPayment(): Promise<void> {
       if (!isPaymentFormValid.value) return;
 
-      // Show reCAPTCHA before proceeding with payment
-      showReCaptcha.value = true;
+      // If using an existing card, proceed directly without reCAPTCHA
+      if (selectedPaymentMethod.value !== 'new-card') {
+        await processExistingCardPayment();
+      } else {
+        // Only show reCAPTCHA for new card addition
+        showReCaptcha.value = true;
+      }
     }
 
     // Handle successful reCAPTCHA verification
@@ -875,13 +866,8 @@ export default defineComponent({
       recaptchaToken.value = token;
       showReCaptcha.value = false;
 
-      // Process payment after successful verification
-      if (selectedPaymentMethod.value === 'new-card') {
-        await createNewCardSession();
-      } else {
-        // Use existing card
-        await processExistingCardPayment();
-      }
+      // Process payment after successful verification - only for new card
+      await createNewCardSession();
     }
 
     // Handle reCAPTCHA cancellation
@@ -896,8 +882,8 @@ export default defineComponent({
       processing.value = true;
 
       try {
-        // Add recaptcha token to all API requests for verification on backend
-        NetworkManager.setAuthHeader('X-Recaptcha-Token', recaptchaToken.value);
+        // For saved cards, we don't need reCAPTCHA token
+        // We're using the card that's already been verified previously
 
         // Get all bookings
         const allBookings = bookingDetails.value;
@@ -998,12 +984,14 @@ export default defineComponent({
           user_id: authStore.user?.id,
           is_card_add: false,
           amount: totalAmount.value,
-          booking_products: bookingProducts
+          booking_products: bookingProducts,
+          // Add the selected card ID for saved card payment
+          card_id: selectedPaymentMethod.value
         };
 
         console.log('Payment payload being sent:', paymentPayload);
 
-        const response = await NetworkManager.processCardPayment(paymentPayload);
+        const response = await apiManager.processCardPayment(paymentPayload);
 
         if (response.success && response.gatewayData?.link) {
           // Store booking data for retry scenarios
@@ -1087,7 +1075,10 @@ export default defineComponent({
         return;
       }
       bookingStore.initializeBooking();
-      await loadSavedCards();
+      await Promise.all([
+        loadSavedCards(),
+        loadBillingAddress()
+      ]);
 
       // Check for IPG return query parameters
       const query = route.query;
@@ -1226,5 +1217,12 @@ export default defineComponent({
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+/* Price alignment styles */
+.price-value {
+  min-width: 110px;
+  text-align: right;
+  white-space: nowrap;
 }
 </style>

@@ -133,63 +133,23 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company (Optional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
             <input
-              v-model="billingForm.company"
-              type="text"
-              class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
-            >
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address Line 1</label>
-            <input
-              v-model="billingForm.addressLine1"
-              type="text"
+              v-model="billingForm.email"
+              type="email"
               required
               class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
             >
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address Line 2 (Optional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
             <input
-              v-model="billingForm.addressLine2"
-              type="text"
+              v-model="billingForm.phone"
+              type="tel"
+              required
               class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
             >
-          </div>
-
-          <div class="grid md:grid-cols-3 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
-              <input
-                v-model="billingForm.city"
-                type="text"
-                required
-                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
-              >
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
-              <select v-model="billingForm.state" required class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                <option value="">Select State</option>
-                <option value="CA">California</option>
-                <option value="NY">New York</option>
-                <option value="TX">Texas</option>
-                <option value="FL">Florida</option>
-                <!-- Add more states as needed -->
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ZIP Code</label>
-              <input
-                v-model="billingForm.zipCode"
-                type="text"
-                required
-                class="input-field dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:ring-gray-500 dark:focus:border-gray-500"
-              >
-            </div>
           </div>
 
           <div class="flex justify-end">
@@ -319,6 +279,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import SuccessOverlay from '../components/SuccessOverlay.vue';
+import { apiManager } from '../api/apiManager';
+import { useAuthStore } from '../stores/auth';
+import { useBookingStore } from '../stores/booking';
 
 interface PaymentMethod {
   id: string;
@@ -341,12 +304,8 @@ interface CardForm {
 interface BillingForm {
   firstName: string;
   lastName: string;
-  company: string;
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  state: string;
-  zipCode: string;
+  email: string;
+  phone: string;
 }
 
 export default defineComponent({
@@ -354,6 +313,21 @@ export default defineComponent({
   
   components: {
     SuccessOverlay
+  },
+  
+  mounted() {
+    // Load billing address when component mounts
+    this.loadBillingAddress();
+  },
+  
+  setup() {
+    const authStore = useAuthStore();
+    const bookingStore = useBookingStore();
+    
+    return {
+      authStore,
+      bookingStore
+    };
   },
   
   data() {
@@ -394,14 +368,10 @@ export default defineComponent({
         isDefault: false
       } as CardForm,
       billingForm: {
-        firstName: 'John',
-        lastName: 'Doe',
-        company: 'Tech Startup Inc.',
-        addressLine1: '123 Main Street',
-        addressLine2: 'Suite 100',
-        city: 'San Francisco',
-        state: 'CA',
-        zipCode: '94105'
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: ''
       } as BillingForm
     };
   },
@@ -515,12 +485,20 @@ export default defineComponent({
     async updateBillingAddress(): Promise<void> {
       this.isUpdatingBilling = true;
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // No API call, just update the overlay
         this.showSuccessOverlay = true;
         this.successTitle = 'Billing Address Updated!';
         this.successMessage = 'Your billing address has been successfully updated.';
+        
+        // This is a simplified approach, in a real implementation
+        // you might want to update the user profile information in the authStore
+        if (this.authStore.isAuthenticated) {
+          // Could update user profile here if needed
+          console.log('Billing details updated:', this.billingForm);
+        }
       } catch (error) {
         console.error('Error updating billing address:', error);
+        alert('Failed to update billing address. Please try again.');
       } finally {
         this.isUpdatingBilling = false;
       }
@@ -541,6 +519,39 @@ export default defineComponent({
     
     closeSuccessOverlay(): void {
       this.showSuccessOverlay = false;
+    },
+    
+    async loadBillingAddress(): Promise<void> {
+      try {
+        // Use auth store to get user details
+        if (this.authStore.isAuthenticated && this.authStore.currentUser) {
+          const user = this.authStore.currentUser;
+          // Populate billing form from user data
+          this.billingForm = {
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            phone: user.phone || ''
+          };
+        } else {
+          // Try to get data from booking store
+          if (this.bookingStore.currentBooking.length > 0) {
+            // Get the first booking with guest info
+            const bookingWithGuestInfo = this.bookingStore.currentBooking.find(booking => booking.guestInfo);
+            if (bookingWithGuestInfo?.guestInfo) {
+              this.billingForm = {
+                firstName: bookingWithGuestInfo.guestInfo.firstName || '',
+                lastName: bookingWithGuestInfo.guestInfo.lastName || '',
+                email: bookingWithGuestInfo.guestInfo.email || '',
+                phone: bookingWithGuestInfo.guestInfo.phone || ''
+              };
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading billing address:', error);
+        // Keep default billing form
+      }
     }
   }
 });

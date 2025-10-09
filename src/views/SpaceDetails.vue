@@ -1941,7 +1941,7 @@ import { defineComponent } from 'vue'
 import AuthModals from '../components/AuthModals.vue'
 import SingleDatePicker from '../components/SingleDatePicker.vue'
 import TeamSizeDropdown from '../components/TeamSizeDropdown.vue'
-import { NetworkManager } from '../api/networkManager'
+import { apiManager, ApiManager } from '../api/apiManager'
 import { logger } from '../utils/logger'
 import type { SpaceDto, ReviewDto, UserDto, RawSpaceApiResponse } from '../dto/response'
 import { useAuthStore } from '../stores/auth'
@@ -2445,7 +2445,7 @@ export default defineComponent({
       this.isLoadingBookedSlots = true;
       try {
         const spaceId = parseInt(this.$route.params.id as string);
-        this.bookedTimeSlots = await NetworkManager.getBookedTimeSlots(spaceId, this.bookingForm.date);
+        this.bookedTimeSlots = await apiManager.getBookedTimeSlots(spaceId, this.bookingForm.date);
         
         // For hot desks, check if the date is already booked
         if (this.productType === 'hot-desk') {
@@ -2754,16 +2754,16 @@ export default defineComponent({
           return
         }
         
-        // Use NetworkManager directly to get space details
-        const response = await NetworkManager.getSpaces({ id: spaceId })
+        // Use apiManager directly to get space details
+        const response = await apiManager.getSpaces({ id: spaceId })
         logger.log('Raw API response for space:', response);
         
         if (response.success && response.space) {
-          // API response data is stored in NetworkManager.lastRawResponseData
-          logger.log('Raw API data stored in NetworkManager:', NetworkManager.lastRawResponseData);
+          // API response data is stored in apiManager.lastRawResponseData
+          logger.log('Raw API data stored in apiManager:', ApiManager.lastRawResponseData);
           
           // Load operation schedule from raw API data
-          const rawSchedule = (NetworkManager.lastRawResponseData as RawSpaceApiResponse)?.operation_schedule || [];
+          const rawSchedule = (ApiManager.lastRawResponseData as RawSpaceApiResponse)?.operation_schedule || [];
           logger.log('Raw operation_schedule from API:', rawSchedule);
           this.operationSchedule = rawSchedule.map(day => ({
             day: day.day,
@@ -3412,8 +3412,8 @@ export default defineComponent({
     },
 
     openLocationMap(): void {
-      // Get the raw data directly from NetworkManager
-      const rawApiData = NetworkManager.lastRawResponseData;
+      // Get the raw data directly from apiManager
+      const rawApiData = ApiManager.lastRawResponseData;
       logger.log('Raw API data:', rawApiData);
       
       // Get location_url directly from raw API response

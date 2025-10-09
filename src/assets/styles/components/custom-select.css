@@ -1,3 +1,12 @@
+/*
+ * Custom Select Components - SpaceBooking Application
+ *
+ * Custom styling for dropdown/select elements:
+ * - Cross-browser appearance resets
+ * - Firefox-specific dropdown menu fixes
+ * - Custom select behavior and theming
+ */
+
 /* Custom select styling */
 .sort-select {
   -webkit-appearance: none;

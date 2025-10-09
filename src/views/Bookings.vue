@@ -1352,9 +1352,8 @@ import BookingCalendar from '../components/BookingCalendar.vue'
 import { generatePDFReceipt, generatePDFFromData } from '../utils/pdfReceipt'
 import SuccessOverlay from '../components/SuccessOverlay.vue'
 import CancelBooking from '../components/CancelBooking.vue'
-import { BookingManager, type BookingData } from '../api/bookingManager'
+import { apiManager, type BookingData } from '../api/apiManager'
 import { useAuthStore } from '../stores/auth'
-import { NetworkManager } from '../api/networkManager'
 import CustomTimeRangePicker from '../components/CustomTimeRangePicker.vue'
 import DateRangePicker from '../components/DateRangePicker.vue'
 import SingleDatePicker from '../components/SingleDatePicker.vue'
@@ -1669,9 +1668,9 @@ const fetchAllBookings = async () => {
     
     // Fetch all three types of bookings in parallel
     const [upcomingResponse, pastResponse, canceledResponse] = await Promise.all([
-      BookingManager.getUpcomingBookings(user.id),
-      BookingManager.getPastBookings(user.id),
-      BookingManager.getCanceledBookings(user.id)
+      apiManager.getUpcomingBookings(user.id),
+      apiManager.getPastBookings(user.id),
+      apiManager.getCanceledBookings(user.id)
     ])
     
     // Process upcoming bookings
@@ -2239,7 +2238,7 @@ const confirmCancelBooking = async () => {
     // Check if we're cancelling a single product or the whole booking
     if (productIdToCancel.value !== null) {
       // Cancel a single product
-      const response = await BookingManager.cancelBookingProduct(bookingId, productIdToCancel.value)
+      const response = await apiManager.cancelBookingProduct(bookingId, productIdToCancel.value)
       
       if (response.success) {
         // Close the modal first
@@ -2276,7 +2275,7 @@ const confirmCancelBooking = async () => {
       }
     } else {
       // Cancel the entire booking
-      const response = await BookingManager.cancelBooking(bookingId)
+      const response = await apiManager.cancelBooking(bookingId)
       
       if (response.success) {
         // Update the booking status in the UI
@@ -2538,7 +2537,7 @@ const fetchBookedTimeSlots = async (spaceId: number, date: string) => {
   dateError.value = ''
   console.log('Fetching booked time slots for space:', spaceId, 'date:', date)
   try {
-    bookedTimeSlots.value = await NetworkManager.getBookedTimeSlots(spaceId, date)
+    bookedTimeSlots.value = await apiManager.getBookedTimeSlots(spaceId, date)
     console.log('Received booked time slots:', bookedTimeSlots.value)
     
     if (isMeetingRoomProduct.value) {
@@ -2788,11 +2787,11 @@ const validateDuration = () => {
 const fetchOperationSchedule = async (productId: number) => {
   try {
     console.log('Fetching operation schedule for product:', productId)
-    const response = await NetworkManager.getSpaces({ id: productId })
+    const response = await apiManager.getSpaces({ id: productId })
     
     if (response.success && response.space) {
       // Get operation schedule from the raw API data
-      const rawSchedule = (NetworkManager as any).lastRawResponseData?.operation_schedule || []
+      const rawSchedule = (apiManager as any).lastRawResponseData?.operation_schedule || []
       console.log('Raw operation_schedule from API:', rawSchedule)
       
       operationSchedule.value = rawSchedule.map((day: any) => ({
@@ -3074,7 +3073,7 @@ const confirmDateChange = async () => {
       console.log('Updating booking with data:', updateData)
 
       // Call the API
-      const response = await NetworkManager.updateBooking(updateData)
+      const response = await apiManager.updateBooking(updateData)
       console.log('API response for date change:', response)
 
       // Cast to any type to handle different response formats
@@ -3245,7 +3244,7 @@ const fetchSubscriptions = async () => {
       return
     }
     
-    const response = await NetworkManager.getUserSubscriptions(user.id)
+    const response = await apiManager.getUserSubscriptions(user.id)
     
     if (response.success) {
       subscriptions.value = response.subscriptions

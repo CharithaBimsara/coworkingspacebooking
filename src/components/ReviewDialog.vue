@@ -209,7 +209,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useAuthStore } from '../stores/auth';
-import { NetworkManager } from '../api/networkManager';
+import { apiManager } from '../api/apiManager';
 
 const props = defineProps({
   spaceId: {
@@ -276,7 +276,7 @@ const submitReview = async () => {
     };
     
     // Submit review
-    const response = await NetworkManager.addRating(reviewData);
+    const response = await apiManager.addRating(reviewData);
     
     if (response.success) {
       emit('review-submitted', response.review);
@@ -303,7 +303,7 @@ const handleLogin = async () => {
   isLoggingIn.value = true;
   
   try {
-    const response = await NetworkManager.loginUser(
+    const response = await apiManager.loginUser(
       loginForm.value.email.trim(), 
       loginForm.value.password.trim()
     );

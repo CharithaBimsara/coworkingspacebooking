@@ -237,7 +237,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { NetworkManager } from '../api/networkManager';
+import { apiManager } from '../api/apiManager';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
@@ -351,7 +351,7 @@ export default defineComponent({
       this.showSuccess = false;
 
       try {
-        const response = await NetworkManager.sendPasswordResetLink(this.email);
+        const response = await apiManager.sendPasswordResetLink(this.email);
 
         if (response.success) {
           this.showSuccessMessage(response.message || 'Password reset instructions sent to your email');
@@ -378,7 +378,7 @@ export default defineComponent({
       this.showError = false;
 
       try {
-        const response = await NetworkManager.verifyPasswordResetCode(this.email, this.resetCode);
+        const response = await apiManager.verifyPasswordResetCode(this.email, this.resetCode);
 
         if (response.success) {
           // Show success message and start transition loading
@@ -422,7 +422,7 @@ export default defineComponent({
       this.showError = false;
 
       try {
-        const response = await NetworkManager.resetPasswordWithCode(
+        const response = await apiManager.resetPasswordWithCode(
           this.email,
           this.resetCode,
           this.newPassword

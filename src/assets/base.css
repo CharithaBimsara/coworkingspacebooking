@@ -1,3 +1,14 @@
+/*
+ * Base Styles - SpaceBooking Application
+ *
+ * This file contains the foundation styles for the application:
+ * - Tailwind CSS framework imports
+ * - CSS custom properties (variables) for theming
+ * - Global styles and CSS resets
+ * - Font imports and typography setup
+ * - Dark mode support
+ */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;

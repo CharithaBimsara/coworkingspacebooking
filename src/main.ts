@@ -2,8 +2,7 @@
 if (window.self !== window.top) {
   document.body.setAttribute('iframe-mode', 'true');
 }
-import './assets/base.css'
-import './assets/custom-select.css'
+import './assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'

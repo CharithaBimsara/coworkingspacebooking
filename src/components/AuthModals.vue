@@ -4,7 +4,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4" @click.stop>
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
-        <p class="text-gray-600 dark:text-gray-300">Sign in to your account</p>
+        <p class="text-gray-600 dark:text-gray-400">Sign in to your account</p>
         <!-- Context Message -->
         <div v-if="contextMessage" class="mt-3 p-3 bg-primary-50 dark:bg-primary-900/30 border border-black-200 dark:border-black-700 rounded-lg">
           <p class="text-sm text-primary-800 dark:text-primary-200">{{ contextMessage }}</p>
@@ -268,7 +268,7 @@ import { defineComponent } from 'vue';
 import SuccessOverlay from './SuccessOverlay.vue';
 import PasswordResetModal from './PasswordResetModal.vue';
 import PolicyModal from './PolicyModal.vue';
-import { NetworkManager } from '../api/networkManager';
+import { apiManager } from '../api/apiManager';
 import { SignInForm, SignUpForm } from '../helpers/forms';
 
 // Define the interface for the success action
@@ -368,9 +368,9 @@ export default defineComponent({
       this.isSigningIn = true;
       
       try {
-        // Use NetworkManager directly for sign in
+        // Use apiManager directly for sign in
         const dto = this.signInForm.toDto();
-        const response = await NetworkManager.loginUser(dto.email, dto.password);
+        const response = await apiManager.loginUser(dto.email, dto.password);
         
         if (response.success && response.user && response.token) {
           // Store user in Pinia store
@@ -430,9 +430,9 @@ export default defineComponent({
       this.isSigningUp = true;
       
       try {
-        // Use NetworkManager directly for sign up
+        // Use apiManager directly for sign up
         const dto = this.signUpForm.toDto();
-        const response = await NetworkManager.registerUser({
+        const response = await apiManager.registerUser({
           FirstName: dto.firstName,
           LastName: dto.lastName,
           Email: dto.email,

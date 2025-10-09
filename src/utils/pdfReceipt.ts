@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import logoImage from "../assets/logo.png";
-import { NetworkManager } from '../api/networkManager';
+import logoImage from "../assets/images/app-images/logo.png";
+import { apiManager } from '../api/apiManager';
 
 // Define interfaces directly here since we're having issues with imports
 export interface InvoiceFacility {
@@ -251,7 +251,7 @@ function formatProductType(type: string): string {
 export const generatePDFReceipt = async (orderId: string): Promise<void> => {
   try {
     // Fetch invoice data from API
-    const invoiceResponse = await NetworkManager.getInvoice(orderId);
+    const invoiceResponse = await apiManager.getInvoice(orderId);
 
     if (!invoiceResponse.success || !invoiceResponse.data) {
       throw new Error(invoiceResponse.message || 'Failed to fetch invoice data');

@@ -12,7 +12,7 @@ export function sanitizeHtml(html: string): string {
   const allowedAttrs = ['xmlns', 'viewBox', 'fill', 'stroke', 'stroke-width', 'd', 'cx', 'cy', 'r', 'x', 'y', 'width', 'height', 'points'];
 
   // Simple regex-based sanitization (not foolproof, but better than nothing)
-  let sanitized = html
+  const sanitized = html
     .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove scripts
     .replace(/<style[^>]*>.*?<\/style>/gi, '') // Remove styles
     .replace(/on\w+="[^"]*"/gi, '') // Remove event handlers

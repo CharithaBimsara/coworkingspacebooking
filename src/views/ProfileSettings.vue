@@ -468,11 +468,11 @@ export default defineComponent({
       this.isUpdating = true
       
       try {
-        // Import NetworkManager
-        const { NetworkManager } = await import('../api/networkManager');
+        // Import apiManager
+        const { apiManager } = await import('../api/apiManager');
         
         // Call the API
-        const result = await NetworkManager.updateUserProfile({
+        const result = await apiManager.updateUserProfile({
           Id: this.profileForm.id,
           FirstName: this.profileForm.firstName,
           LastName: this.profileForm.lastName,

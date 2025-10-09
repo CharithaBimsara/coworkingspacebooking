@@ -1,8 +1,16 @@
-/* Tailwind Component Classes */
+/*
+ * Tailwind Component Classes - SpaceBooking Application
+ *
+ * Custom component classes built with Tailwind utilities:
+ * - Button variants (primary, secondary, danger)
+ * - Form input styling
+ * - Card and container components
+ * - Utility classes for common patterns
+ */
 
 @layer components {
   /* ======== BUTTONS ======== */
-  
+
   /* Primary Button - Neon Green with animations */
   .btn-cute-primary {
     @apply bg-primary text-black dark:text-white py-3 px-6 rounded-full font-medium 
