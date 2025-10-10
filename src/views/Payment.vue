@@ -392,11 +392,17 @@ import SavedCardSelector from '../components/payment/SavedCardSelector.vue';
 
 interface SavedCard {
   id: number;
+  wallet_id?: number;
   card_number: string;
   card_type: string;
   expiry_month: string;
   expiry_year: string;
   is_default: boolean;
+  holder_name?: string;
+  brand?: string;
+  last_four?: string;
+  issuer?: string;
+  card_issuer_type?: string; // CREDIT or DEBIT
 }
 
 interface BillingAddress {
@@ -660,11 +666,22 @@ export default defineComponent({
         }
 
         const response = await apiManager.getPaymentMethods(user.id);
+        console.log('Payment methods response:', response);
+        
         if (response.success && response.paymentMethods.length > 0) {
           savedCards.value = response.paymentMethods;
+          
+          // Debug: Log each card's details to verify wallet_id is present
+          savedCards.value.forEach(card => {
+            console.log(`Card ID: ${card.id}, Wallet ID: ${card.wallet_id}, Type: ${card.card_type}, Brand: ${card.brand}`);
+          });
+          
           // Select the default card or first card
           const defaultCard = savedCards.value.find(card => card.is_default);
           selectedPaymentMethod.value = defaultCard?.id || savedCards.value[0].id;
+          
+          // Log the selected card
+          console.log('Selected card ID:', selectedPaymentMethod.value);
         } else {
           // No saved cards, show add new card option
           savedCards.value = [];
@@ -850,13 +867,23 @@ export default defineComponent({
 
     // Process payment
     async function processPayment(): Promise<void> {
-      if (!isPaymentFormValid.value) return;
+      if (!isPaymentFormValid.value) {
+        console.log('Payment form is not valid');
+        return;
+      }
 
+      console.log('Processing payment with selected method:', selectedPaymentMethod.value);
+      
       // If using an existing card, proceed directly without reCAPTCHA
       if (selectedPaymentMethod.value !== 'new-card') {
+        console.log('Using existing card:', selectedPaymentMethod.value);
+        const selectedCard = savedCards.value.find(card => card.id === selectedPaymentMethod.value);
+        console.log('Selected card details:', selectedCard);
+        
         await processExistingCardPayment();
       } else {
         // Only show reCAPTCHA for new card addition
+        console.log('Adding new card, showing reCAPTCHA');
         showReCaptcha.value = true;
       }
     }
@@ -975,6 +1002,14 @@ export default defineComponent({
           };
         });
 
+        // Find the selected card from the savedCards array
+        const selectedCard = savedCards.value.find(card => card.id === selectedPaymentMethod.value);
+        
+        if (!selectedCard || !selectedCard.wallet_id) {
+          alert('Selected card information is incomplete. Please try again or select a different card.');
+          return;
+        }
+        
         // Construct payload for existing card payment
         const paymentPayload = {
           first_name: billingAddress.value.firstName || '',
@@ -985,13 +1020,17 @@ export default defineComponent({
           is_card_add: false,
           amount: totalAmount.value,
           booking_products: bookingProducts,
-          // Add the selected card ID for saved card payment
-          card_id: selectedPaymentMethod.value
+          // Add wallet_id and card_id for saved card payment
+          wallet_id: String(selectedCard.wallet_id),
+          card_id: String(selectedCard.id),
+          currency: 'LKR' // Default currency or get from configuration
         };
 
         console.log('Payment payload being sent:', paymentPayload);
 
-        const response = await apiManager.processCardPayment(paymentPayload);
+        console.log('Calling processSavedCardPayment with payload:', paymentPayload);
+        const response = await apiManager.processSavedCardPayment(paymentPayload);
+        console.log('Saved card payment API response:', response);
 
         if (response.success && response.gatewayData?.link) {
           // Store booking data for retry scenarios
@@ -1007,6 +1046,7 @@ export default defineComponent({
           showPaymentGateway.value = true;
           gatewayLoading.value = true;
         } else {
+          console.error('Failed to process payment with saved card:', response);
           alert(response.message || 'Failed to process payment');
         }
       } catch (error) {
@@ -1034,6 +1074,9 @@ export default defineComponent({
 
     // Handle messages from payment gateway
     function handlePaymentMessage(event: MessageEvent): void {
+      // Debug log to see what data is coming from the payment gateway
+      console.log('Payment gateway message received:', event.data);
+      
       // Verify origin for security (you should replace with your actual gateway domain)
       // if (event.origin !== 'https://your-gateway-domain.com') return;
 
@@ -1042,12 +1085,32 @@ export default defineComponent({
         showPaymentGateway.value = false;
         gatewayUrl.value = '';
         processing.value = false;
+        
+        console.log('Payment completed successfully. Response:', event.data);
+        
+        // Store payment result data in sessionStorage
+        const paymentResultData = {
+          success: true,
+          orderId: event.data.orderId || event.data.order_id || '',
+          desc: 'Payment processed successfully',
+          status: 'SUCCESS',
+          isCardAddition: false,
+          trnId: event.data.trnId || event.data.transactionId || null,
+          bookingData: bookingDetails.value
+        };
+        
+        console.log('Storing payment result:', paymentResultData);
+        sessionStorage.setItem('payment_result', JSON.stringify(paymentResultData));
+        
         // Clear booking data so floating summary and summary page are reset
         if (bookingStore.clearBookingDetails) bookingStore.clearBookingDetails();
+        
         // Navigate to confirmation page
         router.push('/booking-confirmation');
       } else if (event.data && event.data.type === 'payment_failed') {
         // Payment failed
+        console.log('Payment failed. Response:', event.data);
+        
         showPaymentGateway.value = false;
         gatewayUrl.value = '';
         processing.value = false;
@@ -1082,28 +1145,103 @@ export default defineComponent({
 
       // Check for IPG return query parameters
       const query = route.query;
+      console.log('IPG Return Query Parameters:', query);
+      
       if (query.desc && query.status && query.orderId) {
         // Set IPG processing state to show loading overlay
         ipgProcessing.value = true;
 
-        const isSuccess = query.desc === 'Approved' && query.status === 'SUCCESS';
+        // Handle both regular payment success and card addition success
+        // Regular payment: desc = "Approved", status = "SUCCESS"
+        // Card addition: desc = "Card Adding Successful", status = "SUCCESS"
+        
+        // Debug: Log raw values first
+        console.log('Query desc:', query.desc, 'type:', typeof query.desc);
+        console.log('Query status:', query.status, 'type:', typeof query.status);
+        
+        // Fix: Normalize string comparisons to handle potential case or whitespace issues
+        const normalizedDesc = String(query.desc || '').trim();
+        const normalizedStatus = String(query.status || '').trim().toUpperCase();
+        
+        // CRITICAL FIX: Force success to true when status is SUCCESS regardless of description
+        // This is the key fix based on the session storage showing success: false with status: SUCCESS
+        const isSuccess = normalizedStatus === 'SUCCESS';
+        const isCardAdditionSuccess = normalizedDesc.includes('Card Adding Successful') && normalizedStatus === 'SUCCESS';
+        
+        console.log('Payment processing - Success:', isSuccess);
+        console.log('Payment processing - Card Addition:', isCardAdditionSuccess);
 
         // Store payment result and data in sessionStorage
-        sessionStorage.setItem('payment_result', JSON.stringify({
-          success: isSuccess,
+        const paymentResultData = {
+          success: isSuccess, // Ensure this is a boolean
           orderId: query.orderId,
           desc: query.desc,
           status: query.status,
+          isCardAddition: isCardAdditionSuccess,
+          trnId: query.trnId || null,
           // Store booking data for retry or confirmation
           bookingData: bookingDetails.value
-        }));
+        };
+        
+        console.log('Storing payment result:', paymentResultData);
+        
+        // Force clear and reset to ensure clean data
+        sessionStorage.removeItem('payment_result');
+        
+        try {
+          sessionStorage.setItem('payment_result', JSON.stringify(paymentResultData));
+          
+          // Verify it was set correctly
+          const checkData = sessionStorage.getItem('payment_result');
+          if (checkData) {
+            const parsed = JSON.parse(checkData);
+            console.log('Verified storage success value:', parsed.success);
+            
+            // CRITICAL FIX: If the success value doesn't match what we expect, try again
+            if (parsed.success !== isSuccess) {
+              console.warn('Storage verification failed - recreating with correct boolean');
+              // Create a new object to avoid type issues
+              const fixedPaymentResult = {
+                ...paymentResultData,
+                success: isSuccess  // Keep as boolean
+              };
+              sessionStorage.setItem('payment_result', JSON.stringify(fixedPaymentResult));
+            }
+          }
+        } catch (error) {
+          console.error('Error setting session storage:', error);
+        }
 
         // Add a small delay to ensure loading overlay is visible
         setTimeout(async () => {
           if (isSuccess) {
             // Clear booking data on success
-            if (bookingStore.clearBookingDetails) bookingStore.clearBookingDetails();
+            if (bookingStore.clearBookingDetails) {
+              bookingStore.clearBookingDetails();
+              console.log('Booking data cleared successfully');
+            } else {
+              console.warn('bookingStore.clearBookingDetails is not available');
+            }
+            
+            // Double check what's stored in session storage
+            try {
+              const checkStorage = sessionStorage.getItem('payment_result');
+              console.log('Verified payment_result in sessionStorage:', checkStorage ? 'Present' : 'Missing');
+              console.log('Session storage data type:', typeof checkStorage);
+              // Parse and validate the data
+              if (checkStorage) {
+                const parsed = JSON.parse(checkStorage);
+                console.log('Storage success value after parsing:', parsed.success);
+              }
+            } catch (e) {
+              console.error('Error checking session storage:', e);
+            }
+            
+            console.log('Redirecting to confirmation page with success:', isSuccess);
+          } else {
+            console.log('Payment was not successful, redirecting to confirmation page to show failure');
           }
+          
           // Redirect directly to confirmation page (replace to avoid Payment in history)
           router.replace({ name: 'BookingConfirmation' });
         }, 1500); // 1.5 second delay to show loading effect

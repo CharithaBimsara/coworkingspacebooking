@@ -2,24 +2,27 @@
   <div class="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
     <div class="max-w-6xl mx-auto container-padding py-8">
       <!-- Success Message -->
-      <div v-if="isSuccess" class="text-center mb-8">
+      <div v-if="isSuccess || paymentResult?.status === 'SUCCESS'" class="text-center mb-8">
         <div class="w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg class="w-10 h-10 text-green-600 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 class="text-4xl font-heading font-bold text-gray-900 dark:text-white mb-2">Booking Confirmed!</h1>
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">Your workspace is reserved and ready for you</p>
+        <h1 class="text-4xl font-heading font-bold text-gray-900 dark:text-white mb-2">Payment Successful!</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">
+          <template v-if="isCardAddition || (paymentResult?.desc && String(paymentResult.desc).includes('Card Adding Successful'))">Your booking is confirmed and your card has been securely saved for future payments</template>
+          <template v-else>Your workspace is reserved and ready for you</template>
+        </p>
         <div class="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Order #{{ invoiceData?.order_id || 'N/A' }}
+          Order #{{ invoiceData?.order_id || paymentResult?.orderId || 'N/A' }}
         </div>
       </div>
 
       <!-- Failure Message -->
-      <div v-else class="text-center mb-8">
+      <div v-else-if="!isSuccess && !loading && paymentResult?.status !== 'SUCCESS'" class="text-center mb-8">
         <div class="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg class="w-10 h-10 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -36,9 +39,21 @@
           </svg>
           Retry Payment
         </button>
+        
+        <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+          <details class="cursor-pointer">
+            <summary>Payment Details</summary>
+            <pre class="mt-2 p-4 bg-gray-100 dark:bg-gray-800 rounded text-left overflow-auto max-w-full max-h-40">
+Status: {{ paymentResult?.status || 'Unknown' }}
+Description: {{ paymentResult?.desc || 'No description available' }}
+Order ID: {{ paymentResult?.orderId || 'Not provided' }}
+Success Flag: {{ paymentResult?.success }}
+            </pre>
+          </details>
+        </div>
       </div>
 
-      <!-- Invoice Details -->
+      <!-- Invoice Details - Now showing for both regular payments and card addition -->
       <div v-if="isSuccess && invoiceData" class="space-y-8">
         <!-- Customer Information -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
@@ -174,14 +189,39 @@
         -->
       </div>
 
+      <!-- Card Added Success Message - Card Saved Notification -->
+      <div v-if="isSuccess && isCardAddition" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <div class="flex items-center mb-4">
+          <div class="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mr-4">
+            <svg class="w-6 h-6 text-green-600 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Payment Card Saved</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              Your payment card has been securely saved to your account for future bookings
+            </p>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <router-link to="/payment-methods" class="flex items-center justify-center px-4 py-2 text-sm bg-transparent text-primary hover:underline font-medium">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Manage Payment Methods
+          </router-link>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-else-if="loading" class="text-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
         <p class="text-gray-600 dark:text-gray-400">Loading invoice details...</p>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
+      <!-- Action Buttons - Now unified for all success scenarios -->
+      <div v-if="isSuccess" class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
         <button @click="downloadReceipt" class="flex items-center justify-center px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -203,7 +243,14 @@
           Get Directions
         </button>
 
-        <button @click="contactSupport" class="flex items-center justify-center px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+        <button v-if="isCardAddition" @click="$router.push('/payment-methods')" class="flex items-center justify-center px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          Manage Cards
+        </button>
+        
+        <button v-else @click="contactSupport" class="flex items-center justify-center px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
           </svg>
@@ -230,6 +277,7 @@ import { apiManager } from '../api/apiManager'
 
 // Payment result state
 const isSuccess = ref(true)
+const isCardAddition = ref(false)
 const paymentResult = ref<any>(null)
 const loading = ref(true)
 const invoiceData = ref<any>(null)
@@ -356,35 +404,167 @@ const retryPayment = () => {
 const loadInvoiceData = async (orderId: string) => {
   try {
     loading.value = true
-    const response = await apiManager.getInvoice(orderId)
+    console.log('Loading invoice data for order ID:', orderId);
+    
+    // Fix: Make sure we don't change isSuccess to false for API errors
+    let invoiceLoadSuccess = false;
+    
+    // If this is a card addition success
+    if (isCardAddition.value) {
+      console.log('This is a card addition success, but we will still try to get invoice data');
+      // Use stored booking data as fallback
+      if (paymentResult.value?.bookingData) {
+        // Display the booking info from stored data
+        console.log('Using booking data from payment result as fallback');
+        invoiceData.value = paymentResult.value.bookingData;
+        invoiceLoadSuccess = true;
+        
+        // IMPORTANT: We don't return here anymore - we continue to try the API call
+        // to get complete invoice data for card addition too
+      }
+    }
+    
+    // Still try to load invoice data from API if it's not pure card addition
+    try {
+      console.log('Attempting to fetch invoice data from API for order ID:', orderId);
+      const response = await apiManager.getInvoice(orderId);
+      console.log('API response for invoice:', response);
 
-    if (response.success && response.data) {
-      invoiceData.value = response.data
-    } else {
-      console.error('Failed to load invoice:', response.message)
-      // Handle error gracefully
+      if (response?.success && response?.data) {
+        console.log('Invoice data loaded successfully:', response.data);
+        invoiceData.value = response.data;
+        invoiceLoadSuccess = true;
+      } else {
+        console.error('Failed to load invoice:', response?.message || 'Unknown error');
+        
+        // Handle error gracefully
+        // If this is card addition, we can still show confirmation using stored data
+        if (isCardAddition.value) {
+          console.log('Card addition - showing success despite invoice API failure');
+          // If we're in card addition mode and failed to load invoice, 
+          // don't show empty invoice section
+          if (!invoiceData.value) {
+            invoiceData.value = null;
+          }
+          // Important: Don't change isSuccess for card addition
+          invoiceLoadSuccess = true;
+        } else if (!invoiceLoadSuccess) {
+          // Only for regular payments, if we have no invoice data, mark as failed
+          console.warn('Regular payment with no invoice data - this might be an issue');
+          // Keep isSuccess true if we already have invoice data from somewhere else
+          invoiceLoadSuccess = Boolean(invoiceData.value);
+        }
+      }
+    } catch (apiError) {
+      console.error('API error loading invoice:', apiError);
+      
+      // For card addition, we can proceed with success even if API fails
+      if (isCardAddition.value) {
+        console.log('Continuing with card addition success despite API error');
+        // Don't change isSuccess for card addition
+        invoiceLoadSuccess = true;
+      } else if (!invoiceLoadSuccess) {
+        // For regular payments, log warning but don't automatically fail
+        console.warn('API error for regular payment - check if this is expected');
+        // Keep isSuccess true if we already have invoice data from somewhere else
+        invoiceLoadSuccess = Boolean(invoiceData.value);
+      }
+    }
+    
+    // Important: Never set isSuccess to false for API errors if the payment was successful
+    // Only update if we definitively know it failed to load invoice AND it's not a card addition
+    if (!invoiceLoadSuccess && !isCardAddition.value) {
+      console.warn('Consider if invoice load failure should affect payment success status');
+      // Note: We're not changing isSuccess.value here to avoid false negatives
+      // In production, you might want to decide if missing invoice data means payment failed
     }
   } catch (error) {
-    console.error('Error loading invoice:', error)
+    console.error('Unexpected error in loadInvoiceData:', error);
+    // Don't change isSuccess for unexpected errors to avoid false negatives
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 onMounted(async () => {
+  console.log('BookingConfirmation mounted');
+  
+  // CRITICAL FIX: Check URL parameters first for direct navigation cases
+  const query = route.query;
+  if (query && query.status === 'SUCCESS') {
+    console.log('Direct navigation with SUCCESS status detected in URL params');
+    
+    // Create a payment result object from URL parameters if needed
+    if (!sessionStorage.getItem('payment_result')) {
+      console.log('Creating payment result from URL parameters');
+      const paymentResultData = {
+        success: true, // Force success to true
+        orderId: query.orderId,
+        desc: query.desc,
+        status: query.status,
+        isCardAddition: query.desc && String(query.desc).includes('Card Adding Successful'),
+        trnId: query.trnId || null
+      };
+      
+      sessionStorage.setItem('payment_result', JSON.stringify(paymentResultData));
+      console.log('Created payment result from URL:', paymentResultData);
+    }
+  }
+  
   const storedResult = sessionStorage.getItem('payment_result')
   if (!storedResult) {
     // No payment result, redirect to home
+    console.log('No payment result found, redirecting to home');
     router.replace({ name: 'Home' })
     return
   }
 
-  paymentResult.value = JSON.parse(storedResult)
-  isSuccess.value = paymentResult.value.success
+  try {
+    paymentResult.value = JSON.parse(storedResult)
+    console.log('Payment result (raw):', storedResult);
+    console.log('Payment result (parsed):', paymentResult.value);
+    
+    // Success could be from regular payment or card addition
+    // Fix: Explicitly log and check the format of success flag
+    console.log('Success flag type:', typeof paymentResult.value.success);
+    console.log('Success flag value:', paymentResult.value.success);
+    console.log('Status value:', paymentResult.value.status);
+    
+    // CRITICAL FIX: Override the success flag based on status
+    // If status is SUCCESS, treat it as successful regardless of the success flag
+    if (paymentResult.value.status === 'SUCCESS') {
+      isSuccess.value = true;
+      console.log('FIXING: Setting isSuccess to TRUE because status is SUCCESS');
+    } else if (typeof paymentResult.value.success === 'string') {
+      isSuccess.value = paymentResult.value.success.toLowerCase() === 'true';
+    } else {
+      isSuccess.value = Boolean(paymentResult.value.success);
+    }
+    
+    isCardAddition.value = paymentResult.value.isCardAddition || 
+                          (paymentResult.value.desc && paymentResult.value.desc.includes('Card Adding Successful'));
+    
+    console.log('Final isSuccess value:', isSuccess.value);
+    console.log('Card Addition:', isCardAddition.value);
+  } catch (error) {
+    console.error('Error parsing payment result:', error);
+    isSuccess.value = false;
+  }
 
-  if (isSuccess.value && paymentResult.value.orderId) {
+  console.log('About to check conditions for invoice loading');
+  console.log('isSuccess:', isSuccess.value);
+  console.log('orderId available:', Boolean(paymentResult.value?.orderId));
+  
+  // Fix: Ensure we have a valid orderId and success is true
+  if (isSuccess.value && paymentResult.value?.orderId) {
+    console.log('Loading invoice data for order:', paymentResult.value.orderId);
+    
+    // If this is a card addition success or regular payment success, proceed with confirmation
     // Load invoice data using the order ID
-    await loadInvoiceData(paymentResult.value.orderId)
+    await loadInvoiceData(paymentResult.value.orderId);
+    
+    console.log('After loading invoice data, isSuccess:', isSuccess.value);
+    console.log('Invoice data loaded:', invoiceData.value ? 'Yes' : 'No');
 
     // Generate QR code with order ID
     /*
@@ -393,7 +573,8 @@ onMounted(async () => {
     }
     */
   } else {
-    loading.value = false
+    console.log('Not loading invoice data - conditions not met');
+    loading.value = false;
   }
 })
 </script>

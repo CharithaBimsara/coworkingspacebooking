@@ -60,6 +60,7 @@ enum Endpoints {
   GET_PAYMENT_METHODS = '/payment/get-payment-methods',
   ADD_CARD = '/payment/add-card',
   PROCESS_CARD_PAYMENT = '/cards/card-add',
+  PROCESS_SAVED_CARD_PAYMENT = '/cards/pay-saved-card-without-authorization',
   GET_INVOICE = '/cards/get-invoice',
   GET_BOOKING = '/cards/get-booking',
   GET_BILLING_ADDRESS = '/payment/get-billing-address',
@@ -1019,6 +1020,7 @@ export class ApiManager {
       holder_name?: string;
       brand?: string;
       last_four?: string;
+      wallet_id?: number;
     }>;
   }> {
     try {
@@ -1026,12 +1028,43 @@ export class ApiManager {
       try {
         const response: AxiosResponse = await this.httpClient.post(Endpoints.GET_PAYMENT_METHODS, { user_id: userId });
         const { data } = response;
-
-        if (data.status_code === HttpStatus.OK && Array.isArray(data.data)) {
+        
+        // Check for the new response format
+        if (data.status_code === HttpStatus.OK && data.data?.data?.card_list) {
+          const walletId = data.data.data.wallet_id;
+          const cardList = data.data.data.card_list;
+          
+          // Map the card list to our application's format
+          const paymentMethods = cardList.map((card: any) => {
+            // Parse expiry month and year from "MM-YY" format
+            const [expiryMonth, expiryYear] = (card.expiry || '').split('-');
+            
+            return {
+              id: card.card_id,
+              wallet_id: walletId,
+              card_number: card.mask,
+              card_type: card.brand,
+              expiry_month: expiryMonth || '',
+              expiry_year: expiryYear || '',
+              is_default: true, // First card is default, can be overridden if multiple cards
+              brand: card.brand,
+              last_four: card.mask.slice(-4),
+              issuer: card.issuer,
+              card_issuer_type: card.type // CREDIT or DEBIT
+            };
+          });
+          
+          // If multiple cards, set only the first one as default
+          if (paymentMethods.length > 1) {
+            for (let i = 1; i < paymentMethods.length; i++) {
+              paymentMethods[i].is_default = false;
+            }
+          }
+          
           return {
             success: true,
             message: data.message || 'Payment methods retrieved',
-            paymentMethods: data.data || [],
+            paymentMethods: paymentMethods,
           };
         }
       } catch (apiError) {
@@ -1336,6 +1369,58 @@ export class ApiManager {
     }
   }
 
+  public async processSavedCardPayment(paymentData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    user_id?: number;
+    is_card_add: boolean;
+    amount: number;
+    wallet_id: string;
+    card_id: string;
+    currency?: string;
+    booking_products: Array<{
+      product_id: number;
+      booking_date: string;
+      start_time?: string;
+      end_time?: string;
+      total_price: number;
+      facilities: Array<{
+        facility_id: number;
+        price: number;
+      }>;
+      subscription_start_date?: string;
+      subscription_end_date?: string;
+      package_type?: string;
+    }>;
+  }): Promise<{
+    success: boolean;
+    message: string;
+    gatewayData?: {
+      link: string;
+      token: string;
+      sms_status?: string;
+      email_status?: string;
+    };
+  }> {
+    try {
+      const response: AxiosResponse = await this.httpClient.post(Endpoints.PROCESS_SAVED_CARD_PAYMENT, paymentData);
+      const { data } = response;
+      
+      console.log('Saved card payment response:', data);
+
+      return {
+        success: data.status_code === HttpStatus.OK,
+        message: data.message || 'Payment processed with saved card',
+        gatewayData: data.data,
+      };
+    } catch (error) {
+      console.error('Error processing saved card payment:', error);
+      throw error;
+    }
+  }
+
   public async getBooking(orderId: string): Promise<{
     success: boolean;
     message: string;
@@ -1555,6 +1640,7 @@ export const {
   getAllRatings,
   addNewCard,
   processCardPayment,
+  processSavedCardPayment,
   getBooking,
   sendPasswordResetLink,
   verifyPasswordResetCode,

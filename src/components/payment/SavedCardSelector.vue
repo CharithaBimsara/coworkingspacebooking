@@ -31,6 +31,16 @@
                 <p class="font-medium text-gray-700 dark:text-gray-300">•••• •••• •••• {{ getLastFour(card) }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Expires {{ card.expiry_month }}/{{ card.expiry_year }}</p>
                 <p v-if="card.holder_name" class="text-sm text-gray-500 dark:text-gray-400">{{ card.holder_name }}</p>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span v-if="card.issuer" class="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full">
+                    {{ card.issuer }}
+                  </span>
+                  <span v-if="card.card_issuer_type" class="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                    {{ card.card_issuer_type }}
+                  </span>
+                </div>
+                <!-- Hidden element with card data for debugging purposes -->
+                <div class="hidden" :data-card-id="card.id" :data-wallet-id="card.wallet_id"></div>
               </div>
               
               <!-- Selection indicator -->
@@ -97,6 +107,7 @@ import type { PropType } from 'vue';
 
 interface SavedCard {
   id: number;
+  wallet_id?: number;
   card_number: string;
   card_type: string;
   expiry_month: string;
@@ -105,6 +116,8 @@ interface SavedCard {
   holder_name?: string;
   brand?: string;
   last_four?: string;
+  issuer?: string;
+  card_issuer_type?: string; // CREDIT or DEBIT
 }
 
 export default defineComponent({
@@ -156,7 +169,8 @@ export default defineComponent({
     const getCardType = (card: SavedCard): string => {
       // Use brand field if available, otherwise use card_type
       if (card.brand) return card.brand.toUpperCase();
-      return card.card_type.toUpperCase();
+      if (card.card_type) return card.card_type.toUpperCase();
+      return "CARD";
     };
     
     const getLastFour = (card: SavedCard): string => {
