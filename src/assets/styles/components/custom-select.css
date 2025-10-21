@@ -1,0 +1,49 @@
+/*
+ * Custom Select Components - SpaceBooking Application
+ *
+ * Custom styling for dropdown/select elements:
+ * - Cross-browser appearance resets
+ * - Firefox-specific dropdown menu fixes
+ * - Custom select behavior and theming
+ */
+
+/* Custom select styling */
+.sort-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Reset dropdown menu styling in Firefox */
+@-moz-document url-prefix() {
+  .sort-select {
+    text-indent: 0.01px;
+    text-overflow: '';
+    padding-right: 1rem;
+  }
+  
+  .sort-select option {
+    background-color: white !important;
+    color: #111827 !important;
+  }
+  
+  .dark .sort-select option {
+    background-color: #1f2937 !important;
+    color: #00FE01 !important;
+  }
+}
+
+/* For Webkit browsers */
+.sort-select::-ms-expand {
+  display: none;
+}
+
+/* For IE10+ */
+.sort-select::-ms-expand {
+  display: none;
+}
+
+/* Custom styling for select dropdown */
+select.sort-select {
+  cursor: pointer;
+}

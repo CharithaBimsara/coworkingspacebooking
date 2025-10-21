@@ -1,0 +1,161 @@
+/* Auth Component Animations */
+.auth-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Form transitions */
+.fade-slide-up-enter-active,
+.fade-slide-up-leave-active {
+  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.fade-slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* Overlay transitions */
+.fade-scale-enter-active,
+.fade-scale-leave-active {
+  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.fade-scale-enter-from,
+.fade-scale-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* Form animations for inside elements */
+.form-field {
+  animation: fadeInUp var(--delay, 0.3s) cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+.form-field:nth-child(1) { --delay: 0.1s; }
+.form-field:nth-child(2) { --delay: 0.2s; }
+.form-field:nth-child(3) { --delay: 0.3s; }
+.form-field:nth-child(4) { --delay: 0.4s; }
+.form-field:nth-child(5) { --delay: 0.5s; }
+
+/* Button hover effects */
+.auth-button {
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 254, 1, 0.15);
+}
+
+.auth-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Input focus animations */
+.auth-input {
+  transition: all 0.3s ease;
+}
+
+.auth-input:focus {
+  transform: scale(1.01);
+  border-color: var(--color-primary);
+}
+
+/* Mobile navigation animations */
+.mobile-nav-button {
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-button.active {
+  transform: scale(1.05);
+}
+
+/* Keyframe animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Success checkmark animation */
+.success-checkmark {
+  animation: checkmarkAnimation 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+
+@keyframes checkmarkAnimation {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Pulse animation for buttons */
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 254, 1, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 254, 1, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 254, 1, 0);
+  }
+}

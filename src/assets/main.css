@@ -1,0 +1,16 @@
+/*
+ * Main CSS Entry Point - SpaceBooking Application
+ *
+ * This is the main CSS file that imports all other stylesheets.
+ * It serves as the central hub for all styling in the application.
+ */
+
+@import './base.css';
+@import './styles/components/custom-components.css';
+@import './styles/components/custom-select.css';
+@import './styles/components/operating-hours.css';
+@import './styles/components/tailwind-components.css';
+@import './styles/animations/animations.css';
+@import './styles/animations/auth-animations.css';
+
+/* Additional global styling */

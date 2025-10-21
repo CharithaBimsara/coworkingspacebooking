@@ -1,0 +1,295 @@
+/*
+ * Operating Hours Component - SpaceBooking Application
+ *
+ * Specialized styling for the operating hours display section:
+ * - Day card animations and hover effects
+ * - Timeline indicator styling
+ * - Status indicator designs (open/closed)
+ * - Responsive layout adjustments
+ */
+
+/* Modern Operating Hours Section Styles */
+
+/* Day Card Animation Effects */
+.day-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 1;
+}
+
+.day-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  z-index: 2;
+}
+
+.day-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 25px -5px rgba(var(--primary-color-rgb, 59, 130, 246), 0.3);
+}
+
+.day-card:hover::after {
+  opacity: 1;
+}
+
+/* Timeline Indicator Animation */
+@keyframes timelinePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb, 59, 130, 246), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(var(--primary-color-rgb, 59, 130, 246), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb, 59, 130, 246), 0);
+  }
+}
+
+.timeline-indicator {
+  animation: timelinePulse 2s infinite;
+}
+
+/* Status Badge Styles */
+.status-badge {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-badge:hover {
+  transform: scale(1.08);
+}
+
+.status-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.7s;
+}
+
+.status-badge:hover::before {
+  left: 100%;
+}
+
+/* Progress Bar Animation */
+@keyframes progressGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(var(--primary-color-rgb, 59, 130, 246), 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(var(--primary-color-rgb, 59, 130, 246), 0.4);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(var(--primary-color-rgb, 59, 130, 246), 0.2);
+  }
+}
+
+.progress-bar-glow {
+  animation: progressGlow 3s infinite;
+  position: relative;
+}
+
+.progress-bar-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 8px;
+  background: linear-gradient(to right, transparent, white, transparent);
+  opacity: 0.5;
+  animation: progressSheen 2s infinite;
+}
+
+@keyframes progressSheen {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100px); }
+}
+
+/* Floating Bubbles Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating-element {
+  animation: float 5s ease-in-out infinite;
+}
+
+.floating-element-delayed {
+  animation: float 7s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+/* Bounce Animation for Indicators */
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.bounce-animation {
+  animation: bounce 2s infinite;
+}
+
+/* Shimmer Effect for Cards */
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.15) 50%, 
+    transparent 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Cute Wiggle Animation */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.wiggle-on-hover:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* Heartbeat Effect for Important Elements */
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.1); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+}
+
+.heartbeat {
+  animation: heartbeat 2s infinite;
+}
+
+/* Radial Gradient Animation for Backgrounds */
+@keyframes gradientRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(
+    -45deg, 
+    rgba(var(--primary-color-rgb, 59, 130, 246), 0.05),
+    rgba(16, 185, 129, 0.05), 
+    rgba(var(--primary-color-rgb, 59, 130, 246), 0.05)
+  );
+  background-size: 400% 400%;
+  animation: gradientRotate 15s ease infinite;
+}
+
+.dark .animated-gradient {
+  background: linear-gradient(
+    -45deg, 
+    rgba(var(--primary-color-rgb, 59, 130, 246), 0.1),
+    rgba(16, 185, 129, 0.1), 
+    rgba(var(--primary-color-rgb, 59, 130, 246), 0.1)
+  );
+  background-size: 400% 400%;
+  animation: gradientRotate 15s ease infinite;
+}
+
+/* Staggered Fade-in Animation for Elements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-element {
+  opacity: 0;
+  animation: fadeInUp 0.6s forwards;
+}
+
+.fade-in-element:nth-child(2) { animation-delay: 0.1s; }
+.fade-in-element:nth-child(3) { animation-delay: 0.2s; }
+.fade-in-element:nth-child(4) { animation-delay: 0.3s; }
+.fade-in-element:nth-child(5) { animation-delay: 0.4s; }
+.fade-in-element:nth-child(6) { animation-delay: 0.5s; }
+.fade-in-element:nth-child(7) { animation-delay: 0.6s; }
+
+/* Soft Shadow Effects */
+.soft-shadow {
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.05),
+    0 4px 6px -2px rgba(0, 0, 0, 0.03),
+    0 0 0 1px rgba(0, 0, 0, 0.01);
+  transition: box-shadow 0.3s ease;
+}
+
+.soft-shadow:hover {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.01);
+}
+
+.dark .soft-shadow {
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.2),
+    0 4px 6px -2px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.dark .soft-shadow:hover {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.25),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
